@@ -1,0 +1,363 @@
+[
+ {
+  "id": "n01",
+  "type": "security",
+  "title": "ROBOS EN TEPITO",
+  "desc": "Esta mañana en la estación Tepito se presenciaron demasiados robos.",
+  "impact": "EVITA TEPITO - Alto riesgo de asalto",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Tepito"
+   ]
+  }
+ },
+ {
+  "id": "n02",
+  "type": "security",
+  "title": "ASALTOS EN LÍNEA 1",
+  "desc": "Reportan asaltos frecuentes entre Candelaria y San Lázaro.",
+  "impact": "Candelaria y San Lázaro peligrosas",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Candelaria",
+    "San Lázaro",
+    "Candelaria LB",
+    "Candelaria LB2",
+    "San Lázaro LB",
+    "San Lázaro LB2"
+   ]
+  }
+ },
+ {
+  "id": "n03",
+  "type": "security",
+  "title": "ZONA CALIENTE EN MORELOS",
+  "desc": "La estación Morelos reportó 3 asaltos en la última hora.",
+  "impact": "Morelos es peligrosa ahora",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Morelos"
+   ]
+  }
+ },
+ {
+  "id": "n04",
+  "type": "security",
+  "title": "PELIGRO EN LÍNEA B",
+  "desc": "Usuarios reportan que Lagunilla y Garibaldi son zonas de alto riesgo.",
+  "impact": "Lagunilla y Garibaldi peligrosas",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Lagunilla",
+    "Garibaldi",
+    "Guerrero LB"
+   ]
+  }
+ },
+ {
+  "id": "n05",
+  "type": "security",
+  "title": "CUIDADO EN Isabel la Católica",
+  "desc": "Un pasajero fue asaltado al salir de la estación.",
+  "impact": "Isabel la Católica es riesgosa",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Isabel la Católica"
+   ]
+  }
+ },
+ {
+  "id": "n06",
+  "type": "security",
+  "title": "MOCTEZUMA: ZONA DE CUIDADO",
+  "desc": "Vecinos reportan presencia de personas sospechosas.",
+  "impact": "Moctezuma con actividad delictiva",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Moctezuma"
+   ]
+  }
+ },
+ {
+  "id": "n07",
+  "type": "security",
+  "title": "ASALTOS EN LÍNEA 5",
+  "desc": "La Línea 5 reporta robos en Valle Gómez y Consulado.",
+  "impact": "Valle Gómez y Consulado peligrosas",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Valle Gómez",
+    "Consulado",
+    "Eduardo Molina",
+    "Aragón"
+   ]
+  }
+ },
+ {
+  "id": "n08",
+  "type": "security",
+  "title": "Tlatelolco: Robo a mano armada",
+  "desc": "Esta madrugada asaltaron a un trabajador en Tlatelolco.",
+  "impact": "Tlatelolco es peligrosa",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Tlatelolco"
+   ]
+  }
+ },
+ {
+  "id": "n09",
+  "type": "security",
+  "title": "ALERTA EN LÍNEA 3 NORTE",
+  "desc": "Indios Verdes y La Raza reportan aumento de robos.",
+  "impact": "Indios Verdes y La Raza con riesgo",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Indios Verdes",
+    "La Raza",
+    "La Raza L5"
+   ]
+  }
+ },
+ {
+  "id": "n10",
+  "type": "security",
+  "title": "Pino Suárez: Zona de cuidado",
+  "desc": "Varios reportes de carteristas en Pino Suárez.",
+  "impact": "Pino Suárez con carteristas",
+  "severity": "danger",
+  "icon": "alerta",
+  "effects": {
+   "danger": [
+    "Pino Suárez",
+    "Pino Suárez L2"
+   ]
+  }
+ },
+ {
+  "id": "n11",
+  "type": "protest",
+  "title": "PROTESTA EN INSURGENTES",
+  "desc": "Manifestantes bloquean la estación Insurgentes.",
+  "impact": "Estación INSURGENTES BLOQUEADA",
+  "severity": "danger",
+  "icon": "bloqueo",
+  "effects": {
+   "block": [
+    "Insurgentes"
+   ]
+  }
+ },
+ {
+  "id": "n12",
+  "type": "protest",
+  "title": "BLOQUEO EN LÍNEA 3",
+  "desc": "Estudiantes bloquean Juárez. No hay servicio.",
+  "impact": "Estación JUÁREZ BLOQUEADA",
+  "severity": "danger",
+  "icon": "bloqueo",
+  "effects": {
+   "block": [
+    "Juárez"
+   ]
+  }
+ },
+ {
+  "id": "n13",
+  "type": "protest",
+  "title": "MARCHA EN REFORMA",
+  "desc": "Marcha masiva afecta Bellas Artes.",
+  "impact": "Estación BELLAS ARTES BLOQUEADA",
+  "severity": "danger",
+  "icon": "bloqueo",
+  "effects": {
+   "block": [
+    "Bellas Artes"
+   ]
+  }
+ },
+ {
+  "id": "n14",
+  "type": "protest",
+  "title": "PARO EN LÍNEA B",
+  "desc": "Trabajadores del Metro realizan paro en Garibaldi.",
+  "impact": "Estación GARIBALDI BLOQUEADA",
+  "severity": "danger",
+  "icon": "bloqueo",
+  "effects": {
+   "block": [
+    "Garibaldi"
+   ]
+  }
+ },
+ {
+  "id": "n15",
+  "type": "protest",
+  "title": "MANIFESTACIÓN EN ZÓCALO",
+  "desc": "Protesta en el centro histórico. Zócalo inaccesible.",
+  "impact": "Estación ZÓCALO BLOQUEADA",
+  "severity": "danger",
+  "icon": "bloqueo",
+  "effects": {
+   "block": [
+    "Zócalo"
+   ]
+  }
+ },
+ {
+  "id": "n16",
+  "type": "delay",
+  "title": "RUTA 87 RETRASADA",
+  "desc": "La Ruta 87 tiene 20 min de retraso.",
+  "impact": "⏱ +5 min en rutas de Línea 1",
+  "severity": "warning",
+  "icon": "reloj",
+  "effects": {
+   "timeMod": {
+    "line": "1",
+    "extra": 5
+   }
+  }
+ },
+ {
+  "id": "n17",
+  "type": "delay",
+  "title": "FALLA EN LÍNEA 2",
+  "desc": "Falla eléctrica en la Línea 2. Servicio reducido.",
+  "impact": "⏱ +8 min en rutas de Línea 2",
+  "severity": "warning",
+  "icon": "reloj",
+  "effects": {
+   "timeMod": {
+    "line": "2",
+    "extra": 8
+   }
+  }
+ },
+ {
+  "id": "n18",
+  "type": "delay",
+  "title": "LÍNEA 5 CON DEMORA",
+  "desc": "Demora de 15 minutos en Línea 5 por mantenimiento.",
+  "impact": "⏱ +6 min en rutas de Línea 5",
+  "severity": "warning",
+  "icon": "reloj",
+  "effects": {
+   "timeMod": {
+    "line": "5",
+    "extra": 6
+   }
+  }
+ },
+ {
+  "id": "n19",
+  "type": "delay",
+  "title": "OBRAS EN LÍNEA B",
+  "desc": "Obras en Tepito. Ruta lenta.",
+  "impact": "⏱ +6 min en rutas de Línea B",
+  "severity": "warning",
+  "icon": "reloj",
+  "effects": {
+   "timeMod": {
+    "line": "B",
+    "extra": 6
+   }
+  }
+ },
+ {
+  "id": "n20",
+  "type": "delay",
+  "title": "LA COMBI DEL \"RAYO\" NO PASÓ",
+  "desc": "La combi del \"Rayo\" no pasó. Como siempre.",
+  "impact": "⏱ +3 min en tu próximo viaje",
+  "severity": "warning",
+  "icon": "reloj",
+  "effects": {
+   "timeMod": {
+    "line": "1",
+    "extra": 3
+   }
+  }
+ },
+ {
+  "id": "n21",
+  "type": "weather",
+  "title": "LLUVIA FUERTE",
+  "desc": "Lluvia intensa en la ciudad. Caminos resbalosos.",
+  "impact": "-10 stamina",
+  "severity": "warning",
+  "icon": "alerta",
+  "effects": {
+   "staminaPenalty": 10
+  }
+ },
+ {
+  "id": "n22",
+  "type": "weather",
+  "title": "CALOR EXTREMO 35°C",
+  "desc": "Ola de calor. Hidrátate o perderás energía rápido.",
+  "impact": "-15 stamina",
+  "severity": "warning",
+  "icon": "alerta",
+  "effects": {
+   "staminaPenalty": 15
+  }
+ },
+ {
+  "id": "n23",
+  "type": "positive",
+  "title": "METRO EXPRESS",
+  "desc": "Trenes express en Línea 3. Viaje más rápido.",
+  "impact": "-2 min en rutas de Línea 3",
+  "severity": "success",
+  "icon": "moneda",
+  "effects": {
+   "timeMod": {
+    "line": "3",
+    "extra": -2
+   }
+  }
+ },
+ {
+  "id": "n24",
+  "type": "positive",
+  "title": "PROMOCIÓN MONSTER",
+  "desc": "2x1 en Monster Energy en todas las tiendas del Metro.",
+  "impact": "Monster cuesta $20 en lugar de $30",
+  "severity": "success",
+  "icon": "moneda",
+  "effects": {
+   "monsterPromo": true
+  }
+ },
+ {
+  "id": "n25",
+  "type": "positive",
+  "title": "METRO GRATIS HOY",
+  "desc": "¡El gobierno anunció metro gratis por el día!",
+  "impact": "-$5 en tu próximo viaje (gratis)",
+  "severity": "success",
+  "icon": "moneda",
+  "effects": {
+   "freeRide": 1
+  }
+ }
+]

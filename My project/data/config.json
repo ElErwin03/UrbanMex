@@ -1,0 +1,27 @@
+{
+ "currencyName": "peje-coins",
+ "dayStartMinute": 420,
+ "dayEndMinute": 1200,
+ "stationTime": 5,
+ "transferTime": 12,
+ "minEdgeTime": 3,
+ "staminaPerStation": 5,
+ "moneyPerStation": 5,
+ "monsterPrice": 30,
+ "monsterPromoPrice": 20,
+ "monsterStamina": 40,
+ "robbery": {
+  "baseChance": 0.55,
+  "luck": 0.15,
+  "minLoss": 20,
+  "maxLoss": 59
+ },
+ "news": {
+  "firstDelaySec": 2,
+  "intervalSec": [
+   10,
+   18
+  ],
+  "chance": 0.5
+ }
+}

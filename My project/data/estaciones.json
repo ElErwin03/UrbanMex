@@ -1,0 +1,607 @@
+{
+ "lines": {
+  "1": {
+   "name": "Línea 1",
+   "color": "#E91E63"
+  },
+  "2": {
+   "name": "Línea 2",
+   "color": "#2196F3"
+  },
+  "3": {
+   "name": "Línea 3",
+   "color": "#8BC34A"
+  },
+  "5": {
+   "name": "Línea 5",
+   "color": "#FFEB3B"
+  },
+  "B": {
+   "name": "Línea B",
+   "color": "#9E9E9E"
+  }
+ },
+ "stations": [
+  {
+   "id": "Observatorio",
+   "x": 1,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Juanacatlán",
+   "x": 3,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Chapultepec",
+   "x": 5,
+   "y": 10,
+   "line": "1",
+   "shop": true
+  },
+  {
+   "id": "Sevilla",
+   "x": 7,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Insurgentes",
+   "x": 9,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Cuauhtémoc",
+   "x": 11,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Balderas",
+   "x": 13,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Salto del Agua",
+   "x": 15,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Isabel la Católica",
+   "x": 17,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Pino Suárez",
+   "x": 19,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "San Antonio Abad",
+   "x": 21,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Candelaria",
+   "x": 23,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "San Lázaro",
+   "x": 25,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Moctezuma",
+   "x": 27,
+   "y": 10,
+   "line": "1",
+   "shop": false
+  },
+  {
+   "id": "Pantitlán",
+   "x": 29,
+   "y": 10,
+   "line": "1",
+   "shop": true
+  },
+  {
+   "id": "Cuatro Caminos",
+   "x": 10,
+   "y": 1,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Panteones",
+   "x": 10,
+   "y": 2,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Tacuba",
+   "x": 10,
+   "y": 3,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Cuitláhuac",
+   "x": 10,
+   "y": 4,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Popotla",
+   "x": 10,
+   "y": 5,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Colegio Militar",
+   "x": 10,
+   "y": 6,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Normal",
+   "x": 10,
+   "y": 7,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "San Cosme",
+   "x": 10,
+   "y": 8,
+   "line": "2",
+   "shop": true
+  },
+  {
+   "id": "Revolución",
+   "x": 10,
+   "y": 9,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Hidalgo",
+   "x": 10,
+   "y": 10,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Bellas Artes",
+   "x": 11,
+   "y": 11,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Allende",
+   "x": 12,
+   "y": 12,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Zócalo",
+   "x": 13,
+   "y": 13,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Pino Suárez L2",
+   "x": 14,
+   "y": 14,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "San Antonio Abad L2",
+   "x": 15,
+   "y": 15,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Chabacano",
+   "x": 16,
+   "y": 16,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Viaducto",
+   "x": 17,
+   "y": 17,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Xola",
+   "x": 18,
+   "y": 18,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Villa de Cortés",
+   "x": 19,
+   "y": 19,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Nativitas",
+   "x": 20,
+   "y": 20,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Portales",
+   "x": 21,
+   "y": 21,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Ermita",
+   "x": 22,
+   "y": 22,
+   "line": "2",
+   "shop": false
+  },
+  {
+   "id": "Tasqueña",
+   "x": 23,
+   "y": 23,
+   "line": "2",
+   "shop": true
+  },
+  {
+   "id": "Indios Verdes",
+   "x": 15,
+   "y": 1,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Deportivo 18 de Marzo",
+   "x": 15,
+   "y": 2,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Potrero",
+   "x": 15,
+   "y": 3,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "La Raza",
+   "x": 15,
+   "y": 4,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Tlatelolco",
+   "x": 15,
+   "y": 5,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Guerrero",
+   "x": 15,
+   "y": 6,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Hidalgo L3",
+   "x": 15,
+   "y": 7,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Juárez",
+   "x": 15,
+   "y": 8,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Balderas L3",
+   "x": 15,
+   "y": 9,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Niños Héroes",
+   "x": 15,
+   "y": 11,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Hospital General",
+   "x": 15,
+   "y": 12,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Centro Médico",
+   "x": 15,
+   "y": 13,
+   "line": "3",
+   "shop": true
+  },
+  {
+   "id": "Etiopía",
+   "x": 16,
+   "y": 14,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Eugenia",
+   "x": 17,
+   "y": 15,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "División del Norte",
+   "x": 18,
+   "y": 16,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Zapata",
+   "x": 19,
+   "y": 17,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Coyoacán",
+   "x": 20,
+   "y": 18,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Viveros",
+   "x": 21,
+   "y": 19,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Miguel Ángel de Quevedo",
+   "x": 22,
+   "y": 20,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Copilco",
+   "x": 23,
+   "y": 21,
+   "line": "3",
+   "shop": false
+  },
+  {
+   "id": "Universidad",
+   "x": 24,
+   "y": 22,
+   "line": "3",
+   "shop": true
+  },
+  {
+   "id": "Politécnico",
+   "x": 5,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Instituto del Petróleo",
+   "x": 7,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Autobuses del Norte",
+   "x": 9,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "La Raza L5",
+   "x": 11,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Misterios",
+   "x": 13,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Valle Gómez",
+   "x": 16,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Consulado",
+   "x": 17,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Eduardo Molina",
+   "x": 19,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Aragón",
+   "x": 21,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Oceanía",
+   "x": 23,
+   "y": 3,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Terminal Aérea",
+   "x": 25,
+   "y": 4,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Hangares",
+   "x": 27,
+   "y": 5,
+   "line": "5",
+   "shop": false
+  },
+  {
+   "id": "Pantitlán L5",
+   "x": 29,
+   "y": 6,
+   "line": "5",
+   "shop": true
+  },
+  {
+   "id": "Buenavista",
+   "x": 8,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "Guerrero LB",
+   "x": 9,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "Garibaldi",
+   "x": 12,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "Lagunilla",
+   "x": 14,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "Tepito",
+   "x": 16,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "Morelos",
+   "x": 18,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "San Lázaro LB",
+   "x": 20,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "Candelaria LB",
+   "x": 22,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "Merced",
+   "x": 24,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "Candelaria LB2",
+   "x": 26,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  },
+  {
+   "id": "San Lázaro LB2",
+   "x": 28,
+   "y": 6,
+   "line": "B",
+   "shop": false
+  }
+ ]
+}
