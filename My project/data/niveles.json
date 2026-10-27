@@ -1,0 +1,70 @@
+[
+ {
+  "id": 1,
+  "day": "LUNES",
+  "start": "Tacuba",
+  "goal": "Pantitlán",
+  "startDesc": "Tu casa en Tacuba. Llega a la escuela en Pantitlán.",
+  "goalDesc": "¡Llegaste a la escuela!",
+  "moneyStart": 150,
+  "staminaMax": 100,
+  "blocked": []
+ },
+ {
+  "id": 2,
+  "day": "MARTES",
+  "start": "Indios Verdes",
+  "goal": "Universidad",
+  "startDesc": "Tu casa en Indios Verdes. Llega a la UNAM.",
+  "goalDesc": "¡Llegaste a la UNAM!",
+  "moneyStart": 210,
+  "staminaMax": 110,
+  "blocked": [
+   "Juárez"
+  ]
+ },
+ {
+  "id": 3,
+  "day": "MIÉRCOLES",
+  "start": "Cuatro Caminos",
+  "goal": "Tasqueña",
+  "startDesc": "Tu casa en Cuatro Caminos. Llega al trabajo en Tasqueña.",
+  "goalDesc": "¡Llegaste al trabajo!",
+  "moneyStart": 210,
+  "staminaMax": 100,
+  "blocked": [
+   "Allende"
+  ]
+ },
+ {
+  "id": 4,
+  "day": "JUEVES",
+  "start": "Politécnico",
+  "goal": "Zapata",
+  "startDesc": "Tu casa en el Politécnico. Llega a una junta en Zapata.",
+  "goalDesc": "¡Llegaste a la junta!",
+  "moneyStart": 230,
+  "staminaMax": 120,
+  "blocked": [
+   "Tlatelolco"
+  ]
+ },
+ {
+  "id": 5,
+  "day": "VIERNES",
+  "start": "Observatorio",
+  "goal": "Pantitlán",
+  "startDesc": "Tu casa en Observatorio. Llega a una fiesta en Pantitlán.",
+  "goalDesc": "¡Llegaste a la fiesta!",
+  "moneyStart": 170,
+  "staminaMax": 90,
+  "blocked": [
+   "Isabel la Católica",
+   "Pino Suárez",
+   "Pino Suárez L2",
+   "Candelaria",
+   "Candelaria LB",
+   "Candelaria LB2"
+  ]
+ }
+]
