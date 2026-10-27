@@ -7,7 +7,7 @@
 
   var REASON = { stamina: 'SIN STAMINA', money: 'SIN DINERO', night: 'ANOCHECE', blocked: 'BLOQUEADA', no_connection: 'NO CONECTADA' };
 
-  function wrapLines(lines, cols) { return [].concat.apply([], [].concat(lines).map(function (l) { return util.wrap(l, cols); })); }
+  function wrapLines(lines, cols) { return [].concat.apply([], [].concat(lines).map(function (l) { return l === '' ? [''] : util.wrap(l, cols); })); }   // conserva las líneas en blanco
   function float(um, text, color) { um.floats.push({ text: text, color: color, t: 0 }); if (um.floats.length > 4) um.floats.shift(); }
 
   /** Ventana modal. o: {title, lines[], buttons:[{label, kind:'safe'|'danger'|'neutral', action}]}. Se encolan si ya hay una abierta. */
@@ -24,7 +24,6 @@
     var run = um.run;
     um.map = new U.MapView(scene, data);
     um.map.placePlayer(run.current);
-    var p = um.map.stationPos(run.current); um.map.cam.x = p.x + 190; um.map.cam.y = p.y;
     N.intro(run);
     modal(um, { title: 'DIA ' + run.level.id + ' - ' + run.level.day,
       lines: [run.level.startDesc, '', 'Meta: ' + run.level.goal, 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.', '',
@@ -39,7 +38,7 @@
   function travel(um, id) {
     var run = um.run, from = run.current, out = R.travel(run, id);
     if (!out.ok) { float(um, REASON[out.reason] || 'NO SE PUEDE', PAL.red); return; }
-    um.selected = null; um.map.cam.follow = true; um.map.walk(from, id, 0.45);
+    um.selected = null; if (um.map.cam.zoom > um.map.fitZoom + 0.05) um.map.followPlayer(); um.map.walk(from, id, 0.45);   // con toda la red a la vista la cámara no se mueve
     um.pending = out; float(um, id + '  -' + out.cost.time + ' min', PAL.blue);
   }
 
@@ -92,55 +91,58 @@
     ui.text('hud:tv', util.clock(run.minute), 1030, 22, { size: 8, color: run.minute >= 1140 ? PAL.red : PAL.yellow });
   }
 
-  function drawControls(ui, um) {
-    ui.rect(16, 70, 44, 128, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
-    if (ui.button('z+', '+', 22, 76, 32, 32, { size: 16, fill: '60;60;90' })) um.map.zoomBy(0.2);
-    ui.text('zl', Math.round(um.map.cam.zoom * 100) + '%', 38, 118, { size: 8, align: 'center', color: PAL.dim });
-    if (ui.button('z-', '-', 22, 134, 32, 32, { size: 16, fill: '60;60;90' })) um.map.zoomBy(-0.2);
-    if (ui.button('rc', 'YO', 22, 170, 32, 24, { size: 8, fill: '60;60;90' })) um.map.cam.follow = true;
+  function drawControls(ui, um) {   // barra horizontal arriba a la izquierda: no tapa la red encuadrada
+    var m = um.map, y = 66, c = { size: 8, fill: '60;60;90' };
+    ui.rect(16, 62, 322, 44, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
+    if (ui.button('z-', '-', 22, y, 34, 32, { size: 16, fill: '60;60;90' })) m.zoomBy(-0.2);
+    ui.text('zl', Math.round(m.cam.zoom * 100) + '%', 87, y + 12, { size: 8, align: 'center', color: PAL.dim });
+    if (ui.button('z+', '+', 118, y, 34, 32, { size: 16, fill: '60;60;90' })) m.zoomBy(0.2);
+    if (ui.button('fit', 'TODO', 160, y, 56, 32, c)) m.fit();                                                    // encuadra toda la red
+    if (ui.button('rc', 'YO', 222, y, 40, 32, c)) { if (m.cam.zoom < 1.4) m.zoomBy(1.4 - m.cam.zoom); m.followPlayer(); }
+    if (ui.button('abc', 'ABC', 268, y, 64, 32, { size: 8, fill: m.labelsAll ? '39;174;96' : '60;60;90' })) m.labelsAll = !m.labelsAll;   // todos los nombres
   }
 
   function drawLegend(ui, um) {
-    var x = 950, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.']];
-    ui.rect(x, y, 310, 76, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
+    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.']];
+    ui.rect(x, y, 340, 76, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
     ui.text('lg:t', 'LEYENDA', x + 10, y + 8, { size: 8, color: PAL.orange });
     items.forEach(function (it, i) {
-      var ix = x + 10 + (i % 2) * 150, iy = y + 24 + Math.floor(i / 2) * 24;
+      var ix = x + 10 + (i % 2) * 165, iy = y + 24 + Math.floor(i / 2) * 24;
       ui.icon('lg:i' + i, it[0], ix, iy, 1.5); ui.text('lg:l' + i, it[1], ix + 30, iy + 8, { size: 8 });
     });
   }
 
   function drawStationPanel(ui, um) {
-    var run = um.run, cfg = run.data.config, x = 16, y = 548, w = 520, h = 160;
+    var run = um.run, cfg = run.data.config, x = 16, y = 592, w = 540, h = 124;
     if (um.selected) {
       var id = um.selected, st = run.data.stations[id], chk = R.canTravel(run, id), c = chk.cost || { time: 0, stamina: cfg.staminaPerStation, money: cfg.moneyPerStation };
       var desc = id === run.level.goal ? run.level.goalDesc : st.shop ? 'Hay una tienda. Monster: $' + R.monsterPrice(run) + ' (+' + cfg.monsterStamina + ' stamina)' : st.line === 'B' ? 'Estacion de la Linea B. Viajar aqui?' : 'Estacion de la Linea ' + st.line + '. Viajar aqui?';
       ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });
-      ui.text('sp:t', id, x + 16, y + 14, { size: 16, color: PAL.orange });
-      ui.text('sp:d', desc, x + 16, y + 44, { size: 8, cols: 60, color: '200;205;225' });
+      ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });
+      ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });
       var base = c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base;
-      ui.icon('sp:i1', 'reloj', x + 16, y + 74, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 82, { size: 8, color: delay > 2 ? PAL.red : PAL.blue });
-      ui.icon('sp:i2', 'rayo', x + 220, y + 74, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 82, { size: 8 });
-      ui.icon('sp:i3', 'moneda', x + 300, y + 74, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 82, { size: 8 });
-      if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 380, y + 82, { size: 8, color: PAL.yellow });
+      ui.icon('sp:i1', 'reloj', x + 16, y + 62, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 70, { size: 8, color: delay > 2 ? PAL.red : PAL.blue });
+      ui.icon('sp:i2', 'rayo', x + 220, y + 62, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 70, { size: 8 });
+      ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8 });
+      if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });
       var label = chk.ok ? 'VIAJAR' : (REASON[chk.reason] || 'NO');
-      if (ui.button('sp:go', label, x + 16, y + 110, 200, 36, { size: 8, disabled: !chk.ok })) travel(um, id);
-      if (ui.button('sp:no', 'CANCELAR', x + 232, y + 110, 150, 36, { size: 8, fill: '70;70;100' })) um.selected = null;
+      if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, disabled: !chk.ok })) travel(um, id);
+      if (ui.button('sp:no', 'CANCELAR', x + 232, y + 90, 150, 32, { size: 8, fill: '70;70;100' })) um.selected = null;
     } else if (run.data.stations[run.current].shop) {
       var price = R.monsterPrice(run), can = run.money >= price && run.stamina < run.staminaMax;
-      ui.rect(x, y + 56, 300, 104, { fill: '12;10;24', border: '90;170;255', bw: 3, block: true });
-      ui.icon('sh:i', 'tienda', x + 14, y + 68, 2); ui.text('sh:t', 'TIENDA AQUI', x + 56, y + 76, { size: 8, color: '90;170;255' });
-      if (ui.button('sh:buy', 'MONSTER $' + price, x + 14, y + 108, 272, 36, { size: 8, fill: '39;174;96', disabled: !can })) buy(um);
+      ui.rect(x, 616, 300, 96, { fill: '12;10;24', border: '90;170;255', bw: 3, block: true });
+      ui.icon('sh:i', 'tienda', x + 14, 624, 2); ui.text('sh:t', 'TIENDA AQUI', x + 56, 632, { size: 8, color: '90;170;255' });
+      if (ui.button('sh:buy', 'MONSTER $' + price, x + 14, 666, 272, 36, { size: 8, fill: '39;174;96', disabled: !can })) buy(um);
     }
   }
 
   function drawModal(ui, um) {
     var m = um.modal; if (!m) return;
     ui.rect(0, 0, 1280, 720, { fill: '0;0;0', alpha: 150, bw: 0, modal: true, block: true });
-    var w = 600, h = 300, x = 340, y = 210;
+    var w = 640, h = 300, x = 320, y = 210;
     ui.rect(x, y, w, h, { fill: '16;14;32', border: PAL.orange, bw: 4, modal: true, block: true });
     ui.text('md:t', m.title, x + w / 2, y + 22, { size: 16, align: 'center', color: PAL.orange, z: 320 });
-    ui.text('md:b', wrapLines(m.lines, 64).join('\n'), x + 28, y + 66, { size: 8, z: 320, lineH: 14, color: '220;224;240' });
+    ui.lines('md:b', wrapLines(m.lines, 48), x + 28, y + 64, { size: 12, z: 320, lineH: 18, color: '220;224;240' });
     var n = m.buttons.length, bw = 170, gap = 20, bx = x + (w - (n * bw + (n - 1) * gap)) / 2;
     m.buttons.forEach(function (b, i) {
       var fill = b.kind === 'safe' ? '39;174;96' : b.kind === 'danger' ? '192;57;43' : '70;70;100';
@@ -156,13 +158,14 @@
     }
   }
 
-  function drawPush(ui, um, dt) {
-    var p = um.push; if (!p) return; p.t += dt; if (p.t > 4.5) { um.push = null; return; }
-    var slide = Math.min(1, p.t * 5), y = 64 - 100 * (1 - slide), n = p.item;
-    ui.rect(956, y, 298, 92, { fill: '30;30;48', border: '255;255;255', bw: 2, modal: true });
-    ui.icon('pn:i', n.icon || 'noticia', 966, y + 8, 1.5, { z: 330 }); ui.text('pn:h', 'Noticias CDMX - ahora', 996, y + 14, { size: 8, color: PAL.dim, z: 330 });
-    ui.text('pn:t', util.wrap(n.title, 34).slice(0, 2).join('\n'), 966, y + 36, { size: 8, z: 330, lineH: 12 });
-    ui.text('pn:d', util.wrap(n.desc, 34).slice(0, 2).join('\n'), 966, y + 62, { size: 8, z: 330, color: '200;205;225', lineH: 12 });
+  function drawPush(ui, um, dt) {   // anuncio emergente: letra grande (título 16, texto 12) y más tiempo en pantalla
+    var p = um.push; if (!p) return; p.t += dt; if (p.t > 6.5) { um.push = null; return; }
+    var n = p.item, x = 690, w = 570, tl = util.wrap(n.title, 32).slice(0, 2), dl = util.wrap(n.desc, 44).slice(0, 3);
+    var h = 48 + tl.length * 22 + 8 + dl.length * 18 + 12, y = 64 - (h + 12) * (1 - Math.min(1, p.t * 5));
+    ui.rect(x, y, w, h, { fill: '30;30;48', border: '255;255;255', bw: 3, modal: true });
+    ui.icon('pn:i', n.icon || 'noticia', x + 14, y + 10, 2, { z: 330 }); ui.text('pn:h', 'NOTICIAS CDMX - ahora', x + 56, y + 16, { size: 12, color: PAL.dim, z: 330 });
+    ui.lines('pn:t', tl, x + 16, y + 48, { size: 16, z: 330, lineH: 22 });
+    ui.lines('pn:d', dl, x + 16, y + 48 + tl.length * 22 + 8, { size: 12, z: 330, color: '210;215;235', lineH: 18 });
   }
 
   // ---------------------------------------------------------------- bucle principal
@@ -193,7 +196,7 @@
     if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
     if (!busy) { var item = N.tick(run, dt); if (item) { um.push = { item: item, t: 0 }; if (um.selected && run.blocked[um.selected]) um.selected = null; } }
 
-    um.map.update(dt, run, ui, um.hover);
+    um.map.update(dt, run, ui, um.hover, um.selected);
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }

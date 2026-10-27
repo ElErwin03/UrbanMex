@@ -99,4 +99,36 @@ save(tren(), 'tren')
 # ---------- logo del menú 16x16 (ícono metro) ----------
 im, d = new(16, 16); d.ellipse([0, 0, 15, 15], fill=OR, outline=K); d.rectangle([4, 4, 11, 9], fill=W, outline=K); d.rectangle([5, 10, 6, 11], fill=K); d.rectangle([9, 10, 10, 11], fill=K)
 save(im, 'logo_metro')
+# ---------- ciudad isométrica 2.5D (EdificioIso): 48 px de ancho = 1 casilla del mapa; el rombo base mide 44x22 ----------
+def shade(c, k): return tuple(max(0, min(255, int(v * k))) for v in c[:3]) + (255,)
+def iso_edificio(hgt, base, seed, antena=False):
+    rnd = random.Random(seed); Wd, Ht = 48, hgt + 24 + (7 if antena else 0)
+    im, d = new(Wd, Ht); by = Ht - 12                        # centro del rombo base
+    L, R, B, Tp = (2, by), (45, by), (24, by + 11), (24, by - 11)
+    up = lambda p: (p[0], p[1] - hgt)
+    left = shade(base, 1.0); right = shade(base, 0.68); top = shade(base, 1.35)
+    d.polygon([L, B, up(B), up(L)], fill=left); d.polygon([B, R, up(R), up(B)], fill=right)
+    d.polygon([up(Tp), up(R), up(B), up(L)], fill=top)
+    for a, b in [(L, B), (B, R), (L, up(L)), (B, up(B)), (R, up(R)), (up(L), up(Tp)), (up(Tp), up(R)), (up(R), up(B)), (up(B), up(L))]: d.line([a, b], fill=K)
+    for x in range(6, 21, 5):                                 # ventanas cara izquierda (siguen la pendiente de 1:2)
+        for r in range(5, hgt - 4, 7):
+            y = by - hgt + (x - 2) // 2 + r; d.rectangle([x, y, x + 2, y + 3], fill=YE if rnd.random() > 0.6 else (35, 38, 70, 255))
+    for x in range(28, 43, 5):                                # cara derecha
+        for r in range(5, hgt - 4, 7):
+            y = by - hgt + 11 - (x - 24) // 2 + r; d.rectangle([x, y, x + 2, y + 3], fill=(255, 214, 120, 255) if rnd.random() > 0.7 else (28, 30, 56, 255))
+    if antena: d.rectangle([23, 0, 24, 8 + 2], fill=GY2); d.point((23, 0), fill=RD)
+    return im
+for i, (h, col, an) in enumerate([(16, C('#8a5a52'), False), (28, C('#4f6a9a'), False), (40, C('#3f7a88'), True),
+                                  (56, C('#6a5a9a'), True), (22, C('#9a8a62'), False), (34, C('#6a6f8c'), True)]):
+    save(iso_edificio(h, col, 11 + i, an), f'iso_edificio_{i}')
+
+def iso_parque():          # plaza con árboles
+    im, d = new(48, 36); by = 24
+    d.polygon([(2, by), (24, by - 11), (45, by), (24, by + 11)], fill=C('#2f7a45'), outline=K)
+    d.polygon([(2, by), (24, by + 11), (24, by + 12), (2, by + 1)], fill=C('#1b4f2c')); d.polygon([(24, by + 11), (45, by), (45, by + 1), (24, by + 12)], fill=C('#14401f'))
+    for tx, ty in [(14, 22), (30, 20), (24, 28), (36, 26)]:
+        d.rectangle([tx, ty, tx + 1, ty + 5], fill=C('#5c3b22')); d.ellipse([tx - 4, ty - 8, tx + 5, ty + 1], fill=C('#3fa860'), outline=C('#1e6e3a'))
+    return im
+save(iso_parque(), 'iso_parque')
+
 print('ok', len(os.listdir(OUT)), 'imágenes en', OUT)
