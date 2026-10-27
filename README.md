@@ -28,7 +28,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `rules` | economía, viaje, asaltos, Monster, fin de partida | no |
 | `news` | noticias del celular (nunca dejan la meta inalcanzable) | no |
 | `ui` | interfaz “modo inmediato” sobre objetos Texto/Icono/Painter | sí |
-| `map` | mapa 2D, cámara, estaciones, jugador | sí |
+| `map` | mapa isométrico 2.5D (ciudad en relieve), cámara que encuadra toda la red, estaciones, jugador | sí |
 | `phone` | celular: Noticias, Ruta, Saldo, Ajustes | sí |
 | `scene-*` | controlador de cada escena (Menu, Tutorial, Nivel, Resultado) | sí |
 
@@ -44,3 +44,11 @@ En GDevelop cada módulo es una hoja de **eventos externos** `Mod_<nombre>` y ca
 npm test            # 10 pruebas de reglas + prueba de humo (un bot juega 5 días con clics sobre el proyecto generado)
 npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 ```
+
+## Mapa isométrico
+
+- La cuadrícula lógica (`x`, `y` en `estaciones.json`) no cambió; `src/map.js` solo la proyecta: `pantalla.x = OX + (x - y) * 24`, `pantalla.y = OY + (x + y) * 12` (casilla de 48x24 px, estilo Age of Empires / Clash of Clans).
+- Bajo las líneas hay una isla de ciudad con edificios en relieve (`EdificioIso`, sprites `iso_edificio_*.png` y `iso_parque.png`), avenidas y andenes de colores. El suelo se dibuja una sola vez; cada fotograma solo se redibujan las vías.
+- Al abrir un día la cámara **encuadra toda la red** (sin mover ni acercar). Controles arriba a la izquierda: `-` / `+` (zoom), `TODO` (volver al encuadre), `YO` (seguir al jugador con zoom) y `ABC` (mostrar todos los nombres; por defecto solo se ven los de la estación actual, la meta, el inicio, las vecinas y la que señalas).
+- Anuncios y noticias usan letra de 12 a 16 px (antes 8 px).
+- Probar sin GDevelop: `npm test` (incluye comprobar que ninguna estación queda fuera de pantalla ni bajo la interfaz).

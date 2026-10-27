@@ -36,11 +36,11 @@ def sprite(name, anims, loop=True, tbf=0.25):
     return {"assetStoreId": "", "name": name, "tags": "", "type": "Sprite", "variables": [], "effects": [], "behaviors": [],
             "updateIfNotVisible": False, "animations": animations}
 
-def text(name):
+def text(name, outline=False):
     return {"assetStoreId": "", "name": name, "tags": "", "type": "TextObject::Text", "variables": [], "effects": [], "behaviors": [],
             "content": {"bold": False, "italic": False, "underlined": False, "smoothed": False, "text": "", "font": FONT, "characterSize": 8,
                         "color": "255;255;255", "textAlignment": "left", "verticalTextAlignment": "top", "lineHeight": 0,
-                        "isOutlineEnabled": False, "outlineColor": "0;0;0", "outlineThickness": 2,
+                        "isOutlineEnabled": outline, "outlineColor": "10;8;20", "outlineThickness": 3,
                         "isShadowEnabled": False, "shadowColor": "0;0;0", "shadowOpacity": 127, "shadowDistance": 4, "shadowAngle": 90, "shadowBlurRadius": 2}}
 
 def painter(name):
@@ -50,18 +50,19 @@ def painter(name):
 
 ICONS = ['moneda', 'rayo', 'reloj', 'tienda', 'meta', 'casa', 'bloqueo', 'alerta', 'noticia', 'mapa', 'saldo', 'ajustes', 'persona']
 O = {
-  'Texto': text('Texto'), 'UIBase': painter('UIBase'), 'UIModal': painter('UIModal'), 'Mapa': painter('Mapa'),
+  'Texto': text('Texto'), 'TextoMapa': text('TextoMapa', outline=True), 'UIBase': painter('UIBase'), 'UIModal': painter('UIModal'), 'Mapa': painter('Mapa'),
   'Icono': sprite('Icono', [(i, [f'icono_{i}.png']) for i in ICONS]),
   'Estacion': sprite('Estacion', [(a, [f'estacion_{a}.png']) for a in ['normal', 'tienda', 'meta', 'bloqueada', 'inicio']]),
   'Jugador': sprite('Jugador', [('a0', ['jugador_0.png']), ('a1', ['jugador_1.png'])]),
   'Edificio': sprite('Edificio', [(f'e{i}', [f'edificio_{i}.png']) for i in range(4)]),
+  'EdificioIso': sprite('EdificioIso', [(f'b{i}', [f'iso_edificio_{i}.png']) for i in range(6)] + [('parque', ['iso_parque.png'])]),
   'Tren': sprite('Tren', [('tren', ['tren.png'])]),
 }
 UI_OBJS = ['Texto', 'Icono', 'UIBase', 'UIModal']
 SCENES = {
   'Menu': (UI_OBJS + ['Edificio', 'Tren'], 'scene-menu', 'menu'),
   'Tutorial': (UI_OBJS, 'scene-tutorial', 'tutorial'),
-  'Nivel': (UI_OBJS + ['Mapa', 'Estacion', 'Jugador', 'Edificio'], 'scene-nivel', 'nivel'),
+  'Nivel': (UI_OBJS + ['TextoMapa', 'Mapa', 'Estacion', 'Jugador', 'EdificioIso'], 'scene-nivel', 'nivel'),
   'Resultado': (UI_OBJS, 'scene-resultado', 'resultado'),
 }
 

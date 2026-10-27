@@ -12,7 +12,8 @@ const ALLOWED = {
   Sprite: ['setAnimationName', 'setScale', 'setColor'],
   'TextObject::Text': ['setText', 'setCharacterSize', 'setColor', 'setFontName'],
   'PrimitiveDrawing::Drawer': ['clear', 'drawRectangle', 'drawCircle', 'drawEllipse', 'drawLineV2', 'setFillColor', 'setFillOpacity',
-    'setOutlineColor', 'setOutlineOpacity', 'setOutlineSize', 'setCoordinatesRelative']
+    'setOutlineColor', 'setOutlineOpacity', 'setOutlineSize', 'setCoordinatesRelative',
+    'beginFillPath', 'drawPathLineTo', 'closePath', 'endFillPath']   // trazados de relleno (isométrico): verificados en shapepainterruntimeobject.ts
 };
 const COLOR_FN = ['setColor', 'setFillColor', 'setOutlineColor'];
 let stats = { calls: 0 };
@@ -112,18 +113,18 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
     const um = () => s.scene._um; let guard = 1500;
     while (guard-- > 0 && !s.scene.changes.length) {
       const u = um(), run = u.run;
-      if (u.modal) { const b = u.modal.buttons, n = b.length, bw = 170, x0 = 340 + (600 - (n * bw + (n - 1) * 20)) / 2;
+      if (u.modal) { const b = u.modal.buttons, n = b.length, bw = 170, x0 = 320 + (640 - (n * bw + (n - 1) * 20)) / 2;
         const buy = b.findIndex((x) => x.label === 'COMPRAR'), pick = buy >= 0 && run.stamina < 60 ? buy : 0;
         s.click(x0 + pick * (bw + 20) + 85, 210 + 300 - 62 + 20); s.frame(2); continue; }
       if (u.pending || u.map.moving() || run.over) { s.frame(1); continue; }
       const path = U.Graph.shortestPath(run.graph, run.current, run.level.goal, run.blocked);
       if (!path) { s.frame(1); continue; }
-      const sh = run.data.stations[run.current].shop; if (sh && run.stamina < 60 && run.money > 60) { s.click(150, 548 + 56 + 108 + 18); s.frame(2); }
+      const sh = run.data.stations[run.current].shop; if (sh && run.stamina < 60 && run.money > 60) { s.click(166, 666 + 18); s.frame(2); }
       const w = u.map.stationPos(path[1]), cam = u.map.cam;
       const sx = (w.x - cam.x) * cam.zoom + 640, sy = (w.y - cam.y) * cam.zoom + 360;
-      if (sx < 70 || sx > 930 || sy < 70 || sy > 540) { u.map.cam.follow = true; u.map.zoomBy(-0.2); s.frame(10); continue; }  // la persona alejaría el zoom
+      if (sx < 80 || sx > 900 || sy < 70 || sy > 700) { u.map.fit(); s.frame(10); continue; }  // la persona pulsaría TODO para ver toda la red
       s.click(sx, sy); s.frame(1);
-      if (um().selected) { s.click(132, 548 + 110 + 18); s.frame(1); }
+      if (um().selected) { s.click(132, 592 + 90 + 16); s.frame(1); }
       s.frame(8);
     }
     if (guard <= 0) { const u = um(), r = u.run; console.log('ATASCO', JSON.stringify({ cur: r.current, goal: r.level.goal, st: r.stamina, mo: r.money, min: r.minute, over: r.over, sel: u.selected, modal: u.modal && u.modal.title, pending: !!u.pending, moving: u.map.moving(), cam: u.map.cam, next: U.Graph.shortestPath(r.graph, r.current, r.level.goal, r.blocked), blocked: Object.keys(r.blocked) })); }
@@ -142,4 +143,30 @@ test('Resultado: botones según ganar/perder', () => {
   assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 1);
   U.session.lastResult.won = false; U.session.lastResult.reason = 'Te quedaste sin stamina.'; s.frame(2); s.click(550, 586);
   assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 0);
+});
+
+test('mapa isométrico: toda la red cabe en pantalla, sin zoom ni arrastre y sin quedar tapada por la interfaz', () => {
+  const g = globalThis.gdjs; delete g.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const um = s.scene._um, cam = um.map.cam, data = um.data;
+  assert.ok(cam.zoom >= 0.9 && !cam.follow, 'la cámara debe abrir encuadrando todo (zoom ' + cam.zoom + ')');
+  // rectángulos de interfaz que existen sin abrir nada (el panel de estación solo cubre el borde inferior izquierdo)
+  const ui = [[0, 0, 1280, 56], [16, 62, 322, 44], [920, 64, 340, 560], [920, 636, 340, 76], [16, 592, 540, 124]];
+  const inRect = (x, y, r) => x > r[0] - 14 && x < r[0] + r[2] + 14 && y > r[1] - 14 && y < r[1] + r[3] + 14;
+  data.stationList.forEach((st) => {
+    const w = um.map.stationPos(st.id), sx = (w.x - cam.x) * cam.zoom + 640, sy = (w.y - cam.y) * cam.zoom + 360;
+    assert.ok(sx > 20 && sx < 905 && sy > 60 && sy < 600, `${st.id} fuera del área libre: ${sx.toFixed(0)},${sy.toFixed(0)}`);
+    ui.forEach((r) => assert.ok(!inRect(sx, sy, r), `${st.id} queda bajo la interfaz (${sx.toFixed(0)},${sy.toFixed(0)})`));
+    assert.equal(um.map.pick(sx, sy), st.id, 'clic en ' + st.id + ' no selecciona esa estación');
+  });
+});
+
+test('mapa isométrico: proyección 2:1, ciudad 2.5D y trazados de relleno', () => {
+  const g = globalThis.gdjs; delete g.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const um = s.scene._um, a = um.data.stationList[0];
+  const p0 = um.map.stationPos(a.id);
+  const b = um.data.stationList.find((x) => x.x === a.x + 1 && x.y === a.y) || null;
+  if (b) { const p1 = um.map.stationPos(b.id); assert.equal(p1.x - p0.x, 24); assert.equal(p1.y - p0.y, 12); }   // +1 en x → ↘ (media casilla 24x12)
+  const anims = {}; s.scene.objects.forEach((o) => { if (o.anim && /^(b\d|parque)$/.test(o.anim)) anims[o.anim] = (anims[o.anim] || 0) + 1; });
+  assert.ok(Object.keys(anims).length >= 6, 'deben usarse varios tipos de edificio: ' + JSON.stringify(anims));
+  assert.ok(Object.values(anims).reduce((x, y) => x + y, 0) > 100, 'la ciudad debe tener cientos de edificios');
 });

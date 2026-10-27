@@ -1,7 +1,7 @@
 /* UrbanMex · ui — interfaz "modo inmediato" sobre objetos de GDevelop.
  * Cada fotograma el código dibuja paneles/textos/íconos con ui.rect/ui.text/ui.icon/ui.button; los objetos
  * (Texto, Icono, UIBase, UIModal) se reutilizan de un "pool" y los que no se usan se ocultan.
- * Objetos requeridos en la escena: Texto, Icono, UIBase, UIModal. Capa requerida: "UI". */
+ * Objetos requeridos en la escena: Texto, Icono, UIBase, UIModal (y TextoMapa, con contorno, para los nombres sobre el mapa). Capa requerida: "UI". */
 (function () {
   var U = gdjs.UrbanMex, util = U.util;
   if (U.UI) return;
@@ -61,7 +61,7 @@
   /** Texto. o: {size(8|16|24), color, align:'left'|'center'|'right', z, cols (ajuste de línea), layer, opacity, lineH} */
   P.text = function (key, str, x, y, o) {
     o = o || {}; var size = o.size || 8, layer = o.layer === undefined ? 'UI' : o.layer;
-    var t = pooled(this, 't', key, 'Texto', layer);
+    var t = pooled(this, 't', key, o.obj || 'Texto', layer);
     if (o.cols) str = util.wrap(str, o.cols).join('\n');
     if (t._umSize !== size) { t.setCharacterSize(size); t._umSize = size; }
     t.setText(String(str)); t.setColor(o.color || PAL.text);
@@ -70,6 +70,13 @@
     var wpx = longest * size, ox = o.align === 'center' ? -wpx / 2 : o.align === 'right' ? -wpx : 0;
     t.setPosition(x + ox, y);
     return String(str).split('\n').length * (o.lineH || size + 4);
+  };
+
+  /** Varias líneas de texto, cada una en su propio objeto, con interlineado exacto (no depende de la fuente). Devuelve el alto usado. */
+  P.lines = function (key, arr, x, y, o) {
+    o = o || {}; var lh = o.lineH || (o.size || 8) + 4;
+    arr.forEach(function (l, i) { this.text(key + ':' + i, l, x, y + i * lh, o); }, this);
+    return arr.length * lh;
   };
 
   /** Ícono (sprite 16x16 del objeto Icono). o: {tint, z, scale, layer, opacity} */

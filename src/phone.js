@@ -4,7 +4,7 @@
   var U = gdjs.UrbanMex, util = U.util, PAL = U.UI.PAL;
   if (U.Phone) return;
 
-  var X = 950, Y = 64, W = 310, H = 560;
+  var X = 920, Y = 64, W = 340, H = 560;
   var SEV = { danger: PAL.red, warning: PAL.yellow, success: PAL.green, info: PAL.blue };
   var APPS = [
     { id: 'news', label: 'NOTICIAS', icon: 'noticia', fill: '120;40;40' },
@@ -14,7 +14,7 @@
   ];
 
   function cardLines(n) {
-    return { t: util.wrap(n.title, 30), d: util.wrap(n.desc, 31), i: util.wrap(n.impact, 31) };
+    return { t: util.wrap(n.title, 24), d: util.wrap(n.desc, 24), i: util.wrap(n.impact, 24) };   // letra de 12 px (antes 8)
   }
 
   var Phone = {
@@ -32,15 +32,15 @@
       if (ph.app === 'home') {
         ui.text('ph:h', 'MI CELULAR', X + W / 2, top, { size: 8, align: 'center', color: PAL.dim });
         APPS.forEach(function (a, i) {
-          var ax = sx + 8 + (i % 2) * 138, ay = top + 28 + Math.floor(i / 2) * 124;
-          ui.rect(ax, ay, 130, 112, { fill: a.fill, border: '255;255;255', bw: 2, block: true });
-          ui.icon('ph:ai' + a.id, a.icon, ax + 41, ay + 16, 3);
-          ui.text('ph:al' + a.id, a.label, ax + 65, ay + 82, { size: 8, align: 'center' });
+          var ax = sx + 8 + (i % 2) * 158, ay = top + 28 + Math.floor(i / 2) * 124;
+          ui.rect(ax, ay, 150, 112, { fill: a.fill, border: '255;255;255', bw: 2, block: true });
+          ui.icon('ph:ai' + a.id, a.icon, ax + 51, ay + 16, 3);
+          ui.text('ph:al' + a.id, a.label, ax + 75, ay + 82, { size: 8, align: 'center' });
           if (a.id === 'news' && run.unread > 0) {
-            ui.rect(ax + 104, ay + 4, 22, 18, { fill: PAL.red, border: '255;255;255', bw: 2 });
-            ui.text('ph:badge', String(Math.min(run.unread, 99)), ax + 115, ay + 9, { size: 8, align: 'center' });
+            ui.rect(ax + 124, ay + 4, 22, 18, { fill: PAL.red, border: '255;255;255', bw: 2 });
+            ui.text('ph:badge', String(Math.min(run.unread, 99)), ax + 135, ay + 9, { size: 8, align: 'center' });
           }
-          if (ui.inside(ax, ay, 130, 112) && ui.released) { ph.app = a.id; ph.scroll = 0; if (a.id === 'news') run.unread = 0; }
+          if (ui.inside(ax, ay, 150, 112) && ui.released) { ph.app = a.id; ph.scroll = 0; if (a.id === 'news') run.unread = 0; }
         });
       } else {
         var app = APPS.filter(function (a) { return a.id === ph.app; })[0];
@@ -60,15 +60,15 @@
       if (!log.length) { ui.text('ph:ne', 'Sin noticias aun', x + w / 2, y + 40, { size: 8, align: 'center', color: PAL.dim }); return; }
       var cy = y, shown = 0;
       for (var i = ph.scroll; i < log.length; i++) {
-        var n = log[i], L = cardLines(n), ch = 12 + 8 + (L.t.length + L.d.length + L.i.length) * 12 + 10;
+        var n = log[i], L = cardLines(n), ch = 12 + 10 + (L.t.length + L.d.length + L.i.length) * 16 + 12;
         if (cy + ch > y + h - 30 && shown > 0) break;
         var col = SEV[n.severity] || PAL.blue;
         ui.rect(x, cy, w, ch, { fill: '24;24;46', border: col, bw: 2 });
         ui.text('ph:n' + shown + 'h', n.time + '  ' + n.type.toUpperCase(), x + 8, cy + 8, { size: 8, color: PAL.dim });
-        var ty = cy + 22;
-        ty += ui.text('ph:n' + shown + 't', L.t.join('\n'), x + 8, ty, { size: 8, lineH: 12 });
-        ty += ui.text('ph:n' + shown + 'd', L.d.join('\n'), x + 8, ty, { size: 8, color: '175;180;205', lineH: 12 });
-        ui.text('ph:n' + shown + 'i', L.i.join('\n'), x + 8, ty, { size: 8, color: PAL.orange, lineH: 12 });
+        var ty = cy + 24, k = 'ph:n' + shown;
+        ty += ui.lines(k + 't', L.t, x + 8, ty, { size: 12, lineH: 16 });
+        ty += ui.lines(k + 'd', L.d, x + 8, ty, { size: 12, color: '170;176;204', lineH: 16 });
+        ui.lines(k + 'i', L.i, x + 8, ty, { size: 12, color: PAL.orange, lineH: 16 });
         cy += ch + 6; shown++;
       }
       ui.text('ph:npos', (ph.scroll + 1) + '/' + log.length + ' (rueda del raton)', x + w / 2, y + h - 14, { size: 8, align: 'center', color: PAL.dim });
