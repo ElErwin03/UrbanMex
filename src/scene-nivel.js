@@ -19,7 +19,7 @@
 
   function init(scene, data) {
     var um = scene._um = { data: data, run: R.createRun(data, U.session.levelIndex), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
-      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, endTimer: 0, exitToMenu: false,
+      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, auto: null, lastClick: null, endTimer: 0, exitToMenu: false,
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
     um.map = new U.MapView(scene, data);
@@ -47,6 +47,7 @@
     var out = um.pending, run = um.run; um.pending = null;
     if (out.type === 'shop') shopModal(um);
     else if (out.type === 'robbery') {
+      um.auto = null;                                           // te asaltaron: decide tú qué hacer ahora
       N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');
       modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', '', '"Debiste haber leido las noticias..."'],
                   buttons: [{ label: 'SEGUIR', kind: 'danger' }] });
@@ -74,8 +75,28 @@
     if (!id) { um.selected = null; return; }
     if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }
     if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); return; }
-    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, 'No conectada', PAL.red); return; }
+    if (!U.Graph.connected(run.graph, run.current, id)) {
+      if (U.session.dblTravel && R.planRoute(run, id)) float(um, 'Doble clic: ir ahi solo', PAL.yellow); else float(um, 'No conectada', PAL.red);
+      return;
+    }
     select(um, id);
+  }
+
+  /** Doble clic: viaja solo hasta la estación (aunque esté lejos) por la ruta más barata, avanzando tramo a tramo. */
+  function doubleClick(um, id) {
+    var run = um.run;
+    if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }
+    if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); return; }
+    if (!R.planRoute(run, id)) { float(um, 'No hay ruta', PAL.red); return; }
+    um.selected = null; um.auto = id; float(um, 'VIAJE AUTOMATICO', PAL.yellow);
+  }
+  function autoStep(um) {
+    var run = um.run, route = R.planRoute(run, um.auto);
+    if (run.current === um.auto) { um.auto = null; return; }
+    if (!route || route.length < 2) { um.auto = null; float(um, 'Ruta no disponible', PAL.red); return; }   // p. ej. una noticia bloqueó el camino
+    var chk = R.canTravel(run, route[1]);
+    if (!chk.ok) { um.auto = null; float(um, REASON[chk.reason] || 'NO SE PUEDE', PAL.red); return; }
+    travel(um, route[1]);
   }
 
   // ---------------------------------------------------------------- interfaz
@@ -119,11 +140,11 @@
   }
 
   function drawLegend(ui, um) {
-    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.']];
+    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.'], ['combi', 'Combi']];
     ui.rect(x, y, 340, 76, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
     ui.text('lg:t', 'LEYENDA', x + 10, y + 8, { size: 8, color: PAL.orange });
     items.forEach(function (it, i) {
-      var ix = x + 10 + (i % 2) * 165, iy = y + 24 + Math.floor(i / 2) * 24;
+      var ix = x + 10 + (i % 3) * 112, iy = y + 24 + Math.floor(i / 3) * 24;
       ui.icon('lg:i' + i, it[0], ix, iy, 1.5); ui.text('lg:l' + i, it[1], ix + 30, iy + 8, { size: 8 });
     });
   }
@@ -133,14 +154,16 @@
     if (um.selected) {
       var id = um.selected, st = run.data.stations[id], chk = R.canTravel(run, id), c = chk.cost || { time: 0, stamina: cfg.staminaPerStation, money: cfg.moneyPerStation };
       var desc = id === run.level.goal ? run.level.goalDesc : st.shop ? 'Hay una tienda. Monster: $' + R.monsterPrice(run) + ' (+' + cfg.monsterStamina + ' stamina)' : 'Estacion de la Linea ' + st.line + (st.colorName ? ' (' + st.colorName + ')' : '') + '. Viajar aqui?';
+      if (c.combi && id !== run.level.goal) desc = 'Ruta de COMBI desde ' + run.current + ': $' + c.money + ' pero salta varias estaciones. Viajar aqui?';
       ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });
       ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });
       ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });
-      var base = c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base;
+      var base = c.combi ? c.time : c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base;
       ui.icon('sp:i1', 'reloj', x + 16, y + 62, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 70, { size: 8, color: delay > 2 ? PAL.red : PAL.blue });
       ui.icon('sp:i2', 'rayo', x + 220, y + 62, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 70, { size: 8 });
       ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8 });
-      if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });
+      if (c.combi) ui.text('sp:tr', 'COMBI', x + 400, y + 70, { size: 8, color: '255;170;40' });
+      else if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });
       var label = chk.ok ? 'VIAJAR' : (REASON[chk.reason] || 'NO');
       if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, disabled: !chk.ok })) travel(um, id);
       if (ui.button('sp:no', 'CANCELAR', x + 232, y + 90, 150, 32, { size: 8, fill: '70;70;100' })) um.selected = null;
@@ -186,6 +209,7 @@
     if (!um.modal) drawStationPanel(ui, um);
     U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt); drawModal(ui, um);
 
+    if (um.auto && ui.pressed && !ui.consumed) { um.auto = null; float(um, 'Viaje cancelado', PAL.dim); }   // un clic en el mapa detiene el viaje automático
     var busy = !!um.modal || um.map.moving() || !!um.pending || run.over, d = um.drag;
     if (!busy) {
       if (ui.pressed && !ui.consumed) { d.active = true; d.moved = false; d.sx = d.lx = ui.px; d.sy = d.ly = ui.py; }
@@ -194,12 +218,21 @@
         if (d.moved) um.map.pan(ui.px - d.lx, ui.py - d.ly);
         d.lx = ui.px; d.ly = ui.py;
       }
-      if (d.active && ui.released) { if (!d.moved && !ui.consumed) clickMap(um, um.map.pick(ui.px, ui.py)); d.active = false; }
+      if (d.active && ui.released) {
+        if (!d.moved && !ui.consumed) {
+          var cid = um.map.pick(ui.px, ui.py), lc = um.lastClick;
+          if (cid && lc && lc.id === cid && um.t - lc.t < 0.45 && U.session.dblTravel) { um.lastClick = null; doubleClick(um, cid); }
+          else { clickMap(um, cid); um.lastClick = cid ? { id: cid, t: um.t } : null; }
+        }
+        d.active = false;
+      }
       if (ui.wheel && !ui.consumed) um.map.zoomBy(ui.wheel > 0 ? -0.1 : 0.1);
       um.hover = !ui.consumed ? um.map.pick(ui.px, ui.py) : null;
     } else { d.active = false; um.hover = null; }
 
     if (um.pending && !um.map.moving()) resolve(um);
+    if (um.auto && run.current === um.auto && !um.pending) um.auto = null;                  // llegaste: termina el viaje automático
+    if (um.auto && !um.modal && !um.pending && !um.map.moving() && !run.over) autoStep(um);
     if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
     if (!busy) { var item = N.tick(run, dt); if (item) { um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; } }
 

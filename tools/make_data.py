@@ -21,7 +21,8 @@ config = {
   "staminaPerStation": 5, "moneyPerStation": 5,
   "monsterPrice": 30, "monsterPromoPrice": 20, "monsterStamina": 40,
   "robbery": {"baseChance": 0.55, "luck": 0.15, "minLoss": 20, "maxLoss": 59},
-  "news": {"firstDelaySec": 2, "intervalSec": [10, 18], "chance": 0.5}
+  "news": {"firstDelaySec": 2, "intervalSec": [10, 18], "chance": 0.5},
+  "combi": {"money": 10, "stamina": 5}      # tarifa y esfuerzo de UN tramo en combi (el Metro cuesta 5 y 5 por estación)
 }
 
 # ---- estaciones --------------------------------------------------------
@@ -38,7 +39,13 @@ for name, s in d["STATIONS"].items():
     x, y = FIX_POS.get(name, (s["x"], s["y"]))
     stations.append({"id": name, "x": x, "y": y, "line": str(s["line"]), "shop": bool(s["shop"]) or name in EXTRA_SHOPS})
 json.dump({"lines": LINES, "stations": stations}, open(f"{out}/estaciones.json", "w"), ensure_ascii=False, indent=1)
-json.dump(d["CONNECTIONS"], open(f"{out}/conexiones.json", "w"), ensure_ascii=False)
+# Rutas de combi: unen estaciones algo separadas que el Metro no conecta directo (el 4.º valor es "combi").
+# Elegidas con un solucionador para que ningún día se vuelva trivial (los días 2 a 5 siguen exigiendo Monster); tiempo ≈ 4 + 1.5 × distancia en casillas.
+COMBIS = [
+  ["Colegio Militar", "Guerrero", 12], ["Balderas", "Zócalo", 8], ["Deportivo 18 de Marzo", "Eduardo Molina", 10],
+  ["Buenavista", "San Cosme", 8], ["Isabel la Católica", "Lagunilla", 12], ["Merced", "Moctezuma", 12],
+  ["San Lázaro LB", "Terminal Aérea", 12], ["Morelos", "San Antonio Abad", 12]]
+json.dump(d["CONNECTIONS"] + [c + ["combi"] for c in COMBIS], open(f"{out}/conexiones.json", "w"), ensure_ascii=False)
 
 # ---- niveles (rebalanceados: ver tools/solver.py) ----------------------
 # Balance verificado con tools/solver.py: todos ganables, robustos a mala suerte y (N2-N5) exigen comprar Monster.
@@ -90,4 +97,4 @@ for n in news:
     if n["id"] in BLOCK_TEXT: n["title"], n["impact"] = BLOCK_TEXT[n["id"]]
 json.dump(news, open(f"{out}/noticias.json", "w"), ensure_ascii=False, indent=1)
 json.dump(config, open(f"{out}/config.json", "w"), ensure_ascii=False, indent=1)
-print("ok", len(stations), "estaciones", len(d["CONNECTIONS"]), "conexiones", len(levels), "niveles", len(news), "noticias")
+print("ok", len(stations), "estaciones", len(d["CONNECTIONS"]), "conexiones +", len(COMBIS), "combis", len(levels), "niveles", len(news), "noticias")

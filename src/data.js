@@ -13,6 +13,7 @@
   /** raw = { config, stations:{lines,stations[]}, connections:[[a,b,cost]], levels[], news[] } */
   function normalize(raw) {
     var cfg = raw.config, stations = {}, list = [];
+    cfg.combi = cfg.combi || { money: cfg.moneyPerStation, stamina: cfg.staminaPerStation };   // tarifa de un tramo en combi
     raw.stations.stations.forEach(function (s) {
       var st = { id: s.id, x: s.x, y: s.y, line: String(s.line), shop: !!s.shop, transfer: false,
                  color: raw.stations.lines[String(s.line)].color, colorName: raw.stations.lines[String(s.line)].colorName || '' };
@@ -20,9 +21,9 @@
     });
     var conns = raw.connections.map(function (c) {
       if (!stations[c[0]] || !stations[c[1]]) throw new Error('Conexión con estación inexistente: ' + c[0] + ' - ' + c[1]);
-      var isTransfer = c[2] >= cfg.transferTime;
+      var combi = c[3] === 'combi', isTransfer = !combi && c[2] >= cfg.transferTime;   // las rutas de combi no son transbordos aunque tarden 12 min
       if (isTransfer) { stations[c[0]].transfer = true; stations[c[1]].transfer = true; }
-      return { a: c[0], b: c[1], cost: c[2], transfer: isTransfer };
+      return { a: c[0], b: c[1], cost: c[2], transfer: isTransfer, combi: combi };
     });
     raw.levels.forEach(function (l) {
       [l.start, l.goal].concat(l.blocked).forEach(function (n) {

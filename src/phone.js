@@ -125,6 +125,7 @@
       [['BLOQUEO: solo se cierra esa estacion, no toda la linea. Busca otra ruta.', PAL.purple],
        ['PELIGRO: puede haber asaltos en esa estacion.', PAL.red],
        ['RETRASO: viajar por esa linea tarda mas minutos.', PAL.yellow],
+       ['COMBI: ruta punteada naranja entre estaciones separadas. Cuesta $' + run.data.config.combi.money + ' y salta varias.', '255;170;40'],
        ['Via naranja-roja = retraso. Via morada = bloqueada.', PAL.dim]].forEach(function (g, i) {
         var l = util.wrap(g[0], 31);
         cy += ui.lines('ph:lt' + i, l, x, cy, { size: 8, lineH: 12, color: g[1] }) + 5;
@@ -153,7 +154,10 @@
         ui.text('ph:cr' + i, r[0], x, y + i * 24, { size: 8, color: PAL.dim });
         ui.text('ph:cv' + i, r[1], x + w, y + i * 24, { size: 8, align: 'right' });
       });
-      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 150, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;
+      var dbl = U.session.dblTravel !== false;                                    // doble clic en una estación = viajar solo hasta ahí
+      if (ui.button('ph:dbl', 'DOBLE CLIC VIAJAR: ' + (dbl ? 'SI' : 'NO'), x, y + 128, w, 30, { size: 8, fill: dbl ? '39;174;96' : '110;60;60' })) U.session.dblTravel = !dbl;
+      ui.lines('ph:dbh', util.wrap('Doble clic en una estacion: viaja hasta alli solo por la ruta mas barata. Un clic en el mapa lo cancela.', 31), x, y + 166, { size: 8, lineH: 12, color: PAL.dim });
+      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 232, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;
     }
   };
 

@@ -192,6 +192,15 @@
       },
       {
         "alwaysLoaded": false,
+        "file": "assets/img/icono_combi.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_combi.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_lineas.png",
         "kind": "image",
         "metadata": "",
@@ -926,6 +935,35 @@
                     {
                       "hasCustomCollisionMask": false,
                       "image": "icono_lineas.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "combi",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_combi.png",
                       "points": [],
                       "originPoint": {
                         "name": "origine",
@@ -1878,6 +1916,35 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "combi",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_combi.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -2621,6 +2688,35 @@
                     {
                       "hasCustomCollisionMask": false,
                       "image": "icono_lineas.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "combi",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_combi.png",
                       "points": [],
                       "originPoint": {
                         "name": "origine",
@@ -3903,6 +3999,35 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "combi",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_combi.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -4190,7 +4315,7 @@
             "",
             "  U.VERSION = '2.0.0';",
             "  // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)",
-            "  U.session = { levelIndex: 0, lastResult: null, completed: [] };",
+            "  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true };   // dblTravel: ajuste del celular (doble clic = viajar solo)",
             "",
             "  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }",
             "  function pad2(n) { return (n < 10 ? '0' : '') + n; }",
@@ -4285,6 +4410,7 @@
             "  /** raw = { config, stations:{lines,stations[]}, connections:[[a,b,cost]], levels[], news[] } */",
             "  function normalize(raw) {",
             "    var cfg = raw.config, stations = {}, list = [];",
+            "    cfg.combi = cfg.combi || { money: cfg.moneyPerStation, stamina: cfg.staminaPerStation };   // tarifa de un tramo en combi",
             "    raw.stations.stations.forEach(function (s) {",
             "      var st = { id: s.id, x: s.x, y: s.y, line: String(s.line), shop: !!s.shop, transfer: false,",
             "                 color: raw.stations.lines[String(s.line)].color, colorName: raw.stations.lines[String(s.line)].colorName || '' };",
@@ -4292,9 +4418,9 @@
             "    });",
             "    var conns = raw.connections.map(function (c) {",
             "      if (!stations[c[0]] || !stations[c[1]]) throw new Error('Conexión con estación inexistente: ' + c[0] + ' - ' + c[1]);",
-            "      var isTransfer = c[2] >= cfg.transferTime;",
+            "      var combi = c[3] === 'combi', isTransfer = !combi && c[2] >= cfg.transferTime;   // las rutas de combi no son transbordos aunque tarden 12 min",
             "      if (isTransfer) { stations[c[0]].transfer = true; stations[c[1]].transfer = true; }",
-            "      return { a: c[0], b: c[1], cost: c[2], transfer: isTransfer };",
+            "      return { a: c[0], b: c[1], cost: c[2], transfer: isTransfer, combi: combi };",
             "    });",
             "    raw.levels.forEach(function (l) {",
             "      [l.start, l.goal].concat(l.blocked).forEach(function (n) {",
@@ -4367,16 +4493,18 @@
             "  U.Graph = {",
             "    key: key,",
             "    build: function (data) {",
-            "      var adj = {}, base = {};",
+            "      var adj = {}, base = {}, combi = {};",
             "      data.stationList.forEach(function (s) { adj[s.id] = []; });",
             "      data.connections.forEach(function (c) {",
-            "        adj[c.a].push(c.b); adj[c.b].push(c.a); base[key(c.a, c.b)] = c.cost;",
+            "        adj[c.a].push(c.b); adj[c.b].push(c.a); base[key(c.a, c.b)] = c.cost; if (c.combi) combi[key(c.a, c.b)] = true;",
             "      });",
-            "      return { adj: adj, base: base };",
+            "      return { adj: adj, base: base, combi: combi };",
             "    },",
             "    neighbors: function (g, id) { return g.adj[id] || []; },",
             "    connected: function (g, a, b) { return g.base[key(a, b)] !== undefined; },",
             "    baseCost: function (g, a, b) { return g.base[key(a, b)]; },",
+            "    /** ¿El tramo a-b es una ruta de combi (y no el Metro)? */",
+            "    isCombi: function (g, a, b) { return !!g.combi[key(a, b)]; },",
             "    /** ¿Se puede llegar de `from` a `to` sin pasar por estaciones bloqueadas? */",
             "    reachable: function (g, from, to, blocked) {",
             "      if (blocked[to]) return false;",
@@ -4469,12 +4597,35 @@
             "      if (run.over) return { ok: false, reason: 'over' };",
             "      if (!G.connected(run.graph, run.current, to)) return { ok: false, reason: 'no_connection' };",
             "      if (run.blocked[to]) return { ok: false, reason: 'blocked' };",
-            "      var cost = { time: Rules.edgeCost(run, run.current, to), stamina: cfg.staminaPerStation,",
-            "                   money: run.freeRides > 0 ? 0 : cfg.moneyPerStation };",
+            "      var combi = G.isCombi(run.graph, run.current, to), cc = cfg.combi;       // la combi cuesta más dinero que el Metro pero salta varias estaciones",
+            "      var cost = { time: Rules.edgeCost(run, run.current, to), stamina: combi ? cc.stamina : cfg.staminaPerStation,",
+            "                   money: run.freeRides > 0 ? 0 : (combi ? cc.money : cfg.moneyPerStation), combi: combi };",
             "      if (run.stamina < cost.stamina) return { ok: false, reason: 'stamina', cost: cost };",
             "      if (run.money < cost.money) return { ok: false, reason: 'money', cost: cost };",
             "      if (run.minute + cost.time > cfg.dayEndMinute) return { ok: false, reason: 'night', cost: cost };",
             "      return { ok: true, cost: cost };",
+            "    },",
+            "",
+            "    /** Ruta más barata (minutos + castigo por zonas peligrosas) de la estación actual a `to`, sin pasar por bloqueadas.",
+            "     *  → [ids] (empieza en la estación actual) o null. La usa el viaje automático (doble clic). */",
+            "    planRoute: function (run, to) {",
+            "      if (run.blocked[to] || run.current === to) return run.current === to ? [to] : null;",
+            "      var g = run.graph, dist = {}, prev = {}, done = {}, ids = run.data.stationList.map(function (s) { return s.id; });",
+            "      dist[run.current] = 0;",
+            "      for (;;) {",
+            "        var u = null;",
+            "        ids.forEach(function (id) { if (!done[id] && dist[id] !== undefined && (u === null || dist[id] < dist[u])) u = id; });",
+            "        if (u === null) return null;",
+            "        if (u === to) break;",
+            "        done[u] = true;",
+            "        G.neighbors(g, u).forEach(function (v) {",
+            "          if (run.blocked[v] || done[v]) return;",
+            "          var w = dist[u] + Rules.edgeCost(run, u, v) + (run.danger[v] ? 25 : 0);",
+            "          if (dist[v] === undefined || w < dist[v]) { dist[v] = w; prev[v] = u; }",
+            "        });",
+            "      }",
+            "      var p = [to]; while (prev[p[0]] !== undefined) p.unshift(prev[p[0]]);",
+            "      return p;",
             "    },",
             "",
             "    /** Viaja a `to`. → { ok, type: 'goal'|'shop'|'robbery'|'lucky'|'arrive', cost, stolen? } */",
@@ -4540,6 +4691,7 @@
             "      (e.danger || []).forEach(function (s) { run.danger[s] = true; });",
             "      if (e.timeMod) {",
             "        run.data.connections.forEach(function (c) {",
+            "          if (c.combi) return;                                                     // las combis no usan las líneas del Metro: no les afectan sus fallas",
             "          var la = run.data.stations[c.a].line, lb = run.data.stations[c.b].line;",
             "          if (la === e.timeMod.line || lb === e.timeMod.line) {",
             "            var k = G.key(c.a, c.b), cur = run.timeMods[k] !== undefined ? run.timeMods[k] : c.cost;",
@@ -5015,7 +5167,7 @@
             "      this.cam.x = util.lerp(this.cam.x, tx, Math.min(1, dt * 6)); this.cam.y = util.lerp(this.cam.y, ty, Math.min(1, dt * 6));",
             "    }",
             "    this.layer.setCameraX(Math.round(this.cam.x)); this.layer.setCameraY(Math.round(this.cam.y)); this.layer.setCameraZoom(this.cam.zoom);",
-            "    this._drawRoutes(run, hoverId); this._updateStations(run, ui, hoverId, selId);",
+            "    this._drawRoutes(run, hoverId); this._updateStations(run, ui, hoverId, selId); this._updateCombis(run, ui);",
             "  };",
             "",
             "  P._drawRoutes = function (run, hoverId) {",
@@ -5025,8 +5177,13 @@
             "      var blocked = run.blocked[c.a] || run.blocked[c.b], cost = U.Rules.edgeCost(run, c.a, c.b), slow = cost > c.cost + 2;",
             "      var col = blocked ? '120;80;150' : slow ? '231;76;60' : util.hex(a.color), op = blocked ? 90 : 255, dim = hl && a.line !== hl && b.line !== hl;",
             "      if (dim) op = 40;                                                      // línea elegida en el celular: las demás se apagan",
-            "      stroke(r, '0;0;0', dim ? 40 : 120); r.drawLineV2(pa.x, pa.y + 5, pb.x, pb.y + 5, c.transfer ? 5 : 10);          // sombra de la vía elevada",
-            "      if (c.transfer) {   // transbordo: línea punteada",
+            "      if (c.combi) { dim = !!hl; op = blocked ? 70 : dim ? 40 : 255; col = blocked ? '120;80;150' : '255;170;40'; }       // rutas de combi: naranja punteado",
+            "      stroke(r, '0;0;0', dim ? 40 : 120); r.drawLineV2(pa.x, pa.y + 5, pb.x, pb.y + 5, c.transfer || c.combi ? 5 : 10);          // sombra de la vía elevada",
+            "      if (c.combi) {",
+            "        stroke(r, col, op);",
+            "        var nc = Math.max(2, Math.floor(Math.hypot(pb.x - pa.x, pb.y - pa.y) / 9));",
+            "        for (var j = 0; j < nc; j += 2) r.drawLineV2(util.lerp(pa.x, pb.x, j / nc), util.lerp(pa.y, pb.y, j / nc), util.lerp(pa.x, pb.x, (j + 1) / nc), util.lerp(pa.y, pb.y, (j + 1) / nc), 5);",
+            "      } else if (c.transfer) {   // transbordo: línea punteada",
             "        stroke(r, '255;255;255', dim ? 40 : 170);",
             "        var n = Math.max(2, Math.floor(Math.hypot(pb.x - pa.x, pb.y - pa.y) / 10));",
             "        for (var i = 0; i < n; i += 2) r.drawLineV2(util.lerp(pa.x, pb.x, i / n), util.lerp(pa.y, pb.y, i / n), util.lerp(pa.x, pb.x, (i + 1) / n), util.lerp(pa.y, pb.y, (i + 1) / n), 4);",
@@ -5042,6 +5199,16 @@
             "    ring(wpos(d.stations[run.current]), 27 + 3 * pulse, '255;107;53', 80 + 60 * pulse);",
             "    if (hoverId) ring(wpos(d.stations[hoverId]), 23, '255;255;255', 90);",
             "    fill(r, '0;0;0', 120); r.drawEllipse(self.pp.x, self.pp.y + 2, 30, 12);   // sombra del jugador",
+            "  };",
+            "",
+            "  /** Un microbús sobre cada ruta de combi (como las estaciones, siempre a la vista). */",
+            "  P._updateCombis = function (run, ui) {",
+            "    var d = this.data, n = 0, hl = this.highlight;",
+            "    d.connections.forEach(function (c) {",
+            "      if (!c.combi) return;",
+            "      var pa = wpos(d.stations[c.a]), pb = wpos(d.stations[c.b]), blocked = run.blocked[c.a] || run.blocked[c.b];",
+            "      ui.icon('cb:' + (n++), 'combi', (pa.x + pb.x) / 2 - 12, (pa.y + pb.y) / 2 - 16, 1.5, { layer: '', z: 66, opacity: blocked ? 90 : hl ? 70 : 255 });",
+            "    });",
             "  };",
             "",
             "  P._updateStations = function (run, ui, hoverId, selId) {",
@@ -5225,6 +5392,7 @@
             "      [['BLOQUEO: solo se cierra esa estacion, no toda la linea. Busca otra ruta.', PAL.purple],",
             "       ['PELIGRO: puede haber asaltos en esa estacion.', PAL.red],",
             "       ['RETRASO: viajar por esa linea tarda mas minutos.', PAL.yellow],",
+            "       ['COMBI: ruta punteada naranja entre estaciones separadas. Cuesta $' + run.data.config.combi.money + ' y salta varias.', '255;170;40'],",
             "       ['Via naranja-roja = retraso. Via morada = bloqueada.', PAL.dim]].forEach(function (g, i) {",
             "        var l = util.wrap(g[0], 31);",
             "        cy += ui.lines('ph:lt' + i, l, x, cy, { size: 8, lineH: 12, color: g[1] }) + 5;",
@@ -5253,7 +5421,10 @@
             "        ui.text('ph:cr' + i, r[0], x, y + i * 24, { size: 8, color: PAL.dim });",
             "        ui.text('ph:cv' + i, r[1], x + w, y + i * 24, { size: 8, align: 'right' });",
             "      });",
-            "      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 150, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;",
+            "      var dbl = U.session.dblTravel !== false;                                    // doble clic en una estación = viajar solo hasta ahí",
+            "      if (ui.button('ph:dbl', 'DOBLE CLIC VIAJAR: ' + (dbl ? 'SI' : 'NO'), x, y + 128, w, 30, { size: 8, fill: dbl ? '39;174;96' : '110;60;60' })) U.session.dblTravel = !dbl;",
+            "      ui.lines('ph:dbh', util.wrap('Doble clic en una estacion: viaja hasta alli solo por la ruta mas barata. Un clic en el mapa lo cancela.', 31), x, y + 166, { size: 8, lineH: 12, color: PAL.dim });",
+            "      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 232, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;",
             "    }",
             "  };",
             "",
@@ -5456,7 +5627,7 @@
             "",
             "  function init(scene, data) {",
             "    var um = scene._um = { data: data, run: R.createRun(data, U.session.levelIndex), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),",
-            "      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, endTimer: 0, exitToMenu: false,",
+            "      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, auto: null, lastClick: null, endTimer: 0, exitToMenu: false,",
             "      drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };",
             "    var run = um.run;",
             "    um.map = new U.MapView(scene, data);",
@@ -5484,6 +5655,7 @@
             "    var out = um.pending, run = um.run; um.pending = null;",
             "    if (out.type === 'shop') shopModal(um);",
             "    else if (out.type === 'robbery') {",
+            "      um.auto = null;                                           // te asaltaron: decide tú qué hacer ahora",
             "      N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');",
             "      modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', '', '\"Debiste haber leido las noticias...\"'],",
             "                  buttons: [{ label: 'SEGUIR', kind: 'danger' }] });",
@@ -5511,8 +5683,28 @@
             "    if (!id) { um.selected = null; return; }",
             "    if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }",
             "    if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); return; }",
-            "    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, 'No conectada', PAL.red); return; }",
+            "    if (!U.Graph.connected(run.graph, run.current, id)) {",
+            "      if (U.session.dblTravel && R.planRoute(run, id)) float(um, 'Doble clic: ir ahi solo', PAL.yellow); else float(um, 'No conectada', PAL.red);",
+            "      return;",
+            "    }",
             "    select(um, id);",
+            "  }",
+            "",
+            "  /** Doble clic: viaja solo hasta la estación (aunque esté lejos) por la ruta más barata, avanzando tramo a tramo. */",
+            "  function doubleClick(um, id) {",
+            "    var run = um.run;",
+            "    if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }",
+            "    if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); return; }",
+            "    if (!R.planRoute(run, id)) { float(um, 'No hay ruta', PAL.red); return; }",
+            "    um.selected = null; um.auto = id; float(um, 'VIAJE AUTOMATICO', PAL.yellow);",
+            "  }",
+            "  function autoStep(um) {",
+            "    var run = um.run, route = R.planRoute(run, um.auto);",
+            "    if (run.current === um.auto) { um.auto = null; return; }",
+            "    if (!route || route.length < 2) { um.auto = null; float(um, 'Ruta no disponible', PAL.red); return; }   // p. ej. una noticia bloqueó el camino",
+            "    var chk = R.canTravel(run, route[1]);",
+            "    if (!chk.ok) { um.auto = null; float(um, REASON[chk.reason] || 'NO SE PUEDE', PAL.red); return; }",
+            "    travel(um, route[1]);",
             "  }",
             "",
             "  // ---------------------------------------------------------------- interfaz",
@@ -5556,11 +5748,11 @@
             "  }",
             "",
             "  function drawLegend(ui, um) {",
-            "    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.']];",
+            "    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.'], ['combi', 'Combi']];",
             "    ui.rect(x, y, 340, 76, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });",
             "    ui.text('lg:t', 'LEYENDA', x + 10, y + 8, { size: 8, color: PAL.orange });",
             "    items.forEach(function (it, i) {",
-            "      var ix = x + 10 + (i % 2) * 165, iy = y + 24 + Math.floor(i / 2) * 24;",
+            "      var ix = x + 10 + (i % 3) * 112, iy = y + 24 + Math.floor(i / 3) * 24;",
             "      ui.icon('lg:i' + i, it[0], ix, iy, 1.5); ui.text('lg:l' + i, it[1], ix + 30, iy + 8, { size: 8 });",
             "    });",
             "  }",
@@ -5570,14 +5762,16 @@
             "    if (um.selected) {",
             "      var id = um.selected, st = run.data.stations[id], chk = R.canTravel(run, id), c = chk.cost || { time: 0, stamina: cfg.staminaPerStation, money: cfg.moneyPerStation };",
             "      var desc = id === run.level.goal ? run.level.goalDesc : st.shop ? 'Hay una tienda. Monster: $' + R.monsterPrice(run) + ' (+' + cfg.monsterStamina + ' stamina)' : 'Estacion de la Linea ' + st.line + (st.colorName ? ' (' + st.colorName + ')' : '') + '. Viajar aqui?';",
+            "      if (c.combi && id !== run.level.goal) desc = 'Ruta de COMBI desde ' + run.current + ': $' + c.money + ' pero salta varias estaciones. Viajar aqui?';",
             "      ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });",
             "      ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });",
             "      ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });",
-            "      var base = c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base;",
+            "      var base = c.combi ? c.time : c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base;",
             "      ui.icon('sp:i1', 'reloj', x + 16, y + 62, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 70, { size: 8, color: delay > 2 ? PAL.red : PAL.blue });",
             "      ui.icon('sp:i2', 'rayo', x + 220, y + 62, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 70, { size: 8 });",
             "      ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8 });",
-            "      if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });",
+            "      if (c.combi) ui.text('sp:tr', 'COMBI', x + 400, y + 70, { size: 8, color: '255;170;40' });",
+            "      else if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });",
             "      var label = chk.ok ? 'VIAJAR' : (REASON[chk.reason] || 'NO');",
             "      if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, disabled: !chk.ok })) travel(um, id);",
             "      if (ui.button('sp:no', 'CANCELAR', x + 232, y + 90, 150, 32, { size: 8, fill: '70;70;100' })) um.selected = null;",
@@ -5623,6 +5817,7 @@
             "    if (!um.modal) drawStationPanel(ui, um);",
             "    U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt); drawModal(ui, um);",
             "",
+            "    if (um.auto && ui.pressed && !ui.consumed) { um.auto = null; float(um, 'Viaje cancelado', PAL.dim); }   // un clic en el mapa detiene el viaje automático",
             "    var busy = !!um.modal || um.map.moving() || !!um.pending || run.over, d = um.drag;",
             "    if (!busy) {",
             "      if (ui.pressed && !ui.consumed) { d.active = true; d.moved = false; d.sx = d.lx = ui.px; d.sy = d.ly = ui.py; }",
@@ -5631,12 +5826,21 @@
             "        if (d.moved) um.map.pan(ui.px - d.lx, ui.py - d.ly);",
             "        d.lx = ui.px; d.ly = ui.py;",
             "      }",
-            "      if (d.active && ui.released) { if (!d.moved && !ui.consumed) clickMap(um, um.map.pick(ui.px, ui.py)); d.active = false; }",
+            "      if (d.active && ui.released) {",
+            "        if (!d.moved && !ui.consumed) {",
+            "          var cid = um.map.pick(ui.px, ui.py), lc = um.lastClick;",
+            "          if (cid && lc && lc.id === cid && um.t - lc.t < 0.45 && U.session.dblTravel) { um.lastClick = null; doubleClick(um, cid); }",
+            "          else { clickMap(um, cid); um.lastClick = cid ? { id: cid, t: um.t } : null; }",
+            "        }",
+            "        d.active = false;",
+            "      }",
             "      if (ui.wheel && !ui.consumed) um.map.zoomBy(ui.wheel > 0 ? -0.1 : 0.1);",
             "      um.hover = !ui.consumed ? um.map.pick(ui.px, ui.py) : null;",
             "    } else { d.active = false; um.hover = null; }",
             "",
             "    if (um.pending && !um.map.moving()) resolve(um);",
+            "    if (um.auto && run.current === um.auto && !um.pending) um.auto = null;                  // llegaste: termina el viaje automático",
+            "    if (um.auto && !um.modal && !um.pending && !um.map.moving() && !run.over) autoStep(um);",
             "    if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);",
             "    if (!busy) { var item = N.tick(run, dt); if (item) { um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; } }",
             "",

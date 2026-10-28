@@ -45,6 +45,13 @@ npm test            # 10 pruebas de reglas + prueba de humo (un bot juega 5 día
 npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 ```
 
+## Combis y viaje automático
+
+- **Rutas de combi:** 8 conexiones extra (4.º valor `"combi"` en `conexiones.json`) unen estaciones algo separadas que el Metro no conecta directo: Colegio Militar–Guerrero, Balderas–Zócalo, Deportivo 18 de Marzo–Eduardo Molina, Buenavista–San Cosme, Isabel la Católica–Lagunilla, Merced–Moctezuma, San Lázaro LB–Terminal Aérea y Morelos–San Antonio Abad. En el mapa son líneas **naranjas punteadas** con un microbús; en el panel de viaje aparecen como `COMBI`.
+- **Reglas:** cada tramo cuesta `config.combi` (hoy $10 y 5 de stamina, el Metro cuesta $5 y 5 por estación) y el tiempo indicado en la conexión. No les afectan las fallas de las líneas del Metro (sí los bloqueos de sus estaciones) y nunca cuentan como transbordo.
+- **Balance:** se eligieron con un solucionador para que ningún día se vuelva trivial: los días 2 a 5 siguen exigiendo comprar Monster (`npm run balance`).
+- **Doble clic = viajar solo:** doble clic en cualquier estación (aunque esté lejos) hace que el jugador avance tramo a tramo por la ruta más barata (`Rules.planRoute`: tiempo, castigo por zonas peligrosas, sin pasar por bloqueadas, usando combis si convienen). Se detiene si te asaltan, si se acaba la stamina o el dinero, si una noticia bloquea el camino o con un clic en el mapa. Se activa y desactiva en **celular > AJUSTES > DOBLE CLIC VIAJAR** (por defecto, activado).
+
 ## Mapa isométrico
 
 - La cuadrícula lógica (`x`, `y` en `estaciones.json`) no cambió; `src/map.js` solo la proyecta: `pantalla.x = OX + (x - y) * 24`, `pantalla.y = OY + (x + y) * 12` (casilla de 48x24 px, estilo Age of Empires / Clash of Clans).

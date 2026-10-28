@@ -23,5 +23,9 @@
    18
   ],
   "chance": 0.5
+ },
+ "combi": {
+  "money": 10,
+  "stamina": 5
  }
 }
