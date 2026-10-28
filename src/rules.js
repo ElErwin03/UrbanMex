@@ -36,12 +36,35 @@
       if (run.over) return { ok: false, reason: 'over' };
       if (!G.connected(run.graph, run.current, to)) return { ok: false, reason: 'no_connection' };
       if (run.blocked[to]) return { ok: false, reason: 'blocked' };
-      var cost = { time: Rules.edgeCost(run, run.current, to), stamina: cfg.staminaPerStation,
-                   money: run.freeRides > 0 ? 0 : cfg.moneyPerStation };
+      var combi = G.isCombi(run.graph, run.current, to), cc = cfg.combi;       // la combi cuesta más dinero que el Metro pero salta varias estaciones
+      var cost = { time: Rules.edgeCost(run, run.current, to), stamina: combi ? cc.stamina : cfg.staminaPerStation,
+                   money: run.freeRides > 0 ? 0 : (combi ? cc.money : cfg.moneyPerStation), combi: combi };
       if (run.stamina < cost.stamina) return { ok: false, reason: 'stamina', cost: cost };
       if (run.money < cost.money) return { ok: false, reason: 'money', cost: cost };
       if (run.minute + cost.time > cfg.dayEndMinute) return { ok: false, reason: 'night', cost: cost };
       return { ok: true, cost: cost };
+    },
+
+    /** Ruta más barata (minutos + castigo por zonas peligrosas) de la estación actual a `to`, sin pasar por bloqueadas.
+     *  → [ids] (empieza en la estación actual) o null. La usa el viaje automático (doble clic). */
+    planRoute: function (run, to) {
+      if (run.blocked[to] || run.current === to) return run.current === to ? [to] : null;
+      var g = run.graph, dist = {}, prev = {}, done = {}, ids = run.data.stationList.map(function (s) { return s.id; });
+      dist[run.current] = 0;
+      for (;;) {
+        var u = null;
+        ids.forEach(function (id) { if (!done[id] && dist[id] !== undefined && (u === null || dist[id] < dist[u])) u = id; });
+        if (u === null) return null;
+        if (u === to) break;
+        done[u] = true;
+        G.neighbors(g, u).forEach(function (v) {
+          if (run.blocked[v] || done[v]) return;
+          var w = dist[u] + Rules.edgeCost(run, u, v) + (run.danger[v] ? 25 : 0);
+          if (dist[v] === undefined || w < dist[v]) { dist[v] = w; prev[v] = u; }
+        });
+      }
+      var p = [to]; while (prev[p[0]] !== undefined) p.unshift(prev[p[0]]);
+      return p;
     },
 
     /** Viaja a `to`. → { ok, type: 'goal'|'shop'|'robbery'|'lucky'|'arrive', cost, stolen? } */
@@ -107,6 +130,7 @@
       (e.danger || []).forEach(function (s) { run.danger[s] = true; });
       if (e.timeMod) {
         run.data.connections.forEach(function (c) {
+          if (c.combi) return;                                                     // las combis no usan las líneas del Metro: no les afectan sus fallas
           var la = run.data.stations[c.a].line, lb = run.data.stations[c.b].line;
           if (la === e.timeMod.line || lb === e.timeMod.line) {
             var k = G.key(c.a, c.b), cur = run.timeMods[k] !== undefined ? run.timeMods[k] : c.cost;

@@ -213,3 +213,37 @@ test('celular: la app LINEAS dice el color de cada línea y la resalta en el map
   u().U ? 0 : 0; s.U.News.trigger(run, byId('n12')); assert.deepEqual(run.newsLog[0].lines, ['3']);   // bloqueo en Juárez (L3)
   s.U.News.trigger(run, byId('n17')); assert.deepEqual(run.newsLog[0].lines, ['2']);                   // falla en Línea 2
 });
+
+test('doble clic: viaja solo hasta la estación (aunque esté lejos), se puede apagar en Ajustes y se cancela con un clic', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const u = () => s.scene._um, U = s.U; u().modal = null; u().modalQueue = [];
+  U.session.dblTravel = true;
+  const at = (id) => { const w = u().map.stationPos(id), c = u().map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
+  const dismiss = () => { const b = u().modal.buttons, n = b.length, x0 = 320 + (640 - (n * 170 + (n - 1) * 20)) / 2; s.click(x0 + (n - 1) * 190 + 85, 210 + 300 - 62 + 20); s.frame(2); };
+  const run = u().run, route = U.Rules.planRoute(run, 'Pino Suárez');                  // varias estaciones más allá
+  assert.ok(route && route.length > 3, 'el destino debe estar lejos');
+  // un solo clic en una estación lejana solo avisa (no viaja)
+  s.click(...at('Pino Suárez')); assert.equal(u().auto, null); assert.equal(u().run.current, route[0]); s.frame(40);   // (pasa el tiempo: ya no cuenta como 2.º clic)
+  // doble clic: viaje automático hasta llegar
+  s.click(...at('Pino Suárez')); s.click(...at('Pino Suárez'));
+  assert.equal(u().auto, 'Pino Suárez');
+  for (let g = 800; g-- > 0 && u().run.current !== 'Pino Suárez' && !u().run.over;) { if (u().modal) dismiss(); else s.frame(2); }
+  s.frame(40);                                                                       // termina la animación del último tramo
+  assert.equal(u().run.current, 'Pino Suárez', 'debe llegar solo'); assert.equal(u().auto, null);
+  // apagar la opción en AJUSTES del celular
+  u().phone.app = 'config'; s.frame(2); s.click(1090, 98 + 42 + 128 + 15);
+  assert.equal(U.session.dblTravel, false);
+  const target = U.Rules.planRoute(u().run, 'Balderas')[1] ? 'Balderas' : null;
+  s.click(...at(target)); s.click(...at(target));
+  assert.equal(u().auto, null, 'con la opción apagada el doble clic no viaja solo');
+  U.session.dblTravel = true;
+  // un clic en el mapa cancela un viaje automático en curso
+  u().selected = null; u().auto = 'Balderas'; s.click(300, 300); assert.equal(u().auto, null);
+});
+
+test('combi: las rutas se dibujan en el mapa con su microbús y aparecen en la leyenda', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(2);
+  const n = s.scene.objects.filter((o) => o.anim === 'combi').length;
+  assert.equal(n, 9, 'un microbús por cada ruta de combi (8) más el de la leyenda');
+});

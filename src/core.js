@@ -8,7 +8,7 @@
 
   U.VERSION = '2.0.0';
   // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)
-  U.session = { levelIndex: 0, lastResult: null, completed: [] };
+  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true };   // dblTravel: ajuste del celular (doble clic = viajar solo)
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }

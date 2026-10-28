@@ -24,7 +24,9 @@ function playBot(levelIndex, seed, withNews) {
 
 test('los datos se normalizan y son coherentes', () => {
   assert.equal(data.stationList.length, 83);
-  assert.equal(data.connections.length, 89);
+  assert.equal(data.connections.filter((c) => !c.combi).length, 89);                 // Metro
+  assert.equal(data.connections.filter((c) => c.combi).length, 8);                    // rutas de combi
+  data.connections.filter((c) => c.combi).forEach((c) => assert.ok(!c.transfer, 'una combi no es un transbordo: ' + c.a + ' - ' + c.b));
   const pos = {};
   data.stationList.forEach((s) => { const k = s.x + ',' + s.y; assert.ok(!pos[k], 'estaciones encimadas: ' + s.id + ' / ' + pos[k]); pos[k] = s.id; });
   data.news.forEach((n) => ['danger', 'block'].forEach((k) => ((n.effects || {})[k] || []).forEach((s) => assert.ok(data.stations[s], n.id + ' → ' + s))));
@@ -119,4 +121,31 @@ test('textos: toda mención de una línea dice su color y los bloqueos aclaran q
     for (const m of n[f].matchAll(/L[ÍI]NEA ([1235B])\b/gi)) assert.ok(new RegExp(lines[m[1]].colorName, 'i').test(n[f]), `${n.id}.${f} menciona la línea ${m[1]} sin su color: ${n[f]}`);
   }));
   data.news.filter((n) => n.effects.block).forEach((n) => assert.ok(/^Solo .* est[aá] cerrada/i.test(n.impact), n.id + ' debe aclarar que solo se cierra esa estación'));
+});
+
+test('combi: cuesta más dinero que el Metro, no la afectan las fallas de línea y salta varias estaciones', () => {
+  const run = U.Rules.createRun(data, 0, U.util.seeded(3)), cfg = data.config;
+  const combi = data.connections.find((c) => c.a === 'Balderas' && c.b === 'Zócalo');
+  assert.ok(combi && combi.combi);
+  run.current = 'Balderas'; const chk = U.Rules.canTravel(run, 'Zócalo');
+  assert.ok(chk.ok); assert.equal(chk.cost.money, cfg.combi.money); assert.equal(chk.cost.stamina, cfg.combi.stamina); assert.equal(chk.cost.time, combi.cost); assert.equal(chk.cost.combi, true);
+  assert.ok(cfg.combi.money > cfg.moneyPerStation, 'la combi debe costar más que un tramo de Metro');
+  const metro = U.Rules.canTravel(run, data.connections.find((c) => c.a === 'Balderas' && !c.combi).b); assert.equal(metro.cost.money, cfg.moneyPerStation); assert.ok(!metro.cost.combi);
+  // una falla en la línea 2 (Zócalo es de la línea 2) retrasa el Metro pero no la combi
+  U.Rules.applyNews(run, data.news.find((n) => n.id === 'n17'));
+  assert.equal(U.Rules.edgeCost(run, 'Balderas', 'Zócalo'), combi.cost);
+  const t0 = run.minute, m0 = run.money; assert.ok(U.Rules.travel(run, 'Zócalo').ok);
+  assert.equal(run.minute - t0, combi.cost); assert.equal(m0 - run.money, cfg.combi.money);
+});
+
+test('ruta automática: usa la combi si conviene, evita bloqueos y zonas peligrosas', () => {
+  const run = U.Rules.createRun(data, 0, U.util.seeded(3));
+  run.current = 'Balderas';
+  assert.deepEqual(U.Rules.planRoute(run, 'Zócalo'), ['Balderas', 'Zócalo']);        // 8 min en combi contra ~25 en Metro
+  const far = U.Rules.planRoute(run, 'Pantitlán'); assert.equal(far[0], 'Balderas'); assert.equal(far[far.length - 1], 'Pantitlán');
+  for (let i = 1; i < far.length; i++) assert.ok(U.Graph.connected(run.graph, far[i - 1], far[i]), 'tramo inexistente ' + far[i - 1] + ' → ' + far[i]);
+  assert.equal(U.Rules.planRoute(run, 'Balderas').length, 1);                          // ya estás ahí
+  const mid = far[Math.floor(far.length / 2)]; run.blocked[mid] = true;
+  const detour = U.Rules.planRoute(run, 'Pantitlán'); assert.ok(!detour || !detour.includes(mid), 'no debe pasar por una estación bloqueada');
+  assert.equal(U.Rules.planRoute(run, mid), null);                                     // la meta bloqueada no tiene ruta
 });

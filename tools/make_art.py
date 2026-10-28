@@ -60,8 +60,12 @@ def ic_lineas():   # las cinco líneas del Metro: rosa, azul, verde, amarilla y 
     for y, c in zip((1, 4, 7, 10, 13), ('#E91E63', '#2196F3', '#8BC34A', '#FFEB3B', '#9E9E9E')):
         d.rectangle([1, y, 14, y + 1], fill=C(c)); d.point((3, y), fill=W); d.point((8, y), fill=W); d.point((12, y), fill=W)
     return im
+def ic_combi():    # microbús
+    im, d = new(16, 16); d.rectangle([1, 3, 14, 12], fill=OR, outline=K); d.rectangle([2, 5, 13, 7], fill=(190, 225, 250, 255))
+    for x in (5, 9): d.line([x, 5, x, 7], fill=OR)
+    d.rectangle([1, 9, 14, 9], fill=YE); d.ellipse([2, 11, 5, 14], fill=K); d.ellipse([10, 11, 13, 14], fill=K); d.point((14, 8), fill=YE); return im
 ICONS = {'moneda': ic_moneda, 'rayo': ic_rayo, 'reloj': ic_reloj, 'tienda': ic_tienda, 'meta': ic_meta, 'casa': ic_casa,
-         'bloqueo': ic_bloqueo, 'alerta': ic_alerta, 'noticia': ic_noticia, 'mapa': ic_mapa, 'saldo': ic_saldo, 'ajustes': ic_ajustes, 'persona': ic_persona, 'celular': ic_celular, 'lineas': ic_lineas}
+         'bloqueo': ic_bloqueo, 'alerta': ic_alerta, 'noticia': ic_noticia, 'mapa': ic_mapa, 'saldo': ic_saldo, 'ajustes': ic_ajustes, 'persona': ic_persona, 'celular': ic_celular, 'lineas': ic_lineas, 'combi': ic_combi}
 for n, f in ICONS.items(): save(f(), f'icono_{n}')
 
 # ---------- estaciones 16x16 (blancas para teñirlas con el color de su línea) ----------

@@ -165,7 +165,7 @@
       this.cam.x = util.lerp(this.cam.x, tx, Math.min(1, dt * 6)); this.cam.y = util.lerp(this.cam.y, ty, Math.min(1, dt * 6));
     }
     this.layer.setCameraX(Math.round(this.cam.x)); this.layer.setCameraY(Math.round(this.cam.y)); this.layer.setCameraZoom(this.cam.zoom);
-    this._drawRoutes(run, hoverId); this._updateStations(run, ui, hoverId, selId);
+    this._drawRoutes(run, hoverId); this._updateStations(run, ui, hoverId, selId); this._updateCombis(run, ui);
   };
 
   P._drawRoutes = function (run, hoverId) {
@@ -175,8 +175,13 @@
       var blocked = run.blocked[c.a] || run.blocked[c.b], cost = U.Rules.edgeCost(run, c.a, c.b), slow = cost > c.cost + 2;
       var col = blocked ? '120;80;150' : slow ? '231;76;60' : util.hex(a.color), op = blocked ? 90 : 255, dim = hl && a.line !== hl && b.line !== hl;
       if (dim) op = 40;                                                      // línea elegida en el celular: las demás se apagan
-      stroke(r, '0;0;0', dim ? 40 : 120); r.drawLineV2(pa.x, pa.y + 5, pb.x, pb.y + 5, c.transfer ? 5 : 10);          // sombra de la vía elevada
-      if (c.transfer) {   // transbordo: línea punteada
+      if (c.combi) { dim = !!hl; op = blocked ? 70 : dim ? 40 : 255; col = blocked ? '120;80;150' : '255;170;40'; }       // rutas de combi: naranja punteado
+      stroke(r, '0;0;0', dim ? 40 : 120); r.drawLineV2(pa.x, pa.y + 5, pb.x, pb.y + 5, c.transfer || c.combi ? 5 : 10);          // sombra de la vía elevada
+      if (c.combi) {
+        stroke(r, col, op);
+        var nc = Math.max(2, Math.floor(Math.hypot(pb.x - pa.x, pb.y - pa.y) / 9));
+        for (var j = 0; j < nc; j += 2) r.drawLineV2(util.lerp(pa.x, pb.x, j / nc), util.lerp(pa.y, pb.y, j / nc), util.lerp(pa.x, pb.x, (j + 1) / nc), util.lerp(pa.y, pb.y, (j + 1) / nc), 5);
+      } else if (c.transfer) {   // transbordo: línea punteada
         stroke(r, '255;255;255', dim ? 40 : 170);
         var n = Math.max(2, Math.floor(Math.hypot(pb.x - pa.x, pb.y - pa.y) / 10));
         for (var i = 0; i < n; i += 2) r.drawLineV2(util.lerp(pa.x, pb.x, i / n), util.lerp(pa.y, pb.y, i / n), util.lerp(pa.x, pb.x, (i + 1) / n), util.lerp(pa.y, pb.y, (i + 1) / n), 4);
@@ -192,6 +197,16 @@
     ring(wpos(d.stations[run.current]), 27 + 3 * pulse, '255;107;53', 80 + 60 * pulse);
     if (hoverId) ring(wpos(d.stations[hoverId]), 23, '255;255;255', 90);
     fill(r, '0;0;0', 120); r.drawEllipse(self.pp.x, self.pp.y + 2, 30, 12);   // sombra del jugador
+  };
+
+  /** Un microbús sobre cada ruta de combi (como las estaciones, siempre a la vista). */
+  P._updateCombis = function (run, ui) {
+    var d = this.data, n = 0, hl = this.highlight;
+    d.connections.forEach(function (c) {
+      if (!c.combi) return;
+      var pa = wpos(d.stations[c.a]), pb = wpos(d.stations[c.b]), blocked = run.blocked[c.a] || run.blocked[c.b];
+      ui.icon('cb:' + (n++), 'combi', (pa.x + pb.x) / 2 - 12, (pa.y + pb.y) / 2 - 16, 1.5, { layer: '', z: 66, opacity: blocked ? 90 : hl ? 70 : 255 });
+    });
   };
 
   P._updateStations = function (run, ui, hoverId, selId) {
