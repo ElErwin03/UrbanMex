@@ -15,7 +15,7 @@
     var cfg = raw.config, stations = {}, list = [];
     raw.stations.stations.forEach(function (s) {
       var st = { id: s.id, x: s.x, y: s.y, line: String(s.line), shop: !!s.shop, transfer: false,
-                 color: raw.stations.lines[String(s.line)].color };
+                 color: raw.stations.lines[String(s.line)].color, colorName: raw.stations.lines[String(s.line)].colorName || '' };
       stations[st.id] = st; list.push(st);
     });
     var conns = raw.connections.map(function (c) {

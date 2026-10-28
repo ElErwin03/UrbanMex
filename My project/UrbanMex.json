@@ -183,6 +183,24 @@
       },
       {
         "alwaysLoaded": false,
+        "file": "assets/img/icono_celular.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_celular.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/img/icono_lineas.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_lineas.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_mapa.png",
         "kind": "image",
         "metadata": "",
@@ -850,6 +868,64 @@
                     {
                       "hasCustomCollisionMask": false,
                       "image": "icono_persona.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "celular",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_celular.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "lineas",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_lineas.png",
                       "points": [],
                       "originPoint": {
                         "name": "origine",
@@ -1744,6 +1820,64 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "celular",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_celular.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "lineas",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_lineas.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -2429,6 +2563,64 @@
                     {
                       "hasCustomCollisionMask": false,
                       "image": "icono_persona.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "celular",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_celular.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "lineas",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_lineas.png",
                       "points": [],
                       "originPoint": {
                         "name": "origine",
@@ -3653,6 +3845,64 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "celular",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_celular.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "lineas",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_lineas.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -4037,7 +4287,7 @@
             "    var cfg = raw.config, stations = {}, list = [];",
             "    raw.stations.stations.forEach(function (s) {",
             "      var st = { id: s.id, x: s.x, y: s.y, line: String(s.line), shop: !!s.shop, transfer: false,",
-            "                 color: raw.stations.lines[String(s.line)].color };",
+            "                 color: raw.stations.lines[String(s.line)].color, colorName: raw.stations.lines[String(s.line)].colorName || '' };",
             "      stations[st.id] = st; list.push(st);",
             "    });",
             "    var conns = raw.connections.map(function (c) {",
@@ -4351,9 +4601,17 @@
             "  var U = gdjs.UrbanMex, G = U.Graph, util = U.util, R = U.Rules;",
             "  if (U.News) return;",
             "",
+            "  /** Líneas del Metro que toca la noticia (para mostrar sus colores en el celular). */",
+            "  function linesOf(run, item) {",
+            "    var e = item.effects || {}, out = [], st = run.data.stations;",
+            "    function add(l) { if (l && out.indexOf(l) < 0) out.push(l); }",
+            "    (e.danger || []).concat(e.block || []).forEach(function (n) { if (st[n]) add(st[n].line); });",
+            "    if (e.timeMod) add(e.timeMod.line);",
+            "    return out.slice(0, 4);",
+            "  }",
             "  function stamp(run, item) {",
             "    return { id: item.id, type: item.type, title: item.title, desc: item.desc, impact: item.impact,",
-            "             severity: item.severity, icon: item.icon, time: util.clock(run.minute) };",
+            "             severity: item.severity, icon: item.icon, time: util.clock(run.minute), lines: linesOf(run, item) };",
             "  }",
             "",
             "  var News = {",
@@ -4602,7 +4860,7 @@
             "  var HW = 24, HH = 12, OX = 480, OY = 40;                 // media casilla isométrica y origen del mundo",
             "  var X0 = -2, X1 = 31, Y0 = -2, Y1 = 25, THICK = 20;      // casillas de la isla de la ciudad y grosor del \"terreno\"",
             "  var ICON = 16, ST_SCALE = 2;",
-            "  var VIEW = { x0: 8, x1: 906, y0: 62, y1: 618 };          // zona de pantalla libre para el mapa (sin HUD, celular ni panel inferior)",
+            "  var VIEW = { x0: 8, x1: 906, y0: 62, y1: 618 }, VIEW_NOPHONE_X1 = 1272;          // zona de pantalla libre para el mapa (sin HUD, celular ni panel inferior)",
             "  var PAD = { l: 56, r: 56, t: 60, b: 40 };                // margen alrededor de las estaciones al encuadrar",
             "  var BUILD = [{ h: 16, a: 0 }, { h: 28, a: 0 }, { h: 40, a: 1 }, { h: 56, a: 1 }, { h: 22, a: 0 }, { h: 34, a: 1 }];   // = tools/make_art.py",
             "",
@@ -4628,6 +4886,8 @@
             "    this.ground = scene.createObject('Mapa'); this.routes = scene.createObject('Mapa');",
             "    [this.ground, this.routes].forEach(function (p, k) { p.setPosition(0, 0); p.setZOrder(k ? 50 : 0); p.setCoordinatesRelative(false); p.setOutlineSize(0); });",
             "    this.cam = { x: 0, y: 0, zoom: 1, follow: false };",
+            "    this.view = { x0: VIEW.x0, x1: VIEW.x1, y0: VIEW.y0, y1: VIEW.y1 };   // zona libre; se ensancha al ocultar el celular",
+            "    this.touched = false; this.highlight = null;                         // touched: la persona movió/acercó la cámara",
             "    this.labelsAll = false;",
             "    this.sprites = {}; this.player = scene.createObject('Jugador'); this.player.setZOrder(70);",
             "    this.pp = { x: 0, y: 0 }; this.move = null; this.t = 0;",
@@ -4701,21 +4961,29 @@
             "  P.moving = function () { return !!this.move; };",
             "",
             "  // ---- cámara -------------------------------------------------------------------------------------------------------",
-            "  var CX = (VIEW.x0 + VIEW.x1) / 2, CY = (VIEW.y0 + VIEW.y1) / 2;   // centro de la zona libre en pantalla",
-            "  P._center = function (wx, wy) { this.cam.x = wx + (640 - CX) / this.cam.zoom; this.cam.y = wy + (360 - CY) / this.cam.zoom; };",
+            "  P._cx = function () { return (this.view.x0 + this.view.x1) / 2; };   // centro de la zona libre en pantalla",
+            "  P._cy = function () { return (this.view.y0 + this.view.y1) / 2; };",
+            "  P._center = function (wx, wy) { this.cam.x = wx + (640 - this._cx()) / this.cam.zoom; this.cam.y = wy + (360 - this._cy()) / this.cam.zoom; };",
             "",
             "  /** Encuadra TODA la red del Metro en la zona libre de pantalla. */",
             "  P.fit = function () {",
-            "    var b = this.bbox, w = b.x1 - b.x0 + PAD.l + PAD.r, h = b.y1 - b.y0 + PAD.t + PAD.b;",
-            "    this.cam.zoom = Math.floor(100 * Math.min(1, (VIEW.x1 - VIEW.x0) / w, (VIEW.y1 - VIEW.y0) / h)) / 100; this.cam.follow = false;",
+            "    var b = this.bbox, v = this.view, w = b.x1 - b.x0 + PAD.l + PAD.r, h = b.y1 - b.y0 + PAD.t + PAD.b;",
+            "    this.cam.zoom = Math.floor(100 * Math.min(1, (v.x1 - v.x0) / w, (v.y1 - v.y0) / h)) / 100; this.cam.follow = false; this.touched = false;",
             "    this.fitZoom = this.cam.zoom; this._center((b.x0 - PAD.l + b.x1 + PAD.r) / 2, (b.y0 - PAD.t + b.y1 + PAD.b) / 2);",
             "  };",
-            "  P.followPlayer = function () { this.cam.follow = true; };",
+            "  P.followPlayer = function () { this.cam.follow = true; this.touched = true; };",
+            "",
+            "  /** El celular ocupa la derecha de la pantalla: si se oculta, la red se centra en todo el ancho. */",
+            "  P.setPhoneOpen = function (open) {",
+            "    this.view.x1 = open ? VIEW.x1 : VIEW_NOPHONE_X1;",
+            "    if (!this.touched) this.fit();",
+            "  };",
             "",
             "  /** Zoom alrededor del centro de la zona libre (el mapa no \"se escapa\" detrás del celular). */",
             "  P.zoomBy = function (dz) {",
-            "    var c = this.cam, z0 = c.zoom, z1 = util.clamp(Math.round((z0 + dz) * 10) / 10, 0.5, 2.4);",
+            "    var c = this.cam, z0 = c.zoom, z1 = util.clamp(Math.round((z0 + dz) * 10) / 10, 0.5, 2.4), CX = this._cx(), CY = this._cy();",
             "    if (z1 === z0) return;",
+            "    this.touched = true;",
             "    var px = c.x + (CX - 640) / z0, py = c.y + (CY - 360) / z0; c.zoom = z1; c.x = px - (CX - 640) / z1; c.y = py - (CY - 360) / z1;",
             "  };",
             "",
@@ -4729,7 +4997,7 @@
             "    return best;",
             "  };",
             "",
-            "  P.pan = function (dxScreen, dyScreen) { this.cam.x -= dxScreen / this.cam.zoom; this.cam.y -= dyScreen / this.cam.zoom; this.cam.follow = false; };",
+            "  P.pan = function (dxScreen, dyScreen) { this.cam.x -= dxScreen / this.cam.zoom; this.cam.y -= dyScreen / this.cam.zoom; this.cam.follow = false; this.touched = true; };",
             "",
             "  P.update = function (dt, run, ui, hoverId, selId) {",
             "    this.t += dt;",
@@ -4743,7 +5011,7 @@
             "    pl.setPosition(this.pp.x - 18, this.pp.y - 54);",
             "    // Cámara: fija (toda la red a la vista) salvo que la persona acerque y pulse \"YO\"",
             "    if (this.cam.follow) {",
-            "      var tx = this.pp.x + (640 - CX) / this.cam.zoom, ty = this.pp.y + (360 - CY) / this.cam.zoom - 20;",
+            "      var tx = this.pp.x + (640 - this._cx()) / this.cam.zoom, ty = this.pp.y + (360 - this._cy()) / this.cam.zoom - 20;",
             "      this.cam.x = util.lerp(this.cam.x, tx, Math.min(1, dt * 6)); this.cam.y = util.lerp(this.cam.y, ty, Math.min(1, dt * 6));",
             "    }",
             "    this.layer.setCameraX(Math.round(this.cam.x)); this.layer.setCameraY(Math.round(this.cam.y)); this.layer.setCameraZoom(this.cam.zoom);",
@@ -4751,14 +5019,15 @@
             "  };",
             "",
             "  P._drawRoutes = function (run, hoverId) {",
-            "    var r = this.routes, d = this.data; r.clear();",
+            "    var r = this.routes, d = this.data, hl = this.highlight; r.clear();",
             "    d.connections.forEach(function (c) {",
             "      var a = d.stations[c.a], b = d.stations[c.b], pa = wpos(a), pb = wpos(b);",
             "      var blocked = run.blocked[c.a] || run.blocked[c.b], cost = U.Rules.edgeCost(run, c.a, c.b), slow = cost > c.cost + 2;",
-            "      var col = blocked ? '120;80;150' : slow ? '231;76;60' : util.hex(a.color), op = blocked ? 90 : 255;",
-            "      stroke(r, '0;0;0', 120); r.drawLineV2(pa.x, pa.y + 5, pb.x, pb.y + 5, c.transfer ? 5 : 10);          // sombra de la vía elevada",
+            "      var col = blocked ? '120;80;150' : slow ? '231;76;60' : util.hex(a.color), op = blocked ? 90 : 255, dim = hl && a.line !== hl && b.line !== hl;",
+            "      if (dim) op = 40;                                                      // línea elegida en el celular: las demás se apagan",
+            "      stroke(r, '0;0;0', dim ? 40 : 120); r.drawLineV2(pa.x, pa.y + 5, pb.x, pb.y + 5, c.transfer ? 5 : 10);          // sombra de la vía elevada",
             "      if (c.transfer) {   // transbordo: línea punteada",
-            "        stroke(r, '255;255;255', 170);",
+            "        stroke(r, '255;255;255', dim ? 40 : 170);",
             "        var n = Math.max(2, Math.floor(Math.hypot(pb.x - pa.x, pb.y - pa.y) / 10));",
             "        for (var i = 0; i < n; i += 2) r.drawLineV2(util.lerp(pa.x, pb.x, i / n), util.lerp(pa.y, pb.y, i / n), util.lerp(pa.x, pb.x, (i + 1) / n), util.lerp(pa.y, pb.y, (i + 1) / n), 4);",
             "      } else { stroke(r, col, op); r.drawLineV2(pa.x, pa.y, pb.x, pb.y, 7); }",
@@ -4783,6 +5052,7 @@
             "      var anim = st.id === lv.goal ? 'meta' : blocked ? 'bloqueada' : st.id === lv.start ? 'inicio' : st.shop ? 'tienda' : 'normal';",
             "      if (s._umAnim !== anim) { s.setAnimationName(anim); s._umAnim = anim; }",
             "      var tint = st.id === lv.goal ? '46;204;113' : blocked ? '155;89;182' : st.shop ? '90;170;255' : util.hex(st.color);",
+            "      if (this.highlight && st.line !== this.highlight && !key) tint = '70;72;92';              // estaciones de las otras líneas, apagadas",
             "      if (s._umTint !== tint) { s.setColor(tint); s._umTint = tint; }",
             "      var sc = ST_SCALE * (st.id === run.current ? 1.25 : st.id === hoverId || st.id === selId ? 1.15 : 1); s.setScale(sc);",
             "      s.setPosition(p.x - ICON * sc / 2, p.y - ICON * sc / 2);",
@@ -4828,8 +5098,9 @@
         {
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
-            "/* UrbanMex · phone — el celular del jugador (única guía del juego): Noticias, Ruta, Saldo y Ajustes.",
-            " * Se dibuja con la UI de modo inmediato en la capa \"UI\". */",
+            "/* UrbanMex · phone — el celular del jugador (única guía del juego): Noticias, Ruta, Saldo, Líneas y Ajustes.",
+            " * Se puede ocultar (botón X) y volver a abrir con el icono de la esquina superior derecha. Los avisos de noticias",
+            " * aparecen como notificación DENTRO del celular. Se dibuja con la UI de modo inmediato en la capa \"UI\". */",
             "(function () {",
             "  var U = gdjs.UrbanMex, util = U.util, PAL = U.UI.PAL;",
             "  if (U.Phone) return;",
@@ -4840,8 +5111,18 @@
             "    { id: 'news', label: 'NOTICIAS', icon: 'noticia', fill: '120;40;40' },",
             "    { id: 'map', label: 'RUTA', icon: 'mapa', fill: '30;70;110' },",
             "    { id: 'saldo', label: 'SALDO', icon: 'saldo', fill: '30;90;60' },",
+            "    { id: 'lines', label: 'LINEAS', icon: 'lineas', fill: '90;50;110' },",
             "    { id: 'config', label: 'AJUSTES', icon: 'ajustes', fill: '70;70;90' }",
             "  ];",
+            "",
+            "  /** Cuadritos con el color y la letra/número de cada línea afectada, alineados a la derecha en rx. */",
+            "  function chips(ui, key, lines, rx, y, run, modal) {",
+            "    (lines || []).forEach(function (l, k) {",
+            "      var x0 = rx - (k + 1) * 22 + 4, ln = run.data.lines[l]; if (!ln) return;",
+            "      ui.rect(x0, y, 18, 16, { fill: util.hex(ln.color), border: '255;255;255', bw: 1, modal: modal });",
+            "      ui.text(key + k, l, x0 + 9, y + 4, { size: 8, align: 'center', color: '16;14;30', z: modal ? 335 : 205 });",
+            "    });",
+            "  }",
             "",
             "  function cardLines(n) {",
             "    return { t: util.wrap(n.title, 24), d: util.wrap(n.desc, 24), i: util.wrap(n.impact, 24) };   // letra de 12 px (antes 8)",
@@ -4849,14 +5130,17 @@
             "",
             "  var Phone = {",
             "    rect: { x: X, y: Y, w: W, h: H },",
-            "    newPhoneState: function () { return { app: 'home', scroll: 0 }; },",
+            "    newPhoneState: function () { return { app: 'home', scroll: 0, open: true }; },",
             "",
             "    draw: function (ui, um, run) {",
             "      var ph = um.phone, sx = X + 10, sy = Y + 34, sw = W - 20;",
+            "      if (!ph.open) return;",
+            "      if (ph.app !== 'lines' && um.map.highlight) um.map.highlight = null;       // al salir de LINEAS el mapa vuelve a la normalidad",
             "      ui.rect(X, Y, W, H, { fill: '8;8;14', border: '70;70;95', bw: 4, block: true });",
             "      ui.rect(sx, sy, sw, H - 34 - 52, { fill: '12;12;30', border: '30;30;55', bw: 2, block: true });",
             "      ui.text('ph:clk', util.clock(run.minute), X + 18, Y + 12, { size: 8 });",
-            "      ui.text('ph:net', 'LTE', X + W - 18, Y + 12, { size: 8, align: 'right', color: PAL.dim });",
+            "      ui.text('ph:net', 'LTE', X + W - 46, Y + 12, { size: 8, align: 'right', color: PAL.dim });",
+            "      if (ui.button('ph:hide', 'X', X + W - 34, Y + 6, 26, 22, { fill: '150;50;50', size: 8 })) um.setPhone(false);   // ocultar el celular",
             "      var top = sy + 10;",
             "",
             "      if (ph.app === 'home') {",
@@ -4885,6 +5169,7 @@
             "",
             "    _news: function (ui, um, run, x, y, w, h) {",
             "      var log = run.newsLog, ph = um.phone, maxScroll = Math.max(0, log.length - 1);",
+            "      run.unread = 0;                                                            // estás leyendo: nada sin leer",
             "      if (ui.inside(X, Y, W, H) && ui.wheel) ph.scroll = util.clamp(ph.scroll + (ui.wheel > 0 ? 1 : -1), 0, maxScroll);",
             "      ph.scroll = util.clamp(ph.scroll, 0, maxScroll);",
             "      if (!log.length) { ui.text('ph:ne', 'Sin noticias aun', x + w / 2, y + 40, { size: 8, align: 'center', color: PAL.dim }); return; }",
@@ -4895,6 +5180,7 @@
             "        var col = SEV[n.severity] || PAL.blue;",
             "        ui.rect(x, cy, w, ch, { fill: '24;24;46', border: col, bw: 2 });",
             "        ui.text('ph:n' + shown + 'h', n.time + '  ' + n.type.toUpperCase(), x + 8, cy + 8, { size: 8, color: PAL.dim });",
+            "        chips(ui, 'ph:n' + shown + 'c', n.lines, x + w - 6, cy + 5, run, false);",
             "        var ty = cy + 24, k = 'ph:n' + shown;",
             "        ty += ui.lines(k + 't', L.t, x + 8, ty, { size: 12, lineH: 16 });",
             "        ty += ui.lines(k + 'd', L.d, x + 8, ty, { size: 12, color: '170;176;204', lineH: 16 });",
@@ -4916,7 +5202,33 @@
             "        ui.text('ph:mv' + i, util.wrap(r[1], 32).join('\\n'), x, cy + 14, { size: 8, lineH: 12 });",
             "        cy += 14 + util.wrap(r[1], 32).length * 12 + 8;",
             "      });",
-            "      ui.text('ph:mtip', util.wrap('Las lineas rojas del mapa tienen retraso. Las moradas estan bloqueadas.', 31).join('\\n'), x, cy + 6, { size: 8, color: PAL.yellow, lineH: 12 });",
+            "      ui.text('ph:mtip', util.wrap('Las vias naranja-rojas del mapa tienen retraso. Las moradas estan bloqueadas.', 31).join('\\n'), x, cy + 6, { size: 8, color: PAL.yellow, lineH: 12 });",
+            "    },",
+            "",
+            "    /** Qué color es cada línea; tocar una la resalta en el mapa. También explica bloqueo / peligro / retraso. */",
+            "    _lines: function (ui, um, run, x, y, w) {",
+            "      var ids = Object.keys(run.data.lines), count = {}, hl = um.map.highlight;",
+            "      run.data.stationList.forEach(function (st) { count[st.line] = (count[st.line] || 0) + 1; });",
+            "      ids.forEach(function (id, i) {",
+            "        var ln = run.data.lines[id], ry = y + i * 40, on = hl === id;",
+            "        ui.rect(x, ry, w, 34, { fill: on ? '44;44;80' : '24;24;46', border: on ? '255;255;255' : '60;60;90', bw: 2, block: true });",
+            "        ui.rect(x + 6, ry + 5, 24, 24, { fill: util.hex(ln.color), border: '255;255;255', bw: 2 });",
+            "        ui.text('ph:lk' + i, id, x + 18, ry + 13, { size: 8, align: 'center', color: '16;14;30' });",
+            "        ui.text('ph:ln' + i, ln.name.toUpperCase(), x + 40, ry + 4, { size: 12 });",
+            "        ui.text('ph:lc' + i, (ln.colorName || '').toUpperCase(), x + 40, ry + 21, { size: 8, color: util.hex(ln.color) });",
+            "        ui.text('ph:ls' + i, (count[id] || 0) + ' est.', x + w - 8, ry + 13, { size: 8, align: 'right', color: PAL.dim });",
+            "        if (ui.inside(x, ry, w, 34) && ui.released) um.map.highlight = on ? null : id;",
+            "      });",
+            "      var cy = y + ids.length * 40 + 2;",
+            "      cy += ui.text('ph:lh', util.wrap('Toca una linea para verla en el mapa.', 31).join('\\n'), x, cy, { size: 8, color: PAL.yellow, lineH: 12 }) + 8;",
+            "      ui.text('ph:lg', 'COMO LEER LAS NOTICIAS', x, cy, { size: 8, color: PAL.orange }); cy += 18;",
+            "      [['BLOQUEO: solo se cierra esa estacion, no toda la linea. Busca otra ruta.', PAL.purple],",
+            "       ['PELIGRO: puede haber asaltos en esa estacion.', PAL.red],",
+            "       ['RETRASO: viajar por esa linea tarda mas minutos.', PAL.yellow],",
+            "       ['Via naranja-roja = retraso. Via morada = bloqueada.', PAL.dim]].forEach(function (g, i) {",
+            "        var l = util.wrap(g[0], 31);",
+            "        cy += ui.lines('ph:lt' + i, l, x, cy, { size: 8, lineH: 12, color: g[1] }) + 5;",
+            "      });",
             "    },",
             "",
             "    _saldo: function (ui, um, run, x, y, w) {",
@@ -4943,6 +5255,22 @@
             "      });",
             "      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 150, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;",
             "    }",
+            "  };",
+            "",
+            "  /** Aviso de noticia como notificación del propio celular (arriba de su pantalla). Tocarlo abre Noticias. */",
+            "  Phone.drawPush = function (ui, um, run, dt) {",
+            "    var p = um.push; if (!p) return;",
+            "    if (!um.phone.open) { um.push = null; return; }",
+            "    p.t += dt; if (p.t > 6.5) { um.push = null; return; }",
+            "    var n = p.item, x = X + 16, y = Y + 40, w = W - 32, tl = util.wrap(n.title, 22).slice(0, 3), dl = util.wrap(n.desc, 22).slice(0, 4);",
+            "    var h = 10 + 16 + 8 + tl.length * 16 + 4 + dl.length * 16 + 12, col = SEV[n.severity] || PAL.blue, blink = p.t < 0.8 && Math.floor(p.t * 8) % 2 === 0;",
+            "    ui.rect(x, y, w, h, { fill: '30;30;52', border: blink ? '255;255;255' : col, bw: 3, modal: true, block: true });",
+            "    ui.icon('pn:i', n.icon || 'noticia', x + 8, y + 8, 1, { z: 330 });",
+            "    ui.text('pn:h', 'NOTICIA - ahora', x + 30, y + 12, { size: 8, color: PAL.dim, z: 330 });",
+            "    chips(ui, 'pn:c', n.lines, x + w - 6, y + 8, run, true);",
+            "    ui.lines('pn:t', tl, x + 10, y + 34, { size: 12, z: 330, lineH: 16 });",
+            "    ui.lines('pn:d', dl, x + 10, y + 34 + tl.length * 16 + 4, { size: 12, z: 330, color: '200;205;228', lineH: 16 });",
+            "    if (ui.inside(x, y, w, h) && ui.released) { um.phone.app = 'news'; um.phone.scroll = 0; run.unread = 0; um.push = null; }",
             "  };",
             "  U.Phone = Phone;",
             "})();"
@@ -5132,6 +5460,7 @@
             "      drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };",
             "    var run = um.run;",
             "    um.map = new U.MapView(scene, data);",
+            "    um.setPhone = function (open) { um.phone.open = open; if (!open) um.push = null; um.map.setPhoneOpen(open); };   // mostrar / ocultar el celular",
             "    um.map.placePlayer(run.current);",
             "    N.intro(run);",
             "    modal(um, { title: 'DIA ' + run.level.id + ' - ' + run.level.day,",
@@ -5200,6 +5529,21 @@
             "    ui.text('hud:tv', util.clock(run.minute), 1030, 22, { size: 8, color: run.minute >= 1140 ? PAL.red : PAL.yellow });",
             "  }",
             "",
+            "  /** Icono de la esquina superior derecha: oculta / muestra el celular. Con el celular oculto avisa (parpadea) si llegan noticias. */",
+            "  function drawPhoneToggle(ui, um, run) {",
+            "    var open = um.phone.open, alert = !open && run.unread > 0, flash = alert && Math.floor(um.t * 3) % 2 === 0;",
+            "    var fill = open ? '70;70;110' : flash ? '192;57;43' : '60;60;90';",
+            "    if (ui.button('phone:tg', '', 1222, 6, 52, 44, { fill: fill })) {",
+            "      um.setPhone(!open);",
+            "      if (!open && run.unread > 0 && um.phone.app === 'home') um.phone.app = 'news';   // al abrirlo con noticias nuevas, directo a leerlas",
+            "    }",
+            "    ui.icon('phone:ic', 'celular', 1232, 12, 2);",
+            "    if (run.unread > 0 && !open) {",
+            "      ui.rect(1250, 2, 26, 18, { fill: PAL.red, border: '255;255;255', bw: 2 });",
+            "      ui.text('phone:bd', String(Math.min(run.unread, 99)), 1263, 7, { size: 8, align: 'center', z: 230 });",
+            "    }",
+            "  }",
+            "",
             "  function drawControls(ui, um) {   // barra horizontal arriba a la izquierda: no tapa la red encuadrada",
             "    var m = um.map, y = 66, c = { size: 8, fill: '60;60;90' };",
             "    ui.rect(16, 62, 322, 44, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });",
@@ -5225,7 +5569,7 @@
             "    var run = um.run, cfg = run.data.config, x = 16, y = 592, w = 540, h = 124;",
             "    if (um.selected) {",
             "      var id = um.selected, st = run.data.stations[id], chk = R.canTravel(run, id), c = chk.cost || { time: 0, stamina: cfg.staminaPerStation, money: cfg.moneyPerStation };",
-            "      var desc = id === run.level.goal ? run.level.goalDesc : st.shop ? 'Hay una tienda. Monster: $' + R.monsterPrice(run) + ' (+' + cfg.monsterStamina + ' stamina)' : st.line === 'B' ? 'Estacion de la Linea B. Viajar aqui?' : 'Estacion de la Linea ' + st.line + '. Viajar aqui?';",
+            "      var desc = id === run.level.goal ? run.level.goalDesc : st.shop ? 'Hay una tienda. Monster: $' + R.monsterPrice(run) + ' (+' + cfg.monsterStamina + ' stamina)' : 'Estacion de la Linea ' + st.line + (st.colorName ? ' (' + st.colorName + ')' : '') + '. Viajar aqui?';",
             "      ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });",
             "      ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });",
             "      ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });",
@@ -5267,16 +5611,6 @@
             "    }",
             "  }",
             "",
-            "  function drawPush(ui, um, dt) {   // anuncio emergente: letra grande (título 16, texto 12) y más tiempo en pantalla",
-            "    var p = um.push; if (!p) return; p.t += dt; if (p.t > 6.5) { um.push = null; return; }",
-            "    var n = p.item, x = 690, w = 570, tl = util.wrap(n.title, 32).slice(0, 2), dl = util.wrap(n.desc, 44).slice(0, 3);",
-            "    var h = 48 + tl.length * 22 + 8 + dl.length * 18 + 12, y = 64 - (h + 12) * (1 - Math.min(1, p.t * 5));",
-            "    ui.rect(x, y, w, h, { fill: '30;30;48', border: '255;255;255', bw: 3, modal: true });",
-            "    ui.icon('pn:i', n.icon || 'noticia', x + 14, y + 10, 2, { z: 330 }); ui.text('pn:h', 'NOTICIAS CDMX - ahora', x + 56, y + 16, { size: 12, color: PAL.dim, z: 330 });",
-            "    ui.lines('pn:t', tl, x + 16, y + 48, { size: 16, z: 330, lineH: 22 });",
-            "    ui.lines('pn:d', dl, x + 16, y + 48 + tl.length * 22 + 8, { size: 12, z: 330, color: '210;215;235', lineH: 18 });",
-            "  }",
-            "",
             "  // ---------------------------------------------------------------- bucle principal",
             "  U.Scenes.nivel = function (scene) {",
             "    var data = U.Data.ready(scene), ui = U.UI.of(scene);",
@@ -5284,9 +5618,10 @@
             "    var um = scene._um || init(scene, data), run = um.run, dt = Math.min(0.1, scene.getElapsedTime() / 1000);",
             "    ui.begin();",
             "",
-            "    drawHUD(ui, um); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);",
+            "    um.t = (um.t || 0) + dt;",
+            "    drawHUD(ui, um); drawPhoneToggle(ui, um, run); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);",
             "    if (!um.modal) drawStationPanel(ui, um);",
-            "    drawPush(ui, um, dt); drawFloats(ui, um, dt); drawModal(ui, um);",
+            "    U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt); drawModal(ui, um);",
             "",
             "    var busy = !!um.modal || um.map.moving() || !!um.pending || run.over, d = um.drag;",
             "    if (!busy) {",
@@ -5303,7 +5638,7 @@
             "",
             "    if (um.pending && !um.map.moving()) resolve(um);",
             "    if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);",
-            "    if (!busy) { var item = N.tick(run, dt); if (item) { um.push = { item: item, t: 0 }; if (um.selected && run.blocked[um.selected]) um.selected = null; } }",
+            "    if (!busy) { var item = N.tick(run, dt); if (item) { um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; } }",
             "",
             "    um.map.update(dt, run, ui, um.hover, um.selected);",
             "    ui.end();",

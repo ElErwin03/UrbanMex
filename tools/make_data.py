@@ -9,7 +9,7 @@ out = sys.argv[2] if len(sys.argv) > 2 else 'My project/data'
 d = json.load(open(src))
 os.makedirs(out, exist_ok=True)
 
-EMOJI = re.compile('[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u200D]+')
+EMOJI = re.compile('[\U0001F000-\U0001FAFF\u2300-\u23FF\u2600-\u27BF\uFE0F\u200D]+')   # incluye ⏱ (la fuente pixelada no lo dibuja)
 def clean(s):
     return re.sub(r'\s+', ' ', EMOJI.sub('', s)).strip()
 
@@ -25,15 +25,18 @@ config = {
 }
 
 # ---- estaciones --------------------------------------------------------
-LINES = {
-  "1": {"name": "Línea 1", "color": "#E91E63"}, "2": {"name": "Línea 2", "color": "#2196F3"},
-  "3": {"name": "Línea 3", "color": "#8BC34A"}, "5": {"name": "Línea 5", "color": "#FFEB3B"},
-  "B": {"name": "Línea B", "color": "#9E9E9E"}}
+LINES = {   # colorName: cómo se dice el color de la línea en el juego (celular > LÍNEAS y noticias)
+  "1": {"name": "Línea 1", "color": "#E91E63", "colorName": "rosa"}, "2": {"name": "Línea 2", "color": "#2196F3", "colorName": "azul"},
+  "3": {"name": "Línea 3", "color": "#8BC34A", "colorName": "verde"}, "5": {"name": "Línea 5", "color": "#FFEB3B", "colorName": "amarilla"},
+  "B": {"name": "Línea B", "color": "#9E9E9E", "colorName": "gris"}}
+# Tiendas añadidas (además de las 7 originales): nodos centrales a mitad de camino de varias jornadas y lejos de otra tienda
+# (Balderas: centro-oeste; San Antonio Abad: centro-este; Guerrero: norte). Ver README, sección "Tiendas".
+EXTRA_SHOPS = {"Balderas", "San Antonio Abad", "Guerrero"}
 FIX_POS = {"Guerrero LB": (9, 6), "Valle Gómez": (16, 3)}   # estaban encimadas con otra estación
 stations = []
 for name, s in d["STATIONS"].items():
     x, y = FIX_POS.get(name, (s["x"], s["y"]))
-    stations.append({"id": name, "x": x, "y": y, "line": str(s["line"]), "shop": bool(s["shop"])})
+    stations.append({"id": name, "x": x, "y": y, "line": str(s["line"]), "shop": bool(s["shop"]) or name in EXTRA_SHOPS})
 json.dump({"lines": LINES, "stations": stations}, open(f"{out}/estaciones.json", "w"), ensure_ascii=False, indent=1)
 json.dump(d["CONNECTIONS"], open(f"{out}/conexiones.json", "w"), ensure_ascii=False)
 
@@ -69,6 +72,22 @@ for i, n in enumerate(d["NEWS"]):
     if n.get("moneyBonus"): eff["freeRide"] = 1
     news.append({"id": f"n{i+1:02d}", "type": n["type"], "title": clean(n["title"]), "desc": clean(n["desc"]),
                  "impact": clean(n["impact"]), "severity": n["severity"], "icon": ICON[n["type"]], "effects": eff})
+# El color de cada línea va en los textos ("LÍNEA 3 (VERDE)") y los bloqueos dicen que solo se cierra ESA estación, no toda la línea.
+def tag_lines(t):
+    def f(m):
+        color = LINES[m.group(2)]["colorName"]
+        return m.group(0) + " (" + (color.upper() if m.group(1).isupper() else color) + ")"
+    return re.sub(r"(LÍNEA|Línea|línea) ([1235B])\b(?! \()", f, t)
+for n in news:
+    for k in ("title", "desc", "impact"): n[k] = tag_lines(n[k])
+BLOCK_TEXT = {  # id: (título, impacto)
+  "n11": ("PROTESTA EN INSURGENTES (LÍNEA 1 ROSA)", "Solo INSURGENTES está cerrada; el resto de la línea sigue"),
+  "n12": ("BLOQUEO EN JUÁREZ (LÍNEA 3 VERDE)", "Solo JUÁREZ está cerrada; el resto de la línea sigue"),
+  "n13": ("MARCHA EN REFORMA (BELLAS ARTES, LÍNEA 2 AZUL)", "Solo BELLAS ARTES está cerrada; el resto de la línea sigue"),
+  "n14": ("PARO EN GARIBALDI (LÍNEA B GRIS)", "Solo GARIBALDI está cerrada; el resto de la línea sigue"),
+  "n15": ("MANIFESTACIÓN EN ZÓCALO (LÍNEA 2 AZUL)", "Solo ZÓCALO está cerrada; el resto de la línea sigue")}
+for n in news:
+    if n["id"] in BLOCK_TEXT: n["title"], n["impact"] = BLOCK_TEXT[n["id"]]
 json.dump(news, open(f"{out}/noticias.json", "w"), ensure_ascii=False, indent=1)
 json.dump(config, open(f"{out}/config.json", "w"), ensure_ascii=False, indent=1)
 print("ok", len(stations), "estaciones", len(d["CONNECTIONS"]), "conexiones", len(levels), "niveles", len(news), "noticias")

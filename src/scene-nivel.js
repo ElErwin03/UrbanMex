@@ -23,6 +23,7 @@
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
     um.map = new U.MapView(scene, data);
+    um.setPhone = function (open) { um.phone.open = open; if (!open) um.push = null; um.map.setPhoneOpen(open); };   // mostrar / ocultar el celular
     um.map.placePlayer(run.current);
     N.intro(run);
     modal(um, { title: 'DIA ' + run.level.id + ' - ' + run.level.day,
@@ -91,6 +92,21 @@
     ui.text('hud:tv', util.clock(run.minute), 1030, 22, { size: 8, color: run.minute >= 1140 ? PAL.red : PAL.yellow });
   }
 
+  /** Icono de la esquina superior derecha: oculta / muestra el celular. Con el celular oculto avisa (parpadea) si llegan noticias. */
+  function drawPhoneToggle(ui, um, run) {
+    var open = um.phone.open, alert = !open && run.unread > 0, flash = alert && Math.floor(um.t * 3) % 2 === 0;
+    var fill = open ? '70;70;110' : flash ? '192;57;43' : '60;60;90';
+    if (ui.button('phone:tg', '', 1222, 6, 52, 44, { fill: fill })) {
+      um.setPhone(!open);
+      if (!open && run.unread > 0 && um.phone.app === 'home') um.phone.app = 'news';   // al abrirlo con noticias nuevas, directo a leerlas
+    }
+    ui.icon('phone:ic', 'celular', 1232, 12, 2);
+    if (run.unread > 0 && !open) {
+      ui.rect(1250, 2, 26, 18, { fill: PAL.red, border: '255;255;255', bw: 2 });
+      ui.text('phone:bd', String(Math.min(run.unread, 99)), 1263, 7, { size: 8, align: 'center', z: 230 });
+    }
+  }
+
   function drawControls(ui, um) {   // barra horizontal arriba a la izquierda: no tapa la red encuadrada
     var m = um.map, y = 66, c = { size: 8, fill: '60;60;90' };
     ui.rect(16, 62, 322, 44, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
@@ -116,7 +132,7 @@
     var run = um.run, cfg = run.data.config, x = 16, y = 592, w = 540, h = 124;
     if (um.selected) {
       var id = um.selected, st = run.data.stations[id], chk = R.canTravel(run, id), c = chk.cost || { time: 0, stamina: cfg.staminaPerStation, money: cfg.moneyPerStation };
-      var desc = id === run.level.goal ? run.level.goalDesc : st.shop ? 'Hay una tienda. Monster: $' + R.monsterPrice(run) + ' (+' + cfg.monsterStamina + ' stamina)' : st.line === 'B' ? 'Estacion de la Linea B. Viajar aqui?' : 'Estacion de la Linea ' + st.line + '. Viajar aqui?';
+      var desc = id === run.level.goal ? run.level.goalDesc : st.shop ? 'Hay una tienda. Monster: $' + R.monsterPrice(run) + ' (+' + cfg.monsterStamina + ' stamina)' : 'Estacion de la Linea ' + st.line + (st.colorName ? ' (' + st.colorName + ')' : '') + '. Viajar aqui?';
       ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });
       ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });
       ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });
@@ -158,16 +174,6 @@
     }
   }
 
-  function drawPush(ui, um, dt) {   // anuncio emergente: letra grande (título 16, texto 12) y más tiempo en pantalla
-    var p = um.push; if (!p) return; p.t += dt; if (p.t > 6.5) { um.push = null; return; }
-    var n = p.item, x = 690, w = 570, tl = util.wrap(n.title, 32).slice(0, 2), dl = util.wrap(n.desc, 44).slice(0, 3);
-    var h = 48 + tl.length * 22 + 8 + dl.length * 18 + 12, y = 64 - (h + 12) * (1 - Math.min(1, p.t * 5));
-    ui.rect(x, y, w, h, { fill: '30;30;48', border: '255;255;255', bw: 3, modal: true });
-    ui.icon('pn:i', n.icon || 'noticia', x + 14, y + 10, 2, { z: 330 }); ui.text('pn:h', 'NOTICIAS CDMX - ahora', x + 56, y + 16, { size: 12, color: PAL.dim, z: 330 });
-    ui.lines('pn:t', tl, x + 16, y + 48, { size: 16, z: 330, lineH: 22 });
-    ui.lines('pn:d', dl, x + 16, y + 48 + tl.length * 22 + 8, { size: 12, z: 330, color: '210;215;235', lineH: 18 });
-  }
-
   // ---------------------------------------------------------------- bucle principal
   U.Scenes.nivel = function (scene) {
     var data = U.Data.ready(scene), ui = U.UI.of(scene);
@@ -175,9 +181,10 @@
     var um = scene._um || init(scene, data), run = um.run, dt = Math.min(0.1, scene.getElapsedTime() / 1000);
     ui.begin();
 
-    drawHUD(ui, um); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);
+    um.t = (um.t || 0) + dt;
+    drawHUD(ui, um); drawPhoneToggle(ui, um, run); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);
     if (!um.modal) drawStationPanel(ui, um);
-    drawPush(ui, um, dt); drawFloats(ui, um, dt); drawModal(ui, um);
+    U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt); drawModal(ui, um);
 
     var busy = !!um.modal || um.map.moving() || !!um.pending || run.over, d = um.drag;
     if (!busy) {
@@ -194,7 +201,7 @@
 
     if (um.pending && !um.map.moving()) resolve(um);
     if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
-    if (!busy) { var item = N.tick(run, dt); if (item) { um.push = { item: item, t: 0 }; if (um.selected && run.blocked[um.selected]) um.selected = null; } }
+    if (!busy) { var item = N.tick(run, dt); if (item) { um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; } }
 
     um.map.update(dt, run, ui, um.hover, um.selected);
     ui.end();

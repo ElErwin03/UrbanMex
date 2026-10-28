@@ -4,9 +4,17 @@
   var U = gdjs.UrbanMex, G = U.Graph, util = U.util, R = U.Rules;
   if (U.News) return;
 
+  /** Líneas del Metro que toca la noticia (para mostrar sus colores en el celular). */
+  function linesOf(run, item) {
+    var e = item.effects || {}, out = [], st = run.data.stations;
+    function add(l) { if (l && out.indexOf(l) < 0) out.push(l); }
+    (e.danger || []).concat(e.block || []).forEach(function (n) { if (st[n]) add(st[n].line); });
+    if (e.timeMod) add(e.timeMod.line);
+    return out.slice(0, 4);
+  }
   function stamp(run, item) {
     return { id: item.id, type: item.type, title: item.title, desc: item.desc, impact: item.impact,
-             severity: item.severity, icon: item.icon, time: util.clock(run.minute) };
+             severity: item.severity, icon: item.icon, time: util.clock(run.minute), lines: linesOf(run, item) };
   }
 
   var News = {
