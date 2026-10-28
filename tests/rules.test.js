@@ -99,3 +99,24 @@ test('asaltos solo ocurren en estaciones marcadas como peligrosas', () => {
   assert.ok(['robbery', 'shop', 'goal'].includes(out.type));
   const run2 = U.Rules.createRun(data, 0, () => 0); assert.equal(U.Rules.travel(run2, run2.graph.adj[run2.current][0]).type === 'robbery', false);
 });
+
+test('tiendas: hay 3 nuevas estratégicas y cada jornada tiene al menos 3 tiendas junto a su ruta más corta', () => {
+  const shops = data.stationList.filter((s) => s.shop).map((s) => s.id);
+  assert.equal(shops.length, 10);
+  ['Balderas', 'San Antonio Abad', 'Guerrero'].forEach((n) => assert.ok(shops.includes(n), 'falta la tienda en ' + n));
+  const adj = {}; data.connections.forEach((c) => { (adj[c.a] = adj[c.a] || []).push(c.b); (adj[c.b] = adj[c.b] || []).push(c.a); });
+  const bfs = (src) => { const d = { [src]: 0 }, q = [src]; while (q.length) { const u = q.shift(); adj[u].forEach((v) => { if (!(v in d)) { d[v] = d[u] + 1; q.push(v); } }); } return d; };
+  data.levels.forEach((lv) => {
+    const a = bfs(lv.start), b = bfs(lv.goal), n = a[lv.goal];
+    const near = shops.filter((s) => !lv.blocked.includes(s) && a[s] + b[s] - n <= 2);
+    assert.ok(near.length >= 3, `día ${lv.id}: solo ${near.length} tiendas junto a la ruta (${near.join(', ')})`);
+  });
+});
+
+test('textos: toda mención de una línea dice su color y los bloqueos aclaran que solo se cierra esa estación', () => {
+  const lines = data.lines;
+  data.news.forEach((n) => ['title', 'desc', 'impact'].forEach((f) => {
+    for (const m of n[f].matchAll(/L[ÍI]NEA ([1235B])\b/gi)) assert.ok(new RegExp(lines[m[1]].colorName, 'i').test(n[f]), `${n.id}.${f} menciona la línea ${m[1]} sin su color: ${n[f]}`);
+  }));
+  data.news.filter((n) => n.effects.block).forEach((n) => assert.ok(/^Solo .* est[aá] cerrada/i.test(n.impact), n.id + ' debe aclarar que solo se cierra esa estación'));
+});

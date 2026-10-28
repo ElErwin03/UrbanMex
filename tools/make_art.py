@@ -52,8 +52,16 @@ def ic_ajustes():
     d.ellipse([3, 3, 12, 12], fill=GY, outline=K); d.ellipse([6, 6, 9, 9], fill=K); return im
 def ic_persona():
     im, d = new(16, 16); d.ellipse([4, 1, 11, 8], fill=SK, outline=K); d.rectangle([3, 9, 12, 15], fill=OR, outline=K); return im
+def ic_celular():
+    im, d = new(16, 16); d.rectangle([4, 0, 11, 15], fill=K, outline=GY); d.rectangle([5, 2, 10, 12], fill=(70, 130, 210, 255))
+    d.rectangle([6, 3, 9, 4], fill=W); d.line([6, 6, 9, 6], fill=(190, 215, 250, 255)); d.line([6, 8, 9, 8], fill=(190, 215, 250, 255)); d.point((7, 14), fill=GY); d.point((8, 14), fill=GY); return im
+def ic_lineas():   # las cinco líneas del Metro: rosa, azul, verde, amarilla y gris
+    im, d = new(16, 16)
+    for y, c in zip((1, 4, 7, 10, 13), ('#E91E63', '#2196F3', '#8BC34A', '#FFEB3B', '#9E9E9E')):
+        d.rectangle([1, y, 14, y + 1], fill=C(c)); d.point((3, y), fill=W); d.point((8, y), fill=W); d.point((12, y), fill=W)
+    return im
 ICONS = {'moneda': ic_moneda, 'rayo': ic_rayo, 'reloj': ic_reloj, 'tienda': ic_tienda, 'meta': ic_meta, 'casa': ic_casa,
-         'bloqueo': ic_bloqueo, 'alerta': ic_alerta, 'noticia': ic_noticia, 'mapa': ic_mapa, 'saldo': ic_saldo, 'ajustes': ic_ajustes, 'persona': ic_persona}
+         'bloqueo': ic_bloqueo, 'alerta': ic_alerta, 'noticia': ic_noticia, 'mapa': ic_mapa, 'saldo': ic_saldo, 'ajustes': ic_ajustes, 'persona': ic_persona, 'celular': ic_celular, 'lineas': ic_lineas}
 for n, f in ICONS.items(): save(f(), f'icono_{n}')
 
 # ---------- estaciones 16x16 (blancas para teñirlas con el color de su línea) ----------

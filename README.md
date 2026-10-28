@@ -50,5 +50,12 @@ npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 - La cuadrícula lógica (`x`, `y` en `estaciones.json`) no cambió; `src/map.js` solo la proyecta: `pantalla.x = OX + (x - y) * 24`, `pantalla.y = OY + (x + y) * 12` (casilla de 48x24 px, estilo Age of Empires / Clash of Clans).
 - Bajo las líneas hay una isla de ciudad con edificios en relieve (`EdificioIso`, sprites `iso_edificio_*.png` y `iso_parque.png`), avenidas y andenes de colores. El suelo se dibuja una sola vez; cada fotograma solo se redibujan las vías.
 - Al abrir un día la cámara **encuadra toda la red** (sin mover ni acercar). Controles arriba a la izquierda: `-` / `+` (zoom), `TODO` (volver al encuadre), `YO` (seguir al jugador con zoom) y `ABC` (mostrar todos los nombres; por defecto solo se ven los de la estación actual, la meta, el inicio, las vecinas y la que señalas).
-- Anuncios y noticias usan letra de 12 a 16 px (antes 8 px).
+
+## Celular, líneas y tiendas
+
+- **Celular ocultable:** el botón `X` de su esquina lo oculta (el mapa se centra en todo el ancho) y el icono de la esquina superior derecha lo vuelve a mostrar. Si llegan noticias con el celular oculto, el icono parpadea con el número de noticias sin leer; al abrirlo va directo a Noticias.
+- **Avisos dentro del celular:** una noticia nueva aparece como notificación en la parte alta de la pantalla del propio celular (tocarla abre Noticias). Ya no hay ventanas flotantes fuera del celular.
+- **App LINEAS:** muestra el color de cada línea (1 rosa, 2 azul, 3 verde, 5 amarilla, B gris), cuántas estaciones tiene y, al tocarla, la resalta en el mapa. También explica qué es un bloqueo (se cierra *solo esa estación*, no toda la línea), un peligro y un retraso. Las tarjetas de noticias llevan cuadritos con el color de las líneas que tocan y los textos dicen el color ("LÍNEA 3 (VERDE)").
+- **Tiendas:** además de las 7 originales hay 3 nuevas (`Balderas`, `San Antonio Abad`, `Guerrero`), elegidas por estar en nodos centrales a mitad de camino de varias jornadas y lejos de otra tienda; así cada jornada tiene al menos 3 tiendas junto a su ruta más corta. Se definen en `tools/make_data.py` (`EXTRA_SHOPS`) y en `estaciones.json` (`"shop": true`).
+- Noticias, avisos y ventanas de inicio de día usan letra de 12 px (antes 8 px).
 - Probar sin GDevelop: `npm test` (incluye comprobar que ninguna estación queda fuera de pantalla ni bajo la interfaz).

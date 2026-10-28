@@ -114,7 +114,7 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
     while (guard-- > 0 && !s.scene.changes.length) {
       const u = um(), run = u.run;
       if (u.modal) { const b = u.modal.buttons, n = b.length, bw = 170, x0 = 320 + (640 - (n * bw + (n - 1) * 20)) / 2;
-        const buy = b.findIndex((x) => x.label === 'COMPRAR'), pick = buy >= 0 && run.stamina < 60 ? buy : 0;
+        const buy = b.findIndex((x) => x.label === 'COMPRAR'), no = b.findIndex((x) => x.label === 'NO'), pick = buy < 0 ? 0 : run.stamina < 60 && run.money > 60 ? buy : no;   // solo compra Monster si lo necesita
         s.click(x0 + pick * (bw + 20) + 85, 210 + 300 - 62 + 20); s.frame(2); continue; }
       if (u.pending || u.map.moving() || run.over) { s.frame(1); continue; }
       const path = U.Graph.shortestPath(run.graph, run.current, run.level.goal, run.blocked);
@@ -169,4 +169,47 @@ test('mapa isométrico: proyección 2:1, ciudad 2.5D y trazados de relleno', () 
   const anims = {}; s.scene.objects.forEach((o) => { if (o.anim && /^(b\d|parque)$/.test(o.anim)) anims[o.anim] = (anims[o.anim] || 0) + 1; });
   assert.ok(Object.keys(anims).length >= 6, 'deben usarse varios tipos de edificio: ' + JSON.stringify(anims));
   assert.ok(Object.values(anims).reduce((x, y) => x + y, 0) > 100, 'la ciudad debe tener cientos de edificios');
+});
+
+test('celular: se oculta con X, reaparece con el icono de la esquina y las noticias avisan solo dentro del celular', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const u = () => s.scene._um;
+  u().modal = null; u().modalQueue = [];
+  assert.equal(u().phone.open, true);
+  // 1) celular abierto: el aviso es una notificación DENTRO del celular (ninguna ventana flotante fuera de su marco)
+  const rects = [], ui = u().ui, orig = ui.rect;
+  ui.rect = function (x, y, w, h, o) { rects.push({ x, y, w, h, o: o || {} }); return orig.apply(this, arguments); };
+  u().run.newsTimer = 0; s.frame(2);
+  assert.ok(u().push, 'debe aparecer la notificación');
+  const ph = { x: 920, y: 64, w: 340, h: 560 }, floating = rects.filter((r) => r.o.modal);
+  assert.ok(floating.length > 0, 'la notificación se dibuja');
+  floating.forEach((r) => assert.ok(r.x >= ph.x && r.y >= ph.y && r.x + r.w <= ph.x + ph.w && r.y + r.h <= ph.y + ph.h, 'aviso fuera del celular: ' + JSON.stringify(r)));
+  // 2) ocultar con la X del celular: el mapa aprovecha todo el ancho
+  s.click(1239, 81);
+  assert.equal(u().phone.open, false); assert.equal(u().push, null); assert.ok(u().map.view.x1 > 1200);
+  // 3) con el celular oculto llegan noticias: no hay aviso flotante, se acumulan como "sin leer" y el icono lo señala
+  const before = u().run.unread; let guard = 60;
+  while (guard-- > 0 && u().run.unread === before) { u().run.newsTimer = 0; s.frame(1); }
+  assert.ok(u().run.unread > before, 'debe llegar una noticia'); assert.equal(u().push, null, 'con el celular oculto no hay aviso flotante');
+  // 4) el icono de la esquina superior derecha lo vuelve a mostrar, directo a las noticias nuevas
+  s.click(1248, 28);
+  assert.equal(u().phone.open, true); assert.equal(u().phone.app, 'news'); s.frame(1); assert.equal(u().run.unread, 0);
+  ui.rect = orig;
+});
+
+test('celular: la app LINEAS dice el color de cada línea y la resalta en el mapa; las noticias traen sus líneas', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const u = () => s.scene._um; u().modal = null;
+  assert.deepEqual(Object.values(u().run.data.lines).map((l) => l.colorName), ['rosa', 'azul', 'verde', 'amarilla', 'gris']);
+  u().phone.app = 'lines'; s.frame(2);
+  assert.equal(u().map.highlight, null);
+  s.click(1000, 140 + 40 + 16);                       // fila de la Línea 2 (azul)
+  assert.equal(u().map.highlight, '2');
+  s.click(1000, 140 + 40 + 16); assert.equal(u().map.highlight, null);   // otro toque la quita
+  u().map.highlight = '3'; u().phone.app = 'home'; s.frame(2);
+  assert.equal(u().map.highlight, null, 'al salir de LINEAS el mapa vuelve a la normalidad');
+  // cada noticia guarda las líneas que toca (sus colores se ven en la tarjeta)
+  const run = u().run, byId = (id) => run.data.news.find((n) => n.id === id);
+  u().U ? 0 : 0; s.U.News.trigger(run, byId('n12')); assert.deepEqual(run.newsLog[0].lines, ['3']);   // bloqueo en Juárez (L3)
+  s.U.News.trigger(run, byId('n17')); assert.deepEqual(run.newsLog[0].lines, ['2']);                   // falla en Línea 2
 });

@@ -10,7 +10,7 @@
   var HW = 24, HH = 12, OX = 480, OY = 40;                 // media casilla isométrica y origen del mundo
   var X0 = -2, X1 = 31, Y0 = -2, Y1 = 25, THICK = 20;      // casillas de la isla de la ciudad y grosor del "terreno"
   var ICON = 16, ST_SCALE = 2;
-  var VIEW = { x0: 8, x1: 906, y0: 62, y1: 618 };          // zona de pantalla libre para el mapa (sin HUD, celular ni panel inferior)
+  var VIEW = { x0: 8, x1: 906, y0: 62, y1: 618 }, VIEW_NOPHONE_X1 = 1272;          // zona de pantalla libre para el mapa (sin HUD, celular ni panel inferior)
   var PAD = { l: 56, r: 56, t: 60, b: 40 };                // margen alrededor de las estaciones al encuadrar
   var BUILD = [{ h: 16, a: 0 }, { h: 28, a: 0 }, { h: 40, a: 1 }, { h: 56, a: 1 }, { h: 22, a: 0 }, { h: 34, a: 1 }];   // = tools/make_art.py
 
@@ -36,6 +36,8 @@
     this.ground = scene.createObject('Mapa'); this.routes = scene.createObject('Mapa');
     [this.ground, this.routes].forEach(function (p, k) { p.setPosition(0, 0); p.setZOrder(k ? 50 : 0); p.setCoordinatesRelative(false); p.setOutlineSize(0); });
     this.cam = { x: 0, y: 0, zoom: 1, follow: false };
+    this.view = { x0: VIEW.x0, x1: VIEW.x1, y0: VIEW.y0, y1: VIEW.y1 };   // zona libre; se ensancha al ocultar el celular
+    this.touched = false; this.highlight = null;                         // touched: la persona movió/acercó la cámara
     this.labelsAll = false;
     this.sprites = {}; this.player = scene.createObject('Jugador'); this.player.setZOrder(70);
     this.pp = { x: 0, y: 0 }; this.move = null; this.t = 0;
@@ -109,21 +111,29 @@
   P.moving = function () { return !!this.move; };
 
   // ---- cámara -------------------------------------------------------------------------------------------------------
-  var CX = (VIEW.x0 + VIEW.x1) / 2, CY = (VIEW.y0 + VIEW.y1) / 2;   // centro de la zona libre en pantalla
-  P._center = function (wx, wy) { this.cam.x = wx + (640 - CX) / this.cam.zoom; this.cam.y = wy + (360 - CY) / this.cam.zoom; };
+  P._cx = function () { return (this.view.x0 + this.view.x1) / 2; };   // centro de la zona libre en pantalla
+  P._cy = function () { return (this.view.y0 + this.view.y1) / 2; };
+  P._center = function (wx, wy) { this.cam.x = wx + (640 - this._cx()) / this.cam.zoom; this.cam.y = wy + (360 - this._cy()) / this.cam.zoom; };
 
   /** Encuadra TODA la red del Metro en la zona libre de pantalla. */
   P.fit = function () {
-    var b = this.bbox, w = b.x1 - b.x0 + PAD.l + PAD.r, h = b.y1 - b.y0 + PAD.t + PAD.b;
-    this.cam.zoom = Math.floor(100 * Math.min(1, (VIEW.x1 - VIEW.x0) / w, (VIEW.y1 - VIEW.y0) / h)) / 100; this.cam.follow = false;
+    var b = this.bbox, v = this.view, w = b.x1 - b.x0 + PAD.l + PAD.r, h = b.y1 - b.y0 + PAD.t + PAD.b;
+    this.cam.zoom = Math.floor(100 * Math.min(1, (v.x1 - v.x0) / w, (v.y1 - v.y0) / h)) / 100; this.cam.follow = false; this.touched = false;
     this.fitZoom = this.cam.zoom; this._center((b.x0 - PAD.l + b.x1 + PAD.r) / 2, (b.y0 - PAD.t + b.y1 + PAD.b) / 2);
   };
-  P.followPlayer = function () { this.cam.follow = true; };
+  P.followPlayer = function () { this.cam.follow = true; this.touched = true; };
+
+  /** El celular ocupa la derecha de la pantalla: si se oculta, la red se centra en todo el ancho. */
+  P.setPhoneOpen = function (open) {
+    this.view.x1 = open ? VIEW.x1 : VIEW_NOPHONE_X1;
+    if (!this.touched) this.fit();
+  };
 
   /** Zoom alrededor del centro de la zona libre (el mapa no "se escapa" detrás del celular). */
   P.zoomBy = function (dz) {
-    var c = this.cam, z0 = c.zoom, z1 = util.clamp(Math.round((z0 + dz) * 10) / 10, 0.5, 2.4);
+    var c = this.cam, z0 = c.zoom, z1 = util.clamp(Math.round((z0 + dz) * 10) / 10, 0.5, 2.4), CX = this._cx(), CY = this._cy();
     if (z1 === z0) return;
+    this.touched = true;
     var px = c.x + (CX - 640) / z0, py = c.y + (CY - 360) / z0; c.zoom = z1; c.x = px - (CX - 640) / z1; c.y = py - (CY - 360) / z1;
   };
 
@@ -137,7 +147,7 @@
     return best;
   };
 
-  P.pan = function (dxScreen, dyScreen) { this.cam.x -= dxScreen / this.cam.zoom; this.cam.y -= dyScreen / this.cam.zoom; this.cam.follow = false; };
+  P.pan = function (dxScreen, dyScreen) { this.cam.x -= dxScreen / this.cam.zoom; this.cam.y -= dyScreen / this.cam.zoom; this.cam.follow = false; this.touched = true; };
 
   P.update = function (dt, run, ui, hoverId, selId) {
     this.t += dt;
@@ -151,7 +161,7 @@
     pl.setPosition(this.pp.x - 18, this.pp.y - 54);
     // Cámara: fija (toda la red a la vista) salvo que la persona acerque y pulse "YO"
     if (this.cam.follow) {
-      var tx = this.pp.x + (640 - CX) / this.cam.zoom, ty = this.pp.y + (360 - CY) / this.cam.zoom - 20;
+      var tx = this.pp.x + (640 - this._cx()) / this.cam.zoom, ty = this.pp.y + (360 - this._cy()) / this.cam.zoom - 20;
       this.cam.x = util.lerp(this.cam.x, tx, Math.min(1, dt * 6)); this.cam.y = util.lerp(this.cam.y, ty, Math.min(1, dt * 6));
     }
     this.layer.setCameraX(Math.round(this.cam.x)); this.layer.setCameraY(Math.round(this.cam.y)); this.layer.setCameraZoom(this.cam.zoom);
@@ -159,14 +169,15 @@
   };
 
   P._drawRoutes = function (run, hoverId) {
-    var r = this.routes, d = this.data; r.clear();
+    var r = this.routes, d = this.data, hl = this.highlight; r.clear();
     d.connections.forEach(function (c) {
       var a = d.stations[c.a], b = d.stations[c.b], pa = wpos(a), pb = wpos(b);
       var blocked = run.blocked[c.a] || run.blocked[c.b], cost = U.Rules.edgeCost(run, c.a, c.b), slow = cost > c.cost + 2;
-      var col = blocked ? '120;80;150' : slow ? '231;76;60' : util.hex(a.color), op = blocked ? 90 : 255;
-      stroke(r, '0;0;0', 120); r.drawLineV2(pa.x, pa.y + 5, pb.x, pb.y + 5, c.transfer ? 5 : 10);          // sombra de la vía elevada
+      var col = blocked ? '120;80;150' : slow ? '231;76;60' : util.hex(a.color), op = blocked ? 90 : 255, dim = hl && a.line !== hl && b.line !== hl;
+      if (dim) op = 40;                                                      // línea elegida en el celular: las demás se apagan
+      stroke(r, '0;0;0', dim ? 40 : 120); r.drawLineV2(pa.x, pa.y + 5, pb.x, pb.y + 5, c.transfer ? 5 : 10);          // sombra de la vía elevada
       if (c.transfer) {   // transbordo: línea punteada
-        stroke(r, '255;255;255', 170);
+        stroke(r, '255;255;255', dim ? 40 : 170);
         var n = Math.max(2, Math.floor(Math.hypot(pb.x - pa.x, pb.y - pa.y) / 10));
         for (var i = 0; i < n; i += 2) r.drawLineV2(util.lerp(pa.x, pb.x, i / n), util.lerp(pa.y, pb.y, i / n), util.lerp(pa.x, pb.x, (i + 1) / n), util.lerp(pa.y, pb.y, (i + 1) / n), 4);
       } else { stroke(r, col, op); r.drawLineV2(pa.x, pa.y, pb.x, pb.y, 7); }
@@ -191,6 +202,7 @@
       var anim = st.id === lv.goal ? 'meta' : blocked ? 'bloqueada' : st.id === lv.start ? 'inicio' : st.shop ? 'tienda' : 'normal';
       if (s._umAnim !== anim) { s.setAnimationName(anim); s._umAnim = anim; }
       var tint = st.id === lv.goal ? '46;204;113' : blocked ? '155;89;182' : st.shop ? '90;170;255' : util.hex(st.color);
+      if (this.highlight && st.line !== this.highlight && !key) tint = '70;72;92';              // estaciones de las otras líneas, apagadas
       if (s._umTint !== tint) { s.setColor(tint); s._umTint = tint; }
       var sc = ST_SCALE * (st.id === run.current ? 1.25 : st.id === hoverId || st.id === selId ? 1.15 : 1); s.setScale(sc);
       s.setPosition(p.x - ICON * sc / 2, p.y - ICON * sc / 2);

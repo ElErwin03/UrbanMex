@@ -16,7 +16,7 @@
  {
   "id": "n02",
   "type": "security",
-  "title": "ASALTOS EN LÍNEA 1",
+  "title": "ASALTOS EN LÍNEA 1 (ROSA)",
   "desc": "Reportan asaltos frecuentes entre Candelaria y San Lázaro.",
   "impact": "Candelaria y San Lázaro peligrosas",
   "severity": "danger",
@@ -49,7 +49,7 @@
  {
   "id": "n04",
   "type": "security",
-  "title": "PELIGRO EN LÍNEA B",
+  "title": "PELIGRO EN LÍNEA B (GRIS)",
   "desc": "Usuarios reportan que Lagunilla y Garibaldi son zonas de alto riesgo.",
   "impact": "Lagunilla y Garibaldi peligrosas",
   "severity": "danger",
@@ -93,8 +93,8 @@
  {
   "id": "n07",
   "type": "security",
-  "title": "ASALTOS EN LÍNEA 5",
-  "desc": "La Línea 5 reporta robos en Valle Gómez y Consulado.",
+  "title": "ASALTOS EN LÍNEA 5 (AMARILLA)",
+  "desc": "La Línea 5 (amarilla) reporta robos en Valle Gómez y Consulado.",
   "impact": "Valle Gómez y Consulado peligrosas",
   "severity": "danger",
   "icon": "alerta",
@@ -124,7 +124,7 @@
  {
   "id": "n09",
   "type": "security",
-  "title": "ALERTA EN LÍNEA 3 NORTE",
+  "title": "ALERTA EN LÍNEA 3 (VERDE) NORTE",
   "desc": "Indios Verdes y La Raza reportan aumento de robos.",
   "impact": "Indios Verdes y La Raza con riesgo",
   "severity": "danger",
@@ -155,9 +155,9 @@
  {
   "id": "n11",
   "type": "protest",
-  "title": "PROTESTA EN INSURGENTES",
+  "title": "PROTESTA EN INSURGENTES (LÍNEA 1 ROSA)",
   "desc": "Manifestantes bloquean la estación Insurgentes.",
-  "impact": "Estación INSURGENTES BLOQUEADA",
+  "impact": "Solo INSURGENTES está cerrada; el resto de la línea sigue",
   "severity": "danger",
   "icon": "bloqueo",
   "effects": {
@@ -169,9 +169,9 @@
  {
   "id": "n12",
   "type": "protest",
-  "title": "BLOQUEO EN LÍNEA 3",
+  "title": "BLOQUEO EN JUÁREZ (LÍNEA 3 VERDE)",
   "desc": "Estudiantes bloquean Juárez. No hay servicio.",
-  "impact": "Estación JUÁREZ BLOQUEADA",
+  "impact": "Solo JUÁREZ está cerrada; el resto de la línea sigue",
   "severity": "danger",
   "icon": "bloqueo",
   "effects": {
@@ -183,9 +183,9 @@
  {
   "id": "n13",
   "type": "protest",
-  "title": "MARCHA EN REFORMA",
+  "title": "MARCHA EN REFORMA (BELLAS ARTES, LÍNEA 2 AZUL)",
   "desc": "Marcha masiva afecta Bellas Artes.",
-  "impact": "Estación BELLAS ARTES BLOQUEADA",
+  "impact": "Solo BELLAS ARTES está cerrada; el resto de la línea sigue",
   "severity": "danger",
   "icon": "bloqueo",
   "effects": {
@@ -197,9 +197,9 @@
  {
   "id": "n14",
   "type": "protest",
-  "title": "PARO EN LÍNEA B",
+  "title": "PARO EN GARIBALDI (LÍNEA B GRIS)",
   "desc": "Trabajadores del Metro realizan paro en Garibaldi.",
-  "impact": "Estación GARIBALDI BLOQUEADA",
+  "impact": "Solo GARIBALDI está cerrada; el resto de la línea sigue",
   "severity": "danger",
   "icon": "bloqueo",
   "effects": {
@@ -211,9 +211,9 @@
  {
   "id": "n15",
   "type": "protest",
-  "title": "MANIFESTACIÓN EN ZÓCALO",
+  "title": "MANIFESTACIÓN EN ZÓCALO (LÍNEA 2 AZUL)",
   "desc": "Protesta en el centro histórico. Zócalo inaccesible.",
-  "impact": "Estación ZÓCALO BLOQUEADA",
+  "impact": "Solo ZÓCALO está cerrada; el resto de la línea sigue",
   "severity": "danger",
   "icon": "bloqueo",
   "effects": {
@@ -227,7 +227,7 @@
   "type": "delay",
   "title": "RUTA 87 RETRASADA",
   "desc": "La Ruta 87 tiene 20 min de retraso.",
-  "impact": "⏱ +5 min en rutas de Línea 1",
+  "impact": "+5 min en rutas de Línea 1 (rosa)",
   "severity": "warning",
   "icon": "reloj",
   "effects": {
@@ -240,9 +240,9 @@
  {
   "id": "n17",
   "type": "delay",
-  "title": "FALLA EN LÍNEA 2",
-  "desc": "Falla eléctrica en la Línea 2. Servicio reducido.",
-  "impact": "⏱ +8 min en rutas de Línea 2",
+  "title": "FALLA EN LÍNEA 2 (AZUL)",
+  "desc": "Falla eléctrica en la Línea 2 (azul). Servicio reducido.",
+  "impact": "+8 min en rutas de Línea 2 (azul)",
   "severity": "warning",
   "icon": "reloj",
   "effects": {
@@ -255,9 +255,9 @@
  {
   "id": "n18",
   "type": "delay",
-  "title": "LÍNEA 5 CON DEMORA",
-  "desc": "Demora de 15 minutos en Línea 5 por mantenimiento.",
-  "impact": "⏱ +6 min en rutas de Línea 5",
+  "title": "LÍNEA 5 (AMARILLA) CON DEMORA",
+  "desc": "Demora de 15 minutos en Línea 5 (amarilla) por mantenimiento.",
+  "impact": "+6 min en rutas de Línea 5 (amarilla)",
   "severity": "warning",
   "icon": "reloj",
   "effects": {
@@ -270,9 +270,9 @@
  {
   "id": "n19",
   "type": "delay",
-  "title": "OBRAS EN LÍNEA B",
+  "title": "OBRAS EN LÍNEA B (GRIS)",
   "desc": "Obras en Tepito. Ruta lenta.",
-  "impact": "⏱ +6 min en rutas de Línea B",
+  "impact": "+6 min en rutas de Línea B (gris)",
   "severity": "warning",
   "icon": "reloj",
   "effects": {
@@ -287,7 +287,7 @@
   "type": "delay",
   "title": "LA COMBI DEL \"RAYO\" NO PASÓ",
   "desc": "La combi del \"Rayo\" no pasó. Como siempre.",
-  "impact": "⏱ +3 min en tu próximo viaje",
+  "impact": "+3 min en tu próximo viaje",
   "severity": "warning",
   "icon": "reloj",
   "effects": {
@@ -325,8 +325,8 @@
   "id": "n23",
   "type": "positive",
   "title": "METRO EXPRESS",
-  "desc": "Trenes express en Línea 3. Viaje más rápido.",
-  "impact": "-2 min en rutas de Línea 3",
+  "desc": "Trenes express en Línea 3 (verde). Viaje más rápido.",
+  "impact": "-2 min en rutas de Línea 3 (verde)",
   "severity": "success",
   "icon": "moneda",
   "effects": {
