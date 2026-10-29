@@ -247,3 +247,34 @@ test('combi: las rutas se dibujan en el mapa con su microbús y aparecen en la l
   const n = s.scene.objects.filter((o) => o.anim === 'combi').length;
   assert.equal(n, 9, 'un microbús por cada ruta de combi (8) más el de la leyenda');
 });
+
+test('menú: JUGAR dice a qué nivel entras, el selector solo deja rejugar los completados y el progreso se guarda', () => {
+  const store = {}; globalThis.localStorage = { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } };
+  try {
+    delete globalThis.gdjs.UrbanMex;
+    // 1) ganar un nivel guarda el progreso
+    let n = session('Nivel'); n.frame(2); const um = n.scene._um; um.modal = null; um.run.over = true; um.run.won = true; n.frame(2);
+    assert.deepEqual(n.U.session.completed, [0]); assert.deepEqual(JSON.parse(store['UrbanMex_save_v1']).completed, [0]);
+    // 2) "reiniciar el juego": el menú lee el guardado y JUGAR lleva al nivel 2
+    delete globalThis.gdjs.UrbanMex;
+    let m = session('Menu'); m.frame(5); const U = m.U;
+    assert.deepEqual(U.session.completed, [0]); assert.equal(U.Save.nextLevel(5), 1);
+    m.click(640, 400);                                                            // JUGAR
+    assert.equal(U.session.levelIndex, 1); assert.deepEqual(m.scene.changes.pop(), [3, 'Tutorial']);
+    U.session.seenTutorial = true;
+    // 3) selector con 2 niveles completados: solo esos se pueden rejugar (botones REJUGAR)
+    U.session.completed = [0, 1]; m = session('Menu'); m.frame(5);
+    m.click(640, 484);                                                            // SELECCIONAR NIVEL
+    assert.equal(m.scene._um.view, 'levels');
+    m.click(876, 300); m.click(1112, 300); m.click(640, 400);                     // niveles 4 y 5 (bloqueados) y el 3 (siguiente): no hacen nada
+    assert.equal(m.scene.changes.length, 0);
+    m.click(404, 476);                                                            // REJUGAR nivel 2
+    assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 1);
+    // 4) volver y el botón JUGAR sigue yendo al nivel 3
+    m.scene._um.view = 'levels'; m.frame(2); m.click(640, 598); assert.equal(m.scene._um.view, 'main');
+    m.click(640, 400); assert.equal(U.session.levelIndex, 2); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']);
+    // 5) borrar progreso pide confirmar (dos toques)
+    m.scene._um.view = 'levels'; m.frame(2); m.click(1105, 676); assert.deepEqual(U.session.completed, [0, 1]); m.click(1105, 676);
+    assert.deepEqual(U.session.completed, []); assert.deepEqual(JSON.parse(store['UrbanMex_save_v1']).completed, []);
+  } finally { delete globalThis.localStorage; }
+});

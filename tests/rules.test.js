@@ -137,3 +137,29 @@ test('combi: cuesta más dinero que el Metro, no la afectan las fallas de línea
   const t0 = run.minute, m0 = run.money; assert.ok(U.Rules.travel(run, 'Zócalo').ok);
   assert.equal(run.minute - t0, combi.cost); assert.equal(m0 - run.money, cfg.combi.money);
 });
+
+test('progreso guardado: JUGAR va al primer nivel sin completar y el guardado sobrevive a reiniciar', () => {
+  const store = {}; globalThis.localStorage = { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } };
+  try {
+    const S = U.session, total = 5;
+    S.completed = []; S.loaded = true; S.seenTutorial = false; S.dblTravel = true;
+    assert.equal(U.Save.nextLevel(total), 0);
+    U.Save.markCompleted(0); U.Save.markCompleted(1); U.Save.markCompleted(1);            // repetir no duplica
+    assert.deepEqual(JSON.parse(store[U.Save.KEY]).completed, [0, 1]);
+    assert.equal(U.Save.nextLevel(total), 2);
+    U.Save.markCompleted(3);                                                                // aunque haya uno posterior, JUGAR va al primero pendiente
+    assert.equal(U.Save.nextLevel(total), 2);
+    [2, 4].forEach((i) => U.Save.markCompleted(i)); assert.equal(U.Save.nextLevel(total), total - 1);   // todo completado: el último
+    // "reiniciar el juego": sesión nueva que lee el guardado
+    S.completed = []; S.loaded = false; S.dblTravel = true; S.seenTutorial = false;
+    S.completed = []; U.Save.load(); assert.deepEqual(S.completed.slice().sort(), [0, 1, 2, 3, 4]);
+    // ajustes que también se guardan
+    S.dblTravel = false; S.seenTutorial = true; U.Save.persist();
+    S.loaded = false; S.dblTravel = true; S.seenTutorial = false; S.completed = []; U.Save.load();
+    assert.equal(S.dblTravel, false); assert.equal(S.seenTutorial, true); assert.equal(S.completed.length, 5);
+    U.Save.reset(); assert.deepEqual(JSON.parse(store[U.Save.KEY]).completed, []);
+    // guardado corrupto o de otra versión: se ignora sin romper nada
+    store[U.Save.KEY] = '{no es json'; S.loaded = false; S.completed = [2]; U.Save.load(); assert.deepEqual(S.completed, [2]);
+    store[U.Save.KEY] = JSON.stringify({ v: 99, completed: [0, 1] }); S.loaded = false; S.completed = []; U.Save.load(); assert.deepEqual(S.completed, []);
+  } finally { delete globalThis.localStorage; U.session.completed = []; U.session.loaded = true; U.session.seenTutorial = false; U.session.dblTravel = true; }
+});
