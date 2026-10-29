@@ -23,7 +23,8 @@
       if (!stations[c[0]] || !stations[c[1]]) throw new Error('Conexión con estación inexistente: ' + c[0] + ' - ' + c[1]);
       var combi = c[3] === 'combi', isTransfer = !combi && c[2] >= cfg.transferTime;   // las rutas de combi no son transbordos aunque tarden 12 min
       if (isTransfer) { stations[c[0]].transfer = true; stations[c[1]].transfer = true; }
-      return { a: c[0], b: c[1], cost: c[2], transfer: isTransfer, combi: combi };
+      // combi con tarifa propia (viajes largos): [a, b, tiempo, 'combi', dinero, stamina]; si no, se usa config.combi
+      return { a: c[0], b: c[1], cost: c[2], transfer: isTransfer, combi: combi, fare: combi && c.length > 5 ? { money: c[4], stamina: c[5] } : null };
     });
     raw.levels.forEach(function (l) {
       [l.start, l.goal].concat(l.blocked).forEach(function (n) {

@@ -11,7 +11,7 @@
       var adj = {}, base = {}, combi = {};
       data.stationList.forEach(function (s) { adj[s.id] = []; });
       data.connections.forEach(function (c) {
-        adj[c.a].push(c.b); adj[c.b].push(c.a); base[key(c.a, c.b)] = c.cost; if (c.combi) combi[key(c.a, c.b)] = true;
+        adj[c.a].push(c.b); adj[c.b].push(c.a); base[key(c.a, c.b)] = c.cost; if (c.combi) combi[key(c.a, c.b)] = c.fare || {};
       });
       return { adj: adj, base: base, combi: combi };
     },
@@ -20,6 +20,8 @@
     baseCost: function (g, a, b) { return g.base[key(a, b)]; },
     /** ¿El tramo a-b es una ruta de combi (y no el Metro)? */
     isCombi: function (g, a, b) { return !!g.combi[key(a, b)]; },
+    /** Tarifa propia de una combi ({money, stamina}; vacío = la normal de config.combi). */
+    fare: function (g, a, b) { return g.combi[key(a, b)] || {}; },
     /** ¿Se puede llegar de `from` a `to` sin pasar por estaciones bloqueadas? */
     reachable: function (g, from, to, blocked) {
       if (blocked[to]) return false;

@@ -54,8 +54,9 @@ npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 
 ## Combis y doble clic
 
-- **Rutas de combi:** 8 conexiones extra (4.º valor `"combi"` en `conexiones.json`) unen estaciones algo separadas que el Metro no conecta directo: Colegio Militar–Guerrero, Balderas–Zócalo, Deportivo 18 de Marzo–Eduardo Molina, Buenavista–San Cosme, Isabel la Católica–Lagunilla, Merced–Moctezuma, San Lázaro LB–Terminal Aérea y Morelos–San Antonio Abad. En el mapa son líneas **naranjas punteadas** con un microbús; en el panel de viaje aparecen como `COMBI`.
+- **Rutas de combi:** 9 conexiones extra (4.º valor `"combi"` en `conexiones.json`) unen estaciones algo separadas que el Metro no conecta directo: Colegio Militar–Guerrero, Balderas–Zócalo, Deportivo 18 de Marzo–Eduardo Molina, Buenavista–San Cosme, Isabel la Católica–Lagunilla, Merced–Moctezuma, San Lázaro LB–Terminal Aérea, Morelos–San Antonio Abad y **Coyoacán (L3)–Pantitlán (L1)**. En el mapa son líneas **naranjas punteadas** con un microbús; en el panel de viaje aparecen como `COMBI`.
 - **Reglas:** cada tramo cuesta `config.combi` (hoy $10 y 5 de stamina, el Metro cuesta $5 y 5 por estación) y el tiempo indicado en la conexión. No les afectan las fallas de las líneas del Metro (sí los bloqueos de sus estaciones) y nunca cuentan como transbordo.
+- **Combi larga con tarifa propia:** Coyoacán–Pantitlán (≈12 casillas) cuesta 35 min, $40 y 55 de stamina (`[a, b, tiempo, "combi", dinero, stamina]` en `conexiones.json`); con la tarifa normal rompía el balance de los niveles 2 a 5.
 - **Balance:** se eligieron con un solucionador para que ningún día se vuelva trivial: los días 2 a 5 siguen exigiendo comprar Monster (`npm run balance`).
 - **Doble clic = viajar sin confirmar:** doble clic en una estación **vecina** (conectada a la que ocupa el jugador, por Metro, transbordo o combi) viaja ahí de inmediato, sin abrir el panel de confirmación. Con cualquier otra estación funciona como un clic normal (no viaja). Se activa y desactiva en **celular > AJUSTES > DOBLE CLIC VIAJAR** (por defecto, activado).
 
@@ -73,3 +74,8 @@ npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 - **Tiendas:** además de las 7 originales hay 3 nuevas (`Balderas`, `San Antonio Abad`, `Guerrero`), elegidas por estar en nodos centrales a mitad de camino de varias jornadas y lejos de otra tienda; así cada jornada tiene al menos 3 tiendas junto a su ruta más corta. Se definen en `tools/make_data.py` (`EXTRA_SHOPS`) y en `estaciones.json` (`"shop": true`).
 - Noticias, avisos y ventanas de inicio de día usan letra de 12 px (antes 8 px).
 - Probar sin GDevelop: `npm test` (incluye comprobar que ninguna estación queda fuera de pantalla ni bajo la interfaz).
+
+## Noticias y bloqueos
+
+- **Las noticias solo ocurren cuando el jugador se mueve:** nunca llegan con el reloj o mientras piensas. La primera (siempre de seguridad) llega tras el primer movimiento y después una cada 2 o 3 movimientos con 75 % de probabilidad (`config.news`: `firstAfterMoves`, `everyMoves`, `chance`; `News.onMove` en `src/news.js`). Una noticia nunca repite un bloqueo que ya existe en el nivel.
+- **Nivel 2 (martes):** empieza con **Juárez** (línea 3) y **Zócalo** (línea 2) bloqueadas.
