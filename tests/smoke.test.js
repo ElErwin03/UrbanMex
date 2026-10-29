@@ -214,31 +214,31 @@ test('celular: la app LINEAS dice el color de cada línea y la resalta en el map
   s.U.News.trigger(run, byId('n17')); assert.deepEqual(run.newsLog[0].lines, ['2']);                   // falla en Línea 2
 });
 
-test('doble clic: viaja solo hasta la estación (aunque esté lejos), se puede apagar en Ajustes y se cancela con un clic', () => {
+test('doble clic: solo viaja a las estaciones VECINAS de la actual, sin confirmar, y se puede apagar en Ajustes', () => {
   delete globalThis.gdjs.UrbanMex;
   const s = session('Nivel'); s.frame(2); const u = () => s.scene._um, U = s.U; u().modal = null; u().modalQueue = [];
   U.session.dblTravel = true;
   const at = (id) => { const w = u().map.stationPos(id), c = u().map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
-  const dismiss = () => { const b = u().modal.buttons, n = b.length, x0 = 320 + (640 - (n * 170 + (n - 1) * 20)) / 2; s.click(x0 + (n - 1) * 190 + 85, 210 + 300 - 62 + 20); s.frame(2); };
-  const run = u().run, route = U.Rules.planRoute(run, 'Pino Suárez');                  // varias estaciones más allá
-  assert.ok(route && route.length > 3, 'el destino debe estar lejos');
-  // un solo clic en una estación lejana solo avisa (no viaja)
-  s.click(...at('Pino Suárez')); assert.equal(u().auto, null); assert.equal(u().run.current, route[0]); s.frame(40);   // (pasa el tiempo: ya no cuenta como 2.º clic)
-  // doble clic: viaje automático hasta llegar
-  s.click(...at('Pino Suárez')); s.click(...at('Pino Suárez'));
-  assert.equal(u().auto, 'Pino Suárez');
-  for (let g = 800; g-- > 0 && u().run.current !== 'Pino Suárez' && !u().run.over;) { if (u().modal) dismiss(); else s.frame(2); }
-  s.frame(40);                                                                       // termina la animación del último tramo
-  assert.equal(u().run.current, 'Pino Suárez', 'debe llegar solo'); assert.equal(u().auto, null);
-  // apagar la opción en AJUSTES del celular
+  const run = u().run, start = run.current, neighbors = U.Graph.neighbors(run.graph, start).filter((n) => !run.blocked[n]);
+  const far = run.data.stationList.map((x) => x.id).find((id) => id !== start && !neighbors.includes(id) && !run.blocked[id] && !run.data.stations[id].shop);
+  assert.ok(neighbors.length >= 1 && far);
+  // un solo clic en una vecina: solo abre el panel de viaje
+  s.click(...at(neighbors[0])); assert.equal(u().selected, neighbors[0]); assert.equal(u().run.current, start); s.frame(40);
+  // doble clic en una estación LEJANA (no vecina): no viaja
+  s.click(...at(far)); s.click(...at(far)); s.frame(2);
+  assert.equal(u().run.current, start, 'una estación lejana no debe viajar con doble clic');
+  s.frame(40);
+  // doble clic en una vecina: viaja de inmediato, sin pasar por el panel de confirmación
+  u().selected = null; s.click(...at(neighbors[0])); s.click(...at(neighbors[0]));
+  assert.equal(u().run.current, neighbors[0], 'debe viajar a la estación vecina'); assert.equal(u().selected, null);
+  for (let g = 200; g-- > 0 && (u().pending || u().map.moving() || u().modal);) { if (u().modal) { const b = u().modal.buttons, n = b.length, x0 = 320 + (640 - (n * 170 + (n - 1) * 20)) / 2; s.click(x0 + (n - 1) * 190 + 85, 210 + 300 - 62 + 20); } s.frame(2); }
+  // apagar la opción en AJUSTES del celular: el doble clic vuelve a ser solo un clic (abre el panel)
   u().phone.app = 'config'; s.frame(2); s.click(1090, 98 + 42 + 128 + 15);
   assert.equal(U.session.dblTravel, false);
-  const target = U.Rules.planRoute(u().run, 'Balderas')[1] ? 'Balderas' : null;
-  s.click(...at(target)); s.click(...at(target));
-  assert.equal(u().auto, null, 'con la opción apagada el doble clic no viaja solo');
+  const here = u().run.current, next = U.Graph.neighbors(u().run.graph, here).find((n) => !u().run.blocked[n]);
+  s.frame(40); s.click(...at(next)); s.click(...at(next));
+  assert.equal(u().run.current, here, 'con la opción apagada el doble clic no viaja'); assert.equal(u().selected, next);
   U.session.dblTravel = true;
-  // un clic en el mapa cancela un viaje automático en curso
-  u().selected = null; u().auto = 'Balderas'; s.click(300, 300); assert.equal(u().auto, null);
 });
 
 test('combi: las rutas se dibujan en el mapa con su microbús y aparecen en la leyenda', () => {

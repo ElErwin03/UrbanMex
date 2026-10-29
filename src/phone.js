@@ -156,7 +156,7 @@
       });
       var dbl = U.session.dblTravel !== false;                                    // doble clic en una estación = viajar solo hasta ahí
       if (ui.button('ph:dbl', 'DOBLE CLIC VIAJAR: ' + (dbl ? 'SI' : 'NO'), x, y + 128, w, 30, { size: 8, fill: dbl ? '39;174;96' : '110;60;60' })) U.session.dblTravel = !dbl;
-      ui.lines('ph:dbh', util.wrap('Doble clic en una estacion: viaja hasta alli solo por la ruta mas barata. Un clic en el mapa lo cancela.', 31), x, y + 166, { size: 8, lineH: 12, color: PAL.dim });
+      ui.lines('ph:dbh', util.wrap('Doble clic en una estacion vecina (la siguiente a la tuya): viajas ahi sin confirmar.', 31), x, y + 166, { size: 8, lineH: 12, color: PAL.dim });
       if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 232, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;
     }
   };
