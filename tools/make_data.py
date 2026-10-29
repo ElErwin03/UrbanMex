@@ -21,7 +21,7 @@ config = {
   "staminaPerStation": 5, "moneyPerStation": 5,
   "monsterPrice": 30, "monsterPromoPrice": 20, "monsterStamina": 40,
   "robbery": {"baseChance": 0.55, "luck": 0.15, "minLoss": 20, "maxLoss": 59},
-  "news": {"firstDelaySec": 2, "intervalSec": [10, 18], "chance": 0.5},
+  "news": {"firstAfterMoves": 1, "everyMoves": [2, 3], "chance": 0.75},   # las noticias llegan SOLO cuando el jugador se mueve
   "combi": {"money": 10, "stamina": 5}      # tarifa y esfuerzo de UN tramo en combi (el Metro cuesta 5 y 5 por estación)
 }
 
@@ -44,14 +44,15 @@ json.dump({"lines": LINES, "stations": stations}, open(f"{out}/estaciones.json",
 COMBIS = [
   ["Colegio Militar", "Guerrero", 12], ["Balderas", "Zócalo", 8], ["Deportivo 18 de Marzo", "Eduardo Molina", 10],
   ["Buenavista", "San Cosme", 8], ["Isabel la Católica", "Lagunilla", 12], ["Merced", "Moctezuma", 12],
-  ["San Lázaro LB", "Terminal Aérea", 12], ["Morelos", "San Antonio Abad", 12]]
-json.dump(d["CONNECTIONS"] + [c + ["combi"] for c in COMBIS], open(f"{out}/conexiones.json", "w"), ensure_ascii=False)
+  ["San Lázaro LB", "Terminal Aérea", 12], ["Morelos", "San Antonio Abad", 12],
+  ["Coyoacán", "Pantitlán", 35, 40, 55]]   # pedida a mano: línea 3 (sur) → línea 1 (este). Viaje largo (≈12 casillas): [tiempo, $, stamina] propios; con la tarifa normal rompería el balance de los niveles 2 a 5
+json.dump(d["CONNECTIONS"] + [c[:3] + ["combi"] + c[3:] for c in COMBIS], open(f"{out}/conexiones.json", "w"), ensure_ascii=False)
 
 # ---- niveles (rebalanceados: ver tools/solver.py) ----------------------
 # Balance verificado con tools/solver.py: todos ganables, robustos a mala suerte y (N2-N5) exigen comprar Monster.
 LV = [
   {"blocked": [],                    "moneyStart": 150, "staminaMax": 100},   # Lunes: tutorial, se gana sin Monster
-  {"blocked": ["Juárez"],            "moneyStart": 210, "staminaMax": 110},   # Martes
+  {"blocked": ["Juárez", "Zócalo"],   "moneyStart": 210, "staminaMax": 110},   # Martes (Zócalo, línea 2, también bloqueada)
   {"blocked": ["Allende"],           "moneyStart": 210, "staminaMax": 100},   # Miércoles
   {"blocked": ["Tlatelolco"],        "moneyStart": 230, "staminaMax": 120},   # Jueves (antes: meta inalcanzable)
   {"blocked": ["Isabel la Católica", "Pino Suárez", "Pino Suárez L2", "Candelaria", "Candelaria LB", "Candelaria LB2"],

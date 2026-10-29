@@ -2,7 +2,7 @@
 // El simulado solo permite métodos del runtime de GDevelop verificados contra su código fuente, valida nombres de
 // objetos/animaciones/capas/recursos y rechaza NaN o colores mal formados. Juega una semana completa con un bot.
 const test = require('node:test'), assert = require('node:assert'), fs = require('fs'), path = require('path');
-const { ROOT, DATA } = require('./helpers');
+const { ROOT, DATA, cheapestStaminaPath } = require('./helpers');
 const project = JSON.parse(fs.readFileSync(path.join(ROOT, 'My project', 'UrbanMex.json'), 'utf8'));
 const resNames = {}; project.resources.resources.forEach((r) => { resNames[r.name] = r; });
 const fileOf = (n) => path.join(ROOT, 'My project', resNames[n].file);
@@ -114,12 +114,12 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
     while (guard-- > 0 && !s.scene.changes.length) {
       const u = um(), run = u.run;
       if (u.modal) { const b = u.modal.buttons, n = b.length, bw = 170, x0 = 320 + (640 - (n * bw + (n - 1) * 20)) / 2;
-        const buy = b.findIndex((x) => x.label === 'COMPRAR'), no = b.findIndex((x) => x.label === 'NO'), pick = buy < 0 ? 0 : run.stamina < 60 && run.money > 60 ? buy : no;   // solo compra Monster si lo necesita
+        const buy = b.findIndex((x) => x.label === 'COMPRAR'), no = b.findIndex((x) => x.label === 'NO'), need = (cheapestStaminaPath(U, run) || { need: 0 }).need, pick = buy < 0 ? 0 : run.stamina < need && run.money > 60 ? buy : no;   // solo compra Monster si le falta para lo que resta
         s.click(x0 + pick * (bw + 20) + 85, 210 + 300 - 62 + 20); s.frame(2); continue; }
       if (u.pending || u.map.moving() || run.over) { s.frame(1); continue; }
-      const path = U.Graph.shortestPath(run.graph, run.current, run.level.goal, run.blocked);
+      const bp = cheapestStaminaPath(U, run), path = bp && bp.path;
       if (!path) { s.frame(1); continue; }
-      const sh = run.data.stations[run.current].shop; if (sh && run.stamina < 60 && run.money > 60) { s.click(166, 666 + 18); s.frame(2); }
+      const sh = run.data.stations[run.current].shop; if (sh && run.stamina < bp.need && run.money > 60) { s.click(166, 666 + 18); s.frame(2); }
       const w = u.map.stationPos(path[1]), cam = u.map.cam;
       const sx = (w.x - cam.x) * cam.zoom + 640, sy = (w.y - cam.y) * cam.zoom + 360;
       if (sx < 80 || sx > 900 || sy < 70 || sy > 700) { u.map.fit(); s.frame(10); continue; }  // la persona pulsaría TODO para ver toda la red
@@ -179,8 +179,13 @@ test('celular: se oculta con X, reaparece con el icono de la esquina y las notic
   // 1) celular abierto: el aviso es una notificación DENTRO del celular (ninguna ventana flotante fuera de su marco)
   const rects = [], ui = u().ui, orig = ui.rect;
   ui.rect = function (x, y, w, h, o) { rects.push({ x, y, w, h, o: o || {} }); return orig.apply(this, arguments); };
-  u().run.newsTimer = 0; s.frame(2);
-  assert.ok(u().push, 'debe aparecer la notificación');
+  const U = s.U, at = (id) => { const w = u().map.stationPos(id), c = u().map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
+  const settle = () => { for (let g = 300; g-- > 0 && (u().pending || u().map.moving() || u().modal);) { if (u().modal) { const b = u().modal.buttons, n = b.length, x0 = 320 + (640 - (n * 170 + (n - 1) * 20)) / 2; s.click(x0 + (n - 1) * 190 + 85, 210 + 300 - 62 + 20); } s.frame(2); } };
+  const move = () => { const id = U.Graph.neighbors(u().run.graph, u().run.current).find((n) => !u().run.blocked[n] && !u().run.data.stations[n].shop); s.click(...at(id)); s.click(...at(id)); };
+  // 0) sin moverse no llega ninguna noticia aunque pase el tiempo
+  const n0 = u().run.newsCount; s.frame(600); assert.equal(u().run.newsCount, n0, 'las noticias solo ocurren al moverse'); assert.equal(u().push, null);
+  u().run.newsMoves = 1; move(); for (let g = 120; g-- > 0 && !u().push;) s.frame(2);   // al terminar el movimiento llega la noticia
+  assert.ok(u().push, 'debe aparecer la notificación'); s.frame(2);
   const ph = { x: 920, y: 64, w: 340, h: 560 }, floating = rects.filter((r) => r.o.modal);
   assert.ok(floating.length > 0, 'la notificación se dibuja');
   floating.forEach((r) => assert.ok(r.x >= ph.x && r.y >= ph.y && r.x + r.w <= ph.x + ph.w && r.y + r.h <= ph.y + ph.h, 'aviso fuera del celular: ' + JSON.stringify(r)));
@@ -188,8 +193,7 @@ test('celular: se oculta con X, reaparece con el icono de la esquina y las notic
   s.click(1239, 81);
   assert.equal(u().phone.open, false); assert.equal(u().push, null); assert.ok(u().map.view.x1 > 1200);
   // 3) con el celular oculto llegan noticias: no hay aviso flotante, se acumulan como "sin leer" y el icono lo señala
-  const before = u().run.unread; let guard = 60;
-  while (guard-- > 0 && u().run.unread === before) { u().run.newsTimer = 0; s.frame(1); }
+  settle(); const before = u().run.unread; u().run.data.config.news.chance = 1; u().run.newsMoves = 1; move(); settle(); s.frame(4);   // (chance 1: que no dependa del azar)
   assert.ok(u().run.unread > before, 'debe llegar una noticia'); assert.equal(u().push, null, 'con el celular oculto no hay aviso flotante');
   // 4) el icono de la esquina superior derecha lo vuelve a mostrar, directo a las noticias nuevas
   s.click(1248, 28);
@@ -245,7 +249,7 @@ test('combi: las rutas se dibujan en el mapa con su microbús y aparecen en la l
   delete globalThis.gdjs.UrbanMex;
   const s = session('Nivel'); s.frame(2);
   const n = s.scene.objects.filter((o) => o.anim === 'combi').length;
-  assert.equal(n, 9, 'un microbús por cada ruta de combi (8) más el de la leyenda');
+  assert.equal(n, 10, 'un microbús por cada ruta de combi (9) más el de la leyenda');
 });
 
 test('menú: JUGAR dice a qué nivel entras, el selector solo deja rejugar los completados y el progreso se guarda', () => {

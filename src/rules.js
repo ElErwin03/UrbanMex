@@ -15,7 +15,7 @@
         current: lv.start, stamina: lv.staminaMax, staminaMax: lv.staminaMax, money: lv.moneyStart,
         minute: cfg.dayStartMinute, steps: 0, robbed: 0, stolen: 0, visited: visited,
         blocked: setOf(lv.blocked), danger: {}, timeMods: {}, monsterPromo: false, freeRides: 0,
-        newsLog: [], newsUsed: {}, unread: 0, newsTimer: cfg.news.firstDelaySec, newsCount: 0,
+        newsLog: [], newsUsed: {}, unread: 0, newsMoves: cfg.news.firstAfterMoves, newsCount: 0,
         over: false, won: false, endReason: ''
       };
     },
@@ -36,9 +36,10 @@
       if (run.over) return { ok: false, reason: 'over' };
       if (!G.connected(run.graph, run.current, to)) return { ok: false, reason: 'no_connection' };
       if (run.blocked[to]) return { ok: false, reason: 'blocked' };
-      var combi = G.isCombi(run.graph, run.current, to), cc = cfg.combi;       // la combi cuesta más dinero que el Metro pero salta varias estaciones
-      var cost = { time: Rules.edgeCost(run, run.current, to), stamina: combi ? cc.stamina : cfg.staminaPerStation,
-                   money: run.freeRides > 0 ? 0 : (combi ? cc.money : cfg.moneyPerStation), combi: combi };
+      var combi = G.isCombi(run.graph, run.current, to), fare = combi ? G.fare(run.graph, run.current, to) : {}, cc = cfg.combi;   // la combi cuesta más dinero que el Metro pero salta varias estaciones
+      var fm = fare.money !== undefined ? fare.money : cc.money, fs = fare.stamina !== undefined ? fare.stamina : cc.stamina;
+      var cost = { time: Rules.edgeCost(run, run.current, to), stamina: combi ? fs : cfg.staminaPerStation,
+                   money: run.freeRides > 0 ? 0 : (combi ? fm : cfg.moneyPerStation), combi: combi };
       if (run.stamina < cost.stamina) return { ok: false, reason: 'stamina', cost: cost };
       if (run.money < cost.money) return { ok: false, reason: 'money', cost: cost };
       if (run.minute + cost.time > cfg.dayEndMinute) return { ok: false, reason: 'night', cost: cost };

@@ -12,6 +12,7 @@ adj = collections.defaultdict(list)
 csp, cmp = cfg['staminaPerStation'], cfg['moneyPerStation']; cc = cfg.get('combi', {'stamina': csp, 'money': cmp})
 for a, b, c, *rest in conns:   # 4.º valor 'combi': ruta de combi (otra tarifa y esfuerzo)
     sp_, mp_ = (cc['stamina'], cc['money']) if rest and rest[0] == 'combi' else (csp, cmp)
+    if rest and rest[0] == 'combi' and len(rest) > 2: mp_, sp_ = rest[1], rest[2]     # tarifa propia: [.., 'combi', dinero, stamina]
     adj[a].append((b, c, sp_, mp_)); adj[b].append((a, c, sp_, mp_))
 
 def solve(lv, d_stam=0, d_money=0, blocked=None, no_monster=False):

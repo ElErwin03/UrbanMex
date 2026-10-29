@@ -1,5 +1,5 @@
 const test = require('node:test'), assert = require('node:assert');
-const { loadModules, rawData } = require('./helpers');
+const { loadModules, rawData, cheapestStaminaPath } = require('./helpers');
 const U = loadModules(['core', 'data', 'graph', 'rules', 'news']);
 const data = U.Data.normalize(rawData());
 
@@ -9,10 +9,10 @@ function playBot(levelIndex, seed, withNews) {
   U.News.intro(run);
   let guard = 500;
   while (!run.over && guard--) {
-    if (withNews) { U.News.tick(run, 4); }
-    const path = U.Graph.shortestPath(run.graph, run.current, run.level.goal, run.blocked);
+    if (withNews) { U.News.onMove(run); }                       // las noticias llegan al moverse
+    const bp = cheapestStaminaPath(U, run), path = bp && bp.path;
     assert.ok(path, 'la meta debe seguir siendo alcanzable (nivel ' + (levelIndex + 1) + ', semilla ' + seed + ')');
-    const next = path[1], need = (path.length - 1) * data.config.staminaPerStation;
+    const next = path[1], need = bp.need;
     const shop = data.stations[run.current].shop;
     if (shop && run.stamina < need) while (U.Rules.buyMonster(run).ok && run.stamina < need) {}
     const out = U.Rules.travel(run, next);
@@ -25,7 +25,7 @@ function playBot(levelIndex, seed, withNews) {
 test('los datos se normalizan y son coherentes', () => {
   assert.equal(data.stationList.length, 83);
   assert.equal(data.connections.filter((c) => !c.combi).length, 89);                 // Metro
-  assert.equal(data.connections.filter((c) => c.combi).length, 8);                    // rutas de combi
+  assert.equal(data.connections.filter((c) => c.combi).length, 9);                    // rutas de combi
   data.connections.filter((c) => c.combi).forEach((c) => assert.ok(!c.transfer, 'una combi no es un transbordo: ' + c.a + ' - ' + c.b));
   const pos = {};
   data.stationList.forEach((s) => { const k = s.x + ',' + s.y; assert.ok(!pos[k], 'estaciones encimadas: ' + s.id + ' / ' + pos[k]); pos[k] = s.id; });
@@ -162,4 +162,38 @@ test('progreso guardado: JUGAR va al primer nivel sin completar y el guardado so
     store[U.Save.KEY] = '{no es json'; S.loaded = false; S.completed = [2]; U.Save.load(); assert.deepEqual(S.completed, [2]);
     store[U.Save.KEY] = JSON.stringify({ v: 99, completed: [0, 1] }); S.loaded = false; S.completed = []; U.Save.load(); assert.deepEqual(S.completed, []);
   } finally { delete globalThis.localStorage; U.session.completed = []; U.session.loaded = true; U.session.seenTutorial = false; U.session.dblTravel = true; }
+});
+
+test('nivel 2: Juárez y Zócalo (línea 2) empiezan bloqueadas y no se repite un bloqueo que ya existe', () => {
+  const run = U.Rules.createRun(data, 1, U.util.seeded(9));
+  assert.deepEqual(data.levels[1].blocked.slice().sort(), ['Juárez', 'Zócalo']);
+  assert.ok(run.blocked['Juárez'] && run.blocked['Zócalo']);
+  const ids = U.News.eligible(run).map((n) => n.id);
+  assert.ok(!ids.includes('n15'), 'la manifestación en el Zócalo ya no aporta nada si Zócalo está bloqueada');
+});
+
+test('combi Coyoacán → Pantitlán: viaje largo con tarifa propia (más cara) que no rompe el balance', () => {
+  const c = data.connections.find((x) => x.combi && x.a === 'Coyoacán' && x.b === 'Pantitlán');
+  assert.ok(c, 'falta la combi'); assert.equal(data.stations['Coyoacán'].line, '3'); assert.equal(data.stations['Pantitlán'].line, '1');
+  assert.deepEqual(c.fare, { money: 40, stamina: 55 }); assert.ok(!c.transfer);
+  const run = U.Rules.createRun(data, 2, U.util.seeded(4)); run.current = 'Coyoacán'; run.stamina = 100; run.money = 100;
+  const chk = U.Rules.canTravel(run, 'Pantitlán');
+  assert.ok(chk.ok); assert.equal(chk.cost.money, 40); assert.equal(chk.cost.stamina, 55); assert.equal(chk.cost.time, 35); assert.equal(chk.cost.combi, true);
+  // las otras combis siguen con la tarifa normal
+  run.current = 'Balderas'; const n = U.Rules.canTravel(run, 'Zócalo'); assert.equal(n.cost.money, data.config.combi.money); assert.equal(n.cost.stamina, data.config.combi.stamina);
+});
+
+test('noticias: solo llegan cuando el jugador se mueve (la primera tras el primer movimiento y es de seguridad)', () => {
+  assert.equal(typeof U.News.tick, 'undefined', 'ya no hay noticias por reloj');
+  const run = U.Rules.createRun(data, 0, U.util.seeded(5)); U.News.intro(run); const base = run.newsLog.length;
+  assert.equal(run.newsCount, 0);                                                           // sin moverse: nada, por mucho que pase el tiempo
+  const first = U.News.onMove(run); assert.ok(first); assert.equal(first.type, 'security'); assert.equal(run.newsCount, 1); assert.equal(run.newsLog.length, base + 1);
+  // con chance 1 las noticias salen cada 2 o 3 movimientos
+  const cfg = data.config.news, saved = cfg.chance; cfg.chance = 1;
+  try {
+    let gaps = [], last = 0;
+    for (let mv = 1; mv <= 14 && !run.over; mv++) if (U.News.onMove(run)) { gaps.push(mv - last); last = mv; }
+    assert.ok(gaps.length >= 4, 'debería haber varias noticias: ' + gaps);
+    gaps.slice(1).forEach((g) => assert.ok(g >= cfg.everyMoves[0] && g <= cfg.everyMoves[1], 'separación fuera de rango: ' + gaps));
+  } finally { cfg.chance = saved; }
 });

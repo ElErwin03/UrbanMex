@@ -46,7 +46,9 @@
 
     eligible: function (run, onlyType) {
       return run.data.news.filter(function (n) {
-        return !run.newsUsed[n.id] && (!onlyType || n.type === onlyType) && News.isSafe(run, n);
+        var blocks = (n.effects && n.effects.block) || [];
+        var redundant = blocks.length > 0 && blocks.every(function (b) { return run.blocked[b]; });   // no repetir un bloqueo que ya existe
+        return !run.newsUsed[n.id] && !redundant && (!onlyType || n.type === onlyType) && News.isSafe(run, n);
       });
     },
 
@@ -59,13 +61,14 @@
         'Abre la app de Noticias');
     },
 
-    /** Avanza el reloj de noticias `dt` segundos; devuelve la noticia lanzada o null. */
-    tick: function (run, dt) {
+    /** El jugador acaba de moverse: las noticias solo llegan así (nunca con el reloj parado). Devuelve la noticia lanzada o null.
+     *  config.news: firstAfterMoves (movimientos hasta la primera, siempre de seguridad), everyMoves [min, max] entre noticias y chance. */
+    onMove: function (run) {
       if (run.over) return null;
-      run.newsTimer -= dt;
-      if (run.newsTimer > 0) return null;
       var n = run.data.config.news, first = run.newsCount === 0;
-      run.newsTimer = util.range(run.rnd, n.intervalSec[0], n.intervalSec[1]);
+      run.newsMoves--;
+      if (run.newsMoves > 0) return null;
+      run.newsMoves = Math.floor(util.range(run.rnd, n.everyMoves[0], n.everyMoves[1] + 1));
       if (!first && run.rnd() >= n.chance) return null;
       var pool = News.eligible(run, first ? 'security' : null);
       if (!pool.length) return null;

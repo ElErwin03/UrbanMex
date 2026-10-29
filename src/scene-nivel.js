@@ -46,6 +46,8 @@
 
   function resolve(um) {
     var out = um.pending, run = um.run; um.pending = null;
+    var item = N.onMove(run);                                   // las noticias solo ocurren cuando el jugador se mueve
+    if (item) { um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; }
     if (out.type === 'shop') shopModal(um);
     else if (out.type === 'robbery') {
       N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');
@@ -217,7 +219,6 @@
 
     if (um.pending && !um.map.moving()) resolve(um);
     if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
-    if (!busy) { var item = N.tick(run, dt); if (item) { um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; } }
 
     um.map.update(dt, run, ui, um.hover, um.selected);
     ui.end();

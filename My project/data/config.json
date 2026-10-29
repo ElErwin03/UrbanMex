@@ -17,12 +17,12 @@
   "maxLoss": 59
  },
  "news": {
-  "firstDelaySec": 2,
-  "intervalSec": [
-   10,
-   18
+  "firstAfterMoves": 1,
+  "everyMoves": [
+   2,
+   3
   ],
-  "chance": 0.5
+  "chance": 0.75
  },
  "combi": {
   "money": 10,
