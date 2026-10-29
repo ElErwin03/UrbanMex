@@ -137,15 +137,3 @@ test('combi: cuesta más dinero que el Metro, no la afectan las fallas de línea
   const t0 = run.minute, m0 = run.money; assert.ok(U.Rules.travel(run, 'Zócalo').ok);
   assert.equal(run.minute - t0, combi.cost); assert.equal(m0 - run.money, cfg.combi.money);
 });
-
-test('ruta automática: usa la combi si conviene, evita bloqueos y zonas peligrosas', () => {
-  const run = U.Rules.createRun(data, 0, U.util.seeded(3));
-  run.current = 'Balderas';
-  assert.deepEqual(U.Rules.planRoute(run, 'Zócalo'), ['Balderas', 'Zócalo']);        // 8 min en combi contra ~25 en Metro
-  const far = U.Rules.planRoute(run, 'Pantitlán'); assert.equal(far[0], 'Balderas'); assert.equal(far[far.length - 1], 'Pantitlán');
-  for (let i = 1; i < far.length; i++) assert.ok(U.Graph.connected(run.graph, far[i - 1], far[i]), 'tramo inexistente ' + far[i - 1] + ' → ' + far[i]);
-  assert.equal(U.Rules.planRoute(run, 'Balderas').length, 1);                          // ya estás ahí
-  const mid = far[Math.floor(far.length / 2)]; run.blocked[mid] = true;
-  const detour = U.Rules.planRoute(run, 'Pantitlán'); assert.ok(!detour || !detour.includes(mid), 'no debe pasar por una estación bloqueada');
-  assert.equal(U.Rules.planRoute(run, mid), null);                                     // la meta bloqueada no tiene ruta
-});

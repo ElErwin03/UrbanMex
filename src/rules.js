@@ -45,28 +45,6 @@
       return { ok: true, cost: cost };
     },
 
-    /** Ruta más barata (minutos + castigo por zonas peligrosas) de la estación actual a `to`, sin pasar por bloqueadas.
-     *  → [ids] (empieza en la estación actual) o null. La usa el viaje automático (doble clic). */
-    planRoute: function (run, to) {
-      if (run.blocked[to] || run.current === to) return run.current === to ? [to] : null;
-      var g = run.graph, dist = {}, prev = {}, done = {}, ids = run.data.stationList.map(function (s) { return s.id; });
-      dist[run.current] = 0;
-      for (;;) {
-        var u = null;
-        ids.forEach(function (id) { if (!done[id] && dist[id] !== undefined && (u === null || dist[id] < dist[u])) u = id; });
-        if (u === null) return null;
-        if (u === to) break;
-        done[u] = true;
-        G.neighbors(g, u).forEach(function (v) {
-          if (run.blocked[v] || done[v]) return;
-          var w = dist[u] + Rules.edgeCost(run, u, v) + (run.danger[v] ? 25 : 0);
-          if (dist[v] === undefined || w < dist[v]) { dist[v] = w; prev[v] = u; }
-        });
-      }
-      var p = [to]; while (prev[p[0]] !== undefined) p.unshift(prev[p[0]]);
-      return p;
-    },
-
     /** Viaja a `to`. → { ok, type: 'goal'|'shop'|'robbery'|'lucky'|'arrive', cost, stolen? } */
     travel: function (run, to) {
       var chk = Rules.canTravel(run, to);

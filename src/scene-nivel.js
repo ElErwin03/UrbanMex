@@ -19,7 +19,7 @@
 
   function init(scene, data) {
     var um = scene._um = { data: data, run: R.createRun(data, U.session.levelIndex), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
-      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, auto: null, lastClick: null, endTimer: 0, exitToMenu: false,
+      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false,
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
     um.map = new U.MapView(scene, data);
@@ -47,7 +47,6 @@
     var out = um.pending, run = um.run; um.pending = null;
     if (out.type === 'shop') shopModal(um);
     else if (out.type === 'robbery') {
-      um.auto = null;                                           // te asaltaron: decide tú qué hacer ahora
       N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');
       modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', '', '"Debiste haber leido las noticias..."'],
                   buttons: [{ label: 'SEGUIR', kind: 'danger' }] });
@@ -75,31 +74,17 @@
     if (!id) { um.selected = null; return; }
     if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }
     if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); return; }
-    if (!U.Graph.connected(run.graph, run.current, id)) {
-      if (U.session.dblTravel && R.planRoute(run, id)) float(um, 'Doble clic: ir ahi solo', PAL.yellow); else float(um, 'No conectada', PAL.red);
-      return;
-    }
+    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, 'No conectada', PAL.red); return; }
     select(um, id);
   }
 
-  /** Doble clic: viaja solo hasta la estación (aunque esté lejos) por la ruta más barata, avanzando tramo a tramo. */
+  /** Doble clic en una estación VECINA (conectada a la actual): viaja ahí sin pedir confirmación. Con cualquier otra, actúa como un clic normal. */
   function doubleClick(um, id) {
     var run = um.run;
-    if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }
-    if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); return; }
-    if (!R.planRoute(run, id)) { float(um, 'No hay ruta', PAL.red); return; }
-    um.selected = null; um.auto = id; float(um, 'VIAJE AUTOMATICO', PAL.yellow);
-  }
-  function autoStep(um) {
-    var run = um.run, route = R.planRoute(run, um.auto);
-    if (run.current === um.auto) { um.auto = null; return; }
-    if (!route || route.length < 2) { um.auto = null; float(um, 'Ruta no disponible', PAL.red); return; }   // p. ej. una noticia bloqueó el camino
-    var chk = R.canTravel(run, route[1]);
-    if (!chk.ok) { um.auto = null; float(um, REASON[chk.reason] || 'NO SE PUEDE', PAL.red); return; }
-    travel(um, route[1]);
+    if (id === run.current || run.blocked[id] || !U.Graph.connected(run.graph, run.current, id)) { clickMap(um, id); return; }
+    travel(um, id);
   }
 
-  // ---------------------------------------------------------------- interfaz
   function drawHUD(ui, um) {
     var run = um.run, cfg = run.data.config;
     ui.rect(0, 0, 1280, 56, { fill: '12;10;24', border: PAL.orange, bw: 2, block: true });
@@ -209,7 +194,6 @@
     if (!um.modal) drawStationPanel(ui, um);
     U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt); drawModal(ui, um);
 
-    if (um.auto && ui.pressed && !ui.consumed) { um.auto = null; float(um, 'Viaje cancelado', PAL.dim); }   // un clic en el mapa detiene el viaje automático
     var busy = !!um.modal || um.map.moving() || !!um.pending || run.over, d = um.drag;
     if (!busy) {
       if (ui.pressed && !ui.consumed) { d.active = true; d.moved = false; d.sx = d.lx = ui.px; d.sy = d.ly = ui.py; }
@@ -231,8 +215,6 @@
     } else { d.active = false; um.hover = null; }
 
     if (um.pending && !um.map.moving()) resolve(um);
-    if (um.auto && run.current === um.auto && !um.pending) um.auto = null;                  // llegaste: termina el viaje automático
-    if (um.auto && !um.modal && !um.pending && !um.map.moving() && !run.over) autoStep(um);
     if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
     if (!busy) { var item = N.tick(run, dt); if (item) { um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; } }
 
