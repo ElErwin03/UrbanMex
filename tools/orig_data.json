@@ -1,0 +1,1383 @@
+{
+ "STATIONS": {
+  "Observatorio": {
+   "x": 1,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false
+  },
+  "Juanacatlán": {
+   "x": 3,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false
+  },
+  "Chapultepec": {
+   "x": 5,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": true
+  },
+  "Sevilla": {
+   "x": 7,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false
+  },
+  "Insurgentes": {
+   "x": 9,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false
+  },
+  "Cuauhtémoc": {
+   "x": 11,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false
+  },
+  "Balderas": {
+   "x": 13,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false,
+   "transfer": true
+  },
+  "Salto del Agua": {
+   "x": 15,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false,
+   "transfer": true
+  },
+  "Isabel la Católica": {
+   "x": 17,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false
+  },
+  "Pino Suárez": {
+   "x": 19,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false,
+   "transfer": true
+  },
+  "San Antonio Abad": {
+   "x": 21,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false
+  },
+  "Candelaria": {
+   "x": 23,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false,
+   "transfer": true
+  },
+  "San Lázaro": {
+   "x": 25,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false,
+   "transfer": true
+  },
+  "Moctezuma": {
+   "x": 27,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": false
+  },
+  "Pantitlán": {
+   "x": 29,
+   "y": 10,
+   "line": 1,
+   "color": "#E91E63",
+   "shop": true,
+   "transfer": true
+  },
+  "Cuatro Caminos": {
+   "x": 10,
+   "y": 1,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Panteones": {
+   "x": 10,
+   "y": 2,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Tacuba": {
+   "x": 10,
+   "y": 3,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false,
+   "transfer": true
+  },
+  "Cuitláhuac": {
+   "x": 10,
+   "y": 4,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Popotla": {
+   "x": 10,
+   "y": 5,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Colegio Militar": {
+   "x": 10,
+   "y": 6,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Normal": {
+   "x": 10,
+   "y": 7,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "San Cosme": {
+   "x": 10,
+   "y": 8,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": true
+  },
+  "Revolución": {
+   "x": 10,
+   "y": 9,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Hidalgo": {
+   "x": 10,
+   "y": 10,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false,
+   "transfer": true
+  },
+  "Bellas Artes": {
+   "x": 11,
+   "y": 11,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false,
+   "transfer": true
+  },
+  "Allende": {
+   "x": 12,
+   "y": 12,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Zócalo": {
+   "x": 13,
+   "y": 13,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Pino Suárez L2": {
+   "x": 14,
+   "y": 14,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "San Antonio Abad L2": {
+   "x": 15,
+   "y": 15,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Chabacano": {
+   "x": 16,
+   "y": 16,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false,
+   "transfer": true
+  },
+  "Viaducto": {
+   "x": 17,
+   "y": 17,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Xola": {
+   "x": 18,
+   "y": 18,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Villa de Cortés": {
+   "x": 19,
+   "y": 19,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Nativitas": {
+   "x": 20,
+   "y": 20,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Portales": {
+   "x": 21,
+   "y": 21,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false
+  },
+  "Ermita": {
+   "x": 22,
+   "y": 22,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": false,
+   "transfer": true
+  },
+  "Tasqueña": {
+   "x": 23,
+   "y": 23,
+   "line": 2,
+   "color": "#2196F3",
+   "shop": true
+  },
+  "Indios Verdes": {
+   "x": 15,
+   "y": 1,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Deportivo 18 de Marzo": {
+   "x": 15,
+   "y": 2,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false,
+   "transfer": true
+  },
+  "Potrero": {
+   "x": 15,
+   "y": 3,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "La Raza": {
+   "x": 15,
+   "y": 4,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false,
+   "transfer": true
+  },
+  "Tlatelolco": {
+   "x": 15,
+   "y": 5,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Guerrero": {
+   "x": 15,
+   "y": 6,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false,
+   "transfer": true
+  },
+  "Hidalgo L3": {
+   "x": 15,
+   "y": 7,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Juárez": {
+   "x": 15,
+   "y": 8,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Balderas L3": {
+   "x": 15,
+   "y": 9,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Niños Héroes": {
+   "x": 15,
+   "y": 11,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Hospital General": {
+   "x": 15,
+   "y": 12,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Centro Médico": {
+   "x": 15,
+   "y": 13,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": true
+  },
+  "Etiopía": {
+   "x": 16,
+   "y": 14,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Eugenia": {
+   "x": 17,
+   "y": 15,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "División del Norte": {
+   "x": 18,
+   "y": 16,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Zapata": {
+   "x": 19,
+   "y": 17,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false,
+   "transfer": true
+  },
+  "Coyoacán": {
+   "x": 20,
+   "y": 18,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Viveros": {
+   "x": 21,
+   "y": 19,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Miguel Ángel de Quevedo": {
+   "x": 22,
+   "y": 20,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Copilco": {
+   "x": 23,
+   "y": 21,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": false
+  },
+  "Universidad": {
+   "x": 24,
+   "y": 22,
+   "line": 3,
+   "color": "#8BC34A",
+   "shop": true
+  },
+  "Politécnico": {
+   "x": 5,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "Instituto del Petróleo": {
+   "x": 7,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false,
+   "transfer": true
+  },
+  "Autobuses del Norte": {
+   "x": 9,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "La Raza L5": {
+   "x": 11,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "Misterios": {
+   "x": 13,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "Valle Gómez": {
+   "x": 15,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "Consulado": {
+   "x": 17,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false,
+   "transfer": true
+  },
+  "Eduardo Molina": {
+   "x": 19,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "Aragón": {
+   "x": 21,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "Oceanía": {
+   "x": 23,
+   "y": 3,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false,
+   "transfer": true
+  },
+  "Terminal Aérea": {
+   "x": 25,
+   "y": 4,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "Hangares": {
+   "x": 27,
+   "y": 5,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": false
+  },
+  "Pantitlán L5": {
+   "x": 29,
+   "y": 6,
+   "line": 5,
+   "color": "#FFEB3B",
+   "shop": true
+  },
+  "Buenavista": {
+   "x": 8,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  },
+  "Guerrero LB": {
+   "x": 10,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  },
+  "Garibaldi": {
+   "x": 12,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false,
+   "transfer": true
+  },
+  "Lagunilla": {
+   "x": 14,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  },
+  "Tepito": {
+   "x": 16,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  },
+  "Morelos": {
+   "x": 18,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false,
+   "transfer": true
+  },
+  "San Lázaro LB": {
+   "x": 20,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  },
+  "Candelaria LB": {
+   "x": 22,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  },
+  "Merced": {
+   "x": 24,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  },
+  "Candelaria LB2": {
+   "x": 26,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  },
+  "San Lázaro LB2": {
+   "x": 28,
+   "y": 6,
+   "line": "B",
+   "color": "#9E9E9E",
+   "shop": false
+  }
+ },
+ "CONNECTIONS": [
+  [
+   "Observatorio",
+   "Juanacatlán",
+   5
+  ],
+  [
+   "Juanacatlán",
+   "Chapultepec",
+   5
+  ],
+  [
+   "Chapultepec",
+   "Sevilla",
+   5
+  ],
+  [
+   "Sevilla",
+   "Insurgentes",
+   5
+  ],
+  [
+   "Insurgentes",
+   "Cuauhtémoc",
+   5
+  ],
+  [
+   "Cuauhtémoc",
+   "Balderas",
+   5
+  ],
+  [
+   "Balderas",
+   "Salto del Agua",
+   5
+  ],
+  [
+   "Salto del Agua",
+   "Isabel la Católica",
+   5
+  ],
+  [
+   "Isabel la Católica",
+   "Pino Suárez",
+   5
+  ],
+  [
+   "Pino Suárez",
+   "San Antonio Abad",
+   5
+  ],
+  [
+   "San Antonio Abad",
+   "Candelaria",
+   5
+  ],
+  [
+   "Candelaria",
+   "San Lázaro",
+   5
+  ],
+  [
+   "San Lázaro",
+   "Moctezuma",
+   5
+  ],
+  [
+   "Moctezuma",
+   "Pantitlán",
+   5
+  ],
+  [
+   "Cuatro Caminos",
+   "Panteones",
+   5
+  ],
+  [
+   "Panteones",
+   "Tacuba",
+   5
+  ],
+  [
+   "Tacuba",
+   "Cuitláhuac",
+   5
+  ],
+  [
+   "Cuitláhuac",
+   "Popotla",
+   5
+  ],
+  [
+   "Popotla",
+   "Colegio Militar",
+   5
+  ],
+  [
+   "Colegio Militar",
+   "Normal",
+   5
+  ],
+  [
+   "Normal",
+   "San Cosme",
+   5
+  ],
+  [
+   "San Cosme",
+   "Revolución",
+   5
+  ],
+  [
+   "Revolución",
+   "Hidalgo",
+   5
+  ],
+  [
+   "Hidalgo",
+   "Bellas Artes",
+   5
+  ],
+  [
+   "Bellas Artes",
+   "Allende",
+   5
+  ],
+  [
+   "Allende",
+   "Zócalo",
+   5
+  ],
+  [
+   "Zócalo",
+   "Pino Suárez L2",
+   5
+  ],
+  [
+   "Pino Suárez L2",
+   "San Antonio Abad L2",
+   5
+  ],
+  [
+   "San Antonio Abad L2",
+   "Chabacano",
+   5
+  ],
+  [
+   "Chabacano",
+   "Viaducto",
+   5
+  ],
+  [
+   "Viaducto",
+   "Xola",
+   5
+  ],
+  [
+   "Xola",
+   "Villa de Cortés",
+   5
+  ],
+  [
+   "Villa de Cortés",
+   "Nativitas",
+   5
+  ],
+  [
+   "Nativitas",
+   "Portales",
+   5
+  ],
+  [
+   "Portales",
+   "Ermita",
+   5
+  ],
+  [
+   "Ermita",
+   "Tasqueña",
+   5
+  ],
+  [
+   "Indios Verdes",
+   "Deportivo 18 de Marzo",
+   5
+  ],
+  [
+   "Deportivo 18 de Marzo",
+   "Potrero",
+   5
+  ],
+  [
+   "Potrero",
+   "La Raza",
+   5
+  ],
+  [
+   "La Raza",
+   "Tlatelolco",
+   5
+  ],
+  [
+   "Tlatelolco",
+   "Guerrero",
+   5
+  ],
+  [
+   "Guerrero",
+   "Hidalgo L3",
+   5
+  ],
+  [
+   "Hidalgo L3",
+   "Juárez",
+   5
+  ],
+  [
+   "Juárez",
+   "Balderas L3",
+   5
+  ],
+  [
+   "Balderas L3",
+   "Niños Héroes",
+   5
+  ],
+  [
+   "Niños Héroes",
+   "Hospital General",
+   5
+  ],
+  [
+   "Hospital General",
+   "Centro Médico",
+   5
+  ],
+  [
+   "Centro Médico",
+   "Etiopía",
+   5
+  ],
+  [
+   "Etiopía",
+   "Eugenia",
+   5
+  ],
+  [
+   "Eugenia",
+   "División del Norte",
+   5
+  ],
+  [
+   "División del Norte",
+   "Zapata",
+   5
+  ],
+  [
+   "Zapata",
+   "Coyoacán",
+   5
+  ],
+  [
+   "Coyoacán",
+   "Viveros",
+   5
+  ],
+  [
+   "Viveros",
+   "Miguel Ángel de Quevedo",
+   5
+  ],
+  [
+   "Miguel Ángel de Quevedo",
+   "Copilco",
+   5
+  ],
+  [
+   "Copilco",
+   "Universidad",
+   5
+  ],
+  [
+   "Politécnico",
+   "Instituto del Petróleo",
+   5
+  ],
+  [
+   "Instituto del Petróleo",
+   "Autobuses del Norte",
+   5
+  ],
+  [
+   "Autobuses del Norte",
+   "La Raza L5",
+   5
+  ],
+  [
+   "La Raza L5",
+   "Misterios",
+   5
+  ],
+  [
+   "Misterios",
+   "Valle Gómez",
+   5
+  ],
+  [
+   "Valle Gómez",
+   "Consulado",
+   5
+  ],
+  [
+   "Consulado",
+   "Eduardo Molina",
+   5
+  ],
+  [
+   "Eduardo Molina",
+   "Aragón",
+   5
+  ],
+  [
+   "Aragón",
+   "Oceanía",
+   5
+  ],
+  [
+   "Oceanía",
+   "Terminal Aérea",
+   5
+  ],
+  [
+   "Terminal Aérea",
+   "Hangares",
+   5
+  ],
+  [
+   "Hangares",
+   "Pantitlán L5",
+   5
+  ],
+  [
+   "Buenavista",
+   "Guerrero LB",
+   5
+  ],
+  [
+   "Guerrero LB",
+   "Garibaldi",
+   5
+  ],
+  [
+   "Garibaldi",
+   "Lagunilla",
+   5
+  ],
+  [
+   "Lagunilla",
+   "Tepito",
+   5
+  ],
+  [
+   "Tepito",
+   "Morelos",
+   5
+  ],
+  [
+   "Morelos",
+   "San Lázaro LB",
+   5
+  ],
+  [
+   "San Lázaro LB",
+   "Candelaria LB",
+   5
+  ],
+  [
+   "Candelaria LB",
+   "Merced",
+   5
+  ],
+  [
+   "Merced",
+   "Candelaria LB2",
+   5
+  ],
+  [
+   "Candelaria LB2",
+   "San Lázaro LB2",
+   5
+  ],
+  [
+   "Balderas",
+   "Balderas L3",
+   12
+  ],
+  [
+   "Hidalgo",
+   "Hidalgo L3",
+   12
+  ],
+  [
+   "Pino Suárez",
+   "Pino Suárez L2",
+   12
+  ],
+  [
+   "San Antonio Abad",
+   "San Antonio Abad L2",
+   12
+  ],
+  [
+   "Candelaria",
+   "Candelaria LB",
+   12
+  ],
+  [
+   "Candelaria",
+   "Candelaria LB2",
+   12
+  ],
+  [
+   "San Lázaro",
+   "San Lázaro LB",
+   12
+  ],
+  [
+   "San Lázaro",
+   "San Lázaro LB2",
+   12
+  ],
+  [
+   "Pantitlán",
+   "Pantitlán L5",
+   12
+  ],
+  [
+   "La Raza",
+   "La Raza L5",
+   12
+  ],
+  [
+   "Guerrero",
+   "Guerrero LB",
+   12
+  ]
+ ],
+ "LEVELS": [
+  {
+   "day": "LUNES",
+   "start": "Tacuba",
+   "goal": "Pantitlán",
+   "startDesc": "🏠 Tu casa en Tacuba. Llega a la escuela en Pantitlán.",
+   "goalDesc": "🎉 ¡Llegaste a la escuela!",
+   "moneyStart": 150,
+   "staminaMax": 100,
+   "blocked": []
+  },
+  {
+   "day": "MARTES",
+   "start": "Indios Verdes",
+   "goal": "Universidad",
+   "startDesc": "🏠 Tu casa en Indios Verdes. Llega a la UNAM.",
+   "goalDesc": " ¡Llegaste a la UNAM!",
+   "moneyStart": 180,
+   "staminaMax": 110,
+   "blocked": [
+    "Tlatelolco"
+   ]
+  },
+  {
+   "day": "MIÉRCOLES",
+   "start": "Cuatro Caminos",
+   "goal": "Tasqueña",
+   "startDesc": "🏠 Tu casa en Cuatro Caminos. Llega al trabajo en Tasqueña.",
+   "goalDesc": "💼 ¡Llegaste al trabajo!",
+   "moneyStart": 200,
+   "staminaMax": 120,
+   "blocked": [
+    "Guerrero",
+    "Guerrero LB"
+   ]
+  },
+  {
+   "day": "JUEVES",
+   "start": "Politécnico",
+   "goal": "Zapata",
+   "startDesc": "🏠 Tu casa en el Politécnico. Llega a una junta en Zapata.",
+   "goalDesc": "💼 ¡Llegaste a la junta!",
+   "moneyStart": 220,
+   "staminaMax": 100,
+   "blocked": [
+    "La Raza",
+    "La Raza L5",
+    "Autobuses del Norte"
+   ]
+  },
+  {
+   "day": "VIERNES",
+   "start": "Observatorio",
+   "goal": "Pantitlán",
+   "startDesc": " Tu casa en Observatorio. Llega a una fiesta en Pantitlán.",
+   "goalDesc": " ¡Llegaste a la fiesta!",
+   "moneyStart": 250,
+   "staminaMax": 90,
+   "blocked": [
+    "Isabel la Católica",
+    "Pino Suárez",
+    "Pino Suárez L2",
+    "Candelaria",
+    "Candelaria LB",
+    "Candelaria LB2"
+   ]
+  }
+ ],
+ "NEWS": [
+  {
+   "type": "security",
+   "title": "🚨 ROBOS EN TEPITO",
+   "desc": "Esta mañana en la estación Tepito se presenciaron demasiados robos.",
+   "impact": "⚠️ EVITA TEPITO - Alto riesgo de asalto",
+   "dangerStations": [
+    "Tepito"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": "🚨 ASALTOS EN LÍNEA 1",
+   "desc": "Reportan asaltos frecuentes entre Candelaria y San Lázaro.",
+   "impact": "⚠️ Candelaria y San Lázaro peligrosas",
+   "dangerStations": [
+    "Candelaria",
+    "San Lázaro",
+    "Candelaria LB",
+    "Candelaria LB2",
+    "San Lázaro LB",
+    "San Lázaro LB2"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": " ZONA CALIENTE EN MORELOS",
+   "desc": "La estación Morelos reportó 3 asaltos en la última hora.",
+   "impact": "⚠️ Morelos es peligrosa ahora",
+   "dangerStations": [
+    "Morelos"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": "⚠️ PELIGRO EN LÍNEA B",
+   "desc": "Usuarios reportan que Lagunilla y Garibaldi son zonas de alto riesgo.",
+   "impact": "⚠️ Lagunilla y Garibaldi peligrosas",
+   "dangerStations": [
+    "Lagunilla",
+    "Garibaldi",
+    "Guerrero LB"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": " CUIDADO EN Isabel la Católica",
+   "desc": "Un pasajero fue asaltado al salir de la estación.",
+   "impact": "⚠️ Isabel la Católica es riesgosa",
+   "dangerStations": [
+    "Isabel la Católica"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": " MOCTEZUMA: ZONA DE CUIDADO",
+   "desc": "Vecinos reportan presencia de personas sospechosas.",
+   "impact": "⚠️ Moctezuma con actividad delictiva",
+   "dangerStations": [
+    "Moctezuma"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": "🚨 ASALTOS EN LÍNEA 5",
+   "desc": "La Línea 5 reporta robos en Valle Gómez y Consulado.",
+   "impact": "⚠️ Valle Gómez y Consulado peligrosas",
+   "dangerStations": [
+    "Valle Gómez",
+    "Consulado",
+    "Eduardo Molina",
+    "Aragón"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": "🚨 Tlatelolco: Robo a mano armada",
+   "desc": "Esta madrugada asaltaron a un trabajador en Tlatelolco.",
+   "impact": "⚠️ Tlatelolco es peligrosa",
+   "dangerStations": [
+    "Tlatelolco"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": "🚨 ALERTA EN LÍNEA 3 NORTE",
+   "desc": "Indios Verdes y La Raza reportan aumento de robos.",
+   "impact": "⚠️ Indios Verdes y La Raza con riesgo",
+   "dangerStations": [
+    "Indios Verdes",
+    "La Raza",
+    "La Raza L5"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "security",
+   "title": "⚠️ Pino Suárez: Zona de cuidado",
+   "desc": "Varios reportes de carteristas en Pino Suárez.",
+   "impact": "⚠️ Pino Suárez con carteristas",
+   "dangerStations": [
+    "Pino Suárez",
+    "Pino Suárez L2"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "protest",
+   "title": " PROTESTA EN INSURGENTES",
+   "desc": "Manifestantes bloquean la estación Insurgentes.",
+   "impact": "🚧 Estación INSURGENTES BLOQUEADA",
+   "blockStations": [
+    "Insurgentes"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "protest",
+   "title": "📢 BLOQUEO EN LÍNEA 3",
+   "desc": "Estudiantes bloquean Juárez. No hay servicio.",
+   "impact": "🚧 Estación JUÁREZ BLOQUEADA",
+   "blockStations": [
+    "Juárez"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "protest",
+   "title": "📢 MARCHA EN REFORMA",
+   "desc": "Marcha masiva afecta Bellas Artes.",
+   "impact": "🚧 Estación BELLAS ARTES BLOQUEADA",
+   "blockStations": [
+    "Bellas Artes"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "protest",
+   "title": "📢 PARO EN LÍNEA B",
+   "desc": "Trabajadores del Metro realizan paro en Garibaldi.",
+   "impact": "🚧 Estación GARIBALDI BLOQUEADA",
+   "blockStations": [
+    "Garibaldi"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "protest",
+   "title": " MANIFESTACIÓN EN ZÓCALO",
+   "desc": "Protesta en el centro histórico. Zócalo inaccesible.",
+   "impact": "🚧 Estación ZÓCALO BLOQUEADA",
+   "blockStations": [
+    "Zócalo"
+   ],
+   "severity": "danger"
+  },
+  {
+   "type": "delay",
+   "title": "🚌 RUTA 87 RETRASADA",
+   "desc": "La Ruta 87 tiene 20 min de retraso.",
+   "impact": "⏱️ +5 min en rutas de Línea 1",
+   "timeMod": {
+    "line": 1,
+    "extraCost": 5
+   },
+   "severity": "warning"
+  },
+  {
+   "type": "delay",
+   "title": "🚇 FALLA EN LÍNEA 2",
+   "desc": "Falla eléctrica en la Línea 2. Servicio reducido.",
+   "impact": "⏱️ +8 min en rutas de Línea 2",
+   "timeMod": {
+    "line": 2,
+    "extraCost": 8
+   },
+   "severity": "warning"
+  },
+  {
+   "type": "delay",
+   "title": "⚠️ LÍNEA 5 CON DEMORA",
+   "desc": "Demora de 15 minutos en Línea 5 por mantenimiento.",
+   "impact": "⏱️ +6 min en rutas de Línea 5",
+   "timeMod": {
+    "line": 5,
+    "extraCost": 6
+   },
+   "severity": "warning"
+  },
+  {
+   "type": "delay",
+   "title": "🚧 OBRAS EN LÍNEA B",
+   "desc": "Obras en Tepito. Ruta lenta.",
+   "impact": "⏱️ +6 min en rutas de Línea B",
+   "timeMod": {
+    "line": "B",
+    "extraCost": 6
+   },
+   "severity": "warning"
+  },
+  {
+   "type": "delay",
+   "title": "🚌 LA COMBI DEL \"RAYO\" NO PASÓ",
+   "desc": "La combi del \"Rayo\" no pasó. Como siempre.",
+   "impact": "⏱️ +3 min en tu próximo viaje",
+   "timeMod": {
+    "line": 1,
+    "extraCost": 3
+   },
+   "severity": "warning"
+  },
+  {
+   "type": "weather",
+   "title": "🌧️ LLUVIA FUERTE",
+   "desc": "Lluvia intensa en la ciudad. Caminos resbalosos.",
+   "impact": "⚡ -10 stamina",
+   "staminaPenalty": 10,
+   "severity": "warning"
+  },
+  {
+   "type": "weather",
+   "title": "☀️ CALOR EXTREMO 35°C",
+   "desc": "Ola de calor. Hidrátate o perderás energía rápido.",
+   "impact": " -15 stamina",
+   "staminaPenalty": 15,
+   "severity": "warning"
+  },
+  {
+   "type": "positive",
+   "title": "🎉 METRO EXPRESS",
+   "desc": "Trenes express en Línea 3. Viaje más rápido.",
+   "impact": "️ -2 min en rutas de Línea 3",
+   "timeMod": {
+    "line": 3,
+    "extraCost": -2
+   },
+   "severity": "success"
+  },
+  {
+   "type": "positive",
+   "title": " PROMOCIÓN MONSTER",
+   "desc": "2x1 en Monster Energy en todas las tiendas del Metro.",
+   "impact": "🥤 Monster cuesta $20 en lugar de $30",
+   "monsterDiscount": true,
+   "severity": "success"
+  },
+  {
+   "type": "positive",
+   "title": "🎉 METRO GRATIS HOY",
+   "desc": "¡El gobierno anunció metro gratis por el día!",
+   "impact": "💰 -$5 en tu próximo viaje (gratis)",
+   "moneyBonus": 5,
+   "severity": "success"
+  }
+ ]
+}

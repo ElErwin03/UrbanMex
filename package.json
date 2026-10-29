@@ -1,0 +1,10 @@
+{
+  "name": "urbanmex",
+  "private": true,
+  "description": "Supervivencia Urbana - Metro CDMX (GDevelop). Pruebas de la lógica y del proyecto generado.",
+  "scripts": {
+    "test": "node --test tests/rules.test.js tests/smoke.test.js",
+    "build": "python3 tools/build_project.py",
+    "balance": "python3 tools/solver.py"
+  }
+}
