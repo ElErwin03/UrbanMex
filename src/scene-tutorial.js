@@ -24,7 +24,8 @@
       ui.text('tx' + i, r[2], 214, y + 42, { size: 8, cols: 110, color: '210;214;232' });
     });
     if (ui.button('ok', 'ENTENDIDO!', 490, 618, 300, 52, { size: 16, fill: '39;174;96' })) {
-      U.session.seenTutorial = true; U.session.levelIndex = 0; scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Nivel');
+      U.session.seenTutorial = true; U.Save.persist();                               // desde COMO JUGAR vuelve al menú; desde JUGAR sigue al nivel elegido
+      scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, U.session.afterTutorial || 'Nivel');
     }
     ui.end();
   };

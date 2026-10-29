@@ -8,7 +8,40 @@
 
   U.VERSION = '2.0.0';
   // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)
-  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true };   // dblTravel: ajuste del celular (doble clic = viajar solo)
+  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, loaded: false };   // completed: índices de niveles ganados (se guardan); dblTravel: ajuste del celular
+
+  /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,
+   *  así que sobrevive entre partidas en el navegador y en las exportaciones de escritorio; sin almacenamiento solo dura la sesión. */
+  U.Save = {
+    KEY: 'UrbanMex_save_v1',
+    _store: function () {
+      try { var w = typeof window !== 'undefined' ? window : root; return w.localStorage || root.localStorage || null; } catch (e) { return null; }
+    },
+    /** Lee el guardado una sola vez por ejecución del juego. */
+    load: function () {
+      if (U.session.loaded) return; U.session.loaded = true;
+      var d = null; try { var st = this._store(), raw = st && st.getItem(this.KEY); d = raw ? JSON.parse(raw) : null; } catch (e) { d = null; }
+      if (!d || d.v !== 1) return;
+      U.session.completed = (d.completed || []).filter(function (i) { return typeof i === 'number' && i >= 0 && i % 1 === 0; });
+      if (d.seenTutorial) U.session.seenTutorial = true;
+      if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;
+    },
+    persist: function () {
+      try {
+        var st = this._store(); if (!st) return;
+        st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),
+                                               seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false }));
+      } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }
+    },
+    isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },
+    markCompleted: function (idx) { if (!this.isCompleted(idx)) { U.session.completed.push(idx); this.persist(); } },
+    /** Nivel al que lleva JUGAR: el primero que aún no has completado (o el último si ya completaste todos). */
+    nextLevel: function (total) {
+      for (var i = 0; i < total; i++) if (!this.isCompleted(i)) return i;
+      return Math.max(0, total - 1);
+    },
+    reset: function () { U.session.completed = []; this.persist(); }
+  };
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }

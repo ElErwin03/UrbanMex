@@ -18,6 +18,7 @@
   }
 
   function init(scene, data) {
+    U.Save.load();
     var um = scene._um = { data: data, run: R.createRun(data, U.session.levelIndex), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
       selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false,
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
@@ -26,7 +27,7 @@
     um.setPhone = function (open) { um.phone.open = open; if (!open) um.push = null; um.map.setPhoneOpen(open); };   // mostrar / ocultar el celular
     um.map.placePlayer(run.current);
     N.intro(run);
-    modal(um, { title: 'DIA ' + run.level.id + ' - ' + run.level.day,
+    modal(um, { title: 'NIVEL ' + run.level.id + ' - ' + run.level.day,
       lines: [run.level.startDesc, '', 'Meta: ' + run.level.goal, 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.', '',
               'Lee las noticias del celular: son tu unica guia.'],
       buttons: [{ label: 'EMPEZAR', kind: 'safe' }] });
@@ -88,7 +89,7 @@
   function drawHUD(ui, um) {
     var run = um.run, cfg = run.data.config;
     ui.rect(0, 0, 1280, 56, { fill: '12;10;24', border: PAL.orange, bw: 2, block: true });
-    ui.text('hud:day', 'DIA ' + run.level.id + ' - ' + run.level.day, 14, 10, { size: 8, color: PAL.yellow });
+    ui.text('hud:day', 'NIVEL ' + run.level.id + ' - ' + run.level.day, 14, 10, { size: 8, color: PAL.yellow });
     ui.text('hud:st', run.current, 14, 32, { size: 8 });
     ui.icon('hud:i1', 'rayo', 330, 12, 2); ui.bar(368, 18, 150, 16, run.stamina / run.staminaMax, '243;156;18');
     ui.text('hud:sv', Math.floor(run.stamina) + '', 528, 22, { size: 8 });
@@ -222,6 +223,7 @@
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }
+    if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); }   // guarda el progreso al ganar
     if (run.over && !um.modal && !um.pending && !um.map.moving()) {
       um.endTimer += dt;
       if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }

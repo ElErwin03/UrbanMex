@@ -45,6 +45,13 @@ npm test            # 10 pruebas de reglas + prueba de humo (un bot juega 5 día
 npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 ```
 
+## Progreso y selector de niveles
+
+- **Guardado:** al ganar un nivel se guarda el progreso (niveles completados, y los ajustes: doble clic y tutorial visto) en `localStorage` con la clave `UrbanMex_save_v1` (`U.Save` en `src/core.js`). Es el mismo almacenamiento que usan las acciones de *Almacenamiento* de GDevelop: persiste entre partidas en el navegador y en las exportaciones de escritorio/móvil. Sin almacenamiento disponible el progreso solo dura la sesión.
+- **JUGAR:** siempre te lleva al primer nivel que aún no has completado (si perdiste un nivel, vuelves a él; si ya completaste todos, al último) y el botón dice a cuál entras: `JUGAR / NIVEL 3 - MIÉRCOLES / Cuatro Caminos > Tasqueña`, con un cuadrito por nivel (verde = completado) y el contador de niveles completados.
+- **SELECCIONAR NIVEL:** muestra los 5 niveles; solo los completados tienen botón `REJUGAR`. El siguiente aparece como `SIGUIENTE` (se entra con JUGAR) y los demás como `BLOQUEADO`. `BORRAR PROGRESO` (pide un segundo toque para confirmar) reinicia el guardado.
+- Todo el juego usa ahora la palabra **NIVEL** (antes DÍA) en el menú, el HUD, el aviso de inicio y el resultado.
+
 ## Combis y doble clic
 
 - **Rutas de combi:** 8 conexiones extra (4.º valor `"combi"` en `conexiones.json`) unen estaciones algo separadas que el Metro no conecta directo: Colegio Militar–Guerrero, Balderas–Zócalo, Deportivo 18 de Marzo–Eduardo Molina, Buenavista–San Cosme, Isabel la Católica–Lagunilla, Merced–Moctezuma, San Lázaro LB–Terminal Aérea y Morelos–San Antonio Abad. En el mapa son líneas **naranjas punteadas** con un microbús; en el panel de viaje aparecen como `COMBI`.

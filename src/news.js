@@ -53,7 +53,7 @@
     /** Mensajes iniciales del nivel. */
     intro: function (run) {
       var lv = run.level, cfg = run.data.config;
-      News.info(run, 'Dia ' + lv.id + ': ' + lv.day, lv.startDesc,
+      News.info(run, 'Nivel ' + lv.id + ': ' + lv.day, lv.startDesc,
         'Meta: ' + lv.goal + ' | Tienes hasta las ' + util.clock(cfg.dayEndMinute));
       News.info(run, 'Tip del dia', 'Revisa las noticias ANTES de viajar. El mapa no te avisa de peligros ni bloqueos.',
         'Abre la app de Noticias');
