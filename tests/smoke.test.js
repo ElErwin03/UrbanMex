@@ -9,7 +9,7 @@ const fileOf = (n) => path.join(ROOT, 'My project', resNames[n].file);
 
 const ALLOWED = {
   common: ['setLayer', 'setPosition', 'setX', 'setY', 'getX', 'getY', 'setZOrder', 'hide', 'setOpacity', 'getWidth', 'getHeight', 'deleteFromScene'],
-  Sprite: ['setAnimationName', 'setScale', 'setColor'],
+  Sprite: ['setAnimationName', 'setScale', 'setColor', 'setScaleX', 'setScaleY', 'setAngle', 'setBlendMode'],   // verificados en spriteruntimeobject.ts
   'TextObject::Text': ['setText', 'setCharacterSize', 'setColor', 'setFontName'],
   'PrimitiveDrawing::Drawer': ['clear', 'drawRectangle', 'drawCircle', 'drawEllipse', 'drawLineV2', 'setFillColor', 'setFillOpacity',
     'setOutlineColor', 'setOutlineOpacity', 'setOutlineSize', 'setCoordinatesRelative',
@@ -19,7 +19,7 @@ const COLOR_FN = ['setColor', 'setFillColor', 'setOutlineColor'];
 let stats = { calls: 0 };
 
 function mockObject(def) {
-  const allowed = new Set(ALLOWED.common.concat(ALLOWED[def.type] || [])), state = { x: 0, y: 0, hidden: false, anim: null };
+  const allowed = new Set(ALLOWED.common.concat(ALLOWED[def.type] || [])), state = { x: 0, y: 0, hidden: false, anim: null, name: def.name };
   const anims = def.type === 'Sprite' ? def.animations.map((a) => a.name) : null;
   return new Proxy(state, { get(t, k) {
     if (k in t) return t[k];
@@ -31,6 +31,12 @@ function mockObject(def) {
       if (COLOR_FN.includes(k)) assert.match(args[0], /^\d{1,3};\d{1,3};\d{1,3}$/, `${def.name}.${k}: color inválido ${args[0]}`);
       if (k === 'setAnimationName') { assert.ok(anims.includes(args[0]), `${def.name}: animación inexistente "${args[0]}"`); t.anim = args[0]; }
       if (k === 'setFontName') assert.equal(resNames[args[0]] && resNames[args[0]].kind, 'font', 'fuente no declarada: ' + args[0]);
+      if (k === 'setLayer') t.layer = args[0];
+      if (k === 'setOpacity') { assert.ok(args[0] >= 0 && args[0] <= 255, `${def.name}.setOpacity fuera de rango: ${args[0]}`); t.opacity = args[0]; }
+      if (k === 'setBlendMode') { assert.ok([0, 1, 2, 3].includes(args[0]), 'modo de mezcla inválido ' + args[0]); t.blend = args[0]; }
+      if (k === 'setScaleX') t.sx = args[0];
+      if (k === 'setScaleY') t.sy = args[0];
+      if (k === 'setZOrder') t.z = args[0];
       if (k === 'setPosition') { t.x = args[0]; t.y = args[1]; }
       if (k === 'setX') t.x = args[0];
       if (k === 'setY') t.y = args[0];
@@ -281,4 +287,91 @@ test('menú: JUGAR dice a qué nivel entras, el selector solo deja rejugar los c
     m.scene._um.view = 'levels'; m.frame(2); m.click(1105, 676); assert.deepEqual(U.session.completed, [0, 1]); m.click(1105, 676);
     assert.deepEqual(U.session.completed, []); assert.deepEqual(JSON.parse(store['UrbanMex_save_v1']).completed, []);
   } finally { delete globalThis.localStorage; }
+});
+
+// ------------------------------------------------------------------------------------------------------------------------
+// Efectos visuales (src/fx.js): iluminación dinámica, sombras suaves, partículas, bruma/bokeh y viñeta
+// ------------------------------------------------------------------------------------------------------------------------
+const fxObjs = (s, layer) => s.scene.objects.filter((o) => o.name === 'Fx' && !o.hidden && (layer === undefined || o.layer === layer));
+const freshU = () => { delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(1); return m.U; };   // carga los módulos (la calidad se fija después)
+
+test('efectos: todas las escenas tienen la capa FX entre el mapa y la interfaz, el objeto Fx y recursos suavizados solo para los fx_*', () => {
+  project.layouts.forEach((l) => {
+    assert.deepEqual(l.layers.map((x) => x.name), ['', 'FX', 'UI'], 'orden de capas en ' + l.name);
+    const fx = l.objects.find((o) => o.name === 'Fx'); assert.ok(fx, 'falta el objeto Fx en ' + l.name);
+    assert.deepEqual(fx.animations.map((a) => a.name).sort(), ['beam', 'fog', 'glow', 'haze_b', 'haze_t', 'shadow', 'soft', 'solid', 'spark', 'vignette']);
+  });
+  project.resources.resources.filter((r) => r.kind === 'image').forEach((r) =>
+    assert.equal(r.smoothed, r.name.startsWith('fx_'), `${r.name}: el pixel art debe quedar nítido (nearest) y los efectos suaves`));
+});
+
+test('efectos del nivel: sprites válidos, dentro de pantalla, cantidad acotada y sin tocar la composición original', () => {
+  const U = freshU(); U.session.fxQuality = 'high';
+  const s = session('Nivel'); s.frame(60); const um = s.scene._um;
+  assert.equal(um.map.softShadow, true);
+  const all = fxObjs(s), screen = fxObjs(s, 'FX'), world = fxObjs(s, '');
+  assert.ok(all.length >= 60 && all.length <= 260, 'cantidad de sprites de efectos: ' + all.length);
+  assert.ok(screen.length >= 30 && world.length >= 20, `pantalla ${screen.length} / mapa ${world.length}`);
+  screen.forEach((o) => assert.ok(o.x > -900 && o.x < 1700 && o.y > -500 && o.y < 1100, `sprite FX fuera del área razonable: ${o.x},${o.y}`));
+  assert.ok(all.some((o) => o.blend === 1) && all.some((o) => o.blend === 2) && all.some((o) => !o.blend), 'se usan mezcla aditiva, multiplicar y normal');
+  // los objetos originales siguen ahí con las mismas cantidades (no se agregan ni quitan personajes/objetos)
+  const count = (n) => s.scene.objects.filter((o) => o.name === n).length;
+  assert.equal(count('Estacion'), um.data.stationList.length); assert.equal(count('Jugador'), 1);
+  assert.equal(s.scene.objects.filter((o) => o.anim === 'combi').length, 10);
+});
+
+test('efectos: la iluminación cambia con la hora del nivel (de la luz de la mañana al anochecer) y reacciona al jugador', () => {
+  const U = freshU(); U.session.fxQuality = 'high';
+  const morning = U.FX.lighting(0), noon = U.FX.lighting(0.4), dusk = U.FX.lighting(1);
+  const lum = (c) => 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2];
+  assert.ok(lum(dusk.grade) < lum(morning.grade) - 20, 'al anochecer la gradación es más oscura');
+  assert.ok(dusk.grade[2] > dusk.grade[0], 'y más fría (azul/violeta)'); assert.ok(morning.grade[0] >= morning.grade[2], 'la mañana es cálida');
+  assert.ok(dusk.vig > noon.vig, 'la viñeta se cierra al anochecer'); assert.ok(U.FX.lighting(0.6).sun[0] >= 240, 'la luz solar sigue siendo cálida');
+  const s = session('Nivel'); s.frame(5); const um = s.scene._um, cfg = um.data.config, pool = um.fx.stage.pool;
+  um.modal = null; um.run.minute = cfg.dayStartMinute; s.frame(2); const c0 = pool['FX:grade']._umColor, sun0 = pool['FX:sun'].opacity;
+  um.run.minute = cfg.dayEndMinute; s.frame(2); const c1 = pool['FX:grade']._umColor;
+  assert.notEqual(c0, c1, 'el color de gradación debe cambiar con la hora'); assert.ok(pool['FX:grade'].blend === 2 && Number.isFinite(sun0));
+  // la luz del jugador y su sombra siguen su posición; la luz de la estación actual es la naranja
+  const pl = pool[':pl:light'], sh = pool[':pl:shadow'], pp = um.map.pp;
+  assert.ok(Math.abs(pl.x + 75 - pp.x) < 12 && Math.abs(sh.x + 23 - pp.x) < 12, 'luz y sombra del jugador siguen al jugador');
+  assert.equal(pool[':sl:' + um.run.current]._umColor, '255;150;80');
+});
+
+test('efectos: partículas con paralaje, reproducibles y la cámara desplazada las mueve', () => {
+  const U = freshU(); U.session.fxQuality = 'high';
+  const snap = (s) => ['dust0', 'dust5', 'bokeh2', 'fog1'].map((k) => { const o = s.scene._um.fx.stage.pool['FX:' + k]; return [o.x, o.y].map((v) => +v.toFixed(3)).join(); }).join('|');
+  const a = session('Nivel'); a.frame(40); const b = session('Nivel'); b.frame(40);
+  assert.equal(snap(a), snap(b), 'misma semilla → mismas partículas');
+  const before = snap(a); a.scene._um.map.pan(120, 60); a.frame(1);
+  assert.notEqual(snap(a), before, 'al mover la cámara las partículas se desplazan con paralaje');
+  a.frame(300); assert.ok(a.scene._um.fx.stage.pool['FX:dust0'].x > -100 && a.scene._um.fx.stage.pool['FX:dust0'].x < 1400, 'el polvo envuelve la pantalla y no se escapa');
+});
+
+test('efectos: calidad baja usa menos sprites y "off" no crea ninguno (ni cambia la sombra original del jugador)', () => {
+  const U = freshU(), n = {};
+  ['high', 'low', 'off'].forEach((q) => { U.session.fxQuality = q; const s = session('Nivel'); s.frame(30); n[q] = s.scene.objects.filter((o) => o.name === 'Fx').length; if (q === 'off') assert.equal(s.scene._um.map.softShadow, false); });
+  assert.ok(n.high > n.low && n.low > 0 && n.off === 0, JSON.stringify(n));
+  U.session.fxQuality = 'off'; const m = session('Menu'); m.frame(20); assert.equal(m.scene.objects.filter((o) => o.name === 'Fx').length, 0);
+  U.session.fxQuality = 'high';
+});
+
+test('efectos: menú, tutorial y resultado (luz del tren, brillos de estrellas y resplandor según el resultado)', () => {
+  const U = freshU(); U.session.fxQuality = 'high';
+  const m = session('Menu'); m.frame(30); const poolM = m.scene._um.fx.stage.pool, x0 = poolM['FX:th'].x;
+  assert.ok(fxObjs(m).length >= 30); m.frame(10); assert.notEqual(poolM['FX:th'].x, x0, 'el faro del tren se mueve con el tren');
+  assert.ok(poolM['FX:logo'] && !poolM['FX:logo'].hidden, 'aura del logo en el menú principal'); m.scene._um.view = 'levels'; m.frame(2); assert.ok(poolM['FX:logo'].hidden, 'sin logo en el selector de niveles');
+  const t = session('Tutorial'); t.frame(10); assert.ok(fxObjs(t).length >= 10);
+  const r = session('Resultado'); U.session.lastResult = { won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h', steps: 3, money: 5, robbed: 0, stolen: 0, newsRead: 1, reason: '' };
+  r.frame(3); const win = r.scene._umFx.stage.pool['FX:top']._umColor; U.session.lastResult.won = false; r.frame(3);
+  assert.notEqual(win, r.scene._umFx.stage.pool['FX:top']._umColor, 'el resplandor cambia entre ganar y perder');
+});
+
+test('efectos: el coste por fotograma es acotado (llamadas al motor) y el suelo texturizado se dibuja una sola vez', () => {
+  const U = freshU(); U.session.fxQuality = 'high';
+  const c0 = stats.calls; const s = session('Nivel'); s.frame(2); const build = stats.calls - c0;
+  assert.ok(build > 4000, 'el suelo con texturas y sombras se pinta al abrir el nivel (' + build + ' llamadas)');
+  s.scene._um.modal = null; const c1 = stats.calls; s.frame(20); const perFrame = (stats.calls - c1) / 20;
+  U.session.fxQuality = 'off'; const o = session('Nivel'); o.frame(2); o.scene._um.modal = null; const c2 = stats.calls; o.frame(20); const base = (stats.calls - c2) / 20;
+  console.log(`   llamadas por fotograma: con efectos ${Math.round(perFrame)} / sin efectos ${Math.round(base)} (suelo: ${build} una sola vez)`);
+  assert.ok(perFrame - base < 3500, 'los efectos añaden demasiadas llamadas por fotograma: ' + Math.round(perFrame - base)); U.session.fxQuality = 'high';
 });
