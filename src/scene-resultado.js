@@ -7,6 +7,7 @@
   U.Scenes.resultado = function (scene) {
     var ui = U.UI.of(scene), r = U.session.lastResult, data = U.Data.ready(scene);
     ui.begin();
+    (scene._umFx || (scene._umFx = U.FX.ambient(scene, 'neutral'))).update(Math.min(0.1, scene.getElapsedTime() / 1000), !r ? 'neutral' : r.won ? 'win' : 'lose');   // resplandor verde / rojo según el resultado
     if (!r || !data) {
       ui.text('x', 'Sin resultado', 640, 340, { size: 16, align: 'center' });
       if (ui.button('m', 'MENU', 540, 400, 200, 44, {})) scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu');

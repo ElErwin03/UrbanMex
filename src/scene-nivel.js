@@ -24,6 +24,7 @@
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
     um.map = new U.MapView(scene, data);
+    um.fx = U.FX.level(scene, um);                              // iluminación dinámica, partículas y atmósfera (fx.js)
     um.setPhone = function (open) { um.phone.open = open; if (!open) um.push = null; um.map.setPhoneOpen(open); };   // mostrar / ocultar el celular
     um.map.placePlayer(run.current);
     N.intro(run);
@@ -221,6 +222,7 @@
     if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
 
     um.map.update(dt, run, ui, um.hover, um.selected);
+    um.fx.update(dt, um.hover, um.selected);                    // después del mapa: usa su cámara y la posición del jugador
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }
