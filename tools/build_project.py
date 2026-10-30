@@ -9,7 +9,7 @@ import json, os, glob
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJ = os.path.join(ROOT, 'My project')
 SRC = os.path.join(ROOT, 'src')
-MODULES = ['core', 'data', 'graph', 'rules', 'news', 'ui', 'map', 'phone', 'scene-menu', 'scene-tutorial', 'scene-nivel', 'scene-resultado']
+MODULES = ['core', 'data', 'graph', 'rules', 'news', 'ui', 'map', 'phone', 'fx', 'scene-menu', 'scene-tutorial', 'scene-nivel', 'scene-resultado']
 FONT = 'PressStart2P-Regular.ttf'
 
 # ------------------------------------------------------------------ recursos
@@ -17,7 +17,8 @@ def resources():
     res = []
     for f in sorted(glob.glob(f'{PROJ}/assets/img/*.png')):
         n = os.path.basename(f)
-        res.append({"alwaysLoaded": False, "file": f"assets/img/{n}", "kind": "image", "metadata": "", "name": n, "smoothed": False, "userAdded": True})
+        # sprites de efectos (fx_*): luces y sombras suaves, se escalan con filtro lineal; el pixel art conserva 'nearest'
+        res.append({"alwaysLoaded": False, "file": f"assets/img/{n}", "kind": "image", "metadata": "", "name": n, "smoothed": n.startswith('fx_'), "userAdded": True})
     res.append({"alwaysLoaded": False, "file": f"assets/fonts/{FONT}", "kind": "font", "metadata": "", "name": FONT, "userAdded": True})
     for f in sorted(glob.glob(f'{PROJ}/data/*.json')):
         n = os.path.basename(f)
@@ -48,6 +49,7 @@ def painter(name):
             "fillColor": "255;255;255", "outlineColor": "255;255;255", "fillOpacity": 255, "outlineOpacity": 255, "outlineSize": 0,
             "absoluteCoordinates": True, "clearBetweenFrames": False, "antialiasing": "none"}
 
+FX_ANIMS = ['glow', 'soft', 'fog', 'vignette', 'spark', 'shadow', 'beam', 'haze_t', 'haze_b', 'solid']   # = sprites fx_*.png (src/fx.js)
 ICONS = ['moneda', 'rayo', 'reloj', 'tienda', 'meta', 'casa', 'bloqueo', 'alerta', 'noticia', 'mapa', 'saldo', 'ajustes', 'persona', 'celular', 'lineas', 'combi']
 O = {
   'Texto': text('Texto'), 'TextoMapa': text('TextoMapa', outline=True), 'UIBase': painter('UIBase'), 'UIModal': painter('UIModal'), 'Mapa': painter('Mapa'),
@@ -57,13 +59,14 @@ O = {
   'Edificio': sprite('Edificio', [(f'e{i}', [f'edificio_{i}.png']) for i in range(4)]),
   'EdificioIso': sprite('EdificioIso', [(f'b{i}', [f'iso_edificio_{i}.png']) for i in range(6)] + [('parque', ['iso_parque.png'])]),
   'Tren': sprite('Tren', [('tren', ['tren.png'])]),
+  'Fx': sprite('Fx', [(a, [f'fx_{a}.png']) for a in FX_ANIMS]),
 }
 UI_OBJS = ['Texto', 'Icono', 'UIBase', 'UIModal']
 SCENES = {
-  'Menu': (UI_OBJS + ['Edificio', 'Tren'], 'scene-menu', 'menu'),
-  'Tutorial': (UI_OBJS, 'scene-tutorial', 'tutorial'),
-  'Nivel': (UI_OBJS + ['TextoMapa', 'Mapa', 'Estacion', 'Jugador', 'EdificioIso'], 'scene-nivel', 'nivel'),
-  'Resultado': (UI_OBJS, 'scene-resultado', 'resultado'),
+  'Menu': (UI_OBJS + ['Edificio', 'Tren', 'Fx'], 'scene-menu', 'menu'),
+  'Tutorial': (UI_OBJS + ['Fx'], 'scene-tutorial', 'tutorial'),
+  'Nivel': (UI_OBJS + ['TextoMapa', 'Mapa', 'Estacion', 'Jugador', 'EdificioIso', 'Fx'], 'scene-nivel', 'nivel'),
+  'Resultado': (UI_OBJS + ['Fx'], 'scene-resultado', 'resultado'),
 }
 
 # ------------------------------------------------------------------ eventos
@@ -97,7 +100,7 @@ def scene(name, objs, own_mod, fn):
                            "selectedLayer": "", "gameEditorMode": "instances-editor"},
             "objectsGroups": [], "variables": [], "instances": [], "objects": [O[o] for o in objs],
             "objectsFolderStructure": {"folderName": "__ROOT", "children": [{"objectName": o} for o in objs]},
-            "events": events, "layers": [layer(''), layer('UI')], "behaviorsSharedData": []}
+            "events": events, "layers": [layer(''), layer('FX'), layer('UI')], "behaviorsSharedData": []}
 
 def main():
     base = json.load(open(f'{PROJ}/UrbanMex.json', encoding='utf8')) if os.path.exists(f'{PROJ}/UrbanMex.json') else {}

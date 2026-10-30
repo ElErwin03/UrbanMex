@@ -15,6 +15,7 @@
 
   U.Scenes.tutorial = function (scene) {
     var ui = U.UI.of(scene); ui.begin();
+    (scene._umFx || (scene._umFx = U.FX.ambient(scene, 'neutral'))).update(Math.min(0.1, scene.getElapsedTime() / 1000));   // viñeta, bruma y polvo suaves
     ui.text('h', 'COMO JUGAR', 640, 28, { size: 24, align: 'center', color: PAL.yellow });
     ROWS.forEach(function (r, i) {
       var y = 90 + i * 84;
