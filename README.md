@@ -15,7 +15,7 @@ My project/
   assets/fonts/        Press Start 2P (licencia OFL incluida)
   data/*.json          estaciones, conexiones, niveles, noticias y economía  ← aquí se edita el juego
 src/                   módulos JavaScript (fuente de verdad del código)
-tools/                 generadores y solucionador de balance
+tools/                 generadores, solucionador de balance y vista previa sin GDevelop
 tests/                 pruebas (lógica + proyecto completo sobre un motor simulado)
 ```
 
@@ -30,6 +30,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `ui` | interfaz “modo inmediato” sobre objetos Texto/Icono/Painter | sí |
 | `map` | mapa isométrico 2.5D (ciudad en relieve), cámara que encuadra toda la red, estaciones, jugador | sí |
 | `phone` | celular: Noticias, Ruta, Saldo, Ajustes | sí |
+| `fx` | efectos visuales: iluminación dinámica, partículas, bruma, viñeta (ver *Efectos visuales*) | sí |
 | `scene-*` | controlador de cada escena (Menu, Tutorial, Nivel, Resultado) | sí |
 
 En GDevelop cada módulo es una hoja de **eventos externos** `Mod_<nombre>` y cada escena los enlaza.
@@ -79,3 +80,15 @@ npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 
 - **Las noticias solo ocurren cuando el jugador se mueve:** nunca llegan con el reloj o mientras piensas. La primera (siempre de seguridad) llega tras el primer movimiento y después una cada 2 o 3 movimientos con 75 % de probabilidad (`config.news`: `firstAfterMoves`, `everyMoves`, `chance`; `News.onMove` en `src/news.js`). Una noticia nunca repite un bloqueo que ya existe en el nivel.
 - **Nivel 2 (martes):** empieza con **Juárez** (línea 3) y **Zócalo** (línea 2) bloqueadas.
+
+## Efectos visuales
+
+Capa de acabado "alta fidelidad" sobre el dibujo original: **no cambia ningún personaje, objeto ni composición**, solo luz, material y atmósfera.
+
+- **Arte (`tools/make_art.py`)**: los sprites conservan siluetas, tamaños y ventanas encendidas, pero ahora tienen material (degradado con oclusión ambiental junto al suelo, juntas de piso, grano sutil), luz cálida desde la izquierda y ambiente frío en sombra, ventanas con brillo y aristas suavizadas en lugar de líneas negras. Los 10 sprites `fx_*.png` (luz, mota, niebla, viñeta, destello, sombra, haz, bruma) son suaves y se marcan con suavizado en el proyecto; el pixel art sigue en `nearest`.
+- **Suelo y vías (`src/map.js`)**: asfalto con degradado y grano, bordillos, manzanas con relieve, **sombras suaves** de cada edificio (según su altura, hacia la derecha y abajo), charcos de luz bajo cada estación, vías con halo y reflejo.
+- **Iluminación dinámica (`src/fx.js`, capa `FX` entre el mapa y la interfaz)**: luz bajo cada estación (más fuerte en la actual, la meta, el inicio, las vecinas y las que señalas), luz cálida y sombra de contacto que siguen al jugador, haz de luz en la meta y **gradación según la hora del nivel** (mañana cálida → mediodía → hora dorada → anochecer violeta).
+- **Partículas sutiles**: polvo y bokeh con **paralaje** al mover la cámara, bancos de niebla a la deriva y destellos en la meta, el inicio y las tiendas. Sus posiciones son una función pura del tiempo (reproducibles).
+- **Profundidad de campo ligera**: bruma arriba (lo lejano), oscurecimiento abajo y viñeta; el menú suma resplandor de ciudad, luz del tren y estrellas que centellean; Tutorial y Resultado llevan viñeta, bruma y polvo (resplandor verde o rojo según ganes o pierdas).
+- **Calidad**: `U.session.fxQuality = 'high'` (por defecto) | `'low'` (menos partículas y luces) | `'off'` (sin efectos; vuelve la sombra original del jugador).
+- **Vista previa sin GDevelop**: `node tools/dump_scene.js . Nivel salida.json --level 1 --minute 1150` y `python3 tools/render_preview.py salida.json . salida.png` generan un PNG aproximado (soporta mezcla aditiva y multiplicar). No es el render real de la GPU ni reproduce efectos de capa de GDevelop.
