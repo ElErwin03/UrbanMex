@@ -65,7 +65,6 @@
   "resources": {
     "resources": [
       {
-        "alwaysLoaded": false,
         "file": "assets/img/edificio_0.png",
         "kind": "image",
         "metadata": "",
@@ -74,7 +73,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/edificio_1.png",
         "kind": "image",
         "metadata": "",
@@ -83,7 +81,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/edificio_2.png",
         "kind": "image",
         "metadata": "",
@@ -92,7 +89,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/edificio_3.png",
         "kind": "image",
         "metadata": "",
@@ -101,7 +97,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/estacion_bloqueada.png",
         "kind": "image",
         "metadata": "",
@@ -110,7 +105,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/estacion_inicio.png",
         "kind": "image",
         "metadata": "",
@@ -119,7 +113,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/estacion_meta.png",
         "kind": "image",
         "metadata": "",
@@ -128,7 +121,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/estacion_normal.png",
         "kind": "image",
         "metadata": "",
@@ -137,7 +129,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/estacion_tienda.png",
         "kind": "image",
         "metadata": "",
@@ -146,7 +137,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_beam.png",
         "kind": "image",
         "metadata": "",
@@ -155,7 +145,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_fog.png",
         "kind": "image",
         "metadata": "",
@@ -164,7 +153,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_glow.png",
         "kind": "image",
         "metadata": "",
@@ -173,7 +161,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_haze_b.png",
         "kind": "image",
         "metadata": "",
@@ -182,7 +169,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_haze_t.png",
         "kind": "image",
         "metadata": "",
@@ -191,7 +177,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_shadow.png",
         "kind": "image",
         "metadata": "",
@@ -200,7 +185,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_soft.png",
         "kind": "image",
         "metadata": "",
@@ -209,7 +193,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_solid.png",
         "kind": "image",
         "metadata": "",
@@ -218,7 +201,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_spark.png",
         "kind": "image",
         "metadata": "",
@@ -227,7 +209,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/fx_vignette.png",
         "kind": "image",
         "metadata": "",
@@ -236,7 +217,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_ajustes.png",
         "kind": "image",
         "metadata": "",
@@ -245,7 +225,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_alerta.png",
         "kind": "image",
         "metadata": "",
@@ -254,7 +233,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_bloqueo.png",
         "kind": "image",
         "metadata": "",
@@ -263,7 +241,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_casa.png",
         "kind": "image",
         "metadata": "",
@@ -272,7 +249,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_celular.png",
         "kind": "image",
         "metadata": "",
@@ -281,7 +257,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_combi.png",
         "kind": "image",
         "metadata": "",
@@ -290,7 +265,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_lineas.png",
         "kind": "image",
         "metadata": "",
@@ -299,7 +273,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_mapa.png",
         "kind": "image",
         "metadata": "",
@@ -308,7 +281,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_meta.png",
         "kind": "image",
         "metadata": "",
@@ -317,7 +289,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_moneda.png",
         "kind": "image",
         "metadata": "",
@@ -326,7 +297,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_noticia.png",
         "kind": "image",
         "metadata": "",
@@ -335,7 +305,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_persona.png",
         "kind": "image",
         "metadata": "",
@@ -344,7 +313,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_rayo.png",
         "kind": "image",
         "metadata": "",
@@ -353,7 +321,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_reloj.png",
         "kind": "image",
         "metadata": "",
@@ -362,7 +329,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_saldo.png",
         "kind": "image",
         "metadata": "",
@@ -371,7 +337,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/icono_tienda.png",
         "kind": "image",
         "metadata": "",
@@ -380,7 +345,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_0.png",
         "kind": "image",
         "metadata": "",
@@ -389,7 +353,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_1.png",
         "kind": "image",
         "metadata": "",
@@ -398,7 +361,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_2.png",
         "kind": "image",
         "metadata": "",
@@ -407,7 +369,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_3.png",
         "kind": "image",
         "metadata": "",
@@ -416,7 +377,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_4.png",
         "kind": "image",
         "metadata": "",
@@ -425,7 +385,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_5.png",
         "kind": "image",
         "metadata": "",
@@ -434,7 +393,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/iso_parque.png",
         "kind": "image",
         "metadata": "",
@@ -443,7 +401,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/jugador_0.png",
         "kind": "image",
         "metadata": "",
@@ -452,7 +409,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/jugador_1.png",
         "kind": "image",
         "metadata": "",
@@ -461,7 +417,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/logo_metro.png",
         "kind": "image",
         "metadata": "",
@@ -470,7 +425,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/img/tren.png",
         "kind": "image",
         "metadata": "",
@@ -479,7 +433,6 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": false,
         "file": "assets/fonts/PressStart2P-Regular.ttf",
         "kind": "font",
         "metadata": "",
@@ -487,7 +440,7 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": true,
+        "disablePreload": false,
         "file": "data/conexiones.json",
         "kind": "json",
         "metadata": "",
@@ -495,7 +448,7 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": true,
+        "disablePreload": false,
         "file": "data/config.json",
         "kind": "json",
         "metadata": "",
@@ -503,7 +456,7 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": true,
+        "disablePreload": false,
         "file": "data/estaciones.json",
         "kind": "json",
         "metadata": "",
@@ -511,7 +464,7 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": true,
+        "disablePreload": false,
         "file": "data/niveles.json",
         "kind": "json",
         "metadata": "",
@@ -519,7 +472,7 @@
         "userAdded": true
       },
       {
-        "alwaysLoaded": true,
+        "disablePreload": false,
         "file": "data/noticias.json",
         "kind": "json",
         "metadata": "",
@@ -541,11 +494,11 @@
       "mangledName": "Menu",
       "name": "Menu",
       "r": 14,
+      "renderer3DWorldScale": 100,
+      "standardSortMethod": true,
       "stopSoundsOnStartup": true,
       "title": "",
       "v": 12,
-      "renderer3DWorldScale": 100,
-      "standardSortMethod": true,
       "uiSettings": {
         "grid": false,
         "gridType": "rectangular",
@@ -569,44 +522,56 @@
       "objects": [
         {
           "assetStoreId": "",
+          "bold": false,
+          "italic": false,
           "name": "Texto",
-          "tags": "",
+          "smoothed": false,
           "type": "TextObject::Text",
+          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "string": "",
+          "font": "PressStart2P-Regular.ttf",
+          "textAlignment": "left",
+          "characterSize": 8,
+          "color": {
+            "b": 255,
+            "g": 255,
+            "r": 255
+          },
           "content": {
             "bold": false,
-            "italic": false,
-            "underlined": false,
-            "smoothed": false,
-            "text": "",
-            "font": "PressStart2P-Regular.ttf",
-            "characterSize": 8,
-            "color": "255;255;255",
-            "textAlignment": "left",
-            "verticalTextAlignment": "top",
-            "lineHeight": 0,
             "isOutlineEnabled": false,
+            "isShadowEnabled": false,
+            "italic": false,
             "outlineColor": "10;8;20",
             "outlineThickness": 3,
-            "isShadowEnabled": false,
-            "shadowColor": "0;0;0",
-            "shadowOpacity": 127,
-            "shadowDistance": 4,
             "shadowAngle": 90,
-            "shadowBlurRadius": 2
+            "shadowBlurRadius": 2,
+            "shadowColor": "0;0;0",
+            "shadowDistance": 4,
+            "shadowOpacity": 127,
+            "smoothed": false,
+            "underlined": false,
+            "text": "",
+            "font": "PressStart2P-Regular.ttf",
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "characterSize": 8,
+            "lineHeight": 0,
+            "color": "255;255;255"
           }
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Icono",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "moneda",
@@ -1077,46 +1042,60 @@
         {
           "assetStoreId": "",
           "name": "UIBase",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
           "assetStoreId": "",
           "name": "UIModal",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Edificio",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "e0",
@@ -1237,14 +1216,14 @@
           ]
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Tren",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "tren",
@@ -1278,14 +1257,14 @@
           ]
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Fx",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "glow",
@@ -1609,10 +1588,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -1620,135 +1595,106 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma."
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_core",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_core"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_data",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_data"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_graph",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_graph"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_rules",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_rules"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_news",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_news"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_ui",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_ui"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_map",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_map"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_phone",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_phone"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_fx",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_fx"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-menu",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-menu"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-tutorial",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-tutorial"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-nivel",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-nivel"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-resultado",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-resultado"
         },
         {
           "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": [
-            "gdjs.UrbanMex.Scenes.menu(runtimeScene);"
-          ],
+          "inlineCode": "gdjs.UrbanMex.Scenes.menu(runtimeScene);",
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": false
+          "eventsSheetExpanded": false
         }
       ],
       "layers": [
@@ -1848,11 +1794,11 @@
       "mangledName": "Tutorial",
       "name": "Tutorial",
       "r": 14,
+      "renderer3DWorldScale": 100,
+      "standardSortMethod": true,
       "stopSoundsOnStartup": true,
       "title": "",
       "v": 12,
-      "renderer3DWorldScale": 100,
-      "standardSortMethod": true,
       "uiSettings": {
         "grid": false,
         "gridType": "rectangular",
@@ -1876,44 +1822,56 @@
       "objects": [
         {
           "assetStoreId": "",
+          "bold": false,
+          "italic": false,
           "name": "Texto",
-          "tags": "",
+          "smoothed": false,
           "type": "TextObject::Text",
+          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "string": "",
+          "font": "PressStart2P-Regular.ttf",
+          "textAlignment": "left",
+          "characterSize": 8,
+          "color": {
+            "b": 255,
+            "g": 255,
+            "r": 255
+          },
           "content": {
             "bold": false,
-            "italic": false,
-            "underlined": false,
-            "smoothed": false,
-            "text": "",
-            "font": "PressStart2P-Regular.ttf",
-            "characterSize": 8,
-            "color": "255;255;255",
-            "textAlignment": "left",
-            "verticalTextAlignment": "top",
-            "lineHeight": 0,
             "isOutlineEnabled": false,
+            "isShadowEnabled": false,
+            "italic": false,
             "outlineColor": "10;8;20",
             "outlineThickness": 3,
-            "isShadowEnabled": false,
-            "shadowColor": "0;0;0",
-            "shadowOpacity": 127,
-            "shadowDistance": 4,
             "shadowAngle": 90,
-            "shadowBlurRadius": 2
+            "shadowBlurRadius": 2,
+            "shadowColor": "0;0;0",
+            "shadowDistance": 4,
+            "shadowOpacity": 127,
+            "smoothed": false,
+            "underlined": false,
+            "text": "",
+            "font": "PressStart2P-Regular.ttf",
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "characterSize": 8,
+            "lineHeight": 0,
+            "color": "255;255;255"
           }
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Icono",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "moneda",
@@ -2384,46 +2342,60 @@
         {
           "assetStoreId": "",
           "name": "UIBase",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
           "assetStoreId": "",
           "name": "UIModal",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Fx",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "glow",
@@ -2741,10 +2713,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -2752,135 +2720,106 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma."
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_core",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_core"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_data",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_data"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_graph",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_graph"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_rules",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_rules"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_news",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_news"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_ui",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_ui"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_map",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_map"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_phone",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_phone"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_fx",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_fx"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-menu",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-menu"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-tutorial",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-tutorial"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-nivel",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-nivel"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-resultado",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-resultado"
         },
         {
           "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": [
-            "gdjs.UrbanMex.Scenes.tutorial(runtimeScene);"
-          ],
+          "inlineCode": "gdjs.UrbanMex.Scenes.tutorial(runtimeScene);",
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": false
+          "eventsSheetExpanded": false
         }
       ],
       "layers": [
@@ -2980,11 +2919,11 @@
       "mangledName": "Nivel",
       "name": "Nivel",
       "r": 14,
+      "renderer3DWorldScale": 100,
+      "standardSortMethod": true,
       "stopSoundsOnStartup": true,
       "title": "",
       "v": 12,
-      "renderer3DWorldScale": 100,
-      "standardSortMethod": true,
       "uiSettings": {
         "grid": false,
         "gridType": "rectangular",
@@ -3008,44 +2947,56 @@
       "objects": [
         {
           "assetStoreId": "",
+          "bold": false,
+          "italic": false,
           "name": "Texto",
-          "tags": "",
+          "smoothed": false,
           "type": "TextObject::Text",
+          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "string": "",
+          "font": "PressStart2P-Regular.ttf",
+          "textAlignment": "left",
+          "characterSize": 8,
+          "color": {
+            "b": 255,
+            "g": 255,
+            "r": 255
+          },
           "content": {
             "bold": false,
-            "italic": false,
-            "underlined": false,
-            "smoothed": false,
-            "text": "",
-            "font": "PressStart2P-Regular.ttf",
-            "characterSize": 8,
-            "color": "255;255;255",
-            "textAlignment": "left",
-            "verticalTextAlignment": "top",
-            "lineHeight": 0,
             "isOutlineEnabled": false,
+            "isShadowEnabled": false,
+            "italic": false,
             "outlineColor": "10;8;20",
             "outlineThickness": 3,
-            "isShadowEnabled": false,
-            "shadowColor": "0;0;0",
-            "shadowOpacity": 127,
-            "shadowDistance": 4,
             "shadowAngle": 90,
-            "shadowBlurRadius": 2
+            "shadowBlurRadius": 2,
+            "shadowColor": "0;0;0",
+            "shadowDistance": 4,
+            "shadowOpacity": 127,
+            "smoothed": false,
+            "underlined": false,
+            "text": "",
+            "font": "PressStart2P-Regular.ttf",
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "characterSize": 8,
+            "lineHeight": 0,
+            "color": "255;255;255"
           }
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Icono",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "moneda",
@@ -3516,94 +3467,127 @@
         {
           "assetStoreId": "",
           "name": "UIBase",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
           "assetStoreId": "",
           "name": "UIModal",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
           "assetStoreId": "",
+          "bold": false,
+          "italic": false,
           "name": "TextoMapa",
-          "tags": "",
+          "smoothed": false,
           "type": "TextObject::Text",
+          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "string": "",
+          "font": "PressStart2P-Regular.ttf",
+          "textAlignment": "left",
+          "characterSize": 8,
+          "color": {
+            "b": 255,
+            "g": 255,
+            "r": 255
+          },
           "content": {
             "bold": false,
-            "italic": false,
-            "underlined": false,
-            "smoothed": false,
-            "text": "",
-            "font": "PressStart2P-Regular.ttf",
-            "characterSize": 8,
-            "color": "255;255;255",
-            "textAlignment": "left",
-            "verticalTextAlignment": "top",
-            "lineHeight": 0,
             "isOutlineEnabled": true,
+            "isShadowEnabled": false,
+            "italic": false,
             "outlineColor": "10;8;20",
             "outlineThickness": 3,
-            "isShadowEnabled": false,
-            "shadowColor": "0;0;0",
-            "shadowOpacity": 127,
-            "shadowDistance": 4,
             "shadowAngle": 90,
-            "shadowBlurRadius": 2
+            "shadowBlurRadius": 2,
+            "shadowColor": "0;0;0",
+            "shadowDistance": 4,
+            "shadowOpacity": 127,
+            "smoothed": false,
+            "underlined": false,
+            "text": "",
+            "font": "PressStart2P-Regular.ttf",
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "characterSize": 8,
+            "lineHeight": 0,
+            "color": "255;255;255"
           }
         },
         {
           "assetStoreId": "",
           "name": "Mapa",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Estacion",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "normal",
@@ -3753,14 +3737,14 @@
           ]
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Jugador",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "a0",
@@ -3823,14 +3807,14 @@
           ]
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "EdificioIso",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "b0",
@@ -4038,14 +4022,14 @@
           ]
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Fx",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "glow",
@@ -4378,10 +4362,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -4389,135 +4369,106 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma."
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_core",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_core"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_data",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_data"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_graph",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_graph"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_rules",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_rules"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_news",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_news"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_ui",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_ui"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_map",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_map"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_phone",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_phone"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_fx",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_fx"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-menu",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-menu"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-tutorial",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-tutorial"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-nivel",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-nivel"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-resultado",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-resultado"
         },
         {
           "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": [
-            "gdjs.UrbanMex.Scenes.nivel(runtimeScene);"
-          ],
+          "inlineCode": "gdjs.UrbanMex.Scenes.nivel(runtimeScene);",
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": false
+          "eventsSheetExpanded": false
         }
       ],
       "layers": [
@@ -4617,11 +4568,11 @@
       "mangledName": "Resultado",
       "name": "Resultado",
       "r": 14,
+      "renderer3DWorldScale": 100,
+      "standardSortMethod": true,
       "stopSoundsOnStartup": true,
       "title": "",
       "v": 12,
-      "renderer3DWorldScale": 100,
-      "standardSortMethod": true,
       "uiSettings": {
         "grid": false,
         "gridType": "rectangular",
@@ -4645,44 +4596,56 @@
       "objects": [
         {
           "assetStoreId": "",
+          "bold": false,
+          "italic": false,
           "name": "Texto",
-          "tags": "",
+          "smoothed": false,
           "type": "TextObject::Text",
+          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "string": "",
+          "font": "PressStart2P-Regular.ttf",
+          "textAlignment": "left",
+          "characterSize": 8,
+          "color": {
+            "b": 255,
+            "g": 255,
+            "r": 255
+          },
           "content": {
             "bold": false,
-            "italic": false,
-            "underlined": false,
-            "smoothed": false,
-            "text": "",
-            "font": "PressStart2P-Regular.ttf",
-            "characterSize": 8,
-            "color": "255;255;255",
-            "textAlignment": "left",
-            "verticalTextAlignment": "top",
-            "lineHeight": 0,
             "isOutlineEnabled": false,
+            "isShadowEnabled": false,
+            "italic": false,
             "outlineColor": "10;8;20",
             "outlineThickness": 3,
-            "isShadowEnabled": false,
-            "shadowColor": "0;0;0",
-            "shadowOpacity": 127,
-            "shadowDistance": 4,
             "shadowAngle": 90,
-            "shadowBlurRadius": 2
+            "shadowBlurRadius": 2,
+            "shadowColor": "0;0;0",
+            "shadowDistance": 4,
+            "shadowOpacity": 127,
+            "smoothed": false,
+            "underlined": false,
+            "text": "",
+            "font": "PressStart2P-Regular.ttf",
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "characterSize": 8,
+            "lineHeight": 0,
+            "color": "255;255;255"
           }
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Icono",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "moneda",
@@ -5153,46 +5116,60 @@
         {
           "assetStoreId": "",
           "name": "UIBase",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
           "assetStoreId": "",
           "name": "UIModal",
-          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "fillColor": "255;255;255",
-          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineOpacity": 255,
           "outlineSize": 0,
+          "outlineOpacity": 255,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none"
+          "antialiasing": "none",
+          "fillColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "outlineColor": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          }
         },
         {
+          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Fx",
-          "tags": "",
           "type": "Sprite",
+          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "glow",
@@ -5510,10 +5487,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -5521,135 +5494,106 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma."
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_core",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_core"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_data",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_data"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_graph",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_graph"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_rules",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_rules"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_news",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_news"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_ui",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_ui"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_map",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_map"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_phone",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_phone"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_fx",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_fx"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-menu",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-menu"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-tutorial",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-tutorial"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-nivel",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-nivel"
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-resultado",
-          "disabled": false,
-          "folded": false
+          "target": "Mod_scene-resultado"
         },
         {
           "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": [
-            "gdjs.UrbanMex.Scenes.resultado(runtimeScene);"
-          ],
+          "inlineCode": "gdjs.UrbanMex.Scenes.resultado(runtimeScene);",
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": false
+          "eventsSheetExpanded": false
         }
       ],
       "layers": [
@@ -5751,10 +5695,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"core\" - fuente: src/core.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -5762,9 +5702,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"core\" - fuente: src/core.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · core — espacio de nombres, sesión y utilidades.",
@@ -5862,9 +5804,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -5874,10 +5814,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"data\" - fuente: src/data.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -5885,9 +5821,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"data\" - fuente: src/data.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · data — carga y normaliza los JSON del juego (recursos \"data/*.json\" del proyecto).",
@@ -5951,9 +5889,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -5963,10 +5899,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"graph\" - fuente: src/graph.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -5974,9 +5906,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"graph\" - fuente: src/graph.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · graph — red del Metro (puro, sin motor). */",
@@ -6029,9 +5963,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -6041,10 +5973,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"rules\" - fuente: src/rules.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6052,9 +5980,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"rules\" - fuente: src/rules.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · rules — reglas del juego: economía, viaje, asaltos, Monster, fin de partida.",
@@ -6196,9 +6126,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -6208,10 +6136,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"news\" - fuente: src/news.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6219,9 +6143,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"news\" - fuente: src/news.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · news — generador de noticias del celular (puro).",
@@ -6306,9 +6232,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -6318,10 +6242,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"ui\" - fuente: src/ui.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6329,9 +6249,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"ui\" - fuente: src/ui.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · ui — interfaz \"modo inmediato\" sobre objetos de GDevelop.",
@@ -6452,9 +6374,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -6464,10 +6384,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"map\" - fuente: src/map.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6475,9 +6391,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"map\" - fuente: src/map.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · map — mapa isométrico 2.5D del Metro (estilo Age of Empires / Clash of Clans): isla de ciudad con edificios en",
@@ -6786,9 +6704,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -6798,10 +6714,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"phone\" - fuente: src/phone.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6809,9 +6721,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"phone\" - fuente: src/phone.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · phone — el celular del jugador (única guía del juego): Noticias, Ruta, Saldo, Líneas y Ajustes.",
@@ -6997,9 +6911,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -7009,10 +6921,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"fx\" - fuente: src/fx.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7020,9 +6928,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"fx\" - fuente: src/fx.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · fx — capa de efectos visuales: iluminación dinámica, sombras suaves, partículas sutiles (polvo, brillos, niebla),",
@@ -7243,9 +7153,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -7255,10 +7163,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"scene-menu\" - fuente: src/scene-menu.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7266,9 +7170,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"scene-menu\" - fuente: src/scene-menu.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · escena Menú — título, JUGAR (al nivel que toca), selector de niveles ya completados, skyline pixel-art y tren animado. Objetos: Texto, Icono, UIBase, UIModal, Edificio, Tren. */",
@@ -7365,9 +7271,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -7377,10 +7281,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"scene-tutorial\" - fuente: src/scene-tutorial.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7388,9 +7288,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"scene-tutorial\" - fuente: src/scene-tutorial.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · escena Tutorial — cómo jugar. Objetos: Texto, Icono, UIBase, UIModal. */",
@@ -7429,9 +7331,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -7441,10 +7341,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"scene-nivel\" - fuente: src/scene-nivel.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7452,9 +7348,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"scene-nivel\" - fuente: src/scene-nivel.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · escena Nivel — una jornada: viajar por el Metro de la CDMX antes de que anochezca.",
@@ -7695,9 +7593,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     },
@@ -7707,10 +7603,6 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
-          "comment": "Modulo \"scene-resultado\" - fuente: src/scene-resultado.js (se regenera con tools/build_project.py).",
-          "comment2": "",
-          "disabled": false,
-          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7718,9 +7610,11 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          }
+          },
+          "comment": "Modulo \"scene-resultado\" - fuente: src/scene-resultado.js (se regenera con tools/build_project.py)."
         },
         {
+          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · escena Resultado — fin de cada jornada. Objetos: Texto, Icono, UIBase, UIModal. */",
@@ -7764,9 +7658,7 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false,
-          "disabled": false,
-          "folded": true
+          "eventsSheetExpanded": false
         }
       ]
     }
