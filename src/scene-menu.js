@@ -5,7 +5,7 @@
   if (U.Scenes.menu) return;
 
   function init(scene) {
-    var m = scene._um = { t: 0, view: 'main', resetAsk: 0, buildings: [], train: scene.createObject('Tren'), stars: [] };
+    var m = scene._um = { t: 0, view: 'main', resetAsk: 0, buildings: [], train: scene.createObject('Tren'), stars: [], fx: U.FX.menu(scene) };
     var rnd = util.seeded(7);
     for (var i = 0; i < 14; i++) {
       var b = scene.createObject('Edificio'); b.setAnimationName('e' + (i % 4)); b.setScale(3);
@@ -85,6 +85,7 @@
     ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });
     if (m.view === 'levels') drawLevels(scene, ui, m, data); else drawMain(scene, ui, m, data);
     ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });
+    m.fx.update(dt, m);
     ui.end();
   };
 })();
