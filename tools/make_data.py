@@ -38,6 +38,15 @@ stations = []
 for name, s in d["STATIONS"].items():
     x, y = FIX_POS.get(name, (s["x"], s["y"]))
     stations.append({"id": name, "x": x, "y": y, "line": str(s["line"]), "shop": bool(s["shop"]) or name in EXTRA_SHOPS})
+# Estaciones eliminadas del juego por completo (pedido): la línea sigue pasando y sus vecinas quedan conectadas directo (5 min, como cualquier tramo).
+REMOVED = ["Niños Héroes", "Potrero", "Popotla", "Xola"]
+stations = [st for st in stations if st["id"] not in REMOVED]
+conns = [list(c) for c in d["CONNECTIONS"]]
+for r in REMOVED:
+    nb = [c[1] if c[0] == r else c[0] for c in conns if r in c[:2]]
+    conns = [c for c in conns if r not in c[:2]]
+    assert len(nb) == 2, r + ": se esperaban exactamente 2 vecinas"
+    if not any({c[0], c[1]} == set(nb) for c in conns): conns.append([nb[0], nb[1], 5])
 json.dump({"lines": LINES, "stations": stations}, open(f"{out}/estaciones.json", "w"), ensure_ascii=False, indent=1)
 # Rutas de combi: unen estaciones algo separadas que el Metro no conecta directo (el 4.º valor es "combi").
 # Elegidas con un solucionador para que ningún día se vuelva trivial (los días 2 a 5 siguen exigiendo Monster); tiempo ≈ 4 + 1.5 × distancia en casillas.
@@ -46,16 +55,16 @@ COMBIS = [
   ["Buenavista", "San Cosme", 8], ["Isabel la Católica", "Lagunilla", 12], ["Merced", "Moctezuma", 12],
   ["San Lázaro LB", "Terminal Aérea", 12], ["Morelos", "San Antonio Abad", 12],
   ["Coyoacán", "Pantitlán", 35, 40, 55]]   # pedida a mano: línea 3 (sur) → línea 1 (este). Viaje largo (≈12 casillas): [tiempo, $, stamina] propios; con la tarifa normal rompería el balance de los niveles 2 a 5
-json.dump(d["CONNECTIONS"] + [c[:3] + ["combi"] + c[3:] for c in COMBIS], open(f"{out}/conexiones.json", "w"), ensure_ascii=False)
+json.dump(conns + [c[:3] + ["combi"] + c[3:] for c in COMBIS], open(f"{out}/conexiones.json", "w"), ensure_ascii=False)
 
 # ---- niveles (rebalanceados: ver tools/solver.py) ----------------------
 # Balance verificado con tools/solver.py: todos ganables, robustos a mala suerte y (N2-N5) exigen comprar Monster.
 LV = [
   {"blocked": [],                    "moneyStart": 150, "staminaMax": 100},   # Lunes: tutorial, se gana sin Monster
-  {"blocked": ["Juárez", "Zócalo"],   "moneyStart": 210, "staminaMax": 110},   # Martes (Zócalo, línea 2, también bloqueada)
-  {"blocked": ["Allende"],           "moneyStart": 210, "staminaMax": 100},   # Miércoles
-  {"blocked": ["Tlatelolco"],        "moneyStart": 230, "staminaMax": 120},   # Jueves (antes: meta inalcanzable)
-  {"blocked": ["Isabel la Católica", "Pino Suárez", "Pino Suárez L2", "Candelaria", "Candelaria LB", "Candelaria LB2"],
+  {"blocked": ["Juárez", "Zócalo"],   "moneyStart": 210, "staminaMax": 100},   # Martes (Zócalo, línea 2, también bloqueada)
+  {"blocked": ["Allende"],           "moneyStart": 210, "staminaMax": 90},    # Miércoles
+  {"blocked": ["Tlatelolco", "Pantitlán"], "moneyStart": 230, "staminaMax": 105},   # Jueves (Pantitlán de la línea 1 también bloqueada)
+  {"blocked": ["Isabel la Católica", "Pino Suárez", "Pino Suárez L2", "Candelaria", "Candelaria LB", "Candelaria LB2", "Coyoacán"],
    "moneyStart": 170, "staminaMax": 90},                                        # Viernes
 ]
 levels = []
@@ -98,4 +107,4 @@ for n in news:
     if n["id"] in BLOCK_TEXT: n["title"], n["impact"] = BLOCK_TEXT[n["id"]]
 json.dump(news, open(f"{out}/noticias.json", "w"), ensure_ascii=False, indent=1)
 json.dump(config, open(f"{out}/config.json", "w"), ensure_ascii=False, indent=1)
-print("ok", len(stations), "estaciones", len(d["CONNECTIONS"]), "conexiones +", len(COMBIS), "combis", len(levels), "niveles", len(news), "noticias")
+print("ok", len(stations), "estaciones", len(conns), "conexiones +", len(COMBIS), "combis", len(levels), "niveles", len(news), "noticias")

@@ -78,4 +78,6 @@ npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 ## Noticias y bloqueos
 
 - **Las noticias solo ocurren cuando el jugador se mueve:** nunca llegan con el reloj o mientras piensas. La primera (siempre de seguridad) llega tras el primer movimiento y después una cada 2 o 3 movimientos con 75 % de probabilidad (`config.news`: `firstAfterMoves`, `everyMoves`, `chance`; `News.onMove` en `src/news.js`). Una noticia nunca repite un bloqueo que ya existe en el nivel.
-- **Nivel 2 (martes):** empieza con **Juárez** (línea 3) y **Zócalo** (línea 2) bloqueadas.
+- **Bloqueos al empezar cada nivel:** N2 **Juárez** y **Zócalo** · N3 **Allende** · N4 **Tlatelolco** y **Pantitlán** (línea 1) · N5 Isabel la Católica, Pino Suárez, Candelaria y **Coyoacán** (definidos en `LV` de `tools/make_data.py`).
+- **Estaciones eliminadas del juego:** Niños Héroes y Potrero (línea 3), Popotla y Xola (línea 2). La línea sigue pasando: sus vecinas quedan conectadas directo (un tramo normal de 5 min). Son 79 estaciones y 85 tramos de Metro.
+- **Balance:** al acortarse las rutas se bajó la stamina máxima de N2 (100), N3 (90) y N4 (105) para que los niveles 2 a 5 sigan exigiendo comprar Monster (`npm run balance`).

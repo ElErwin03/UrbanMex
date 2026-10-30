@@ -161,13 +161,6 @@
    "shop": false
   },
   {
-   "id": "Popotla",
-   "x": 10,
-   "y": 5,
-   "line": "2",
-   "shop": false
-  },
-  {
    "id": "Colegio Militar",
    "x": 10,
    "y": 6,
@@ -252,13 +245,6 @@
    "shop": false
   },
   {
-   "id": "Xola",
-   "x": 18,
-   "y": 18,
-   "line": "2",
-   "shop": false
-  },
-  {
    "id": "Villa de Cortés",
    "x": 19,
    "y": 19,
@@ -308,13 +294,6 @@
    "shop": false
   },
   {
-   "id": "Potrero",
-   "x": 15,
-   "y": 3,
-   "line": "3",
-   "shop": false
-  },
-  {
    "id": "La Raza",
    "x": 15,
    "y": 4,
@@ -353,13 +332,6 @@
    "id": "Balderas L3",
    "x": 15,
    "y": 9,
-   "line": "3",
-   "shop": false
-  },
-  {
-   "id": "Niños Héroes",
-   "x": 15,
-   "y": 11,
    "line": "3",
    "shop": false
   },
