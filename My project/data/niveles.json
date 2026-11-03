@@ -18,7 +18,7 @@
   "startDesc": "Tu casa en Indios Verdes. Llega a la UNAM.",
   "goalDesc": "¡Llegaste a la UNAM!",
   "moneyStart": 210,
-  "staminaMax": 110,
+  "staminaMax": 100,
   "blocked": [
    "Juárez",
    "Zócalo"
@@ -32,7 +32,7 @@
   "startDesc": "Tu casa en Cuatro Caminos. Llega al trabajo en Tasqueña.",
   "goalDesc": "¡Llegaste al trabajo!",
   "moneyStart": 210,
-  "staminaMax": 100,
+  "staminaMax": 90,
   "blocked": [
    "Allende"
   ]
@@ -45,9 +45,10 @@
   "startDesc": "Tu casa en el Politécnico. Llega a una junta en Zapata.",
   "goalDesc": "¡Llegaste a la junta!",
   "moneyStart": 230,
-  "staminaMax": 120,
+  "staminaMax": 105,
   "blocked": [
-   "Tlatelolco"
+   "Tlatelolco",
+   "Pantitlán"
   ]
  },
  {
@@ -65,7 +66,8 @@
    "Pino Suárez L2",
    "Candelaria",
    "Candelaria LB",
-   "Candelaria LB2"
+   "Candelaria LB2",
+   "Coyoacán"
   ]
  }
 ]

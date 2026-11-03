@@ -23,8 +23,8 @@ function playBot(levelIndex, seed, withNews) {
 }
 
 test('los datos se normalizan y son coherentes', () => {
-  assert.equal(data.stationList.length, 83);
-  assert.equal(data.connections.filter((c) => !c.combi).length, 89);                 // Metro
+  assert.equal(data.stationList.length, 79);                                          // 83 originales − 4 eliminadas
+  assert.equal(data.connections.filter((c) => !c.combi).length, 85);                 // Metro
   assert.equal(data.connections.filter((c) => c.combi).length, 9);                    // rutas de combi
   data.connections.filter((c) => c.combi).forEach((c) => assert.ok(!c.transfer, 'una combi no es un transbordo: ' + c.a + ' - ' + c.b));
   const pos = {};
@@ -196,4 +196,32 @@ test('noticias: solo llegan cuando el jugador se mueve (la primera tras el prime
     assert.ok(gaps.length >= 4, 'debería haber varias noticias: ' + gaps);
     gaps.slice(1).forEach((g) => assert.ok(g >= cfg.everyMoves[0] && g <= cfg.everyMoves[1], 'separación fuera de rango: ' + gaps));
   } finally { cfg.chance = saved; }
+});
+
+test('estaciones eliminadas: Niños Héroes, Potrero (línea 3), Popotla y Xola (línea 2) ya no existen y las líneas siguen unidas', () => {
+  ['Niños Héroes', 'Potrero', 'Popotla', 'Xola'].forEach((n) => {
+    assert.ok(!data.stations[n], n + ' debe haberse eliminado');
+    data.connections.forEach((c) => assert.ok(c.a !== n && c.b !== n, 'conexión con una estación eliminada: ' + n));
+    data.news.forEach((x) => assert.ok(!JSON.stringify(x).includes(n), 'noticia que menciona ' + n));
+    data.levels.forEach((l) => assert.ok(![l.start, l.goal].concat(l.blocked).includes(n), 'nivel que usa ' + n));
+  });
+  // sus vecinas quedan conectadas directo (un tramo normal de Metro)
+  [['Deportivo 18 de Marzo', 'La Raza'], ['Balderas L3', 'Hospital General'], ['Cuitláhuac', 'Colegio Militar'], ['Viaducto', 'Villa de Cortés']].forEach(([a, b]) => {
+    const c = data.connections.find((x) => !x.combi && ((x.a === a && x.b === b) || (x.a === b && x.b === a)));
+    assert.ok(c, `falta la conexión ${a} – ${b}`); assert.equal(c.cost, 5);
+  });
+  // la red sigue conectada (todas las estaciones se alcanzan desde cualquier otra)
+  const adj = {}; data.connections.forEach((c) => { (adj[c.a] = adj[c.a] || []).push(c.b); (adj[c.b] = adj[c.b] || []).push(c.a); });
+  const seen = new Set([data.stationList[0].id]), q = [data.stationList[0].id];
+  while (q.length) { const u = q.pop(); (adj[u] || []).forEach((v) => { if (!seen.has(v)) { seen.add(v); q.push(v); } }); }
+  assert.equal(seen.size, data.stationList.length);
+});
+
+test('bloqueos de nivel: el 4 bloquea Pantitlán (línea 1) y el 5 bloquea Coyoacán desde el inicio', () => {
+  assert.ok(data.levels[3].blocked.includes('Pantitlán') && data.levels[3].blocked.includes('Tlatelolco'));
+  assert.equal(data.stations['Pantitlán'].line, '1');
+  const r4 = U.Rules.createRun(data, 3, U.util.seeded(2)); assert.ok(r4.blocked['Pantitlán']);
+  assert.ok(data.levels[4].blocked.includes('Coyoacán'));
+  const r5 = U.Rules.createRun(data, 4, U.util.seeded(2)); assert.ok(r5.blocked['Coyoacán']);
+  assert.ok(!U.Rules.canTravel(Object.assign(r5, { current: 'Viveros' }), 'Coyoacán').ok, 'no se puede viajar a una estación bloqueada');
 });
