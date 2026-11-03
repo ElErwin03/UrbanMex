@@ -9,7 +9,7 @@ import json, os, glob
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJ = os.path.join(ROOT, 'My project')
 SRC = os.path.join(ROOT, 'src')
-MODULES = ['core', 'data', 'graph', 'rules', 'news', 'ui', 'map', 'phone', 'fx', 'scene-menu', 'scene-tutorial', 'scene-nivel', 'scene-resultado']
+MODULES = ['core', 'data', 'graph', 'rules', 'news', 'ui', 'map', 'phone', 'fx', 'audio', 'scene-menu', 'scene-tutorial', 'scene-nivel', 'scene-resultado']
 FONT = 'PressStart2P-Regular.ttf'
 
 # ------------------------------------------------------------------ recursos
@@ -19,6 +19,10 @@ def resources():
         n = os.path.basename(f)
         # sprites de efectos (fx_*): luces y sombras suaves, se escalan con filtro lineal; el pixel art conserva 'nearest'
         res.append({"alwaysLoaded": False, "file": f"assets/img/{n}", "kind": "image", "metadata": "", "name": n, "smoothed": n.startswith('fx_'), "userAdded": True})
+    for f in sorted(glob.glob(f'{PROJ}/assets/audio/*.ogg')):         # audio (tools/make_audio.py): músicas en streaming, el resto precargado como sonido
+        n = os.path.basename(f); music = n.startswith('musica_')
+        res.append({"alwaysLoaded": True, "file": f"assets/audio/{n}", "kind": "audio", "metadata": "", "name": n, "preloadAsMusic": music,
+                    "preloadAsSound": not music, "preloadInCache": False, "userAdded": True})
     res.append({"alwaysLoaded": False, "file": f"assets/fonts/{FONT}", "kind": "font", "metadata": "", "name": FONT, "userAdded": True})
     for f in sorted(glob.glob(f'{PROJ}/data/*.json')):
         n = os.path.basename(f)
@@ -93,7 +97,7 @@ def scene(name, objs, own_mod, fn):
                       'Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.')]
     events += [link('Mod_' + m) for m in MODULES]
     events.append(js_event(f'gdjs.UrbanMex.Scenes.{fn}(runtimeScene);'))
-    return {"b": 28, "disableInputWhenNotFocused": True, "mangledName": name, "name": name, "r": 14, "stopSoundsOnStartup": True, "title": "", "v": 12,
+    return {"b": 28, "disableInputWhenNotFocused": True, "mangledName": name, "name": name, "r": 14, "stopSoundsOnStartup": False, "title": "", "v": 12,
             "renderer3DWorldScale": 100, "standardSortMethod": True,
             "uiSettings": {"grid": False, "gridType": "rectangular", "gridWidth": 32, "gridHeight": 32, "gridDepth": 32, "gridOffsetX": 0, "gridOffsetY": 0,
                            "gridOffsetZ": 0, "gridColor": 10401023, "gridAlpha": 0.8, "snap": False, "zoomFactor": 0.5, "windowMask": False,

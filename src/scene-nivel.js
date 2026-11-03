@@ -8,6 +8,7 @@
   var REASON = { stamina: 'SIN STAMINA', money: 'SIN DINERO', night: 'ANOCHECE', blocked: 'BLOQUEADA', no_connection: 'NO CONECTADA' };
 
   function wrapLines(lines, cols) { return [].concat.apply([], [].concat(lines).map(function (l) { return l === '' ? [''] : util.wrap(l, cols); })); }   // conserva las líneas en blanco
+  function snd(um, name) { U.Audio.play(um.ui.scene, name); }   // efecto de sonido suave (audio.js)
   function float(um, text, color) { um.floats.push({ text: text, color: color, t: 0 }); if (um.floats.length > 4) um.floats.shift(); }
 
   /** Ventana modal. o: {title, lines[], buttons:[{label, kind:'safe'|'danger'|'neutral', action}]}. Se encolan si ya hay una abierta. */
@@ -40,23 +41,24 @@
 
   function travel(um, id) {
     var run = um.run, from = run.current, out = R.travel(run, id);
-    if (!out.ok) { float(um, REASON[out.reason] || 'NO SE PUEDE', PAL.red); return; }
-    um.selected = null; if (um.map.cam.zoom > um.map.fitZoom + 0.05) um.map.followPlayer(); um.map.walk(from, id, 0.45);   // con toda la red a la vista la cámara no se mueve
+    if (!out.ok) { float(um, REASON[out.reason] || 'NO SE PUEDE', PAL.red); snd(um, 'error'); return; }
+    snd(um, 'viaje'); um.selected = null; if (um.map.cam.zoom > um.map.fitZoom + 0.05) um.map.followPlayer(); um.map.walk(from, id, 0.45);   // con toda la red a la vista la cámara no se mueve
     um.pending = out; float(um, id + '  -' + out.cost.time + ' min', PAL.blue);
   }
 
   function resolve(um) {
     var out = um.pending, run = um.run; um.pending = null;
     var item = N.onMove(run);                                   // las noticias solo ocurren cuando el jugador se mueve
-    if (item) { um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; }
-    if (out.type === 'shop') shopModal(um);
+    if (item) { snd(um, 'noticia'); um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; }
+    if (out.type === 'shop') { snd(um, 'tienda'); shopModal(um); }
     else if (out.type === 'robbery') {
+      snd(um, 'robo');
       N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');
       modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', '', '"Debiste haber leido las noticias..."'],
                   buttons: [{ label: 'SEGUIR', kind: 'danger' }] });
     } else if (out.type === 'lucky') {
       N.info(run, 'Pasaste de suerte', 'Ibas por ' + run.current + ' (zona reportada) y no paso nada. Esta vez!', 'Sin incidentes');
-      float(um, 'Pasaste de suerte', PAL.green);
+      float(um, 'Pasaste de suerte', PAL.green); snd(um, 'suerte');
     }
   }
 
@@ -69,17 +71,17 @@
   }
   function buy(um) {
     var r = R.buyMonster(um.run);
-    if (r.ok) { float(um, '+' + r.gained + ' stamina', PAL.yellow); N.info(um.run, 'Monster!', 'Compraste un Monster Energy.', '+' + r.gained + ' stamina'); }
-    else float(um, r.reason === 'full' ? 'Stamina llena' : 'Sin dinero', PAL.red);
+    if (r.ok) { snd(um, 'moneda'); float(um, '+' + r.gained + ' stamina', PAL.yellow); N.info(um.run, 'Monster!', 'Compraste un Monster Energy.', '+' + r.gained + ' stamina'); }
+    else { float(um, r.reason === 'full' ? 'Stamina llena' : 'Sin dinero', PAL.red); snd(um, 'error'); }
   }
 
   function clickMap(um, id) {
     var run = um.run;
     if (!id) { um.selected = null; return; }
     if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }
-    if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); return; }
-    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, 'No conectada', PAL.red); return; }
-    select(um, id);
+    if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); snd(um, 'error'); return; }
+    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, 'No conectada', PAL.red); snd(um, 'error'); return; }
+    select(um, id); snd(um, 'select');
   }
 
   /** Doble clic en una estación VECINA (conectada a la actual): viaja ahí sin pedir confirmación. Con cualquier otra, actúa como un clic normal. */
@@ -222,7 +224,8 @@
     if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
 
     um.map.update(dt, run, ui, um.hover, um.selected);
-    um.fx.update(dt, um.hover, um.selected);                    // después del mapa: usa su cámara y la posición del jugador
+    um.fx.update(dt, um.hover, um.selected);
+    U.Audio.tick(scene, 'nivel', dt);                           // música del nivel y tren lejano cada 60 s                    // después del mapa: usa su cámara y la posición del jugador
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }

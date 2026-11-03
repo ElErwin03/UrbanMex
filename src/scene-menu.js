@@ -86,6 +86,8 @@
     if (m.view === 'levels') drawLevels(scene, ui, m, data); else drawMain(scene, ui, m, data);
     ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });
     m.fx.update(dt, m);
+    U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
+    U.Audio.button(ui, scene, 'snd', 16, 14, 190, 30);                  // interruptor de sonido (se guarda)
     ui.end();
   };
 })();
