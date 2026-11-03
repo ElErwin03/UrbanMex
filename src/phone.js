@@ -157,7 +157,9 @@
       var dbl = U.session.dblTravel !== false;                                    // doble clic en una estación = viajar solo hasta ahí
       if (ui.button('ph:dbl', 'DOBLE CLIC VIAJAR: ' + (dbl ? 'SI' : 'NO'), x, y + 128, w, 30, { size: 8, fill: dbl ? '39;174;96' : '110;60;60' })) { U.session.dblTravel = !dbl; U.Save.persist(); }
       ui.lines('ph:dbh', util.wrap('Doble clic en una estacion vecina (la siguiente a la tuya): viajas ahi sin confirmar.', 31), x, y + 166, { size: 8, lineH: 12, color: PAL.dim });
-      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 232, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;
+      U.Audio.button(ui, um.ui.scene, 'ph:snd', x, y + 232, w, 30, 'MUSICA Y SONIDO');                             // música, tren y efectos (se guarda)
+      ui.lines('ph:sdh', util.wrap('Musica relajante de fondo y un tren lejano que pasa cada minuto, a volumen bajo.', 31), x, y + 270, { size: 8, lineH: 12, color: PAL.dim });
+      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 340, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;
     }
   };
 

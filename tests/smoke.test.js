@@ -47,6 +47,22 @@ function mockObject(def) {
   } });
 }
 
+// Administrador de sonido simulado y ESTRICTO: solo los métodos de GDevelop verificados en howler-sound-manager.ts; cada nombre debe ser un
+// recurso de audio declarado en el proyecto, los volúmenes van de 0 a 100 (de 0 a 1 en fade) y la música debe ir en bucle.
+const audioCheck = (n) => { assert.ok(resNames[n] && resNames[n].kind === 'audio', 'recurso de audio no declarado: ' + n); assert.ok(fs.existsSync(fileOf(n)), 'falta el archivo de ' + n); };
+const SND = { log: [], music: {}, gv: 100,
+  reset() { this.log = []; this.music = {}; this.gv = 100; },
+  playSound(n, loop, v, p) { audioCheck(n); assert.equal(loop, false); assert.ok(v >= 0 && v <= 100 && p === 1, 'volumen/tono de ' + n); this.log.push({ k: 'sound', n, v }); },
+  playMusicOnChannel(n, ch, loop, v, p) {
+    audioCheck(n); assert.equal(loop, true, 'la música va en bucle'); assert.ok(v >= 0 && v <= 100 && [0, 1].includes(ch));
+    if (this.music[ch]) this.music[ch].stopped = true;
+    this.music[ch] = { n, ch, stopped: false, fades: [], fade(a, b, d) { assert.ok(a >= 0 && a <= 1 && b >= 0 && b <= 1 && d > 0); this.fades.push([a, b, d]); return this; }, stop() { this.stopped = true; return this; } };
+    this.log.push({ k: 'music', n, ch, v });
+  },
+  getMusicOnChannel(ch) { return this.music[ch] || null; },
+  setGlobalVolume(v) { assert.ok(v >= 0 && v <= 100); this.gv = v; },
+  count(re) { return this.log.filter((e) => re.test(e.n)).length; } };
+
 function makeScene(layout, input, json) {
   const layers = layout.layers.map((l) => l.name), cams = {};
   const mkLayer = (n) => cams[n] = cams[n] || { x: 640, y: 360, zoom: 1, setCameraX(v) { assert.ok(Number.isFinite(v)); this.x = v; }, setCameraY(v) { assert.ok(Number.isFinite(v)); this.y = v; },
@@ -55,7 +71,7 @@ function makeScene(layout, input, json) {
     createObject(n) { const d = layout.objects.find((o) => o.name === n); assert.ok(d, `objeto "${n}" no declarado en la escena ${layout.name}`); const o = mockObject(d); scene.objects.push(o); return o; },
     getLayer(n) { assert.ok(layers.includes(n), `capa inexistente "${n}"`); return mkLayer(n); },
     getElapsedTime: () => 100, requestChange(c, n) { scene.changes.push([c, n]); },
-    getGame: () => ({ getInputManager: () => input, getJsonManager: () => json }) };
+    getGame: () => ({ getInputManager: () => input, getJsonManager: () => json, getSoundManager: () => SND }) };
   return scene;
 }
 
@@ -374,4 +390,89 @@ test('efectos: el coste por fotograma es acotado (llamadas al motor) y el suelo 
   U.session.fxQuality = 'off'; const o = session('Nivel'); o.frame(2); o.scene._um.modal = null; const c2 = stats.calls; o.frame(20); const base = (stats.calls - c2) / 20;
   console.log(`   llamadas por fotograma: con efectos ${Math.round(perFrame)} / sin efectos ${Math.round(base)} (suelo: ${build} una sola vez)`);
   assert.ok(perFrame - base < 3500, 'los efectos añaden demasiadas llamadas por fotograma: ' + Math.round(perFrame - base)); U.session.fxQuality = 'high';
+});
+
+// ------------------------------------------------------------------------------------------------------------------------
+// Audio (src/audio.js): música relajante, tren lejano cada 60 s y efectos suaves
+// ------------------------------------------------------------------------------------------------------------------------
+const audioReset = () => { delete globalThis.gdjs.UrbanMex; SND.reset(); };
+const finishModals = (s) => { for (let g = 400; g-- > 0 && (s.scene._um.pending || s.scene._um.map.moving() || s.scene._um.modal);) { const u = s.scene._um; if (u.modal) { const b = u.modal.buttons, n = b.length, x0 = 320 + (640 - (n * 170 + (n - 1) * 20)) / 2; s.click(x0 + (n - 1) * 190 + 85, 210 + 300 - 62 + 20); } s.frame(2); } };
+
+test('audio: los archivos existen, son .ogg válidos, el proyecto los declara y las escenas no cortan los sonidos al cambiar', () => {
+  audioReset(); const m = session('Menu'); m.frame(2); const A = m.U.Audio;
+  const names = [...Object.values(A.MUSIC).map((x) => x.file), ...A.TRAINS, ...Object.keys(A.SFX).map((k) => `sfx_${k}.ogg`)];
+  assert.equal(new Set(names).size, 2 + 2 + 11);
+  names.forEach((n) => { audioCheck(n); const b = fs.readFileSync(fileOf(n)); assert.equal(b.subarray(0, 4).toString(), 'OggS', n + ' no es un Ogg'); });
+  const kb = (n) => fs.statSync(fileOf(n)).size / 1024;
+  assert.ok(kb('musica_menu.ogg') > 150 && kb('musica_nivel.ogg') > 150, 'las músicas duran más de un minuto'); assert.ok(kb('sfx_click.ogg') < 20, 'los efectos son cortos');
+  assert.ok(project.resources.resources.filter((r) => r.kind === 'audio').every((r) => r.alwaysLoaded && (r.name.startsWith('musica_') ? r.preloadAsMusic && !r.preloadAsSound : r.preloadAsSound && !r.preloadAsMusic)));
+  project.layouts.forEach((l) => assert.equal(l.stopSoundsOnStartup, false, 'si GDevelop corta los sonidos al cambiar de escena, la música se reinicia: ' + l.name));
+  // niveles de volumen bajos a propósito: la música es de fondo y el tren apenas se nota
+  assert.ok(Object.values(A.MUSIC).every((x) => x.vol <= 45)); assert.ok(A.state && Object.values(A.SFX).every((v) => v <= 50));
+});
+
+test('audio: una pista por tipo de pantalla, sin reiniciarse entre Menú/Tutorial/Resultado y con fundido al pasar al Nivel', () => {
+  audioReset(); const m = session('Menu'); m.frame(5);
+  assert.equal(SND.count(/^musica_/), 1); assert.equal(SND.log.find((e) => e.k === 'music').n, 'musica_menu.ogg');
+  const first = SND.music[Object.keys(SND.music)[0]];
+  const t = session('Tutorial'); t.frame(5); const r = session('Resultado'); r.frame(5);
+  assert.equal(SND.count(/^musica_/), 1, 'misma música en Menú, Tutorial y Resultado: no se reinicia');
+  const n = session('Nivel'); n.frame(3);
+  assert.equal(SND.count(/^musica_/), 2); assert.equal(SND.log.filter((e) => e.k === 'music')[1].n, 'musica_nivel.ogg');
+  assert.equal(first.fades.length, 1, 'la pista anterior baja con fundido'); assert.deepEqual(first.fades[0].slice(1), [0, 1800]);
+  assert.equal(first.stopped, false); n.frame(25); assert.equal(first.stopped, true, 'y se detiene cuando acaba el fundido');
+  const playing = Object.values(SND.music).filter((x) => !x.stopped); assert.equal(playing.length, 1); assert.equal(playing[0].n, 'musica_nivel.ogg');
+  n.frame(100); assert.equal(SND.count(/^musica_/), 2, 'en el Nivel no vuelve a empezar');
+});
+
+test('audio: el tren pasa cada 60 s (primero a los 20 s), alternando lado, a volumen bajo y más suave que la música', () => {
+  audioReset(); const t = session('Tutorial'); t.frame(2); const A = t.U.Audio, trains = () => SND.log.filter((e) => /^tren_/.test(e.n));
+  assert.equal(A.TRAIN_EVERY, 60);
+  t.frame(185); assert.equal(trains().length, 0, 'a los 18.7 s todavía no');                 // el mock avanza 0.1 s por fotograma
+  t.frame(20); assert.equal(trains().length, 1, 'a los 20 s pasa el primero');
+  t.frame(590); assert.equal(trains().length, 1, 'a los 79 s todavía no pasa el segundo');
+  t.frame(20); assert.equal(trains().length, 2, 'a los 80 s, el segundo (60 s después)');
+  t.frame(1200); assert.equal(trains().length, 4, 'y así cada minuto: 20, 80, 140 y 200 s');
+  const l = trains(); assert.notEqual(l[0].n, l[1].n, 'alterna izquierda→derecha y derecha→izquierda'); assert.equal(l[0].n, l[2].n);
+  assert.ok(l.every((e) => e.v <= 30), 'volumen bajo'); assert.ok(l[0].v < SND.log.find((e) => e.k === 'music').v, 'más bajo que la música');
+});
+
+test('audio: efectos suaves en clics, selección, viaje, noticias y resultado (una sola vez)', () => {
+  audioReset(); const m = session('Menu'); m.frame(5); SND.log.length = 0;
+  m.click(640, 484); assert.equal(SND.count(/^sfx_click/), 1, 'clic de botón en el menú');
+  audioReset(); const s = session('Nivel'); s.frame(3); const u = () => s.scene._um, U = s.U; u().modal = null; u().modalQueue = [];
+  const at = (id) => { const w = u().map.stationPos(id), c = u().map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
+  const run = u().run, nb = U.Graph.neighbors(run.graph, run.current).find((x) => !run.blocked[x] && !run.data.stations[x].shop);
+  SND.log.length = 0; s.click(...at(nb)); assert.equal(SND.count(/^sfx_select/), 1, 'al elegir una estación');
+  s.click(132, 592 + 90 + 16); assert.equal(SND.count(/^sfx_viaje/), 1, 'al viajar'); finishModals(s);
+  SND.log.length = 0; const nb2 = U.Graph.neighbors(u().run.graph, u().run.current).find((x) => !u().run.blocked[x]); u().run.blocked[nb2] = true;   // fuerza el caso: estación bloqueada
+  s.click(...at(nb2)); assert.equal(SND.count(/^sfx_error/), 1, 'estación bloqueada → error suave'); delete u().run.blocked[nb2];
+  u().run.newsMoves = 1; u().run.data.config.news.chance = 1; const before = SND.count(/^sfx_noticia/);
+  for (let i = 0; i < 6 && SND.count(/^sfx_noticia/) === before; i++) { const n2 = U.Graph.neighbors(u().run.graph, u().run.current).find((x) => !u().run.blocked[x] && !u().run.data.stations[x].shop); if (!n2) break; u().run.newsMoves = 1; s.click(...at(n2)); s.click(...at(n2)); finishModals(s); }
+  assert.ok(SND.count(/^sfx_noticia/) > before, 'al llegar una noticia');
+  // Resultado: fanfarria una sola vez (ganar / perder)
+  audioReset(); const r = session('Resultado'); r.frame(1);
+  r.U.session.lastResult = { won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h', steps: 3, money: 5, robbed: 0, stolen: 0, newsRead: 1, reason: '' };
+  r.frame(30); assert.equal(SND.count(/^sfx_ganar/), 1); assert.equal(SND.count(/^sfx_perder/), 0);
+  audioReset(); const r2 = session('Resultado'); r2.frame(1); r2.U.session.lastResult = { won: false, levelIndex: 0, day: 'LUNES', arrival: '', travelTime: '', steps: 1, money: 0, robbed: 0, stolen: 0, newsRead: 0, reason: 'Sin stamina' };
+  r2.frame(30); assert.equal(SND.count(/^sfx_perder/), 1);
+});
+
+test('audio: el interruptor de sonido (Menú y AJUSTES) apaga todo con volumen global 0, no suena el tren y se guarda con el progreso', () => {
+  const store = {}; globalThis.localStorage = { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } };
+  try {
+    audioReset(); const m = session('Menu'); m.frame(5); const U = m.U;
+    assert.equal(U.session.audio, true); assert.equal(SND.gv, 100);
+    m.click(100, 29);                                                              // SONIDO: SI → NO (esquina del menú)
+    assert.equal(U.session.audio, false); assert.equal(SND.gv, 0, 'volumen global 0'); assert.equal(JSON.parse(store['UrbanMex_save_v1']).audio, false);
+    SND.log.length = 0; m.frame(900); assert.equal(SND.count(/^tren_/), 0, 'apagado: no suena el tren'); m.click(640, 484); assert.equal(SND.count(/^sfx_/), 0, 'ni los efectos');
+    // "reiniciar el juego": el sonido sigue apagado
+    audioReset(); const m2 = session('Menu'); m2.frame(5); assert.equal(m2.U.session.audio, false); assert.equal(SND.gv, 0);
+    m2.click(100, 29); assert.equal(m2.U.session.audio, true); assert.equal(SND.gv, 100); assert.equal(JSON.parse(store['UrbanMex_save_v1']).audio, true);
+    // el mismo interruptor en AJUSTES del celular
+    audioReset(); const s = session('Nivel'); s.frame(3); const u = s.scene._um; u.modal = null; u.phone.app = 'config'; s.frame(2);
+    s.click(1000, 140 + 232 + 15); assert.equal(s.U.session.audio, false); assert.equal(SND.gv, 0);
+    s.click(1000, 140 + 232 + 15); assert.equal(s.U.session.audio, true); assert.equal(SND.gv, 100);
+    s.click(1000, 140 + 340 + 14); assert.equal(u.exitToMenu, true, 'SALIR AL MENU sigue funcionando en su nuevo lugar');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });

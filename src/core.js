@@ -8,7 +8,7 @@
 
   U.VERSION = '2.0.0';
   // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)
-  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, loaded: false };   // completed: índices de niveles ganados (se guardan); dblTravel: ajuste del celular
+  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, audio: true, loaded: false };   // completed: índices de niveles ganados (se guardan); dblTravel y audio: ajustes (se guardan)
 
   /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,
    *  así que sobrevive entre partidas en el navegador y en las exportaciones de escritorio; sin almacenamiento solo dura la sesión. */
@@ -25,12 +25,13 @@
       U.session.completed = (d.completed || []).filter(function (i) { return typeof i === 'number' && i >= 0 && i % 1 === 0; });
       if (d.seenTutorial) U.session.seenTutorial = true;
       if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;
+      if (typeof d.audio === 'boolean') U.session.audio = d.audio;
     },
     persist: function () {
       try {
         var st = this._store(); if (!st) return;
         st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),
-                                               seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false }));
+                                               seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, audio: U.session.audio !== false }));
       } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }
     },
     isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },
