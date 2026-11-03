@@ -7,7 +7,10 @@
   U.Scenes.resultado = function (scene) {
     var ui = U.UI.of(scene), r = U.session.lastResult, data = U.Data.ready(scene);
     ui.begin();
-    (scene._umFx || (scene._umFx = U.FX.ambient(scene, 'neutral'))).update(Math.min(0.1, scene.getElapsedTime() / 1000), !r ? 'neutral' : r.won ? 'win' : 'lose');   // resplandor verde / rojo según el resultado
+    var dt = Math.min(0.1, scene.getElapsedTime() / 1000);
+    (scene._umFx || (scene._umFx = U.FX.ambient(scene, 'neutral'))).update(dt, !r ? 'neutral' : r.won ? 'win' : 'lose');   // resplandor verde / rojo según el resultado
+    U.Audio.tick(scene, 'menu', dt);
+    if (r && !scene._umJingle) { scene._umJingle = true; U.Audio.play(scene, r.won ? 'ganar' : 'perder'); }   // fanfarria suave, una vez
     if (!r || !data) {
       ui.text('x', 'Sin resultado', 640, 340, { size: 16, align: 'center' });
       if (ui.button('m', 'MENU', 540, 400, 200, 44, {})) scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu');

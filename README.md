@@ -13,6 +13,7 @@ My project/
   UrbanMex.json        proyecto de GDevelop (GENERADO, ver abajo)
   assets/img/          pixel art (generado con tools/make_art.py)
   assets/fonts/        Press Start 2P (licencia OFL incluida)
+  assets/audio/        música, tren y efectos .ogg (generado con tools/make_audio.py)
   data/*.json          estaciones, conexiones, niveles, noticias y economía  ← aquí se edita el juego
 src/                   módulos JavaScript (fuente de verdad del código)
 tools/                 generadores, solucionador de balance y vista previa sin GDevelop
@@ -31,6 +32,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `map` | mapa isométrico 2.5D (ciudad en relieve), cámara que encuadra toda la red, estaciones, jugador | sí |
 | `phone` | celular: Noticias, Ruta, Saldo, Ajustes | sí |
 | `fx` | efectos visuales: iluminación dinámica, partículas, bruma, viñeta (ver *Efectos visuales*) | sí |
+| `audio` | música de fondo, tren lejano cada 60 s y efectos de interfaz (ver *Música y sonido*) | sí |
 | `scene-*` | controlador de cada escena (Menu, Tutorial, Nivel, Resultado) | sí |
 
 En GDevelop cada módulo es una hoja de **eventos externos** `Mod_<nombre>` y cada escena los enlaza.
@@ -94,3 +96,20 @@ Capa de acabado "alta fidelidad" sobre el dibujo original: **no cambia ningún p
 - **Profundidad de campo ligera**: bruma arriba (lo lejano), oscurecimiento abajo y viñeta; el menú suma resplandor de ciudad, luz del tren y estrellas que centellean; Tutorial y Resultado llevan viñeta, bruma y polvo (resplandor verde o rojo según ganes o pierdas).
 - **Calidad**: `U.session.fxQuality = 'high'` (por defecto) | `'low'` (menos partículas y luces) | `'off'` (sin efectos; vuelve la sombra original del jugador).
 - **Vista previa sin GDevelop**: `node tools/dump_scene.js . Nivel salida.json --level 1 --minute 1150` y `python3 tools/render_preview.py salida.json . salida.png` generan un PNG aproximado (soporta mezcla aditiva y multiplicar). No es el render real de la GPU ni reproduce efectos de capa de GDevelop.
+
+## Música y sonido
+
+Todo el audio se **sintetiza** con `python3 tools/make_audio.py` (numpy + scipy + ffmpeg con libvorbis): no hay muestras ni descargas, así que no hay derechos de terceros. Los volúmenes (0 a 100) están en `src/audio.js` y son bajos a propósito.
+
+| Archivo | Qué es | Volumen en el juego |
+|---|---|---|
+| `musica_menu.ogg` (64 s) | pad cálido y arpegios suaves de piano eléctrico (Am9 · Fmaj9 · Cmaj9 · G6). Menú, Tutorial y Resultado | 40 |
+| `musica_nivel.ogg` (58 s) | más luminosa, lenta y espaciada (Dmaj9 · Bm9 · Gmaj9 · A6/9). Durante el nivel | 40 |
+| `tren_a.ogg` / `tren_b.ogg` (16 s) | tren lejano: retumbo, zumbido con efecto Doppler, soplo de aire y golpeteo entre vagones; pasa de izquierda a derecha y al revés | 28 |
+| `sfx_*.ogg` | clic, selección, viaje, noticia, moneda, tienda, asalto, suerte, error, ganar y perder | 34 a 48 |
+
+- **Tren de fondo:** suena **cada 60 s** (el primero a los 20 s), alternando el lado por el que pasa, unos 8 dB por debajo de la música para que apenas se note (`TRAIN_EVERY`, `TRAIN_FIRST` y `TRAIN_VOL` en `src/audio.js`).
+- **Música:** las dos pistas son bucles sin costura (la cola de la reverb da la vuelta). Al pasar de una a otra, la anterior baja con un fundido de 1.8 s; entre Menú, Tutorial y Resultado la música no se reinicia (por eso las escenas tienen `stopSoundsOnStartup` en falso).
+- **Interruptor de sonido:** `SONIDO: SI / NO` en la esquina del Menú y `MUSICA Y SONIDO` en AJUSTES del celular. Apagar pone el volumen global en 0 y se guarda con el progreso (`audio` en `UrbanMex_save_v1`).
+- **Para cambiar la música:** edita los acordes en `compose(...)` de `tools/make_audio.py` y vuelve a ejecutarlo; luego `python3 tools/build_project.py`.
+- Los navegadores no dejan reproducir audio hasta el primer clic de la persona; GDevelop/Howler lo reintenta solo en cuanto hay interacción.

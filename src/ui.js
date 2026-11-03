@@ -97,7 +97,9 @@
     this.rect(x, y, w, h, { fill: fill, border: o.disabled ? '80;80;100' : '255;255;255', bw: 2, modal: o.modal, block: true });
     var size = o.size || 8, tx = x + w / 2, ty = y + (h - size) / 2 + (over && this.down ? 2 : 0);
     this.text('btn:' + id, label, tx, ty, { size: size, align: 'center', z: z, color: o.disabled ? '120;120;140' : (o.color || '255;255;255') });
-    return !!(over && this.released);
+    var hit = !!(over && this.released);
+    if (hit && U.Audio) U.Audio.play(this.scene, 'click');          // clic suave (audio.js)
+    return hit;
   };
 
   /** Barra de progreso. pct 0..1 */
