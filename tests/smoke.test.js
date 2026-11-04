@@ -177,7 +177,7 @@ test('Resultado: botones según ganar/perder', () => {
 test('mapa isométrico: toda la red cabe en pantalla, sin zoom ni arrastre y sin quedar tapada por la interfaz', () => {
   const g = globalThis.gdjs; delete g.UrbanMex;
   const s = session('Nivel'); s.frame(2); const um = s.scene._um, cam = um.map.cam, data = um.data;
-  assert.ok(cam.zoom >= 0.9 && !cam.follow, 'la cámara debe abrir encuadrando todo (zoom ' + cam.zoom + ')');
+  assert.ok(cam.zoom >= 0.75 && !cam.follow, 'la cámara debe abrir encuadrando todo (zoom ' + cam.zoom + ')');
   // rectángulos de interfaz que existen sin abrir nada (el panel de estación solo cubre el borde inferior izquierdo)
   const ui = [[0, 0, 1280, 56], [16, 62, 322, 44], [920, 64, 340, 560], [920, 636, 340, 76], [16, 592, 540, 124]];
   const inRect = (x, y, r) => x > r[0] - 14 && x < r[0] + r[2] + 14 && y > r[1] - 14 && y < r[1] + r[3] + 14;
@@ -189,12 +189,51 @@ test('mapa isométrico: toda la red cabe en pantalla, sin zoom ni arrastre y sin
   });
 });
 
+test('mapa menos saturado: estaciones separadas, plazas despejadas y rutas secundarias por las calles (sin diagonales ni encimarse con el Metro)', () => {
+  const g = globalThis.gdjs; delete g.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const um = s.scene._um, d = um.data, L = g.UrbanMex.Layout;
+  assert.ok(L.K >= 1.25, 'las estaciones deben separarse (K ' + L.K + ')');
+  // 1) las estaciones nunca quedan a menos de ~1.3 casillas entre sí (antes las líneas 2 y 3 estaban a 1)
+  let minD = 1e9;
+  d.stationList.forEach((a, i) => d.stationList.forEach((b, j) => { if (j > i) minD = Math.min(minD, Math.hypot(L.pos(a).gx - L.pos(b).gx, L.pos(a).gy - L.pos(b).gy)); }));
+  assert.ok(minD >= 1.25, 'estaciones demasiado juntas: ' + minD.toFixed(2));
+  // 2) cada combi / transbordo: tramos solo en los ejes de la cuadrícula, y empieza y termina justo en sus estaciones
+  const sec = L.secondary(d); assert.equal(sec.length, d.connections.filter((c) => c.combi || c.transfer).length);
+  sec.forEach((r) => {
+    const a = L.pos(d.stations[r.conn.a]), b = L.pos(d.stations[r.conn.b]), pts = r.pts;
+    assert.ok(Math.hypot(pts[0].gx - a.gx, pts[0].gy - a.gy) < 1e-9 && Math.hypot(pts[pts.length - 1].gx - b.gx, pts[pts.length - 1].gy - b.gy) < 1e-9, 'no une ' + r.conn.a + ' con ' + r.conn.b);
+    L.segs(pts).forEach((sg) => assert.ok(Math.abs(sg[0].gx - sg[1].gx) < 1e-9 || Math.abs(sg[0].gy - sg[1].gy) < 1e-9, 'tramo en diagonal en ' + r.conn.a + ' > ' + r.conn.b));
+    assert.ok(pts.length <= 4, 'demasiados codos en ' + r.conn.a + ' > ' + r.conn.b);
+  });
+  // 3) ninguna ruta secundaria corre encimada con una vía del Metro más que un tramo corto (cruzarla sí es normal)
+  sec.forEach((r) => assert.ok(L.stats(d, r.pts, r.conn).overlap <= 3, r.conn.a + ' > ' + r.conn.b + ' va encimada con el Metro: ' + L.stats(d, r.pts, r.conn).overlap.toFixed(1)));
+  // 4) es determinista (mismo trazado siempre)
+  assert.equal(JSON.stringify(L.secondary(d).map((r) => r.pts)), JSON.stringify(sec.map((r) => r.pts)));
+  // 5) plaza despejada: ningún edificio ni parque a menos de 1.9 casillas de una estación
+  const K = L.K, near = um.map.lots.filter((l) => l.kind && l.plaza);
+  assert.equal(near.length, 0, 'hay edificios dentro de la plaza de una estación');
+  assert.ok(um.map.lots.some((l) => l.plaza), 'debe haber plazas marcadas');
+});
+
+test('el jugador sigue la ruta con codos de las combis y termina exactamente en la estación destino', () => {
+  const g = globalThis.gdjs; delete g.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const um = s.scene._um, d = um.data, map = um.map;
+  const c = d.connections.find((x) => x.combi), from = c.a, to = c.b;
+  const route = map.route(from, to), back = map.route(to, from);
+  assert.ok(route.length >= 2 && back.length === route.length);
+  assert.deepEqual(route.map((p) => [p.x, p.y]), back.slice().reverse().map((p) => [p.x, p.y]));
+  map.walk(from, to, 1); for (let i = 0; i < 12; i++) map.update(0.1, um.run, um.ui, null, null);
+  const end = map.stationPos(to);
+  assert.ok(!map.moving() && Math.hypot(map.pp.x - end.x, map.pp.y - end.y) < 1e-6, 'el jugador no llegó a ' + to);
+});
+
 test('mapa isométrico: proyección 2:1, ciudad 2.5D y trazados de relleno', () => {
   const g = globalThis.gdjs; delete g.UrbanMex;
   const s = session('Nivel'); s.frame(2); const um = s.scene._um, a = um.data.stationList[0];
   const p0 = um.map.stationPos(a.id);
-  const b = um.data.stationList.find((x) => x.x === a.x + 1 && x.y === a.y) || null;
-  if (b) { const p1 = um.map.stationPos(b.id); assert.equal(p1.x - p0.x, 24); assert.equal(p1.y - p0.y, 12); }   // +1 en x → ↘ (media casilla 24x12)
+  const K = g.UrbanMex.Layout.K, b = um.data.stationList.find((x) => x.x === a.x + 2 && x.y === a.y) || null;
+  assert.ok(b, 'debe haber una estación 2 casillas a la derecha de la primera');
+  const p1 = um.map.stationPos(b.id); assert.ok(Math.abs(p1.x - p0.x - 48 * K) < 1e-6 && Math.abs(p1.y - p0.y - 24 * K) < 1e-6);   // +2 en x → ↘ (casilla 2:1, separada por K)
   const anims = {}; s.scene.objects.forEach((o) => { if (o.anim && /^(b\d|parque)$/.test(o.anim)) anims[o.anim] = (anims[o.anim] || 0) + 1; });
   assert.ok(Object.keys(anims).length >= 6, 'deben usarse varios tipos de edificio: ' + JSON.stringify(anims));
   assert.ok(Object.values(anims).reduce((x, y) => x + y, 0) > 100, 'la ciudad debe tener cientos de edificios');
