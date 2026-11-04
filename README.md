@@ -113,3 +113,10 @@ Todo el audio se **sintetiza** con `python3 tools/make_audio.py` (numpy + scipy 
 - **Interruptor de sonido:** `SONIDO: SI / NO` en la esquina del Menú y `MUSICA Y SONIDO` en AJUSTES del celular. Apagar pone el volumen global en 0 y se guarda con el progreso (`audio` en `UrbanMex_save_v1`).
 - **Para cambiar la música:** edita los acordes en `compose(...)` de `tools/make_audio.py` y vuelve a ejecutarlo; luego `python3 tools/build_project.py`.
 - Los navegadores no dejan reproducir audio hasta el primer clic de la persona; GDevelop/Howler lo reintenta solo en cuanto hay interacción.
+
+## Responsivo (cualquier ventana)
+La interfaz y el mundo están dibujados en coordenadas fijas de 1280x720, así que el juego mantiene esa resolución lógica
+(`adaptGameResolutionAtRuntime: false`, `sizeOnStartupMode: ""`). GDevelop escala el lienzo para que quepa entero en la ventana,
+conservando la proporción 16:9 y centrándolo: en ventanas verticales o muy anchas aparecen franjas oscuras arriba/abajo o a los lados,
+pero nada se recorta y los clics siguen cayendo en el botón correcto. Antes la resolución se adaptaba al ancho de la ventana y, en
+ventanas estrechas, el menú y el mapa quedaban cortados. En móvil conviene jugar en horizontal (`orientation: landscape`).
