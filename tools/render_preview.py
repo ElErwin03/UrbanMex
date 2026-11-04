@@ -105,7 +105,8 @@ def render(dump, repo, out, crop=None, zoom=1):
                     fill = rgb(op['fill']) + (a8(op['fo']),)
                     if k == 'drawRectangle':
                         (x1, y1), (x2, y2) = T(a[0], a[1]), T(a[2], a[3])
-                        draw.rectangle([min(x1, x2), min(y1, y2), max(x1, x2) - 1, max(y1, y2) - 1], fill=fill)
+                        lx, ly = min(x1, x2), min(y1, y2)
+                        draw.rectangle([lx, ly, max(lx, max(x1, x2) - 1), max(ly, max(y1, y2) - 1)], fill=fill)   # a zoom < 1 un rectángulo fino puede medir < 1 px
                     elif k == 'drawEllipse':
                         cx, cy = T(a[0], a[1])
                         draw.ellipse([cx - a[2] * z / 2, cy - a[3] * z / 2, cx + a[2] * z / 2, cy + a[3] * z / 2], fill=fill)
