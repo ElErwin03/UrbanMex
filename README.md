@@ -120,3 +120,11 @@ La interfaz y el mundo están dibujados en coordenadas fijas de 1280x720, así q
 conservando la proporción 16:9 y centrándolo: en ventanas verticales o muy anchas aparecen franjas oscuras arriba/abajo o a los lados,
 pero nada se recorta y los clics siguen cayendo en el botón correcto. Antes la resolución se adaptaba al ancho de la ventana y, en
 ventanas estrechas, el menú y el mapa quedaban cortados. En móvil conviene jugar en horizontal (`orientation: landscape`).
+
+## Mapa menos saturado (estaciones y rutas secundarias)
+La cuadrícula lógica de `estaciones.json` no cambia; `src/layout.js` (funciones puras) decide cómo se acomoda en pantalla:
+- **Estaciones más separadas:** el mapa multiplica las coordenadas por `K = 1.3` (antes las líneas 2 y 3 tenían las estaciones a una sola casilla y se tocaban). La cámara encuadra la red completa, por eso el zoom inicial baja de ~97% a ~76%.
+- **Plaza despejada:** alrededor de cada estación (1.9 casillas) no hay edificios ni parques, y en 3.2 casillas solo edificios bajos. La ciudad tiene menos densidad (40% edificios, 10% parques, antes 52% y 8%) y las calles de todas las rutas quedan libres. Los edificios siempre se dibujan por debajo de las vías.
+- **Combis y transbordos por las calles:** ya no son diagonales rectas que cruzan todo el mapa. Siguen la cuadrícula (tramos en los ejes, máximo 2 codos); para cada ruta se elige, entre unos 40 trazados candidatos, el que menos se encima con el Metro, menos lo cruza, menos pasa pegado a estaciones ajenas y menos se mezcla con otras rutas secundarias. Es determinista. Las líneas del Metro siguen rectas. Se dibujan como calle angosta con codos redondeados, el jugador las recorre siguiendo los codos y el microbús va a la mitad del recorrido.
+- Los nombres de estación crecen hasta 35% cuando el zoom baja de 100%, para seguir legibles.
+Los ajustes (`K`, `PLAZA`, `CALM`, `BUILD_P`, pesos del puntaje) están al inicio de `src/layout.js` y `src/map.js`.
