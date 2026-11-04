@@ -110,7 +110,7 @@ def main():
     base = json.load(open(f'{PROJ}/UrbanMex.json', encoding='utf8')) if os.path.exists(f'{PROJ}/UrbanMex.json') else {}
     props = base.get('properties', {})
     props.update({"name": "UrbanMex", "windowWidth": 1280, "windowHeight": 720, "scaleMode": "nearest", "pixelsRounding": True,
-                  "antialiasingMode": "none", "orientation": "landscape", "adaptGameResolutionAtRuntime": True, "sizeOnStartupMode": "adaptWidth",
+                  "antialiasingMode": "none", "orientation": "landscape", "adaptGameResolutionAtRuntime": False, "sizeOnStartupMode": "",
                   "version": "2.0.0", "description": "Supervivencia Urbana - Metro CDMX"})
     proj = {"firstLayout": "Menu", "gdVersion": {"build": 285, "major": 5, "minor": 6, "revision": 0}, "initialGDVersion": "5.6.285",
             "properties": props, "resources": {"resources": resources()}, "objects": [], "objectsFolderStructure": {"folderName": "__ROOT"},

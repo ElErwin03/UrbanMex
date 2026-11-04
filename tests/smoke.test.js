@@ -109,6 +109,13 @@ test('el proyecto generado es coherente (recursos, objetos, capas, escena inicia
   assert.equal(project.properties.scaleMode, 'nearest');
 });
 
+test('responsivo: resolución lógica fija 1280x720 (la ventana solo escala y centra el lienzo, sin recortar la interfaz)', () => {
+  const p = project.properties;
+  assert.equal(p.windowWidth, 1280); assert.equal(p.windowHeight, 720);
+  assert.equal(p.adaptGameResolutionAtRuntime, false, 'si la resolución se adapta a la ventana, la UI (en coordenadas 1280x720) se recorta');
+  assert.ok(!p.sizeOnStartupMode, 'sizeOnStartupMode debe estar vacío (sin adaptWidth/adaptHeight/scaleOuter)');
+});
+
 test('Menú → Tutorial → Nivel con clics', () => {
   const m = session('Menu'); m.frame(60);
   m.click(640, 376);   // JUGAR
