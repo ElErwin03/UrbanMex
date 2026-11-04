@@ -8,7 +8,7 @@
   },
   "initialGDVersion": "5.6.285",
   "properties": {
-    "adaptGameResolutionAtRuntime": true,
+    "adaptGameResolutionAtRuntime": false,
     "antialiasingMode": "none",
     "antialisingEnabledOnMobile": false,
     "folderProject": false,
@@ -17,7 +17,7 @@
     "pixelsRounding": true,
     "projectUuid": "f04f9957-b98b-4904-b31c-82f2f58b9996",
     "scaleMode": "nearest",
-    "sizeOnStartupMode": "adaptWidth",
+    "sizeOnStartupMode": "",
     "templateSlug": "",
     "version": "2.0.0",
     "name": "UrbanMex",
