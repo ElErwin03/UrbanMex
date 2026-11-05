@@ -3,7 +3,7 @@
  * que REGISTRA lo que se dibuja (sprites, textos y comandos de los objetos Dibujante) y lo vuelca a un JSON.
  * El paso 2 (tools/render_preview.py) convierte ese JSON en un PNG.
  *
- *   node tools/dump_scene.js <carpeta-del-repo> <Escena> <salida.json> [--level N] [--frames N] [--minute M] [--select ESTACION] [--modal] [--phone APP] [--result win|lose]
+ *   node tools/dump_scene.js <carpeta-del-repo> <Escena> <salida.json> [--level N] [--frames N] [--minute M] [--select ESTACION] [--modal] [--phone APP] [--result win|lose] [--view sound|levels]
  *
  * Es una aproximación fiel del orden de dibujo (capas, zOrder, cámara), no el renderizador real de GDevelop:
  * no reproduce filtros/efectos de capa de GDevelop (Adjustment, etc.) ni el suavizado exacto de la GPU. Sí registra escala X/Y, ángulo
@@ -62,6 +62,7 @@ if (flag('result'))                                            // escena Resulta
 for (let i = 0; i < frames; i++) {
   frame();
   const um = scene._um;
+  if (flag('view') && um && !um.run) um.view = flag('view');                  // escena Menú: abre una vista (sound = volumen de los tres módulos)
   if (um && um.run) {
     if (!flag('modal')) um.modal = null;                       // quita la ventana de "EMPEZAR" para ver el mapa
     if (flag('minute')) um.run.minute = +flag('minute');

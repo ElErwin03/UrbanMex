@@ -8,7 +8,8 @@
 
   U.VERSION = '2.0.0';
   // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)
-  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, audio: true, loaded: false };   // completed: índices de niveles ganados (se guardan); dblTravel y audio: ajustes (se guardan)
+  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, loaded: false,
+    vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan
 
   /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,
    *  así que sobrevive entre partidas en el navegador y en las exportaciones de escritorio; sin almacenamiento solo dura la sesión. */
@@ -25,13 +26,19 @@
       U.session.completed = (d.completed || []).filter(function (i) { return typeof i === 'number' && i >= 0 && i % 1 === 0; });
       if (d.seenTutorial) U.session.seenTutorial = true;
       if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;
-      if (typeof d.audio === 'boolean') U.session.audio = d.audio;
+      var vol = d.vol && typeof d.vol === 'object' ? d.vol : null;                                  // volúmenes por módulo (se validan: un guardado viejo o dañado no rompe nada)
+      ['music', 'sfx', 'alert'].forEach(function (g) {
+        var v = vol && vol[g], t = U.session.vol[g];
+        if (v && typeof v.level === 'number' && v.level >= 0 && v.level <= 10 && v.level % 1 === 0) t.level = v.level;
+        if (v && typeof v.mute === 'boolean') t.mute = v.mute;
+        else if (!vol && d.audio === false) t.mute = true;                                           // guardado de la versión anterior (un solo interruptor): apagado = todo en silencio
+      });
     },
     persist: function () {
       try {
         var st = this._store(); if (!st) return;
         st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),
-                                               seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, audio: U.session.audio !== false }));
+                                               seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol }));
       } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }
     },
     isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },

@@ -52,7 +52,7 @@
     if (item) { snd(um, 'noticia'); um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; }
     if (out.type === 'shop') { snd(um, 'tienda'); shopModal(um); }
     else if (out.type === 'robbery') {
-      snd(um, 'robo');
+      snd(um, 'asalto');
       N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');
       modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', '', '"Debiste haber leido las noticias..."'],
                   buttons: [{ label: 'SEGUIR', kind: 'danger' }] });
@@ -225,7 +225,7 @@
 
     um.map.update(dt, run, ui, um.hover, um.selected);
     um.fx.update(dt, um.hover, um.selected);
-    U.Audio.tick(scene, 'nivel', dt);                           // música del nivel y tren lejano cada 60 s                    // después del mapa: usa su cámara y la posición del jugador
+    U.Audio.tick(scene, 'nivel', dt, { alert: U.Audio.danger(run) });   // música del nivel, tren lejano cada 60 s y latido de apuro con < 15 % de tiempo o dinero
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }

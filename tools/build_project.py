@@ -20,7 +20,7 @@ def resources():
         # sprites de efectos (fx_*): luces y sombras suaves, se escalan con filtro lineal; el pixel art conserva 'nearest'
         res.append({"alwaysLoaded": False, "file": f"assets/img/{n}", "kind": "image", "metadata": "", "name": n, "smoothed": n.startswith('fx_'), "userAdded": True})
     for f in sorted(glob.glob(f'{PROJ}/assets/audio/*.ogg')):         # audio (tools/make_audio.py): músicas en streaming, el resto precargado como sonido
-        n = os.path.basename(f); music = n.startswith('musica_')
+        n = os.path.basename(f); music = n.startswith(('musica_', 'peligro_'))     # música y bucle de apuro: se reproducen como música (canal propio, en bucle)
         res.append({"alwaysLoaded": True, "file": f"assets/audio/{n}", "kind": "audio", "metadata": "", "name": n, "preloadAsMusic": music,
                     "preloadAsSound": not music, "preloadInCache": False, "userAdded": True})
     res.append({"alwaysLoaded": False, "file": f"assets/fonts/{FONT}", "kind": "font", "metadata": "", "name": FONT, "userAdded": True})
@@ -54,7 +54,7 @@ def painter(name):
             "absoluteCoordinates": True, "clearBetweenFrames": False, "antialiasing": "none"}
 
 FX_ANIMS = ['glow', 'soft', 'fog', 'vignette', 'spark', 'shadow', 'beam', 'haze_t', 'haze_b', 'solid']   # = sprites fx_*.png (src/fx.js)
-ICONS = ['moneda', 'rayo', 'reloj', 'tienda', 'meta', 'casa', 'bloqueo', 'alerta', 'noticia', 'mapa', 'saldo', 'ajustes', 'persona', 'celular', 'lineas', 'combi']
+ICONS = ['moneda', 'rayo', 'reloj', 'tienda', 'meta', 'casa', 'bloqueo', 'alerta', 'noticia', 'mapa', 'saldo', 'ajustes', 'sonido', 'persona', 'celular', 'lineas', 'combi']
 O = {
   'Texto': text('Texto'), 'TextoMapa': text('TextoMapa', outline=True), 'UIBase': painter('UIBase'), 'UIModal': painter('UIModal'), 'Mapa': painter('Mapa'),
   'Icono': sprite('Icono', [(i, [f'icono_{i}.png']) for i in ICONS]),

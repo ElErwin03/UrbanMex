@@ -76,6 +76,16 @@
     }
   }
 
+  /** Volumen y silencio de la música general, los sonidos generales y el sonido de peligro y apuro (se guardan). */
+  function drawSound(scene, ui, m) {
+    ui.text('h', 'SONIDO', 640, 70, { size: 24, align: 'center', color: PAL.yellow });
+    ui.text('hs', 'Sube, baja o silencia cada parte por separado.', 640, 116, { size: 8, align: 'center', color: PAL.dim });
+    ui.rect(300, 150, 680, 276, { fill: '24;24;46', border: '60;60;90', bw: 2 });
+    U.Audio.panel(ui, scene, 'mn:', 330, 172, 620, true);
+    ui.text('hn', 'El apuro suena cuando te queda menos del 15% del tiempo o del dinero.', 640, 450, { size: 8, align: 'center', color: PAL.dim });
+    if (ui.button('sback', 'VOLVER', 490, 520, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+  }
+
   U.Scenes.menu = function (scene) {
     var ui = U.UI.of(scene), m = scene._um || init(scene), dt = Math.min(0.1, scene.getElapsedTime() / 1000), data = U.Data.ready(scene);
     U.Save.load();
@@ -83,11 +93,11 @@
     m.stars.forEach(function (s) { ui.rect(s[0], s[1], 4, 4, { fill: Math.sin(m.t * 2 + s[2]) > 0 ? '255;255;255' : '120;120;160', bw: 0 }); });
     m.train.setX(((m.t * 220) % 1900) - 300);
     ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });
-    if (m.view === 'levels') drawLevels(scene, ui, m, data); else drawMain(scene, ui, m, data);
+    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else drawMain(scene, ui, m, data);
     ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });
     m.fx.update(dt, m);
     U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
-    U.Audio.button(ui, scene, 'snd', 16, 14, 190, 30);                  // interruptor de sonido (se guarda)
+    if (m.view !== 'sound' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
     ui.end();
   };
 })();

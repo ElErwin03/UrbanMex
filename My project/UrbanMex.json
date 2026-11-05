@@ -65,6 +65,7 @@
   "resources": {
     "resources": [
       {
+        "alwaysLoaded": false,
         "file": "assets/img/edificio_0.png",
         "kind": "image",
         "metadata": "",
@@ -73,6 +74,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/edificio_1.png",
         "kind": "image",
         "metadata": "",
@@ -81,6 +83,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/edificio_2.png",
         "kind": "image",
         "metadata": "",
@@ -89,6 +92,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/edificio_3.png",
         "kind": "image",
         "metadata": "",
@@ -97,6 +101,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/estacion_bloqueada.png",
         "kind": "image",
         "metadata": "",
@@ -105,6 +110,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/estacion_inicio.png",
         "kind": "image",
         "metadata": "",
@@ -113,6 +119,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/estacion_meta.png",
         "kind": "image",
         "metadata": "",
@@ -121,6 +128,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/estacion_normal.png",
         "kind": "image",
         "metadata": "",
@@ -129,6 +137,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/estacion_tienda.png",
         "kind": "image",
         "metadata": "",
@@ -137,6 +146,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_beam.png",
         "kind": "image",
         "metadata": "",
@@ -145,6 +155,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_fog.png",
         "kind": "image",
         "metadata": "",
@@ -153,6 +164,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_glow.png",
         "kind": "image",
         "metadata": "",
@@ -161,6 +173,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_haze_b.png",
         "kind": "image",
         "metadata": "",
@@ -169,6 +182,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_haze_t.png",
         "kind": "image",
         "metadata": "",
@@ -177,6 +191,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_shadow.png",
         "kind": "image",
         "metadata": "",
@@ -185,6 +200,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_soft.png",
         "kind": "image",
         "metadata": "",
@@ -193,6 +209,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_solid.png",
         "kind": "image",
         "metadata": "",
@@ -201,6 +218,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_spark.png",
         "kind": "image",
         "metadata": "",
@@ -209,6 +227,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/fx_vignette.png",
         "kind": "image",
         "metadata": "",
@@ -217,6 +236,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_ajustes.png",
         "kind": "image",
         "metadata": "",
@@ -225,6 +245,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_alerta.png",
         "kind": "image",
         "metadata": "",
@@ -233,6 +254,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_bloqueo.png",
         "kind": "image",
         "metadata": "",
@@ -241,6 +263,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_casa.png",
         "kind": "image",
         "metadata": "",
@@ -249,6 +272,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_celular.png",
         "kind": "image",
         "metadata": "",
@@ -257,6 +281,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_combi.png",
         "kind": "image",
         "metadata": "",
@@ -265,6 +290,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_lineas.png",
         "kind": "image",
         "metadata": "",
@@ -273,6 +299,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_mapa.png",
         "kind": "image",
         "metadata": "",
@@ -281,6 +308,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_meta.png",
         "kind": "image",
         "metadata": "",
@@ -289,6 +317,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_moneda.png",
         "kind": "image",
         "metadata": "",
@@ -297,6 +326,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_noticia.png",
         "kind": "image",
         "metadata": "",
@@ -305,6 +335,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_persona.png",
         "kind": "image",
         "metadata": "",
@@ -313,6 +344,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_rayo.png",
         "kind": "image",
         "metadata": "",
@@ -321,6 +353,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_reloj.png",
         "kind": "image",
         "metadata": "",
@@ -329,6 +362,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_saldo.png",
         "kind": "image",
         "metadata": "",
@@ -337,6 +371,16 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
+        "file": "assets/img/icono_sonido.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_sonido.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_tienda.png",
         "kind": "image",
         "metadata": "",
@@ -345,6 +389,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_0.png",
         "kind": "image",
         "metadata": "",
@@ -353,6 +398,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_1.png",
         "kind": "image",
         "metadata": "",
@@ -361,6 +407,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_2.png",
         "kind": "image",
         "metadata": "",
@@ -369,6 +416,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_3.png",
         "kind": "image",
         "metadata": "",
@@ -377,6 +425,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_4.png",
         "kind": "image",
         "metadata": "",
@@ -385,6 +434,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_5.png",
         "kind": "image",
         "metadata": "",
@@ -393,6 +443,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/iso_parque.png",
         "kind": "image",
         "metadata": "",
@@ -401,6 +452,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/jugador_0.png",
         "kind": "image",
         "metadata": "",
@@ -409,6 +461,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/jugador_1.png",
         "kind": "image",
         "metadata": "",
@@ -417,6 +470,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/logo_metro.png",
         "kind": "image",
         "metadata": "",
@@ -425,6 +479,7 @@
         "userAdded": true
       },
       {
+        "alwaysLoaded": false,
         "file": "assets/img/tren.png",
         "kind": "image",
         "metadata": "",
@@ -451,6 +506,28 @@
         "name": "musica_nivel.ogg",
         "preloadAsMusic": true,
         "preloadAsSound": false,
+        "preloadInCache": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": true,
+        "file": "assets/audio/peligro_loop.ogg",
+        "kind": "audio",
+        "metadata": "",
+        "name": "peligro_loop.ogg",
+        "preloadAsMusic": true,
+        "preloadAsSound": false,
+        "preloadInCache": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": true,
+        "file": "assets/audio/sfx_asalto.ogg",
+        "kind": "audio",
+        "metadata": "",
+        "name": "sfx_asalto.ogg",
+        "preloadAsMusic": false,
+        "preloadAsSound": true,
         "preloadInCache": false,
         "userAdded": true
       },
@@ -515,17 +592,6 @@
         "kind": "audio",
         "metadata": "",
         "name": "sfx_perder.ogg",
-        "preloadAsMusic": false,
-        "preloadAsSound": true,
-        "preloadInCache": false,
-        "userAdded": true
-      },
-      {
-        "alwaysLoaded": true,
-        "file": "assets/audio/sfx_robo.ogg",
-        "kind": "audio",
-        "metadata": "",
-        "name": "sfx_robo.ogg",
         "preloadAsMusic": false,
         "preloadAsSound": true,
         "preloadInCache": false,
@@ -606,7 +672,7 @@
         "userAdded": true
       },
       {
-        "disablePreload": false,
+        "alwaysLoaded": true,
         "file": "data/conexiones.json",
         "kind": "json",
         "metadata": "",
@@ -614,7 +680,7 @@
         "userAdded": true
       },
       {
-        "disablePreload": false,
+        "alwaysLoaded": true,
         "file": "data/config.json",
         "kind": "json",
         "metadata": "",
@@ -622,7 +688,7 @@
         "userAdded": true
       },
       {
-        "disablePreload": false,
+        "alwaysLoaded": true,
         "file": "data/estaciones.json",
         "kind": "json",
         "metadata": "",
@@ -630,7 +696,7 @@
         "userAdded": true
       },
       {
-        "disablePreload": false,
+        "alwaysLoaded": true,
         "file": "data/niveles.json",
         "kind": "json",
         "metadata": "",
@@ -638,7 +704,7 @@
         "userAdded": true
       },
       {
-        "disablePreload": false,
+        "alwaysLoaded": true,
         "file": "data/noticias.json",
         "kind": "json",
         "metadata": "",
@@ -660,11 +726,11 @@
       "mangledName": "Menu",
       "name": "Menu",
       "r": 14,
-      "renderer3DWorldScale": 100,
-      "standardSortMethod": true,
-      "stopSoundsOnStartup": true,
+      "stopSoundsOnStartup": false,
       "title": "",
       "v": 12,
+      "renderer3DWorldScale": 100,
+      "standardSortMethod": true,
       "uiSettings": {
         "grid": false,
         "gridType": "rectangular",
@@ -688,56 +754,44 @@
       "objects": [
         {
           "assetStoreId": "",
-          "bold": false,
-          "italic": false,
           "name": "Texto",
-          "smoothed": false,
+          "tags": "",
           "type": "TextObject::Text",
-          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "string": "",
-          "font": "PressStart2P-Regular.ttf",
-          "textAlignment": "left",
-          "characterSize": 8,
-          "color": {
-            "b": 255,
-            "g": 255,
-            "r": 255
-          },
           "content": {
             "bold": false,
-            "isOutlineEnabled": false,
-            "isShadowEnabled": false,
             "italic": false,
-            "outlineColor": "10;8;20",
-            "outlineThickness": 3,
-            "shadowAngle": 90,
-            "shadowBlurRadius": 2,
-            "shadowColor": "0;0;0",
-            "shadowDistance": 4,
-            "shadowOpacity": 127,
-            "smoothed": false,
             "underlined": false,
+            "smoothed": false,
             "text": "",
             "font": "PressStart2P-Regular.ttf",
+            "characterSize": 8,
+            "color": "255;255;255",
             "textAlignment": "left",
             "verticalTextAlignment": "top",
-            "characterSize": 8,
             "lineHeight": 0,
-            "color": "255;255;255"
+            "isOutlineEnabled": false,
+            "outlineColor": "10;8;20",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 4,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
           }
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Icono",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "moneda",
@@ -1088,6 +1142,35 @@
               ]
             },
             {
+              "name": "sonido",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_sonido.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "name": "persona",
               "useMultipleDirections": false,
               "directions": [
@@ -1208,60 +1291,46 @@
         {
           "assetStoreId": "",
           "name": "UIBase",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
           "assetStoreId": "",
           "name": "UIModal",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Edificio",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "e0",
@@ -1382,14 +1451,14 @@
           ]
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Tren",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "tren",
@@ -1423,14 +1492,14 @@
           ]
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Fx",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "glow",
@@ -1754,6 +1823,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -1761,29 +1834,34 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma."
+          }
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_core"
+          "target": "Mod_core",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_data"
+          "target": "Mod_data",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_graph"
+          "target": "Mod_graph",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
@@ -1808,35 +1886,45 @@
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_news"
+          "target": "Mod_news",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_ui"
+          "target": "Mod_ui",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_map"
+          "target": "Mod_map",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_phone"
+          "target": "Mod_phone",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_fx"
+          "target": "Mod_fx",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
@@ -1861,28 +1949,38 @@
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-tutorial"
+          "target": "Mod_scene-tutorial",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-nivel"
+          "target": "Mod_scene-nivel",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-resultado"
+          "target": "Mod_scene-resultado",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": "gdjs.UrbanMex.Scenes.menu(runtimeScene);",
+          "inlineCode": [
+            "gdjs.UrbanMex.Scenes.menu(runtimeScene);"
+          ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": false
         }
       ],
       "layers": [
@@ -1985,6 +2083,8 @@
       "stopSoundsOnStartup": false,
       "title": "",
       "v": 12,
+      "renderer3DWorldScale": 100,
+      "standardSortMethod": true,
       "uiSettings": {
         "grid": false,
         "gridType": "rectangular",
@@ -2008,56 +2108,44 @@
       "objects": [
         {
           "assetStoreId": "",
-          "bold": false,
-          "italic": false,
           "name": "Texto",
-          "smoothed": false,
+          "tags": "",
           "type": "TextObject::Text",
-          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "string": "",
-          "font": "PressStart2P-Regular.ttf",
-          "textAlignment": "left",
-          "characterSize": 8,
-          "color": {
-            "b": 255,
-            "g": 255,
-            "r": 255
-          },
           "content": {
             "bold": false,
-            "isOutlineEnabled": false,
-            "isShadowEnabled": false,
             "italic": false,
-            "outlineColor": "10;8;20",
-            "outlineThickness": 3,
-            "shadowAngle": 90,
-            "shadowBlurRadius": 2,
-            "shadowColor": "0;0;0",
-            "shadowDistance": 4,
-            "shadowOpacity": 127,
-            "smoothed": false,
             "underlined": false,
+            "smoothed": false,
             "text": "",
             "font": "PressStart2P-Regular.ttf",
+            "characterSize": 8,
+            "color": "255;255;255",
             "textAlignment": "left",
             "verticalTextAlignment": "top",
-            "characterSize": 8,
             "lineHeight": 0,
-            "color": "255;255;255"
+            "isOutlineEnabled": false,
+            "outlineColor": "10;8;20",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 4,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
           }
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Icono",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "moneda",
@@ -2408,6 +2496,35 @@
               ]
             },
             {
+              "name": "sonido",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_sonido.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "name": "persona",
               "useMultipleDirections": false,
               "directions": [
@@ -2528,60 +2645,46 @@
         {
           "assetStoreId": "",
           "name": "UIBase",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
           "assetStoreId": "",
           "name": "UIModal",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Fx",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "glow",
@@ -2899,6 +3002,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -2906,29 +3013,34 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma."
+          }
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_core"
+          "target": "Mod_core",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_data"
+          "target": "Mod_data",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_graph"
+          "target": "Mod_graph",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
@@ -2953,35 +3065,45 @@
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_news"
+          "target": "Mod_news",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_ui"
+          "target": "Mod_ui",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_map"
+          "target": "Mod_map",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_phone"
+          "target": "Mod_phone",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_fx"
+          "target": "Mod_fx",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
@@ -3006,28 +3128,38 @@
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-tutorial"
+          "target": "Mod_scene-tutorial",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-nivel"
+          "target": "Mod_scene-nivel",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-resultado"
+          "target": "Mod_scene-resultado",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": "gdjs.UrbanMex.Scenes.tutorial(runtimeScene);",
+          "inlineCode": [
+            "gdjs.UrbanMex.Scenes.tutorial(runtimeScene);"
+          ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": false
         }
       ],
       "layers": [
@@ -3130,6 +3262,8 @@
       "stopSoundsOnStartup": false,
       "title": "",
       "v": 12,
+      "renderer3DWorldScale": 100,
+      "standardSortMethod": true,
       "uiSettings": {
         "grid": false,
         "gridType": "rectangular",
@@ -3153,56 +3287,44 @@
       "objects": [
         {
           "assetStoreId": "",
-          "bold": false,
-          "italic": false,
           "name": "Texto",
-          "smoothed": false,
+          "tags": "",
           "type": "TextObject::Text",
-          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "string": "",
-          "font": "PressStart2P-Regular.ttf",
-          "textAlignment": "left",
-          "characterSize": 8,
-          "color": {
-            "b": 255,
-            "g": 255,
-            "r": 255
-          },
           "content": {
             "bold": false,
-            "isOutlineEnabled": false,
-            "isShadowEnabled": false,
             "italic": false,
-            "outlineColor": "10;8;20",
-            "outlineThickness": 3,
-            "shadowAngle": 90,
-            "shadowBlurRadius": 2,
-            "shadowColor": "0;0;0",
-            "shadowDistance": 4,
-            "shadowOpacity": 127,
-            "smoothed": false,
             "underlined": false,
+            "smoothed": false,
             "text": "",
             "font": "PressStart2P-Regular.ttf",
+            "characterSize": 8,
+            "color": "255;255;255",
             "textAlignment": "left",
             "verticalTextAlignment": "top",
-            "characterSize": 8,
             "lineHeight": 0,
-            "color": "255;255;255"
+            "isOutlineEnabled": false,
+            "outlineColor": "10;8;20",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 4,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
           }
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Icono",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "moneda",
@@ -3553,6 +3675,35 @@
               ]
             },
             {
+              "name": "sonido",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_sonido.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "name": "persona",
               "useMultipleDirections": false,
               "directions": [
@@ -3673,127 +3824,94 @@
         {
           "assetStoreId": "",
           "name": "UIBase",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
           "assetStoreId": "",
           "name": "UIModal",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
           "assetStoreId": "",
-          "bold": false,
-          "italic": false,
           "name": "TextoMapa",
-          "smoothed": false,
+          "tags": "",
           "type": "TextObject::Text",
-          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "string": "",
-          "font": "PressStart2P-Regular.ttf",
-          "textAlignment": "left",
-          "characterSize": 8,
-          "color": {
-            "b": 255,
-            "g": 255,
-            "r": 255
-          },
           "content": {
             "bold": false,
-            "isOutlineEnabled": true,
-            "isShadowEnabled": false,
             "italic": false,
-            "outlineColor": "10;8;20",
-            "outlineThickness": 3,
-            "shadowAngle": 90,
-            "shadowBlurRadius": 2,
-            "shadowColor": "0;0;0",
-            "shadowDistance": 4,
-            "shadowOpacity": 127,
-            "smoothed": false,
             "underlined": false,
+            "smoothed": false,
             "text": "",
             "font": "PressStart2P-Regular.ttf",
+            "characterSize": 8,
+            "color": "255;255;255",
             "textAlignment": "left",
             "verticalTextAlignment": "top",
-            "characterSize": 8,
             "lineHeight": 0,
-            "color": "255;255;255"
+            "isOutlineEnabled": true,
+            "outlineColor": "10;8;20",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 4,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
           }
         },
         {
           "assetStoreId": "",
           "name": "Mapa",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Estacion",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "normal",
@@ -3943,14 +4061,14 @@
           ]
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Jugador",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "a0",
@@ -4013,14 +4131,14 @@
           ]
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "EdificioIso",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "b0",
@@ -4228,14 +4346,14 @@
           ]
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Fx",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "glow",
@@ -4568,6 +4686,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -4575,29 +4697,34 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma."
+          }
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_core"
+          "target": "Mod_core",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_data"
+          "target": "Mod_data",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_graph"
+          "target": "Mod_graph",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
@@ -4622,35 +4749,45 @@
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_news"
+          "target": "Mod_news",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_ui"
+          "target": "Mod_ui",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_map"
+          "target": "Mod_map",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_phone"
+          "target": "Mod_phone",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_fx"
+          "target": "Mod_fx",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
@@ -4675,28 +4812,38 @@
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-tutorial"
+          "target": "Mod_scene-tutorial",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-nivel"
+          "target": "Mod_scene-nivel",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-resultado"
+          "target": "Mod_scene-resultado",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": "gdjs.UrbanMex.Scenes.nivel(runtimeScene);",
+          "inlineCode": [
+            "gdjs.UrbanMex.Scenes.nivel(runtimeScene);"
+          ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": false
         }
       ],
       "layers": [
@@ -4799,6 +4946,8 @@
       "stopSoundsOnStartup": false,
       "title": "",
       "v": 12,
+      "renderer3DWorldScale": 100,
+      "standardSortMethod": true,
       "uiSettings": {
         "grid": false,
         "gridType": "rectangular",
@@ -4822,56 +4971,44 @@
       "objects": [
         {
           "assetStoreId": "",
-          "bold": false,
-          "italic": false,
           "name": "Texto",
-          "smoothed": false,
+          "tags": "",
           "type": "TextObject::Text",
-          "underlined": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
-          "string": "",
-          "font": "PressStart2P-Regular.ttf",
-          "textAlignment": "left",
-          "characterSize": 8,
-          "color": {
-            "b": 255,
-            "g": 255,
-            "r": 255
-          },
           "content": {
             "bold": false,
-            "isOutlineEnabled": false,
-            "isShadowEnabled": false,
             "italic": false,
-            "outlineColor": "10;8;20",
-            "outlineThickness": 3,
-            "shadowAngle": 90,
-            "shadowBlurRadius": 2,
-            "shadowColor": "0;0;0",
-            "shadowDistance": 4,
-            "shadowOpacity": 127,
-            "smoothed": false,
             "underlined": false,
+            "smoothed": false,
             "text": "",
             "font": "PressStart2P-Regular.ttf",
+            "characterSize": 8,
+            "color": "255;255;255",
             "textAlignment": "left",
             "verticalTextAlignment": "top",
-            "characterSize": 8,
             "lineHeight": 0,
-            "color": "255;255;255"
+            "isOutlineEnabled": false,
+            "outlineColor": "10;8;20",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 4,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
           }
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Icono",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "moneda",
@@ -5222,6 +5359,35 @@
               ]
             },
             {
+              "name": "sonido",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_sonido.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "name": "persona",
               "useMultipleDirections": false,
               "directions": [
@@ -5342,60 +5508,46 @@
         {
           "assetStoreId": "",
           "name": "UIBase",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
           "assetStoreId": "",
           "name": "UIModal",
+          "tags": "",
           "type": "PrimitiveDrawing::Drawer",
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "fillColor": "255;255;255",
+          "outlineColor": "255;255;255",
           "fillOpacity": 255,
-          "outlineSize": 0,
           "outlineOpacity": 255,
+          "outlineSize": 0,
           "absoluteCoordinates": true,
           "clearBetweenFrames": false,
-          "antialiasing": "none",
-          "fillColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          },
-          "outlineColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-          }
+          "antialiasing": "none"
         },
         {
-          "adaptCollisionMaskAutomatically": false,
           "assetStoreId": "",
           "name": "Fx",
+          "tags": "",
           "type": "Sprite",
-          "updateIfNotVisible": false,
           "variables": [],
           "effects": [],
           "behaviors": [],
+          "updateIfNotVisible": false,
           "animations": [
             {
               "name": "glow",
@@ -5713,6 +5865,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma.",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -5720,29 +5876,34 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Los modulos del juego viven en las hojas de eventos externos \"Mod_*\" (codigo fuente en la carpeta src/ del repo). Se enlazan aqui; despues el controlador de esta escena corre cada fotograma."
+          }
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_core"
+          "target": "Mod_core",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_data"
+          "target": "Mod_data",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_graph"
+          "target": "Mod_graph",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
@@ -5767,35 +5928,45 @@
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_news"
+          "target": "Mod_news",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_ui"
+          "target": "Mod_ui",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_map"
+          "target": "Mod_map",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_phone"
+          "target": "Mod_phone",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_fx"
+          "target": "Mod_fx",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
@@ -5820,28 +5991,38 @@
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-tutorial"
+          "target": "Mod_scene-tutorial",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-nivel"
+          "target": "Mod_scene-nivel",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::Link",
           "include": {
             "includeConfig": 0
           },
-          "target": "Mod_scene-resultado"
+          "target": "Mod_scene-resultado",
+          "disabled": false,
+          "folded": false
         },
         {
           "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": "gdjs.UrbanMex.Scenes.resultado(runtimeScene);",
+          "inlineCode": [
+            "gdjs.UrbanMex.Scenes.resultado(runtimeScene);"
+          ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": false
         }
       ],
       "layers": [
@@ -5943,6 +6124,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"core\" - fuente: src/core.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -5950,11 +6135,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"core\" - fuente: src/core.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · core — espacio de nombres, sesión y utilidades.",
@@ -5967,7 +6150,8 @@
             "",
             "  U.VERSION = '2.0.0';",
             "  // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)",
-            "  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, audio: true, loaded: false };   // completed: índices de niveles ganados (se guardan); dblTravel y audio: ajustes (se guardan)",
+            "  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, loaded: false,",
+            "    vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan",
             "",
             "  /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,",
             "   *  así que sobrevive entre partidas en el navegador y en las exportaciones de escritorio; sin almacenamiento solo dura la sesión. */",
@@ -5984,13 +6168,19 @@
             "      U.session.completed = (d.completed || []).filter(function (i) { return typeof i === 'number' && i >= 0 && i % 1 === 0; });",
             "      if (d.seenTutorial) U.session.seenTutorial = true;",
             "      if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;",
-            "      if (typeof d.audio === 'boolean') U.session.audio = d.audio;",
+            "      var vol = d.vol && typeof d.vol === 'object' ? d.vol : null;                                  // volúmenes por módulo (se validan: un guardado viejo o dañado no rompe nada)",
+            "      ['music', 'sfx', 'alert'].forEach(function (g) {",
+            "        var v = vol && vol[g], t = U.session.vol[g];",
+            "        if (v && typeof v.level === 'number' && v.level >= 0 && v.level <= 10 && v.level % 1 === 0) t.level = v.level;",
+            "        if (v && typeof v.mute === 'boolean') t.mute = v.mute;",
+            "        else if (!vol && d.audio === false) t.mute = true;                                           // guardado de la versión anterior (un solo interruptor): apagado = todo en silencio",
+            "      });",
             "    },",
             "    persist: function () {",
             "      try {",
             "        var st = this._store(); if (!st) return;",
             "        st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),",
-            "                                               seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, audio: U.session.audio !== false }));",
+            "                                               seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol }));",
             "      } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }",
             "    },",
             "    isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },",
@@ -6053,7 +6243,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -6063,6 +6255,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"data\" - fuente: src/data.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6070,11 +6266,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"data\" - fuente: src/data.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · data — carga y normaliza los JSON del juego (recursos \"data/*.json\" del proyecto).",
@@ -6138,7 +6332,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -6148,6 +6344,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"graph\" - fuente: src/graph.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6155,11 +6355,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"graph\" - fuente: src/graph.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · graph — red del Metro (puro, sin motor). */",
@@ -6212,7 +6410,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -6365,6 +6565,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"rules\" - fuente: src/rules.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6372,11 +6576,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"rules\" - fuente: src/rules.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · rules — reglas del juego: economía, viaje, asaltos, Monster, fin de partida.",
@@ -6518,7 +6720,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -6528,6 +6732,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"news\" - fuente: src/news.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6535,11 +6743,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"news\" - fuente: src/news.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · news — generador de noticias del celular (puro).",
@@ -6624,7 +6830,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -6634,6 +6842,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"ui\" - fuente: src/ui.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6641,11 +6853,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"ui\" - fuente: src/ui.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · ui — interfaz \"modo inmediato\" sobre objetos de GDevelop.",
@@ -6768,7 +6978,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -6778,6 +6990,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"map\" - fuente: src/map.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -6785,11 +7001,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"map\" - fuente: src/map.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · map — mapa isométrico 2.5D del Metro (estilo Age of Empires / Clash of Clans): isla de ciudad con edificios en",
@@ -7156,7 +7370,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -7166,6 +7382,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"phone\" - fuente: src/phone.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7173,11 +7393,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"phone\" - fuente: src/phone.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · phone — el celular del jugador (única guía del juego): Noticias, Ruta, Saldo, Líneas y Ajustes.",
@@ -7194,6 +7412,7 @@
             "    { id: 'map', label: 'RUTA', icon: 'mapa', fill: '30;70;110' },",
             "    { id: 'saldo', label: 'SALDO', icon: 'saldo', fill: '30;90;60' },",
             "    { id: 'lines', label: 'LINEAS', icon: 'lineas', fill: '90;50;110' },",
+            "    { id: 'snd', label: 'SONIDO', icon: 'sonido', fill: '30;80;100' },",
             "    { id: 'config', label: 'AJUSTES', icon: 'ajustes', fill: '70;70;90' }",
             "  ];",
             "",
@@ -7329,6 +7548,11 @@
             "      });",
             "    },",
             "",
+            "    _snd: function (ui, um, run, x, y, w) {",
+            "      var h = U.Audio.panel(ui, um.ui.scene, 'ph:', x, y + 4, w, true);",
+            "      ui.lines('ph:sn', util.wrap('El apuro suena cuando te queda menos del 15% del tiempo o del dinero.', 31), x, y + h + 10, { size: 8, lineH: 12, color: PAL.dim });",
+            "    },",
+            "",
             "    _config: function (ui, um, run, x, y, w) {",
             "      var rows = [['DIA', run.level.day], ['NIVEL', run.level.id + '/' + run.data.levels.length], ['PASOS', String(run.steps)],",
             "                  ['NOTICIAS', String(run.newsCount)], ['VERSION', U.VERSION]];",
@@ -7339,7 +7563,7 @@
             "      var dbl = U.session.dblTravel !== false;                                    // doble clic en una estación = viajar solo hasta ahí",
             "      if (ui.button('ph:dbl', 'DOBLE CLIC VIAJAR: ' + (dbl ? 'SI' : 'NO'), x, y + 128, w, 30, { size: 8, fill: dbl ? '39;174;96' : '110;60;60' })) { U.session.dblTravel = !dbl; U.Save.persist(); }",
             "      ui.lines('ph:dbh', util.wrap('Doble clic en una estacion vecina (la siguiente a la tuya): viajas ahi sin confirmar.', 31), x, y + 166, { size: 8, lineH: 12, color: PAL.dim });",
-            "      U.Audio.button(ui, um.ui.scene, 'ph:snd', x, y + 232, w, 30, 'MUSICA Y SONIDO');                             // música, tren y efectos (se guarda)",
+            "      if (ui.button('ph:snd', 'SONIDO Y MUSICA >', x, y + 232, w, 30, { size: 8, fill: '30;80;100' })) { um.phone.app = 'snd'; um.phone.scroll = 0; }   // volumen y silencio de música, sonidos y peligro",
             "      ui.lines('ph:sdh', util.wrap('Musica relajante de fondo y un tren lejano que pasa cada minuto, a volumen bajo.', 31), x, y + 270, { size: 8, lineH: 12, color: PAL.dim });",
             "      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 340, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;",
             "    }",
@@ -7365,7 +7589,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -7375,6 +7601,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"fx\" - fuente: src/fx.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7382,11 +7612,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"fx\" - fuente: src/fx.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · fx — capa de efectos visuales: iluminación dinámica, sombras suaves, partículas sutiles (polvo, brillos, niebla),",
@@ -7607,7 +7835,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -7633,70 +7863,144 @@
         {
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
-            "/* UrbanMex · audio — música relajante de fondo, un tren lejano que pasa cada 60 s y efectos suaves de interfaz.",
+            "/* UrbanMex · audio — música relajante de fondo, un tren lejano cada 60 s, efectos suaves, y el sonido de peligro / apuro.",
             " *",
-            " *  · Música: una pista tranquila para Menú / Tutorial / Resultado (\"menu\") y otra más luminosa para el Nivel (\"nivel\"). Al cambiar de pista la",
-            " *    anterior se apaga con un fundido de 1.8 s (dos canales de música). No se reinicia al cambiar de escena entre pantallas que usan la misma.",
-            " *  · Tren: cada 60 s (el primero a los 20 s) suena una pasada lejana, alternando de izquierda a derecha y al revés, a volumen bajo.",
-            " *  · Efectos: clic, selección de estación, viaje, noticia, moneda, tienda, asalto, suerte, error y fanfarria de ganar / perder, todos suaves.",
-            " *  · Sonido: interruptor SI / NO en AJUSTES del celular y en el Menú; se guarda con el progreso (U.session.audio). Apagado = volumen global 0.",
-            " * Los archivos viven en assets/audio (los genera tools/make_audio.py) y son recursos de audio del proyecto. Los volúmenes (0 a 100) están aquí",
-            " * abajo, a propósito bajos: la música es de fondo y el tren apenas se nota.",
-            " * API de GDevelop usada (verificada en howler-sound-manager.ts): playSound, playMusicOnChannel, getMusicOnChannel, setGlobalVolume; del sonido: fade, stop. */",
+            " * TRES MÓDULOS, cada uno con su volumen (0 a 10, el 7 es el nivel \"de fábrica\") y su silencio:",
+            " *   · \"music\"  MÚSICA GENERAL     — la música de fondo (una pista tranquila para Menú / Tutorial / Resultado y otra para el Nivel).",
+            " *   · \"sfx\"    SONIDOS GENERALES  — clic, selección, viaje, noticia, moneda, tienda, suerte, error, ganar / perder y el tren lejano de cada 60 s.",
+            " *   · \"alert\"  PELIGRO Y APURO    — el latido con tic de reloj que suena mientras te quede MENOS DEL 15 % del tiempo o del dinero, y el",
+            " *                                   golpe seco del asalto. Mientras suena el apuro la música baja un poco para que se note.",
+            " * El volumen real de cada sonido es (su volumen base de esta tabla) × (nivel / 7); silenciado = 0. Se guarda con el progreso (U.session.vol).",
+            " * Los archivos viven en assets/audio (los genera tools/make_audio.py) y son recursos de audio del proyecto. Los volúmenes base (0 a 100) están",
+            " * aquí abajo, a propósito bajos: la música es de fondo y el tren apenas se nota.",
+            " * API de GDevelop usada (verificada en howler-sound-manager.ts): playSound, playMusicOnChannel, getMusicOnChannel; del sonido: setVolume, fade, stop. */",
             "(function () {",
-            "  var U = gdjs.UrbanMex;",
+            "  var U = gdjs.UrbanMex, PAL = U.UI.PAL;",
             "  if (U.Audio) return;",
             "",
             "  var MUSIC = { menu: { file: 'musica_menu.ogg', vol: 40 }, nivel: { file: 'musica_nivel.ogg', vol: 40 } };",
             "  var TRAINS = ['tren_a.ogg', 'tren_b.ogg'], TRAIN_VOL = 28, TRAIN_EVERY = 60, TRAIN_FIRST = 20;     // segundos",
-            "  var SFX = { click: 34, select: 40, viaje: 42, noticia: 44, moneda: 44, tienda: 40, robo: 48, suerte: 40, error: 36, ganar: 48, perder: 44 };   // sfx_<nombre>.ogg",
-            "  var FADE = 1.8;",
+            "  var SFX = { click: 34, select: 40, viaje: 42, noticia: 44, moneda: 44, tienda: 40, suerte: 40, error: 36, ganar: 48, perder: 44, asalto: 46 };   // sfx_<nombre>.ogg",
+            "  var GROUP_OF = { asalto: 'alert' };                        // todo lo demás de SFX es \"sfx\"",
+            "  var ALERT = { file: 'peligro_loop.ogg', vol: 30, ch: 2, fadeIn: 1.6, fadeOut: 1.2, low: 0.15, duck: 0.6 };   // bucle de apuro, canal de música propio; low: umbral; duck: la música baja a 60 %",
+            "  var STEPS = 10, DEFAULT = 7;                                // niveles 0..10; el 7 deja los volúmenes base tal cual",
+            "  var FADE = 1.8, PREVIEW_GAP = 0.7;",
+            "  var GROUPS = [",
+            "    { id: 'music', label: 'MUSICA GENERAL', hint: 'Musica relajante de fondo', color: '70;130;220' },",
+            "    { id: 'sfx', label: 'SONIDOS GENERALES', hint: 'Clics, tren, noticias, tienda', color: '46;174;96' },",
+            "    { id: 'alert', label: 'PELIGRO Y APURO', hint: 'Apuro y golpe de asalto', color: '235;120;50' }",
+            "  ];",
             "",
-            "  var st = { t: 0, music: null, ch: 0, trainIn: TRAIN_FIRST, trains: 0, fading: [], applied: null };",
+            "  var st = { t: 0, music: null, ch: 0, mv: 1, mvApplied: -1, trainIn: TRAIN_FIRST, trains: 0, fading: [], al: null, alv: 0, alApplied: -1, lastPreview: -9 };",
             "",
             "  function mgr(scene) { try { var g = scene.getGame(), m = g && g.getSoundManager && g.getSoundManager(); return m || null; } catch (e) { return null; } }",
-            "  function on() { return U.session.audio !== false; }",
-            "  function apply(m) { var v = on() ? 100 : 0; if (st.applied !== v) { m.setGlobalVolume(v); st.applied = v; } }   // apagar = volumen global 0 (la música sigue \"corriendo\" en silencio)",
+            "  function slot(g) { return U.session.vol[g]; }",
+            "  /** Ganancia de un módulo: 0 si está en silencio; 1 en el nivel 7 (de fábrica); hasta 10/7 en el nivel 10. */",
+            "  function gain(g) { var s = slot(g); return s.mute ? 0 : s.level / DEFAULT; }",
+            "  function pct(v, g) { return Math.max(0, Math.min(100, v * g)); }",
             "",
             "  /** Cambia de pista de música (si ya suena esa, no hace nada): la anterior baja con un fundido y la nueva entra en el otro canal. */",
             "  function setMusic(m, track) {",
             "    if (st.music === track) return;",
             "    var spec = MUSIC[track], old = st.music !== null ? m.getMusicOnChannel(st.ch) : null;",
-            "    if (old) { old.fade(MUSIC[st.music].vol / 100, 0, FADE * 1000); st.fading.push({ s: old, left: FADE + 0.3 }); }",
+            "    if (old) { old.fade(Math.min(1, MUSIC[st.music].vol * st.mv / 100), 0, FADE * 1000); st.fading.push({ s: old, left: FADE + 0.3 }); }",
             "    st.ch = 1 - st.ch; st.music = track;",
-            "    m.playMusicOnChannel(spec.file, st.ch, true, spec.vol, 1);",
+            "    m.playMusicOnChannel(spec.file, st.ch, true, pct(spec.vol, st.mv), 1);",
+            "    st.mvApplied = st.mv;",
+            "  }",
+            "",
+            "  /** Volumen vivo de la música: sigue al nivel del módulo y baja mientras suena el apuro; el cambio es suave (sin saltos). */",
+            "  function musicLevel(m, dt, alertOn) {",
+            "    var want = gain('music') * (alertOn ? ALERT.duck : 1);",
+            "    st.mv += (want - st.mv) * Math.min(1, dt * 3);",
+            "    if (Math.abs(want - st.mv) < 0.002) st.mv = want;",
+            "    if (st.mv !== st.mvApplied && st.music !== null) {",
+            "      var s = m.getMusicOnChannel(st.ch); if (s) s.setVolume(Math.min(1, MUSIC[st.music].vol * st.mv / 100));",
+            "      st.mvApplied = st.mv;",
+            "    }",
+            "  }",
+            "",
+            "  /** Bucle de apuro: entra con un fundido mientras `want`, sale con otro, y se detiene del todo al terminar de apagarse. */",
+            "  function alertLoop(m, dt, want) {",
+            "    var g = gain('alert'), on = want && g > 0, target = on ? Math.min(1, ALERT.vol * g / 100) : 0;",
+            "    if (on && !st.al) { m.playMusicOnChannel(ALERT.file, ALERT.ch, true, 0, 1); st.al = m.getMusicOnChannel(ALERT.ch); st.alv = 0; st.alApplied = -1; }",
+            "    if (!st.al) return;",
+            "    var rate = (ALERT.vol * 1.43 / 100) / (target >= st.alv ? ALERT.fadeIn : ALERT.fadeOut) * dt;",
+            "    st.alv += Math.max(-rate, Math.min(rate, target - st.alv));",
+            "    if (st.alv !== st.alApplied) { st.al.setVolume(st.alv); st.alApplied = st.alv; }",
+            "    if (!on && st.alv <= 0.0005) { st.al.stop(); st.al = null; st.alv = 0; }",
             "  }",
             "",
             "  U.Audio = {",
-            "    state: st, MUSIC: MUSIC, SFX: SFX, TRAINS: TRAINS, TRAIN_EVERY: TRAIN_EVERY, TRAIN_FIRST: TRAIN_FIRST,",
-            "    enabled: on,",
+            "    state: st, MUSIC: MUSIC, SFX: SFX, TRAINS: TRAINS, TRAIN_EVERY: TRAIN_EVERY, TRAIN_FIRST: TRAIN_FIRST, ALERT: ALERT, GROUPS: GROUPS, STEPS: STEPS, DEFAULT: DEFAULT,",
+            "    gain: gain, level: function (g) { return slot(g).level; }, muted: function (g) { return slot(g).mute; },",
             "",
-            "    /** Una vez por fotograma desde cada escena: track = 'menu' | 'nivel'. Mantiene la música, los fundidos y el tren de cada 60 s. */",
-            "    tick: function (scene, track, dt) {",
+            "    /** ¿Estás en apuro? Queda menos del 15 % del tiempo del día o del dinero con el que empezó el nivel (y la partida sigue). */",
+            "    danger: function (run) {",
+            "      if (!run || run.over) return false;",
+            "      var cfg = run.data.config, span = cfg.dayEndMinute - cfg.dayStartMinute, ms = run.level.moneyStart;",
+            "      return (cfg.dayEndMinute - run.minute) / span < ALERT.low || (ms > 0 && run.money / ms < ALERT.low);",
+            "    },",
+            "",
+            "    /** Una vez por fotograma desde cada escena: track = 'menu' | 'nivel'; opts.alert = true en el Nivel cuando hay apuro.",
+            "     *  Mantiene la música, los fundidos, el bucle de apuro y el tren de cada 60 s. */",
+            "    tick: function (scene, track, dt, opts) {",
             "      var m = mgr(scene); if (!m) return;",
-            "      st.t += dt; apply(m); setMusic(m, track);",
+            "      U.Save.load();                                                       // los volúmenes guardados valen desde el primer fotograma (no hay \"salto\" al arrancar)",
+            "      if (!st.ready) { st.ready = true; st.mv = gain('music'); }",
+            "      var alertOn = !!(opts && opts.alert) && gain('alert') > 0;",
+            "      st.t += dt; musicLevel(m, dt, alertOn); setMusic(m, track); alertLoop(m, dt, !!(opts && opts.alert));",
             "      st.fading = st.fading.filter(function (f) { f.left -= dt; if (f.left > 0) return true; f.s.stop(); return false; });",
             "      st.trainIn -= dt;",
-            "      if (st.trainIn <= 0) { st.trainIn += TRAIN_EVERY; st.trains++; if (on()) m.playSound(TRAINS[st.trains % 2], false, TRAIN_VOL, 1); }",
+            "      if (st.trainIn <= 0) { st.trainIn += TRAIN_EVERY; st.trains++; if (gain('sfx') > 0) m.playSound(TRAINS[st.trains % 2], false, pct(TRAIN_VOL, gain('sfx')), 1); }",
             "    },",
             "",
-            "    /** Efecto de interfaz suave (nombre de SFX). */",
+            "    /** Efecto de sonido (nombre de SFX); suena con el volumen de su módulo y nada si está en silencio. */",
             "    play: function (scene, name) {",
-            "      var m = mgr(scene); if (!m || !on() || SFX[name] === undefined) return;",
-            "      m.playSound('sfx_' + name + '.ogg', false, SFX[name], 1);",
+            "      var m = mgr(scene); if (!m || SFX[name] === undefined) return;",
+            "      var g = gain(GROUP_OF[name] || 'sfx'); if (g <= 0) return;",
+            "      m.playSound('sfx_' + name + '.ogg', false, pct(SFX[name], g), 1);",
             "    },",
             "",
-            "    /** Enciende / apaga todo el sonido y lo guarda. */",
-            "    toggle: function (scene) {",
-            "      U.session.audio = !on(); U.Save.persist();",
-            "      var m = mgr(scene); if (m) apply(m);",
-            "      if (on()) this.play(scene, 'select');",
+            "    /** Sube o baja un paso el volumen de un módulo (0..10) y lo guarda. Un efecto de muestra deja oír el nuevo nivel. */",
+            "    step: function (scene, g, dir) { this.setLevel(scene, g, slot(g).level + dir); },",
+            "    setLevel: function (scene, g, n) {",
+            "      var s = slot(g), v = Math.max(0, Math.min(STEPS, Math.round(n)));",
+            "      if (v === s.level && !s.mute) return;",
+            "      s.level = v; if (v > 0) s.mute = false; U.Save.persist(); this.preview(scene, g);",
+            "    },",
+            "    /** Silencia / reactiva un módulo y lo guarda. */",
+            "    toggleMute: function (scene, g) {",
+            "      var s = slot(g); s.mute = !s.mute; if (!s.mute && s.level === 0) s.level = 1; U.Save.persist(); if (!s.mute) this.preview(scene, g);",
+            "    },",
+            "    /** Muestra breve del módulo (la música se oye en vivo; los otros dos suenan una vez, sin repetirse en menos de 0.7 s). */",
+            "    preview: function (scene, g) {",
+            "      if (g === 'music' || st.t - st.lastPreview < PREVIEW_GAP) return;",
+            "      st.lastPreview = st.t; this.play(scene, g === 'alert' ? 'asalto' : 'select');",
             "    },",
             "",
-            "    /** Botón SI / NO de sonido (AJUSTES y Menú). */",
-            "    button: function (ui, scene, id, x, y, w, h, label) {",
-            "      var a = on();",
-            "      if (ui.button(id, (label || 'SONIDO') + ': ' + (a ? 'SI' : 'NO'), x, y, w, h, { size: 8, fill: a ? '39;174;96' : '110;60;60' })) this.toggle(scene);",
+            "    /** Los tres módulos (música general, sonidos generales, peligro y apuro): nombre y %, barra de 10 pasos (se toca un paso), − / + y MUDO.",
+            "     *  Devuelve el alto que ocupa. `id` distingue los botones; `hints` muestra la línea de descripción. */",
+            "    panel: function (ui, scene, id, x, y, w, hints) {",
+            "      var self = this, rowH = hints === false ? 62 : 80;",
+            "      GROUPS.forEach(function (G, i) {",
+            "        var s = slot(G.id), ry = y + i * rowH, muted = s.mute, k = id + G.id;",
+            "        ui.text(k + 't', G.label, x, ry, { size: 8, color: muted ? PAL.dim : '255;255;255' });",
+            "        ui.text(k + 'p', muted ? 'MUDO' : s.level * 10 + '%', x + w, ry, { size: 8, align: 'right', color: muted ? PAL.red : PAL.yellow });",
+            "        var cy = ry + (hints === false ? 16 : 32);",
+            "        if (hints !== false) ui.text(k + 'h', G.hint, x, ry + 15, { size: 8, color: PAL.dim });",
+            "        var bw = 30, mw = 76, gap = 4, barW = w - 2 * bw - mw - 3 * gap - 4, seg = Math.floor(barW / STEPS), bx = x + bw + gap;",
+            "        if (ui.button(k + '-', '-', x, cy, bw, 30, { size: 12, fill: '70;70;100' })) self.step(scene, G.id, -1);",
+            "        ui.rect(bx - 2, cy, seg * STEPS + 4, 30, { fill: '10;10;20', border: '90;90;120', bw: 2 });",
+            "        for (var j = 0; j < STEPS; j++) {                                           // barra de 10 pasos: tocar uno fija ese volumen",
+            "          var sx = bx + j * seg, on = j < s.level && !muted;",
+            "          ui.rect(sx + 1, cy + 5, seg - 2, 20, { fill: on ? G.color : '34;34;58', bw: 0 });",
+            "          if (ui.inside(sx, cy, seg, 30) && ui.released) self.setLevel(scene, G.id, j + 1);",
+            "        }",
+            "        if (ui.button(k + '+', '+', bx + seg * STEPS + gap + 2, cy, bw, 30, { size: 12, fill: '70;70;100' })) self.step(scene, G.id, 1);",
+            "        if (ui.button(k + 'm', muted ? 'ACTIVAR' : 'MUDO', x + w - mw, cy, mw, 30, { size: 8, fill: muted ? '39;174;96' : '110;60;60' })) self.toggleMute(scene, G.id);",
+            "      });",
+            "      return GROUPS.length * rowH;",
             "    }",
             "  };",
             "})();"
@@ -7715,6 +8019,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"scene-menu\" - fuente: src/scene-menu.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7722,11 +8030,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"scene-menu\" - fuente: src/scene-menu.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · escena Menú — título, JUGAR (al nivel que toca), selector de niveles ya completados, skyline pixel-art y tren animado. Objetos: Texto, Icono, UIBase, UIModal, Edificio, Tren. */",
@@ -7754,8 +8060,8 @@
             "    var total = data ? data.levels.length : 5, next = U.Save.nextLevel(total), lv = data && data.levels[next];",
             "    var done = U.session.completed.filter(function (i) { return i < total; }).length;",
             "    ui.icon('logo', 'meta', 592, 70, 6, { z: 220 });",
-            "    ui.text('t1', 'SUPERVIVENCIA', 640, 190, { size: 24, align: 'center', color: PAL.orange });",
-            "    ui.text('t2', 'URBANA', 640, 230, { size: 24, align: 'center', color: PAL.orange });",
+            "    ui.text('t1', 'URBAN', 640, 190, { size: 24, align: 'center', color: PAL.orange });",
+            "    ui.text('t2', 'MEX', 640, 230, { size: 24, align: 'center', color: PAL.orange });",
             "    ui.text('t3', '\"Llegar a la meta... si el Metro lo permite\"', 640, 280, { size: 8, align: 'center', color: PAL.dim });",
             "    for (var i = 0; i < total; i++) {           // un cuadrito por nivel: verde si ya lo completaste",
             "      var ok = U.Save.isCompleted(i);",
@@ -7807,6 +8113,16 @@
             "    }",
             "  }",
             "",
+            "  /** Volumen y silencio de la música general, los sonidos generales y el sonido de peligro y apuro (se guardan). */",
+            "  function drawSound(scene, ui, m) {",
+            "    ui.text('h', 'SONIDO', 640, 70, { size: 24, align: 'center', color: PAL.yellow });",
+            "    ui.text('hs', 'Sube, baja o silencia cada parte por separado.', 640, 116, { size: 8, align: 'center', color: PAL.dim });",
+            "    ui.rect(300, 150, 680, 276, { fill: '24;24;46', border: '60;60;90', bw: 2 });",
+            "    U.Audio.panel(ui, scene, 'mn:', 330, 172, 620, true);",
+            "    ui.text('hn', 'El apuro suena cuando te queda menos del 15% del tiempo o del dinero.', 640, 450, { size: 8, align: 'center', color: PAL.dim });",
+            "    if (ui.button('sback', 'VOLVER', 490, 520, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';",
+            "  }",
+            "",
             "  U.Scenes.menu = function (scene) {",
             "    var ui = U.UI.of(scene), m = scene._um || init(scene), dt = Math.min(0.1, scene.getElapsedTime() / 1000), data = U.Data.ready(scene);",
             "    U.Save.load();",
@@ -7814,18 +8130,20 @@
             "    m.stars.forEach(function (s) { ui.rect(s[0], s[1], 4, 4, { fill: Math.sin(m.t * 2 + s[2]) > 0 ? '255;255;255' : '120;120;160', bw: 0 }); });",
             "    m.train.setX(((m.t * 220) % 1900) - 300);",
             "    ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });",
-            "    if (m.view === 'levels') drawLevels(scene, ui, m, data); else drawMain(scene, ui, m, data);",
+            "    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else drawMain(scene, ui, m, data);",
             "    ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });",
             "    m.fx.update(dt, m);",
             "    U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s",
-            "    U.Audio.button(ui, scene, 'snd', 16, 14, 190, 30);                  // interruptor de sonido (se guarda)",
+            "    if (m.view !== 'sound' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio",
             "    ui.end();",
             "  };",
             "})();"
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -7835,6 +8153,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"scene-tutorial\" - fuente: src/scene-tutorial.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7842,11 +8164,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"scene-tutorial\" - fuente: src/scene-tutorial.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · escena Tutorial — cómo jugar. Objetos: Texto, Icono, UIBase, UIModal. */",
@@ -7887,7 +8207,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -7897,6 +8219,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"scene-nivel\" - fuente: src/scene-nivel.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -7904,11 +8230,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"scene-nivel\" - fuente: src/scene-nivel.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · escena Nivel — una jornada: viajar por el Metro de la CDMX antes de que anochezca.",
@@ -7965,7 +8289,7 @@
             "    if (item) { snd(um, 'noticia'); um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; }",
             "    if (out.type === 'shop') { snd(um, 'tienda'); shopModal(um); }",
             "    else if (out.type === 'robbery') {",
-            "      snd(um, 'robo');",
+            "      snd(um, 'asalto');",
             "      N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');",
             "      modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', '', '\"Debiste haber leido las noticias...\"'],",
             "                  buttons: [{ label: 'SEGUIR', kind: 'danger' }] });",
@@ -8138,7 +8462,7 @@
             "",
             "    um.map.update(dt, run, ui, um.hover, um.selected);",
             "    um.fx.update(dt, um.hover, um.selected);",
-            "    U.Audio.tick(scene, 'nivel', dt);                           // música del nivel y tren lejano cada 60 s                    // después del mapa: usa su cámara y la posición del jugador",
+            "    U.Audio.tick(scene, 'nivel', dt, { alert: U.Audio.danger(run) });   // música del nivel, tren lejano cada 60 s y latido de apuro con < 15 % de tiempo o dinero",
             "    ui.end();",
             "",
             "    if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }",
@@ -8152,7 +8476,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     },
@@ -8162,6 +8488,10 @@
       "events": [
         {
           "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"scene-resultado\" - fuente: src/scene-resultado.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
           "color": {
             "b": 109,
             "g": 230,
@@ -8169,11 +8499,9 @@
             "textB": 0,
             "textG": 0,
             "textR": 0
-          },
-          "comment": "Modulo \"scene-resultado\" - fuente: src/scene-resultado.js (se regenera con tools/build_project.py)."
+          }
         },
         {
-          "folded": true,
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
             "/* UrbanMex · escena Resultado — fin de cada jornada. Objetos: Texto, Icono, UIBase, UIModal. */",
@@ -8220,7 +8548,9 @@
           ],
           "parameterObjects": "",
           "useStrict": true,
-          "eventsSheetExpanded": false
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
         }
       ]
     }

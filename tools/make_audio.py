@@ -7,7 +7,10 @@
   musica_nivel.ogg  58 s  bucle sin costura. Más luminosa (Dmaj9 · Bm9 · Gmaj9 · A6/9), más lenta y espaciada.
   tren_a.ogg / tren_b.ogg  16 s  tren lejano que pasa de izquierda a derecha / de derecha a izquierda (retumbo, zumbido con efecto
                           Doppler, soplo de aire y golpeteo entre vagones). Se reproduce cada 60 s a volumen bajo (src/audio.js).
-  sfx_*.ogg         efectos cortos y suaves de interfaz (clic, selección, viaje, noticia, moneda, tienda, robo, suerte, error, ganar, perder).
+  sfx_*.ogg         efectos cortos y suaves de interfaz (clic, selección, viaje, noticia, moneda, tienda, suerte, error, ganar, perder).
+  peligro_loop.ogg  5 s   bucle sin costura de "apresúrate": latido (96 lpm) + tic de reloj + zumbido grave tenso (segunda menor). Suena en el
+                          Nivel mientras quede menos del 15 % del tiempo o del dinero (src/audio.js).
+  sfx_asalto.ogg    ~1 s  golpe seco de ataque brusco (ráfaga de ruido + golpe grave + racimo disonante) cuando te asaltan.
 
 El volumen con el que suena cada uno en el juego se define en src/audio.js; aquí solo se normaliza el nivel de cada archivo."""
 import os, subprocess, wave, tempfile
@@ -198,13 +201,53 @@ def make_sfx():
     sfx('sfx_noticia', with_reverb(seq([(0, epiano(880, 0.7, 0.8, 5.5)), (0.13, epiano(1319, 0.7, 0.9, 5.0))], 1.1), 0.3), 0.55)
     sfx('sfx_moneda', with_reverb(seq([(0, bell(1319, 0.5, 6.0, 0.7)), (0.07, bell(1760, 0.8, 4.6, 0.8))], 1.0), 0.15), 0.55)
     sfx('sfx_tienda', with_reverb(bell(659, 1.6, 2.4, 1.0), 0.3), 0.5)
-    sweep = np.sin(2 * np.pi * np.cumsum(np.linspace(130, 48, int(0.3 * SR))) / SR) * np.exp(-np.arange(int(0.3 * SR)) / SR * 10)
-    low = (tone(220, 0.9, 3.0, 0.4) + tone(233, 0.9, 3.0, 0.4)) * smooth_env(int(0.9 * SR), 0.02, 0.5)
-    sfx('sfx_robo', with_reverb(seq([(0, sweep), (0.05, low * 0.7)], 1.2), 0.2), 0.6)
     sfx('sfx_suerte', with_reverb(seq([(i * 0.08, bell(f, 0.7, 4.0, 0.7)) for i, f in enumerate((523, 659, 784, 1047))], 1.3), 0.3), 0.5)
     sfx('sfx_error', seq([(0, tone(330, 0.09, 24)), (0.12, tone(262, 0.14, 18))], 0.35), 0.5)
     sfx('sfx_ganar', with_reverb(seq([(i * 0.16, bell(f, 1.6, 2.2, 0.75)) for i, f in enumerate((523, 659, 784, 988, 1319))] + [(0.7, bell(262, 2.2, 1.4, 0.5))], 3.2), 0.35), 0.55)
     sfx('sfx_perder', with_reverb(seq([(i * 0.34, bell(f, 1.9, 2.0, 0.7)) for i, f in enumerate((440, 349, 294, 220))], 3.4), 0.35), 0.5)
+
+
+# -------------------------------------------------------------------------------------------------------------- peligro y asalto
+def make_alert():
+    """peligro_loop: 8 pulsos a 96 lpm = 5.0 s exactos. El zumbido usa frecuencias con ciclos enteros en 5 s (55.0 y 58.0 Hz) y el tremolo 1.6 Hz
+    (8 ciclos), y todo lo demás entra en un búfer circular, así que no hay costura al repetirse."""
+    L = 5.0; beat = 60 / 96; rng = np.random.default_rng(404); loop = Loop(L); n = int(L * SR); t = np.arange(n) / SR
+    def thump(f0, f1, dur, dec, v):
+        m = int(dur * SR); tt = np.arange(m) / SR; ph = 2 * np.pi * np.cumsum(f1 + (f0 - f1) * np.exp(-tt * 28)) / SR
+        return np.sin(ph) * np.exp(-tt * dec) * v
+    def click(fc, dur, dec, v):
+        m = int(dur * SR); return bandpass(rng.standard_normal(m), fc * 0.7, fc * 1.4) * np.exp(-np.arange(m) / SR * dec) * v
+    def mix(*sigs):
+        out = np.zeros(max(len(g) for g in sigs))
+        for g in sigs: out[:len(g)] += g
+        return out
+    for b in range(8):                                             # latido: "lub-dub" en cada pulso, el primero de cada compás algo más fuerte
+        t0 = b * beat; acc = 1.0 if b % 4 == 0 else 0.85
+        loop.add(t0, mix(thump(95, 52, 0.30, 11, 0.95 * acc), click(180, 0.05, 90, 0.5 * acc)), 0.0)
+        loop.add(t0 + 0.19, mix(thump(110, 62, 0.24, 14, 0.6 * acc), click(220, 0.04, 100, 0.3 * acc)), 0.0)
+    for i in range(16):                                            # tic de reloj en cada corchea, alternando de lado (más marcado en el pulso)
+        loop.add(i * beat / 2, click(2600, 0.03, 160, 0.34 if i % 2 == 0 else 0.2), -0.35 if i % 4 < 2 else 0.35)
+    body = loop.buf
+    trem = 0.62 + 0.38 * np.cos(2 * np.pi * 1.6 * t)
+    drone = np.tanh(1.6 * (np.sin(2 * np.pi * 55.0 * t) + np.sin(2 * np.pi * 58.0 * t) + 0.5 * np.sin(2 * np.pi * 110.0 * t) + 0.45 * np.sin(2 * np.pi * 116.0 * t))) * trem
+    drone = lowpass(np.concatenate([drone, drone, drone]), 520, 2)[n:2 * n]            # filtrado circular (3 copias, la del medio) → sin salto en la unión
+    x = body + np.stack([drone, drone]) * 0.20
+    x = lowpass(np.concatenate([x, x, x], axis=1), 9000, 1)[:, n:2 * n]
+    write_ogg('peligro_loop', x * min(0.85 / np.abs(x).max(), 10 ** (-22 / 20) / np.sqrt((x ** 2).mean())), 3)     # RMS -22 dB sin pasar de 0.85 de pico
+
+    # asalto: lo más brusco del juego, pero corto y sin llegar a ser agresivo
+    d = int(1.1 * SR); tt = np.arange(d) / SR
+    burst = highpass(rng.standard_normal(d), 700) * np.exp(-tt * 26)
+    hit = thump(170, 42, 1.1, 8, 1.0)[:d]
+    saw = lambda f: sum(np.sin(2 * np.pi * f * k * tt) / k for k in range(1, 7))
+    cluster = np.tanh(1.5 * (saw(233.1) + saw(246.9) + 0.8 * saw(329.6) + 0.6 * saw(349.2))) * np.exp(-tt * 5.5)
+    cluster = lowpass(cluster, 2600)
+    x = np.tanh(1.9 * (burst * 0.7 + hit * 0.95 + cluster * 0.4))                               # saturación suave: sube la energía sin subir el pico
+    x = x * np.concatenate([np.minimum(1, np.arange(int(0.0006 * SR)) / (0.0006 * SR)), np.ones(d - int(0.0006 * SR))])     # ataque de 0.6 ms
+    sfx_raw = with_reverb(x, 0.16)
+    sfx_raw = sfx_raw[:np.nonzero(np.abs(sfx_raw) > 1e-4)[0][-1] + 1]
+    sfx_raw = sfx_raw * np.concatenate([np.ones(len(sfx_raw) - int(0.05 * SR)), np.cos(np.linspace(0, np.pi / 2, int(0.05 * SR))) ** 2])
+    write_ogg('sfx_asalto', normalize(sfx_raw, peak=0.78), 4, mono=True)
 
 
 if __name__ == '__main__':
@@ -232,4 +275,6 @@ if __name__ == '__main__':
     train_pass('tren_b', True, 32)
     print('efectos')
     make_sfx()
+    print('peligro y asalto')
+    make_alert()
     print('listo ->', OUT)
