@@ -23,8 +23,8 @@
     var total = data ? data.levels.length : 5, next = U.Save.nextLevel(total), lv = data && data.levels[next];
     var done = U.session.completed.filter(function (i) { return i < total; }).length;
     ui.icon('logo', 'meta', 592, 70, 6, { z: 220 });
-    ui.text('t1', 'SUPERVIVENCIA', 640, 190, { size: 24, align: 'center', color: PAL.orange });
-    ui.text('t2', 'URBANA', 640, 230, { size: 24, align: 'center', color: PAL.orange });
+    ui.text('t1', 'URBAN', 640, 190, { size: 24, align: 'center', color: PAL.orange });
+    ui.text('t2', 'MEX', 640, 230, { size: 24, align: 'center', color: PAL.orange });
     ui.text('t3', '"Llegar a la meta... si el Metro lo permite"', 640, 280, { size: 8, align: 'center', color: PAL.dim });
     for (var i = 0; i < total; i++) {           // un cuadrito por nivel: verde si ya lo completaste
       var ok = U.Save.isCompleted(i);
