@@ -52,6 +52,9 @@ def ic_ajustes():
     im, d = new(16, 16)
     for a in [(7, 0), (7, 13), (0, 7), (13, 7), (2, 2), (11, 2), (2, 11), (11, 11)]: d.rectangle([a[0], a[1], a[0] + 2, a[1] + 2], fill=GY)
     d.ellipse([3, 3, 12, 12], fill=GY, outline=K); d.ellipse([6, 6, 9, 9], fill=K); return im
+def ic_sonido():   # bocina con ondas
+    im, d = new(16, 16); d.polygon([(1, 6), (4, 6), (8, 2), (8, 13), (4, 9), (1, 9)], fill=W, outline=K)
+    d.line([10, 6, 10, 9], fill=W); d.line([12, 4, 12, 11], fill=(255, 255, 255, 215)); d.line([14, 2, 14, 13], fill=(255, 255, 255, 150)); return im
 def ic_persona():
     im, d = new(16, 16); d.ellipse([4, 1, 11, 8], fill=SK, outline=K); d.rectangle([3, 9, 12, 15], fill=OR, outline=K); return im
 def ic_celular():
@@ -67,7 +70,7 @@ def ic_combi():    # microbús
     for x in (5, 9): d.line([x, 5, x, 7], fill=OR)
     d.rectangle([1, 9, 14, 9], fill=YE); d.ellipse([2, 11, 5, 14], fill=K); d.ellipse([10, 11, 13, 14], fill=K); d.point((14, 8), fill=YE); return im
 ICONS = {'moneda': ic_moneda, 'rayo': ic_rayo, 'reloj': ic_reloj, 'tienda': ic_tienda, 'meta': ic_meta, 'casa': ic_casa,
-         'bloqueo': ic_bloqueo, 'alerta': ic_alerta, 'noticia': ic_noticia, 'mapa': ic_mapa, 'saldo': ic_saldo, 'ajustes': ic_ajustes, 'persona': ic_persona, 'celular': ic_celular, 'lineas': ic_lineas, 'combi': ic_combi}
+         'bloqueo': ic_bloqueo, 'alerta': ic_alerta, 'noticia': ic_noticia, 'mapa': ic_mapa, 'saldo': ic_saldo, 'ajustes': ic_ajustes, 'sonido': ic_sonido, 'persona': ic_persona, 'celular': ic_celular, 'lineas': ic_lineas, 'combi': ic_combi}
 for n, f in ICONS.items(): save(f(), f'icono_{n}')
 
 # ===========================================================================================================================

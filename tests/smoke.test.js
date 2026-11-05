@@ -54,9 +54,9 @@ const SND = { log: [], music: {}, gv: 100,
   reset() { this.log = []; this.music = {}; this.gv = 100; },
   playSound(n, loop, v, p) { audioCheck(n); assert.equal(loop, false); assert.ok(v >= 0 && v <= 100 && p === 1, 'volumen/tono de ' + n); this.log.push({ k: 'sound', n, v }); },
   playMusicOnChannel(n, ch, loop, v, p) {
-    audioCheck(n); assert.equal(loop, true, 'la música va en bucle'); assert.ok(v >= 0 && v <= 100 && [0, 1].includes(ch));
+    audioCheck(n); assert.equal(loop, true, 'la música va en bucle'); assert.ok(v >= 0 && v <= 100 && [0, 1, 2].includes(ch));
     if (this.music[ch]) this.music[ch].stopped = true;
-    this.music[ch] = { n, ch, stopped: false, fades: [], fade(a, b, d) { assert.ok(a >= 0 && a <= 1 && b >= 0 && b <= 1 && d > 0); this.fades.push([a, b, d]); return this; }, stop() { this.stopped = true; return this; } };
+    this.music[ch] = { n, ch, stopped: false, vol: v / 100, fades: [], setVolume(x) { assert.ok(typeof x === 'number' && x >= 0 && x <= 1, 'setVolume 0..1: ' + x); this.vol = x; return this; }, fade(a, b, d) { assert.ok(a >= 0 && a <= 1 && b >= 0 && b <= 1 && d > 0); this.fades.push([a, b, d]); return this; }, stop() { this.stopped = true; return this; } };
     this.log.push({ k: 'music', n, ch, v });
   },
   getMusicOnChannel(ch) { return this.music[ch] || null; },
@@ -133,6 +133,11 @@ function playLevel(levelIndex, seed) {
   return s;
 }
 test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, modales, noticias)', () => {
+  // Los asaltos y noticias usan Math.random: la partida del bot es repetible con una semilla fija (por defecto 1). UM_SEED=n prueba otra; UM_SEED=azar, al azar.
+  // (Con la semilla 2 el bot se atasca: elige la combi Coyoacán-Pantitlán, que cuesta 40 y 55 de stamina, sin poder pagarla. Es una limitación del bot, no del juego.)
+  const seedEnv = process.env.UM_SEED === 'azar' ? '' : process.env.UM_SEED || '1', realRandom = Math.random;
+  if (seedEnv) { let t = (+seedEnv) >>> 0; Math.random = () => { t = (t + 0x6D2B79F5) >>> 0; let r = Math.imul(t ^ (t >>> 15), 1 | t); r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r; return ((r ^ (r >>> 14)) >>> 0) / 4294967296; }; }
+  try {
   let day = 0, outcomes = [];
   const g = globalThis.gdjs; delete g.UrbanMex;
   let s = session('Nivel'); s.frame(2); const U = s.U; U.session.levelIndex = 0;
@@ -163,6 +168,7 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
   }
   console.log('   resultados del bot (clics reales):', outcomes.join(' | '));
   assert.ok(outcomes.filter((o) => o === 'GANÓ').length >= 3);
+  } finally { Math.random = realRandom; }
 });
 
 test('Resultado: botones según ganar/perder', () => {
@@ -446,15 +452,20 @@ const finishModals = (s) => { for (let g = 400; g-- > 0 && (s.scene._um.pending 
 
 test('audio: los archivos existen, son .ogg válidos, el proyecto los declara y las escenas no cortan los sonidos al cambiar', () => {
   audioReset(); const m = session('Menu'); m.frame(2); const A = m.U.Audio;
-  const names = [...Object.values(A.MUSIC).map((x) => x.file), ...A.TRAINS, ...Object.keys(A.SFX).map((k) => `sfx_${k}.ogg`)];
-  assert.equal(new Set(names).size, 2 + 2 + 11);
+  const names = [...Object.values(A.MUSIC).map((x) => x.file), ...A.TRAINS, A.ALERT.file, ...Object.keys(A.SFX).map((k) => `sfx_${k}.ogg`)];
+  assert.equal(new Set(names).size, 2 + 2 + 1 + 11);
   names.forEach((n) => { audioCheck(n); const b = fs.readFileSync(fileOf(n)); assert.equal(b.subarray(0, 4).toString(), 'OggS', n + ' no es un Ogg'); });
+  assert.ok(!resNames['sfx_robo.ogg'] && !fs.existsSync(path.join(ROOT, 'My project', 'assets', 'audio', 'sfx_robo.ogg')), 'sfx_robo.ogg ya no existe (lo reemplaza sfx_asalto.ogg)');
   const kb = (n) => fs.statSync(fileOf(n)).size / 1024;
   assert.ok(kb('musica_menu.ogg') > 150 && kb('musica_nivel.ogg') > 150, 'las músicas duran más de un minuto'); assert.ok(kb('sfx_click.ogg') < 20, 'los efectos son cortos');
-  assert.ok(project.resources.resources.filter((r) => r.kind === 'audio').every((r) => r.alwaysLoaded && (r.name.startsWith('musica_') ? r.preloadAsMusic && !r.preloadAsSound : r.preloadAsSound && !r.preloadAsMusic)));
+  assert.ok(kb('peligro_loop.ogg') > 15 && kb('peligro_loop.ogg') < 80, 'el bucle de apuro dura unos segundos');
+  // las músicas y el bucle de apuro son de música (en bucle); lo demás, sonidos cortos
+  assert.ok(project.resources.resources.filter((r) => r.kind === 'audio').every((r) => r.alwaysLoaded && (/^(musica_|peligro_)/.test(r.name) ? r.preloadAsMusic && !r.preloadAsSound : r.preloadAsSound && !r.preloadAsMusic)));
   project.layouts.forEach((l) => assert.equal(l.stopSoundsOnStartup, false, 'si GDevelop corta los sonidos al cambiar de escena, la música se reinicia: ' + l.name));
-  // niveles de volumen bajos a propósito: la música es de fondo y el tren apenas se nota
-  assert.ok(Object.values(A.MUSIC).every((x) => x.vol <= 45)); assert.ok(A.state && Object.values(A.SFX).every((v) => v <= 50));
+  // niveles de volumen bajos a propósito: la música es de fondo y el tren apenas se nota; incluso en el nivel 10 (×1.43) nada pasa de 70
+  assert.ok(Object.values(A.MUSIC).every((x) => x.vol <= 45)); assert.ok(A.state && Object.values(A.SFX).every((v) => v <= 50) && A.ALERT.vol <= 35);
+  assert.ok(Object.values(A.SFX).every((v) => v * 10 / A.DEFAULT <= 70) && A.ALERT.vol * 10 / A.DEFAULT <= 50);
+  assert.ok(A.SFX.asalto > Math.max(...Object.entries(A.SFX).filter(([k]) => !['asalto', 'ganar'].includes(k)).map(([, v]) => v)), 'el golpe de asalto es el efecto más marcado (salvo la fanfarria)');
 });
 
 test('audio: una pista por tipo de pantalla, sin reiniciarse entre Menú/Tutorial/Resultado y con fundido al pasar al Nivel', () => {
@@ -504,21 +515,137 @@ test('audio: efectos suaves en clics, selección, viaje, noticias y resultado (u
   r2.frame(30); assert.equal(SND.count(/^sfx_perder/), 1);
 });
 
-test('audio: el interruptor de sonido (Menú y AJUSTES) apaga todo con volumen global 0, no suena el tren y se guarda con el progreso', () => {
-  const store = {}; globalThis.localStorage = { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } };
+
+// -------- Tres módulos de volumen: MÚSICA GENERAL, SONIDOS GENERALES y PELIGRO Y APURO
+const store0 = () => { const store = {}; globalThis.localStorage = { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } }; return store; };
+const musicSnd = () => Object.values(SND.music).find((x) => !x.stopped && /^musica_/.test(x.n));
+const alertSnd = () => Object.values(SND.music).find((x) => !x.stopped && /^peligro_/.test(x.n));
+// filas del panel (menú): cada módulo ocupa 80 px desde y = 172; los botones − / barra / + / MUDO están en y + 32 (+15 de alto medio)
+const MN = { x: 330, w: 620, y: (i) => 172 + i * 80 + 32 + 15, minus: 330 + 15, plus: (seg) => 330 + 34 + seg * 10 + 4 + 2 + 15, mute: 330 + 620 - 38, seg: (j, seg) => 330 + 34 + j * seg + seg / 2 };
+
+test('volumen: el menú tiene tres módulos (música general, sonidos generales, peligro y apuro) con − / + y MUDO, y se guardan', () => {
+  const store = store0();
   try {
-    audioReset(); const m = session('Menu'); m.frame(5); const U = m.U;
-    assert.equal(U.session.audio, true); assert.equal(SND.gv, 100);
-    m.click(100, 29);                                                              // SONIDO: SI → NO (esquina del menú)
-    assert.equal(U.session.audio, false); assert.equal(SND.gv, 0, 'volumen global 0'); assert.equal(JSON.parse(store['UrbanMex_save_v1']).audio, false);
-    SND.log.length = 0; m.frame(900); assert.equal(SND.count(/^tren_/), 0, 'apagado: no suena el tren'); m.click(640, 484); assert.equal(SND.count(/^sfx_/), 0, 'ni los efectos');
-    // "reiniciar el juego": el sonido sigue apagado
-    audioReset(); const m2 = session('Menu'); m2.frame(5); assert.equal(m2.U.session.audio, false); assert.equal(SND.gv, 0);
-    m2.click(100, 29); assert.equal(m2.U.session.audio, true); assert.equal(SND.gv, 100); assert.equal(JSON.parse(store['UrbanMex_save_v1']).audio, true);
-    // el mismo interruptor en AJUSTES del celular
-    audioReset(); const s = session('Nivel'); s.frame(3); const u = s.scene._um; u.modal = null; u.phone.app = 'config'; s.frame(2);
-    s.click(1000, 140 + 232 + 15); assert.equal(s.U.session.audio, false); assert.equal(SND.gv, 0);
-    s.click(1000, 140 + 232 + 15); assert.equal(s.U.session.audio, true); assert.equal(SND.gv, 100);
-    s.click(1000, 140 + 340 + 14); assert.equal(u.exitToMenu, true, 'SALIR AL MENU sigue funcionando en su nuevo lugar');
+    audioReset(); const m = session('Menu'); m.frame(5); const U = m.U, A = U.Audio, vol = () => JSON.parse(store['UrbanMex_save_v1']).vol;
+    assert.deepEqual(A.GROUPS.map((g) => g.id), ['music', 'sfx', 'alert']);
+    assert.deepEqual(['music', 'sfx', 'alert'].map((g) => A.level(g)), [7, 7, 7], 'de fábrica: nivel 7 (= los volúmenes base)');
+    m.click(100, 29); m.frame(3);                                                    // SONIDO → panel de los tres módulos
+    assert.equal(m.scene._um.view, 'sound');
+    const seg = Math.floor((620 - 60 - 76 - 12 - 4) / 10);
+    m.click(MN.minus, MN.y(0)); assert.equal(A.level('music'), 6); assert.equal(A.level('sfx'), 7); assert.equal(A.level('alert'), 7, 'cada módulo es independiente');
+    m.click(MN.plus(seg), MN.y(1)); assert.equal(A.level('sfx'), 8);
+    m.click(MN.seg(1, seg), MN.y(2)); assert.equal(A.level('alert'), 2, 'tocar un paso de la barra fija ese volumen');
+    assert.deepEqual(vol(), { music: { level: 6, mute: false }, sfx: { level: 8, mute: false }, alert: { level: 2, mute: false } }, 'se guarda al cambiar');
+    for (let i = 0; i < 20; i++) m.click(MN.plus(seg), MN.y(0)); assert.equal(A.level('music'), 10, 'tope en 10');
+    for (let i = 0; i < 20; i++) m.click(MN.minus, MN.y(0)); assert.equal(A.level('music'), 0, 'piso en 0');
+    m.click(MN.plus(seg), MN.y(0)); assert.equal(A.level('music'), 1);
+    // MUDO / ACTIVAR por módulo
+    m.click(MN.mute, MN.y(1)); assert.equal(A.muted('sfx'), true); assert.equal(A.gain('sfx'), 0); assert.equal(A.muted('music'), false);
+    assert.equal(vol().sfx.mute, true); assert.equal(vol().sfx.level, 8, 'silenciar no pierde el nivel');
+    m.click(MN.mute, MN.y(1)); assert.equal(A.muted('sfx'), false); assert.ok(Math.abs(A.gain('sfx') - 8 / 7) < 1e-9);
+    // "reiniciar el juego": todo vuelve como se dejó
+    m.click(MN.mute, MN.y(2)); audioReset(); const m2 = session('Menu'); m2.frame(5);
+    assert.deepEqual(['music', 'sfx', 'alert'].map((g) => m2.U.Audio.level(g)), [1, 8, 2]); assert.deepEqual(['music', 'sfx', 'alert'].map((g) => m2.U.Audio.muted(g)), [false, false, true]);
+    m2.click(100, 29); m2.frame(3); m2.click(640, 544); m2.frame(2); assert.equal(m2.scene._um.view, 'main', 'VOLVER regresa al menú');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('volumen: guardados viejos o dañados no rompen nada (interruptor único antiguo → todo en silencio; niveles inválidos → de fábrica)', () => {
+  const store = store0();
+  try {
+    store['UrbanMex_save_v1'] = JSON.stringify({ v: 1, completed: [0], audio: false });
+    audioReset(); const a = session('Menu'); a.frame(3);
+    assert.deepEqual(['music', 'sfx', 'alert'].map((g) => a.U.Audio.muted(g)), [true, true, true]); assert.deepEqual(a.U.session.completed, [0]);
+    store['UrbanMex_save_v1'] = JSON.stringify({ v: 1, completed: [], vol: { music: { level: 99, mute: 'sí' }, sfx: { level: 3.5 }, alert: null } });
+    audioReset(); const b = session('Menu'); b.frame(3);
+    assert.deepEqual(['music', 'sfx', 'alert'].map((g) => b.U.Audio.level(g)), [7, 7, 7]); assert.deepEqual(['music', 'sfx', 'alert'].map((g) => b.U.Audio.muted(g)), [false, false, false]);
+    store['UrbanMex_save_v1'] = '{ no es json'; audioReset(); const c = session('Menu'); c.frame(3); assert.equal(c.U.Audio.level('music'), 7);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('volumen: la música sigue el nivel y el silencio en vivo (sin saltos), y los sonidos y el tren salen con el volumen de su módulo', () => {
+  audioReset(); const m = session('Menu'); m.frame(5); const A = m.U.Audio, base = A.MUSIC.menu.vol / 100;
+  assert.ok(Math.abs(musicSnd().vol - base) < 1e-9, 'nivel 7 = volumen base');
+  A.setLevel(m.scene, 'music', 10); m.frame(60); assert.ok(Math.abs(musicSnd().vol - base * 10 / 7) < 0.005, 'nivel 10 = ×1.43');
+  A.setLevel(m.scene, 'music', 3); m.frame(60); assert.ok(Math.abs(musicSnd().vol - base * 3 / 7) < 0.005);
+  const v1 = musicSnd().vol; A.toggleMute(m.scene, 'music'); m.frame(1); assert.ok(musicSnd().vol < v1 && musicSnd().vol > 0, 'el silencio entra con un fundido corto, no de golpe');
+  m.frame(60); assert.equal(musicSnd().vol, 0, 'en silencio: volumen 0'); assert.equal(SND.gv, 100, 'no se toca el volumen global');
+  A.toggleMute(m.scene, 'music'); m.frame(60); assert.ok(Math.abs(musicSnd().vol - base * 3 / 7) < 0.005, 'al reactivar vuelve al mismo nivel');
+  // arrancar con el módulo en silencio no deja oír ni un instante de música
+  const store = store0();
+  try { A.setLevel(m.scene, 'music', 7); A.toggleMute(m.scene, 'music'); audioReset(); const m2 = session('Menu'); m2.frame(1); assert.equal(musicSnd().vol, 0, 'ya empieza en 0, sin un instante de música'); }
+  finally { delete globalThis.localStorage; }
+  // efectos y tren con el volumen del módulo "sonidos generales"
+  audioReset(); const s = session('Menu'); s.frame(2); const B = s.U.Audio; SND.log.length = 0;
+  B.setLevel(s.scene, 'sfx', 3); SND.log.length = 0; B.play(s.scene, 'noticia'); assert.ok(Math.abs(SND.log[0].v - B.SFX.noticia * 3 / 7) < 1e-9, 'efecto con el volumen del módulo');
+  s.frame(20 * 61); const t = SND.log.filter((e) => /^tren_/.test(e.n)); assert.ok(t.length >= 1); assert.ok(Math.abs(t[0].v - 28 * 3 / 7) < 1e-9, 'el tren sale con el volumen del módulo de sonidos');
+  B.toggleMute(s.scene, 'sfx'); SND.log.length = 0; B.play(s.scene, 'noticia'); s.frame(900); assert.equal(SND.log.filter((e) => e.k === 'sound').length, 0, 'sonidos en MUDO: ni efectos ni tren');
+  // el módulo de música no afecta a los sonidos y al revés
+  audioReset(); const u = session('Menu'); u.frame(2); u.U.Audio.toggleMute(u.scene, 'music'); SND.log.length = 0; u.U.Audio.play(u.scene, 'moneda'); assert.equal(SND.count(/^sfx_moneda/), 1);
+});
+
+test('apuro: con menos del 15 % del tiempo o del dinero suena el latido (con fundido), la música baja, y se apaga al terminar o al silenciar su módulo', () => {
+  audioReset(); const s = session('Nivel'); s.frame(3); const u = () => s.scene._um, A = s.U.Audio, run = u().run, cfg = run.data.config; u().modal = null; u().modalQueue = [];
+  assert.equal(A.danger(run), false); s.frame(60); assert.equal(alertSnd(), undefined, 'al empezar no hay apuro');
+  const span = cfg.dayEndMinute - cfg.dayStartMinute, edge = cfg.dayEndMinute - 0.15 * span;     // minuto en que queda justo el 15 % del tiempo
+  run.minute = edge - 1; assert.equal(A.danger(run), false, '15.1 % del tiempo: aún no'); run.minute = edge + 1; assert.equal(A.danger(run), true, 'menos del 15 % del tiempo');
+  const base = A.MUSIC.nivel.vol / 100; s.frame(2); const al = alertSnd();
+  assert.ok(al, 'empieza el bucle de apuro'); assert.equal(al.n, 'peligro_loop.ogg'); assert.equal(al.ch, 2, 'en su propio canal');
+  assert.ok(al.vol > 0 && al.vol < A.ALERT.vol / 100 * 0.5, 'entra con fundido (no de golpe): ' + al.vol); s.frame(120); assert.ok(Math.abs(alertSnd().vol - A.ALERT.vol / 100) < 0.01, 'llega a su volumen');
+  assert.ok(musicSnd().vol < base * 0.8, 'la música tiene que bajar de verdad (menos del 80 %)'); assert.ok(Math.abs(musicSnd().vol - base * A.ALERT.duck) < 0.01, 'la música baja a ' + A.ALERT.duck * 100 + ' % mientras dura el apuro'); assert.equal(SND.count(/^peligro_/), 1, 'una sola vez, no se reinicia');
+  s.frame(600); assert.equal(SND.count(/^peligro_/), 1);
+  // módulo en MUDO: se apaga (con fundido), la música vuelve y no ducking
+  A.toggleMute(s.scene, 'alert'); s.frame(120); assert.equal(alertSnd(), undefined, 'silenciado: se detiene'); assert.ok(Math.abs(musicSnd().vol - base) < 0.01, 'sin apuro sonoro, la música no baja');
+  A.toggleMute(s.scene, 'alert'); s.frame(5); assert.ok(alertSnd(), 'al reactivar, vuelve mientras haya apuro');
+  // el apuro termina: sale con fundido y se detiene; dinero: 15 %
+  run.minute = cfg.dayStartMinute; assert.equal(A.danger(run), false); s.frame(150); assert.equal(alertSnd(), undefined, 'ya no hay apuro: se apaga'); assert.ok(Math.abs(musicSnd().vol - base) < 0.01);
+  const ms = run.level.moneyStart; run.money = Math.floor(0.15 * ms) + 1; assert.equal(A.danger(run), false, 'poco más del 15 % del dinero'); run.money = Math.ceil(0.15 * ms) - 1; assert.equal(A.danger(run), true, 'menos del 15 % del dinero');
+  s.frame(5); assert.ok(alertSnd()); run.money = ms; run.minute = edge + 5; assert.equal(A.danger(run), true, 'tiempo o dinero, cualquiera de los dos');
+  run.over = true; assert.equal(A.danger(run), false, 'con la partida terminada ya no hay apuro'); s.frame(150); assert.equal(alertSnd(), undefined);
+});
+
+test('apuro: al salir del Nivel el latido se apaga solo, y su volumen es el del módulo PELIGRO Y APURO', () => {
+  audioReset(); const s = session('Nivel'); s.frame(3); const u = s.scene._um, A = s.U.Audio; u.modal = null; A.setLevel(s.scene, 'alert', 10);
+  u.run.minute = u.run.data.config.dayEndMinute - 30; s.frame(200); assert.ok(Math.abs(alertSnd().vol - A.ALERT.vol * 10 / 7 / 100) < 0.01, 'nivel 10 del módulo = ×1.43');
+  A.setLevel(s.scene, 'alert', 2); s.frame(200); assert.ok(Math.abs(alertSnd().vol - A.ALERT.vol * 2 / 7 / 100) < 0.01, 'el cambio de nivel se oye en vivo');
+  audioReset();
+  // en otra pantalla (Resultado) ya no pide apuro: se apaga
+  const r = session('Resultado'); r.frame(2); assert.equal(alertSnd(), undefined);
+});
+
+test('asalto: el golpe brusco suena al ser asaltado, con el volumen de PELIGRO Y APURO (no de los sonidos generales), y en MUDO no suena', () => {
+  const rob = (muteWhat) => {
+    audioReset(); const s = session('Nivel'); s.frame(3); const u = s.scene._um, A = s.U.Audio, run = u.run; u.modal = null; u.modalQueue = [];
+    if (muteWhat) A.toggleMute(s.scene, muteWhat);
+    run.rnd = () => 0;                                                              // con 0 siempre hay asalto en una estación reportada
+    const nb = s.U.Graph.neighbors(run.graph, run.current).find((x) => !run.blocked[x] && !run.data.stations[x].shop); run.danger[nb] = true;
+    SND.log.length = 0; const at = (id) => { const w = u.map.stationPos(id), c = u.map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
+    s.click(...at(nb)); s.click(...at(nb)); for (let g = 0; g < 400 && !SND.count(/^sfx_asalto/) && (u.pending || u.map.moving() || g < 5); g++) s.frame(2);
+    return { s, u, A, run };
+  };
+  const a = rob(); assert.equal(a.run.robbed, 1, 'el jugador fue asaltado'); assert.equal(SND.count(/^sfx_asalto/), 1, 'un golpe por asalto'); assert.equal(SND.count(/^sfx_robo/), 0);
+  assert.ok(Math.abs(SND.log.find((e) => /asalto/.test(e.n)).v - a.A.SFX.asalto) < 1e-9, 'volumen de fábrica');
+  const b = rob('sfx'); assert.equal(b.run.robbed, 1); assert.equal(SND.count(/^sfx_asalto/), 1, 'silenciar SONIDOS GENERALES no silencia el asalto (es de PELIGRO Y APURO)');
+  const c = rob('alert'); assert.equal(c.run.robbed, 1); assert.equal(SND.count(/^sfx_asalto/), 0, 'PELIGRO Y APURO en MUDO: sin golpe');
+  // vía directa: el efecto de asalto obedece a su módulo
+  audioReset(); const d = session('Menu'); d.frame(2); d.U.Audio.setLevel(d.scene, 'alert', 3); SND.log.length = 0; d.U.Audio.play(d.scene, 'asalto');
+  assert.ok(Math.abs(SND.log[0].v - d.U.Audio.SFX.asalto * 3 / 7) < 1e-9);
+});
+
+test('celular: la app SONIDO (y el acceso desde AJUSTES) muestra los tres módulos y funciona igual que en el menú', () => {
+  const store = store0();
+  try {
+    audioReset(); const s = session('Nivel'); s.frame(3); const u = s.scene._um, A = s.U.Audio; u.modal = null; u.phone.app = 'home'; s.frame(2);
+    assert.ok(project.layouts.find((l) => l.name === 'Nivel').objects.find((o) => o.name === 'Icono').animations.some((a) => a.name === 'sonido'), 'el icono "sonido" existe');
+    // tile SONIDO en el inicio del celular: 5.º (columna izquierda de la 3.ª fila)
+    s.click(920 + 10 + 8 + 75, 64 + 34 + 10 + 28 + 2 * 124 + 56); s.frame(2); assert.equal(u.phone.app, 'snd');
+    const y0 = 64 + 34 + 42 + 4, bar = (i) => y0 + i * 80 + 32 + 15, w = 304, x0 = 920 + 10 + 8, seg = Math.floor((w - 60 - 76 - 12 - 4) / 10);
+    s.click(x0 + 15, bar(0)); assert.equal(A.level('music'), 6);
+    s.click(x0 + 34 + seg * 10 + 4 + 2 + 15, bar(1)); assert.equal(A.level('sfx'), 8);
+    s.click(x0 + w - 38, bar(2)); assert.equal(A.muted('alert'), true); s.click(x0 + w - 38, bar(2)); assert.equal(A.muted('alert'), false);
+    assert.equal(JSON.parse(store['UrbanMex_save_v1']).vol.music.level, 6);
+    // desde AJUSTES: "SONIDO Y MUSICA >" lleva a la misma app y SALIR AL MENU sigue en su lugar
+    u.phone.app = 'config'; s.frame(2); s.click(1000, 140 + 232 + 15); s.frame(2); assert.equal(u.phone.app, 'snd');
+    u.phone.app = 'config'; s.frame(2); s.click(1000, 140 + 340 + 14); assert.equal(u.exitToMenu, true);
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });

@@ -12,6 +12,7 @@
     { id: 'map', label: 'RUTA', icon: 'mapa', fill: '30;70;110' },
     { id: 'saldo', label: 'SALDO', icon: 'saldo', fill: '30;90;60' },
     { id: 'lines', label: 'LINEAS', icon: 'lineas', fill: '90;50;110' },
+    { id: 'snd', label: 'SONIDO', icon: 'sonido', fill: '30;80;100' },
     { id: 'config', label: 'AJUSTES', icon: 'ajustes', fill: '70;70;90' }
   ];
 
@@ -147,6 +148,11 @@
       });
     },
 
+    _snd: function (ui, um, run, x, y, w) {
+      var h = U.Audio.panel(ui, um.ui.scene, 'ph:', x, y + 4, w, true);
+      ui.lines('ph:sn', util.wrap('El apuro suena cuando te queda menos del 15% del tiempo o del dinero.', 31), x, y + h + 10, { size: 8, lineH: 12, color: PAL.dim });
+    },
+
     _config: function (ui, um, run, x, y, w) {
       var rows = [['DIA', run.level.day], ['NIVEL', run.level.id + '/' + run.data.levels.length], ['PASOS', String(run.steps)],
                   ['NOTICIAS', String(run.newsCount)], ['VERSION', U.VERSION]];
@@ -157,7 +163,7 @@
       var dbl = U.session.dblTravel !== false;                                    // doble clic en una estación = viajar solo hasta ahí
       if (ui.button('ph:dbl', 'DOBLE CLIC VIAJAR: ' + (dbl ? 'SI' : 'NO'), x, y + 128, w, 30, { size: 8, fill: dbl ? '39;174;96' : '110;60;60' })) { U.session.dblTravel = !dbl; U.Save.persist(); }
       ui.lines('ph:dbh', util.wrap('Doble clic en una estacion vecina (la siguiente a la tuya): viajas ahi sin confirmar.', 31), x, y + 166, { size: 8, lineH: 12, color: PAL.dim });
-      U.Audio.button(ui, um.ui.scene, 'ph:snd', x, y + 232, w, 30, 'MUSICA Y SONIDO');                             // música, tren y efectos (se guarda)
+      if (ui.button('ph:snd', 'SONIDO Y MUSICA >', x, y + 232, w, 30, { size: 8, fill: '30;80;100' })) { um.phone.app = 'snd'; um.phone.scroll = 0; }   // volumen y silencio de música, sonidos y peligro
       ui.lines('ph:sdh', util.wrap('Musica relajante de fondo y un tren lejano que pasa cada minuto, a volumen bajo.', 31), x, y + 270, { size: 8, lineH: 12, color: PAL.dim });
       if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 340, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;
     }
