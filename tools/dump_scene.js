@@ -62,7 +62,8 @@ if (flag('result'))                                            // escena Resulta
 for (let i = 0; i < frames; i++) {
   frame();
   const um = scene._um;
-  if (flag('view') && um && !um.run) um.view = flag('view');                  // escena Menú: abre una vista (sound = volumen de los tres módulos)
+  if (flag('view') && um && !um.run) um.view = flag('view');
+  if (flag('confirm') && um && !um.run) um.confirmExit = true;                 // escena Menú: abre la ventana "SALIR DEL JUEGO"                  // escena Menú: abre una vista (sound = volumen de los tres módulos)
   if (um && um.run) {
     if (!flag('modal')) um.modal = null;                       // quita la ventana de "EMPEZAR" para ver el mapa
     if (flag('minute')) um.run.minute = +flag('minute');

@@ -40,6 +40,31 @@
     if (lv) ui.text('pl3', lv.start + ' > ' + lv.goal, 640, 430, { size: 8, align: 'center', color: '255;220;190' });
     if (ui.button('sel', 'SELECCIONAR NIVEL', 490, 462, 300, 44, { size: 8, fill: '70;70;100' })) m.view = 'levels';
     if (ui.button('how', 'COMO JUGAR', 490, 516, 300, 40, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }
+    if (ui.button('quit', 'SALIR', 490, 574, 300, 40, { size: 8, fill: '110;50;50' })) m.confirmExit = true;      // pide confirmación antes de cerrar
+  }
+
+  /** Ventana "¿Seguro que quieres salir?". SI cierra el juego (ventana de GDevelop / app); en un navegador no se puede cerrar la pestaña, así que
+   *  se muestra una despedida con la opción de volver. El progreso ya se guarda solo, pero se guarda otra vez al salir. */
+  function drawConfirmExit(scene, ui, m) {
+    ui.rect(0, 0, 1280, 720, { fill: '0;0;0', alpha: 170, bw: 0, modal: true, block: true });
+    var w = 560, h = 250, x = 360, y = 200;
+    ui.rect(x, y, w, h, { fill: '16;14;32', border: PAL.orange, bw: 4, modal: true, block: true });
+    ui.text('cx:t', 'SALIR DEL JUEGO', x + w / 2, y + 24, { size: 16, align: 'center', color: PAL.orange, z: 320 });
+    ui.text('cx:1', 'Seguro que quieres cerrar el juego?', x + w / 2, y + 86, { size: 8, align: 'center', color: '230;234;250', z: 320 });
+    ui.text('cx:2', 'Tu progreso ya esta guardado.', x + w / 2, y + 112, { size: 8, align: 'center', color: PAL.dim, z: 320 });
+    if (ui.button('cx:no', 'CANCELAR', x + 40, y + h - 70, 220, 44, { size: 8, fill: '70;70;100', modal: true })) m.confirmExit = false;
+    if (ui.button('cx:si', 'SI, SALIR', x + w - 260, y + h - 70, 220, 44, { size: 8, fill: '192;57;43', modal: true })) {
+      m.confirmExit = false; m.view = 'bye'; U.Save.persist();
+      scene.requestChange(gdjs.SceneChangeRequest.STOP_GAME);              // cierra la ventana / app (Electron, Cordova, vista previa)
+      try { if (typeof window !== 'undefined' && window.close) window.close(); } catch (e) { /* un navegador puede negarse: queda la despedida */ }
+    }
+  }
+
+  /** Despedida (solo se ve si el entorno no pudo cerrar la ventana, p. ej. una pestaña de navegador). */
+  function drawBye(scene, ui, m) {
+    ui.text('by1', 'GRACIAS POR JUGAR!', 640, 250, { size: 24, align: 'center', color: PAL.yellow });
+    ui.text('by2', 'Ya puedes cerrar esta ventana.', 640, 320, { size: 12, align: 'center', color: '230;234;250' });
+    if (ui.button('byb', 'VOLVER AL MENU', 490, 400, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
   }
 
   /** Selector: solo se pueden rejugar los niveles ya completados; el siguiente se juega con JUGAR. */
@@ -82,7 +107,7 @@
     ui.text('hs', 'Sube, baja o silencia cada parte por separado.', 640, 116, { size: 8, align: 'center', color: PAL.dim });
     ui.rect(300, 150, 680, 276, { fill: '24;24;46', border: '60;60;90', bw: 2 });
     U.Audio.panel(ui, scene, 'mn:', 330, 172, 620, true);
-    ui.text('hn', 'El apuro suena cuando te queda menos del 15% del tiempo o del dinero.', 640, 450, { size: 8, align: 'center', color: PAL.dim });
+    ui.text('hn', 'El apuro suena cuando te queda menos del 15% del tiempo, dinero o energia.', 640, 450, { size: 8, align: 'center', color: PAL.dim });
     if (ui.button('sback', 'VOLVER', 490, 520, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
   }
 
@@ -90,14 +115,16 @@
     var ui = U.UI.of(scene), m = scene._um || init(scene), dt = Math.min(0.1, scene.getElapsedTime() / 1000), data = U.Data.ready(scene);
     U.Save.load();
     m.t += dt; ui.begin();
+    var rx = ui.px, ry = ui.py; if (m.confirmExit) { ui.px = -9999; ui.py = -9999; }   // con la ventana de salida abierta, nada de abajo responde al ratón
     m.stars.forEach(function (s) { ui.rect(s[0], s[1], 4, 4, { fill: Math.sin(m.t * 2 + s[2]) > 0 ? '255;255;255' : '120;120;160', bw: 0 }); });
     m.train.setX(((m.t * 220) % 1900) - 300);
     ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });
-    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else drawMain(scene, ui, m, data);
+    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else drawMain(scene, ui, m, data);
     ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });
     m.fx.update(dt, m);
     U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
-    if (m.view !== 'sound' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
+    if (m.view !== 'sound' && m.view !== 'bye' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
+    ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);
     ui.end();
   };
 })();
