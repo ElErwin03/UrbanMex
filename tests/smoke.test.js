@@ -453,19 +453,19 @@ const finishModals = (s) => { for (let g = 400; g-- > 0 && (s.scene._um.pending 
 test('audio: los archivos existen, son .ogg válidos, el proyecto los declara y las escenas no cortan los sonidos al cambiar', () => {
   audioReset(); const m = session('Menu'); m.frame(2); const A = m.U.Audio;
   const names = [...Object.values(A.MUSIC).map((x) => x.file), ...A.TRAINS, A.ALERT.file, ...Object.keys(A.SFX).map((k) => `sfx_${k}.ogg`)];
-  assert.equal(new Set(names).size, 2 + 2 + 1 + 11);
+  assert.equal(new Set(names).size, 2 + 2 + 1 + 12);
   names.forEach((n) => { audioCheck(n); const b = fs.readFileSync(fileOf(n)); assert.equal(b.subarray(0, 4).toString(), 'OggS', n + ' no es un Ogg'); });
   assert.ok(!resNames['sfx_robo.ogg'] && !fs.existsSync(path.join(ROOT, 'My project', 'assets', 'audio', 'sfx_robo.ogg')), 'sfx_robo.ogg ya no existe (lo reemplaza sfx_asalto.ogg)');
   const kb = (n) => fs.statSync(fileOf(n)).size / 1024;
   assert.ok(kb('musica_menu.ogg') > 150 && kb('musica_nivel.ogg') > 150, 'las músicas duran más de un minuto'); assert.ok(kb('sfx_click.ogg') < 20, 'los efectos son cortos');
-  assert.ok(kb('peligro_loop.ogg') > 15 && kb('peligro_loop.ogg') < 80, 'el bucle de apuro dura unos segundos');
+  assert.ok(kb('peligro_loop.ogg') > 15 && kb('peligro_loop.ogg') < 80 && kb('sfx_alerta.ogg') < 20, 'el bucle de apuro dura unos segundos');
   // las músicas y el bucle de apuro son de música (en bucle); lo demás, sonidos cortos
   assert.ok(project.resources.resources.filter((r) => r.kind === 'audio').every((r) => r.alwaysLoaded && (/^(musica_|peligro_)/.test(r.name) ? r.preloadAsMusic && !r.preloadAsSound : r.preloadAsSound && !r.preloadAsMusic)));
   project.layouts.forEach((l) => assert.equal(l.stopSoundsOnStartup, false, 'si GDevelop corta los sonidos al cambiar de escena, la música se reinicia: ' + l.name));
   // niveles de volumen bajos a propósito: la música es de fondo y el tren apenas se nota; incluso en el nivel 10 (×1.43) nada pasa de 70
-  assert.ok(Object.values(A.MUSIC).every((x) => x.vol <= 45)); assert.ok(A.state && Object.values(A.SFX).every((v) => v <= 50) && A.ALERT.vol <= 35);
-  assert.ok(Object.values(A.SFX).every((v) => v * 10 / A.DEFAULT <= 70) && A.ALERT.vol * 10 / A.DEFAULT <= 50);
-  assert.ok(A.SFX.asalto > Math.max(...Object.entries(A.SFX).filter(([k]) => !['asalto', 'ganar'].includes(k)).map(([, v]) => v)), 'el golpe de asalto es el efecto más marcado (salvo la fanfarria)');
+  assert.ok(Object.values(A.MUSIC).every((x) => x.vol <= 45)); assert.ok(A.state && Object.values(A.SFX).every((v) => v <= 50) && A.ALERT.vol <= 50);
+  assert.ok(Object.values(A.SFX).every((v) => v * 10 / A.DEFAULT <= 70) && A.ALERT.vol * 10 / A.DEFAULT <= 70);
+  assert.ok(A.SFX.asalto > Math.max(...Object.entries(A.SFX).filter(([k]) => !['asalto', 'alerta', 'ganar'].includes(k)).map(([, v]) => v)), 'el golpe de asalto es el efecto más marcado (salvo la fanfarria)');
 });
 
 test('audio: una pista por tipo de pantalla, sin reiniciarse entre Menú/Tutorial/Resultado y con fundido al pasar al Nivel', () => {
@@ -550,6 +550,27 @@ test('volumen: el menú tiene tres módulos (música general, sonidos generales,
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 
+test('menú: botón SALIR abajo del todo; pide confirmación y, si se acepta, cierra el juego (STOP_GAME) y guarda', () => {
+  const store = store0();
+  try {
+    audioReset(); const m = session('Menu'); m.frame(5); const um = m.scene._um;
+    const quit = [490 + 150, 574 + 20], si = [360 + 560 - 260 + 110, 200 + 250 - 70 + 22], no = [360 + 40 + 110, 200 + 250 - 70 + 22];
+    // el botón está debajo de todos los demás botones del menú principal
+    assert.ok(574 > 516 + 40, 'SALIR queda debajo de COMO JUGAR');
+    m.click(...quit); m.frame(2); assert.equal(um.confirmExit, true, 'abre la ventana de confirmación'); assert.equal(m.scene.changes.length, 0, 'todavía no cierra');
+    // con la ventana abierta nada de abajo responde: un clic sobre JUGAR no hace nada
+    m.click(640, 400); m.frame(2); assert.equal(m.scene.changes.length, 0); assert.equal(um.confirmExit, true);
+    // CANCELAR: se cierra la ventana, el juego sigue
+    m.click(...no); m.frame(2); assert.equal(um.confirmExit, false); assert.equal(m.scene.changes.length, 0);
+    // SALIR otra vez → SI, SALIR: pide cerrar el juego
+    m.click(...quit); m.frame(2); assert.equal(um.confirmExit, true); m.click(...si); m.frame(2);
+    assert.deepEqual(m.scene.changes.map((c) => c[0]), [globalThis.gdjs.SceneChangeRequest.STOP_GAME], 'pide cerrar el juego una sola vez');
+    assert.equal(um.confirmExit, false); assert.equal(um.view, 'bye', 'despedida por si el entorno no puede cerrar la ventana');
+    assert.ok(store['UrbanMex_save_v1'], 'se guarda al salir');
+    m.click(640, 424); m.frame(2); assert.equal(um.view, 'main', 'VOLVER AL MENU funciona si no se pudo cerrar');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
 test('volumen: guardados viejos o dañados no rompen nada (interruptor único antiguo → todo en silencio; niveles inválidos → de fábrica)', () => {
   const store = store0();
   try {
@@ -599,9 +620,22 @@ test('apuro: con menos del 15 % del tiempo o del dinero suena el latido (con fun
   A.toggleMute(s.scene, 'alert'); s.frame(5); assert.ok(alertSnd(), 'al reactivar, vuelve mientras haya apuro');
   // el apuro termina: sale con fundido y se detiene; dinero: 15 %
   run.minute = cfg.dayStartMinute; assert.equal(A.danger(run), false); s.frame(150); assert.equal(alertSnd(), undefined, 'ya no hay apuro: se apaga'); assert.ok(Math.abs(musicSnd().vol - base) < 0.01);
+  // energía (stamina): también cuenta, y es lo que se agota primero al viajar sin comprar Monster
+  run.minute = cfg.dayStartMinute; run.money = run.level.moneyStart; run.stamina = run.staminaMax; assert.equal(A.danger(run), false);
+  run.stamina = Math.floor(0.15 * run.staminaMax) + 1; assert.equal(A.danger(run), false, 'poco más del 15 % de la energía'); run.stamina = Math.ceil(0.15 * run.staminaMax) - 1; assert.equal(A.danger(run), true, 'menos del 15 % de la energía');
+  run.stamina = 5; assert.equal(A.danger(run), true, 'con 5 de energía hay apuro'); s.frame(5); assert.ok(alertSnd(), 'suena el latido con 5 de energía'); run.stamina = run.staminaMax;
   const ms = run.level.moneyStart; run.money = Math.floor(0.15 * ms) + 1; assert.equal(A.danger(run), false, 'poco más del 15 % del dinero'); run.money = Math.ceil(0.15 * ms) - 1; assert.equal(A.danger(run), true, 'menos del 15 % del dinero');
-  s.frame(5); assert.ok(alertSnd()); run.money = ms; run.minute = edge + 5; assert.equal(A.danger(run), true, 'tiempo o dinero, cualquiera de los dos');
+  s.frame(5); assert.ok(alertSnd()); run.money = 10; assert.equal(A.danger(run), true, 'con 10 monedas hay apuro'); run.money = ms; run.minute = edge + 5; assert.equal(A.danger(run), true, 'tiempo, dinero o energía: cualquiera de los tres');
   run.over = true; assert.equal(A.danger(run), false, 'con la partida terminada ya no hay apuro'); s.frame(150); assert.equal(alertSnd(), undefined);
+});
+
+test('apuro: un aviso de dos pitidos suena UNA vez al entrar en apuro (no se repite mientras dura, y vuelve a sonar en el siguiente apuro)', () => {
+  audioReset(); const s = session('Nivel'); s.frame(3); const u = s.scene._um, A = s.U.Audio, run = u.run; u.modal = null; u.modalQueue = [];
+  s.frame(40); assert.equal(SND.count(/^sfx_alerta/), 0, 'sin apuro, sin aviso');
+  run.stamina = 5; s.frame(3); assert.equal(SND.count(/^sfx_alerta/), 1, 'aviso al entrar'); assert.equal(SND.log.find((e) => /alerta/.test(e.n)).v, A.SFX.alerta);
+  s.frame(200); assert.equal(SND.count(/^sfx_alerta/), 1, 'no se repite mientras dura el apuro');
+  run.stamina = run.staminaMax; s.frame(150); run.money = 10; s.frame(3); assert.equal(SND.count(/^sfx_alerta/), 2, 'otro apuro, otro aviso');
+  A.toggleMute(s.scene, 'alert'); run.money = run.level.moneyStart; s.frame(5); run.money = 10; s.frame(5); assert.equal(SND.count(/^sfx_alerta/), 2, 'PELIGRO Y APURO en MUDO: sin aviso');
 });
 
 test('apuro: al salir del Nivel el latido se apaga solo, y su volumen es el del módulo PELIGRO Y APURO', () => {

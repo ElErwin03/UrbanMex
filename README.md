@@ -107,7 +107,8 @@ Todo el audio se **sintetiza** con `python3 tools/make_audio.py` (numpy + scipy 
 | `musica_nivel.ogg` (58 s) | más luminosa, lenta y espaciada (Dmaj9 · Bm9 · Gmaj9 · A6/9). Durante el nivel | 40 |
 | `tren_a.ogg` / `tren_b.ogg` (16 s) | tren lejano: retumbo, zumbido con efecto Doppler, soplo de aire y golpeteo entre vagones; pasa de izquierda a derecha y al revés | 28 |
 | `sfx_*.ogg` | clic, selección, viaje, noticia, moneda, tienda, suerte, error, ganar y perder | 34 a 48 |
-| `peligro_loop.ogg` (5 s) | **apuro**: latido a 96 lpm + tic de reloj + zumbido grave tenso (segunda menor), bucle sin costura | 30 |
+| `peligro_loop.ogg` (5 s) | **apuro**: latido a 96 lpm (con armónicos medios para que se oiga en bocinas chicas) + tic-tac + pitido tenso (segunda menor) + zumbido grave, bucle sin costura | 46 |
+| `sfx_alerta.ogg` (0.6 s) | aviso de dos pitidos agudos y un golpe grave, una sola vez al **entrar** en apuro | 46 |
 | `sfx_asalto.ogg` (~1.3 s) | **asalto**: golpe seco de ataque brusco (ráfaga de ruido, golpe grave y racimo disonante); reemplaza al antiguo `sfx_robo` | 46 |
 
 - **Tren de fondo:** suena **cada 60 s** (el primero a los 20 s), alternando el lado por el que pasa, unos 8 dB por debajo de la música para que apenas se note (`TRAIN_EVERY`, `TRAIN_FIRST` y `TRAIN_VOL` en `src/audio.js`).
@@ -117,7 +118,7 @@ Todo el audio se **sintetiza** con `python3 tools/make_audio.py` (numpy + scipy 
   - **SONIDOS GENERALES:** clics, selección, viaje, noticias, moneda, tienda, suerte, error, ganar / perder y el tren lejano.
   - **PELIGRO Y APURO:** el latido de apuro y el golpe de asalto.
   El nivel va de 0 a 10; el 7 (de fábrica) deja los volúmenes base de la tabla, y el 10 los sube ×1.43. Los tres se guardan con el progreso (`vol` en `UrbanMex_save_v1`); un guardado anterior con el interruptor único `audio: false` se entiende como los tres en silencio. Al cambiar un nivel suena una muestra (la del asalto no se repite en menos de 0.7 s).
-- **Apuro:** mientras queda **menos del 15 % del tiempo del día o del dinero** con el que empezó el nivel (y la partida sigue), entra con un fundido de 1.6 s el latido (canal de música 2) y la música baja a 60 % para que se note; al dejar de haber apuro, o al terminar la partida, sale con un fundido de 1.2 s. Con el módulo en MUDO no suena ni baja la música. El umbral y los volúmenes están en `ALERT` de `src/audio.js`.
+- **Apuro:** mientras queda **menos del 15 % del tiempo del día, del dinero** con el que empezó el nivel **o de la energía** (stamina) máxima (y la partida sigue; con 0 de dinero o de energía la partida termina), entra con un fundido de 1.6 s el latido (canal de música 2) y la música baja a 60 % para que se note; al dejar de haber apuro, o al terminar la partida, sale con un fundido de 1.2 s. Con el módulo en MUDO no suena ni baja la música. El umbral y los volúmenes están en `ALERT` de `src/audio.js`.
 - **Asalto:** al ser asaltado suena `sfx_asalto` con el volumen de PELIGRO Y APURO (silenciar los sonidos generales no lo silencia).
 - **Para cambiar la música:** edita los acordes en `compose(...)` de `tools/make_audio.py` y vuelve a ejecutarlo; luego `python3 tools/build_project.py`.
 - Los navegadores no dejan reproducir audio hasta el primer clic de la persona; GDevelop/Howler lo reintenta solo en cuanto hay interacción.
@@ -136,3 +137,6 @@ La cuadrícula lógica de `estaciones.json` no cambia; `src/layout.js` (funcione
 - **Combis y transbordos por las calles:** ya no son diagonales rectas que cruzan todo el mapa. Siguen la cuadrícula (tramos en los ejes, máximo 2 codos); para cada ruta se elige, entre unos 40 trazados candidatos, el que menos se encima con el Metro, menos lo cruza, menos pasa pegado a estaciones ajenas y menos se mezcla con otras rutas secundarias. Es determinista. Las líneas del Metro siguen rectas. Se dibujan como calle angosta con codos redondeados, el jugador las recorre siguiendo los codos y el microbús va a la mitad del recorrido.
 - Los nombres de estación crecen hasta 35% cuando el zoom baja de 100%, para seguir legibles.
 Los ajustes (`K`, `PLAZA`, `CALM`, `BUILD_P`, pesos del puntaje) están al inicio de `src/layout.js` y `src/map.js`.
+
+## Salir del juego
+El menú principal tiene un botón **SALIR** hasta abajo. Abre la ventana «SALIR DEL JUEGO» (CANCELAR / SI, SALIR); con SI se guarda el progreso y se pide cerrar el juego (`STOP_GAME`, que cierra la ventana de GDevelop o la app de escritorio / móvil). Un navegador no deja que un juego cierre su propia pestaña, así que ahí se muestra «GRACIAS POR JUGAR! Ya puedes cerrar esta ventana.» con un botón para volver al menú. Mientras la ventana está abierta, nada de lo de abajo responde al ratón.
