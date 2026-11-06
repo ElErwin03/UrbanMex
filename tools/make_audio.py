@@ -10,6 +10,7 @@
   sfx_*.ogg         efectos cortos y suaves de interfaz (clic, selección, viaje, noticia, moneda, tienda, suerte, error, ganar, perder).
   peligro_loop.ogg  5 s   bucle sin costura de "apresúrate": latido (96 lpm) + tic de reloj + zumbido grave tenso (segunda menor). Suena en el
                           Nivel mientras quede menos del 15 % del tiempo o del dinero (src/audio.js).
+  sfx_alerta.ogg    0.6 s aviso corto (dos pitidos agudos y un golpe grave) al ENTRAR en apuro.
   sfx_asalto.ogg    ~1 s  golpe seco de ataque brusco (ráfaga de ruido + golpe grave + racimo disonante) cuando te asaltan.
 
 El volumen con el que suena cada uno en el juego se define en src/audio.js; aquí solo se normaliza el nivel de cada archivo."""
@@ -221,19 +222,31 @@ def make_alert():
         out = np.zeros(max(len(g) for g in sigs))
         for g in sigs: out[:len(g)] += g
         return out
-    for b in range(8):                                             # latido: "lub-dub" en cada pulso, el primero de cada compás algo más fuerte
+    for b in range(8):                                             # latido: "lub-dub" en cada pulso (con armónicos y un "clac" medio para que se oiga también en bocinas chicas)
         t0 = b * beat; acc = 1.0 if b % 4 == 0 else 0.85
-        loop.add(t0, mix(thump(95, 52, 0.30, 11, 0.95 * acc), click(180, 0.05, 90, 0.5 * acc)), 0.0)
-        loop.add(t0 + 0.19, mix(thump(110, 62, 0.24, 14, 0.6 * acc), click(220, 0.04, 100, 0.3 * acc)), 0.0)
-    for i in range(16):                                            # tic de reloj en cada corchea, alternando de lado (más marcado en el pulso)
-        loop.add(i * beat / 2, click(2600, 0.03, 160, 0.34 if i % 2 == 0 else 0.2), -0.35 if i % 4 < 2 else 0.35)
+        loop.add(t0, mix(np.tanh(1.8 * thump(95, 52, 0.30, 11, 0.95 * acc)), thump(190, 104, 0.16, 20, 0.55 * acc), click(420, 0.05, 80, 0.8 * acc)), 0.0)
+        loop.add(t0 + 0.19, mix(np.tanh(1.8 * thump(110, 62, 0.24, 14, 0.6 * acc)), thump(220, 124, 0.12, 24, 0.4 * acc), click(520, 0.04, 90, 0.55 * acc)), 0.0)
+    for i in range(16):                                            # tic-tac de reloj en cada corchea (agudo / grave), alternando de lado; más marcado en el pulso
+        loop.add(i * beat / 2, click(2300 if i % 2 == 0 else 1700, 0.035, 120, 0.85 if i % 2 == 0 else 0.55), -0.35 if i % 4 < 2 else 0.35)
+    for b in range(0, 8, 2):                                       # pitido tenso (segunda menor) cada dos pulsos, en el contratiempo
+        m = int(0.09 * SR); tt = np.arange(m) / SR; env = np.minimum(1, tt / 0.004) * np.exp(-tt * 20)
+        loop.add(b * beat + beat * 0.62, (np.sin(2 * np.pi * 880 * tt) + np.sin(2 * np.pi * 932 * tt)) * env * 0.16, 0.0)
     body = loop.buf
     trem = 0.62 + 0.38 * np.cos(2 * np.pi * 1.6 * t)
     drone = np.tanh(1.6 * (np.sin(2 * np.pi * 55.0 * t) + np.sin(2 * np.pi * 58.0 * t) + 0.5 * np.sin(2 * np.pi * 110.0 * t) + 0.45 * np.sin(2 * np.pi * 116.0 * t))) * trem
     drone = lowpass(np.concatenate([drone, drone, drone]), 520, 2)[n:2 * n]            # filtrado circular (3 copias, la del medio) → sin salto en la unión
-    x = body + np.stack([drone, drone]) * 0.20
+    x = body + np.stack([drone, drone]) * 0.14
     x = lowpass(np.concatenate([x, x, x], axis=1), 9000, 1)[:, n:2 * n]
-    write_ogg('peligro_loop', x * min(0.85 / np.abs(x).max(), 10 ** (-22 / 20) / np.sqrt((x ** 2).mean())), 3)     # RMS -22 dB sin pasar de 0.85 de pico
+    write_ogg('peligro_loop', x * min(0.62 / np.abs(x).max(), 10 ** (-18 / 20) / np.sqrt((x ** 2).mean())), 3)     # RMS -18 dB sin pasar de 0.62 de pico (Vorbis rebasa ~+2.5 dB en transitorios; así el archivo decodificado no recorta)
+
+    # alerta: aviso corto (dos pitidos y un golpe grave) que suena UNA vez al entrar en apuro, para que se note de inmediato
+    d = int(0.62 * SR); tt = np.arange(d) / SR; x = np.zeros(d)
+    for t0, f in ((0.0, 988.0), (0.17, 988.0), (0.34, 740.0)):
+        m = int(0.13 * SR); u = np.arange(m) / SR; env = np.minimum(1, u / 0.003) * np.minimum(1, (0.13 - u) / 0.02)
+        beep = sum(np.sin(2 * np.pi * f * k * u) / k for k in (1, 2, 3)) * env
+        x[int(t0 * SR):int(t0 * SR) + m] += beep * 0.5
+    x = lowpass(x, 5200) + np.concatenate([thump(120, 55, 0.3, 12, 0.7), np.zeros(max(0, d - int(0.3 * SR)))])[:d]
+    write_ogg('sfx_alerta', normalize(with_reverb(x, 0.1)[:int(0.62 * SR)], peak=0.74), 4, mono=True)
 
     # asalto: lo más brusco del juego, pero corto y sin llegar a ser agresivo
     d = int(1.1 * SR); tt = np.arange(d) / SR

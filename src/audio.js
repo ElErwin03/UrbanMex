@@ -3,8 +3,8 @@
  * TRES MÓDULOS, cada uno con su volumen (0 a 10, el 7 es el nivel "de fábrica") y su silencio:
  *   · "music"  MÚSICA GENERAL     — la música de fondo (una pista tranquila para Menú / Tutorial / Resultado y otra para el Nivel).
  *   · "sfx"    SONIDOS GENERALES  — clic, selección, viaje, noticia, moneda, tienda, suerte, error, ganar / perder y el tren lejano de cada 60 s.
- *   · "alert"  PELIGRO Y APURO    — el latido con tic de reloj que suena mientras te quede MENOS DEL 15 % del tiempo o del dinero, y el
- *                                   golpe seco del asalto. Mientras suena el apuro la música baja un poco para que se note.
+ *   · "alert"  PELIGRO Y APURO    — el latido con tic-tac que suena mientras te quede MENOS DEL 15 % del tiempo, del dinero o de la energía
+ *                                   (con un aviso de dos pitidos al entrar) y el golpe seco del asalto. Mientras suena el apuro la música baja un poco.
  * El volumen real de cada sonido es (su volumen base de esta tabla) × (nivel / 7); silenciado = 0. Se guarda con el progreso (U.session.vol).
  * Los archivos viven en assets/audio (los genera tools/make_audio.py) y son recursos de audio del proyecto. Los volúmenes base (0 a 100) están
  * aquí abajo, a propósito bajos: la música es de fondo y el tren apenas se nota.
@@ -15,9 +15,9 @@
 
   var MUSIC = { menu: { file: 'musica_menu.ogg', vol: 40 }, nivel: { file: 'musica_nivel.ogg', vol: 40 } };
   var TRAINS = ['tren_a.ogg', 'tren_b.ogg'], TRAIN_VOL = 28, TRAIN_EVERY = 60, TRAIN_FIRST = 20;     // segundos
-  var SFX = { click: 34, select: 40, viaje: 42, noticia: 44, moneda: 44, tienda: 40, suerte: 40, error: 36, ganar: 48, perder: 44, asalto: 46 };   // sfx_<nombre>.ogg
-  var GROUP_OF = { asalto: 'alert' };                        // todo lo demás de SFX es "sfx"
-  var ALERT = { file: 'peligro_loop.ogg', vol: 30, ch: 2, fadeIn: 1.6, fadeOut: 1.2, low: 0.15, duck: 0.6 };   // bucle de apuro, canal de música propio; low: umbral; duck: la música baja a 60 %
+  var SFX = { click: 34, select: 40, viaje: 42, noticia: 44, moneda: 44, tienda: 40, suerte: 40, error: 36, ganar: 48, perder: 44, asalto: 46, alerta: 46 };   // sfx_<nombre>.ogg
+  var GROUP_OF = { asalto: 'alert', alerta: 'alert' };                        // todo lo demás de SFX es "sfx"
+  var ALERT = { file: 'peligro_loop.ogg', vol: 46, ch: 2, fadeIn: 1.6, fadeOut: 1.2, low: 0.15, duck: 0.6 };   // bucle de apuro, canal de música propio; low: umbral; duck: la música baja a 60 %
   var STEPS = 10, DEFAULT = 7;                                // niveles 0..10; el 7 deja los volúmenes base tal cual
   var FADE = 1.8, PREVIEW_GAP = 0.7;
   var GROUPS = [
@@ -26,7 +26,7 @@
     { id: 'alert', label: 'PELIGRO Y APURO', hint: 'Apuro y golpe de asalto', color: '235;120;50' }
   ];
 
-  var st = { t: 0, music: null, ch: 0, mv: 1, mvApplied: -1, trainIn: TRAIN_FIRST, trains: 0, fading: [], al: null, alv: 0, alApplied: -1, lastPreview: -9 };
+  var st = { t: 0, music: null, ch: 0, mv: 1, mvApplied: -1, trainIn: TRAIN_FIRST, trains: 0, fading: [], al: null, alv: 0, alApplied: -1, wasDanger: false, lastPreview: -9 };
 
   function mgr(scene) { try { var g = scene.getGame(), m = g && g.getSoundManager && g.getSoundManager(); return m || null; } catch (e) { return null; } }
   function slot(g) { return U.session.vol[g]; }
@@ -70,11 +70,12 @@
     state: st, MUSIC: MUSIC, SFX: SFX, TRAINS: TRAINS, TRAIN_EVERY: TRAIN_EVERY, TRAIN_FIRST: TRAIN_FIRST, ALERT: ALERT, GROUPS: GROUPS, STEPS: STEPS, DEFAULT: DEFAULT,
     gain: gain, level: function (g) { return slot(g).level; }, muted: function (g) { return slot(g).mute; },
 
-    /** ¿Estás en apuro? Queda menos del 15 % del tiempo del día o del dinero con el que empezó el nivel (y la partida sigue). */
+    /** ¿Estás en apuro? Queda menos del 15 % del tiempo del día, del dinero con el que empezó el nivel o de la energía (stamina) máxima, y la
+     *  partida sigue (con 0 de dinero o de energía la partida termina y ya no hay nada que apurar). */
     danger: function (run) {
       if (!run || run.over) return false;
-      var cfg = run.data.config, span = cfg.dayEndMinute - cfg.dayStartMinute, ms = run.level.moneyStart;
-      return (cfg.dayEndMinute - run.minute) / span < ALERT.low || (ms > 0 && run.money / ms < ALERT.low);
+      var cfg = run.data.config, span = cfg.dayEndMinute - cfg.dayStartMinute, ms = run.level.moneyStart, sm = run.staminaMax;
+      return (cfg.dayEndMinute - run.minute) / span < ALERT.low || (ms > 0 && run.money / ms < ALERT.low) || (sm > 0 && run.stamina / sm < ALERT.low);
     },
 
     /** Una vez por fotograma desde cada escena: track = 'menu' | 'nivel'; opts.alert = true en el Nivel cuando hay apuro.
@@ -83,8 +84,10 @@
       var m = mgr(scene); if (!m) return;
       U.Save.load();                                                       // los volúmenes guardados valen desde el primer fotograma (no hay "salto" al arrancar)
       if (!st.ready) { st.ready = true; st.mv = gain('music'); }
-      var alertOn = !!(opts && opts.alert) && gain('alert') > 0;
-      st.t += dt; musicLevel(m, dt, alertOn); setMusic(m, track); alertLoop(m, dt, !!(opts && opts.alert));
+      var wantAlert = !!(opts && opts.alert), alertOn = wantAlert && gain('alert') > 0;
+      if (wantAlert && !st.wasDanger) this.play(scene, 'alerta');             // aviso de dos pitidos, una sola vez al ENTRAR en apuro
+      st.wasDanger = wantAlert;
+      st.t += dt; musicLevel(m, dt, alertOn); setMusic(m, track); alertLoop(m, dt, wantAlert);
       st.fading = st.fading.filter(function (f) { f.left -= dt; if (f.left > 0) return true; f.s.stop(); return false; });
       st.trainIn -= dt;
       if (st.trainIn <= 0) { st.trainIn += TRAIN_EVERY; st.trains++; if (gain('sfx') > 0) m.playSound(TRAINS[st.trains % 2], false, pct(TRAIN_VOL, gain('sfx')), 1); }
