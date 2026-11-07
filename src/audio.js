@@ -17,7 +17,7 @@
   var TRAINS = ['tren_a.ogg', 'tren_b.ogg'], TRAIN_VOL = 28, TRAIN_EVERY = 60, TRAIN_FIRST = 20;     // segundos
   var SFX = { click: 34, select: 40, viaje: 42, noticia: 44, moneda: 44, tienda: 40, suerte: 40, error: 36, ganar: 48, perder: 44, asalto: 46, alerta: 46 };   // sfx_<nombre>.ogg
   var GROUP_OF = { asalto: 'alert', alerta: 'alert' };                        // todo lo demás de SFX es "sfx"
-  var ALERT = { file: 'peligro_loop.ogg', vol: 46, ch: 2, fadeIn: 1.6, fadeOut: 1.2, low: 0.15, duck: 0.6, pauseDuck: 0.35 };   // bucle de apuro, canal de música propio; low: umbral; duck: la música baja a 60 %; pauseDuck: en PAUSA baja a 35 %
+  var ALERT = { file: 'peligro_loop.ogg', vol: 46, ch: 2, fadeIn: 1.6, fadeOut: 1.2, duck: 0.6, pauseDuck: 0.35 };   // bucle de apuro, canal de música propio; duck: la música baja a 60 %; pauseDuck: en PAUSA baja a 35 %
   var STEPS = 10, DEFAULT = 7;                                // niveles 0..10; el 7 deja los volúmenes base tal cual
   var FADE = 1.8, PREVIEW_GAP = 0.7;
   var GROUPS = [
@@ -72,11 +72,7 @@
 
     /** ¿Estás en apuro? Queda menos del 15 % del tiempo del día, del dinero con el que empezó el nivel o de la energía (stamina) máxima, y la
      *  partida sigue (con 0 de dinero o de energía la partida termina y ya no hay nada que apurar). */
-    danger: function (run) {
-      if (!run || run.over) return false;
-      var cfg = run.data.config, span = cfg.dayEndMinute - cfg.dayStartMinute, ms = run.level.moneyStart, sm = run.staminaMax;
-      return (cfg.dayEndMinute - run.minute) / span < ALERT.low || (ms > 0 && run.money / ms < ALERT.low) || (sm > 0 && run.stamina / sm < ALERT.low);
-    },
+    danger: function (run) { return U.Rules.urgency(run).any; },   // la regla vive en Rules.urgency (la comparten el sonido, el borde rojo y el HUD)
 
     /** Una vez por fotograma desde cada escena: track = 'menu' | 'nivel'; opts.alert = true en el Nivel cuando hay apuro.
      *  Mantiene la música, los fundidos, el bucle de apuro y el tren de cada 60 s. */
