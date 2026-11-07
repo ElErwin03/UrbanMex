@@ -57,8 +57,13 @@ const frame = () => { layout.events.forEach((ev) => {
 const frames = +flag('frames', 12), U = () => globalThis.gdjs.UrbanMex;
 frame();                                                       // 1.er fotograma: crea los módulos (y la sesión)
 if (flag('level')) U().session.levelIndex = +flag('level');
-if (flag('result'))                                            // escena Resultado: --result win | lose (datos de ejemplo)
-  U().session.lastResult = { won: flag('result') === 'win', levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '2h 00m', steps: 14, money: 60, robbed: 1, stolen: 40, newsRead: 5, reason: 'Te quedaste sin stamina.' };
+if (flag('result')) {                                         // escena Resultado: --result win | lose (datos de ejemplo); --stars 1..3 (win), --left N (lose), --cause stamina|money|night|blocked, --record new|old, --t SEG (avanza la animación)
+  const won = flag('result') === 'win', stars = won ? +flag('stars', 3) : 0, left = +flag('left', 4), hops = 12;
+  U().session.lastResult = { won, levelIndex: +flag('level', 0), day: 'LUNES', arrival: '9:00 AM', travelTime: '2h 00m', steps: 14, money: 60, robbed: stars === 3 ? 0 : 1, stolen: stars === 3 ? 0 : 40, newsRead: 5,
+    reason: won ? '' : 'Te quedaste sin stamina.', cause: won ? '' : String(flag('cause', 'stamina')), moneyStart: 150, currency: 'peje-coins', stars, moneyGoal: 56,
+    got: { arrive: won, saver: stars >= 2, safe: stars === 3 }, hops, left: won ? 0 : left, progress: won ? 1 : 1 - left / hops,
+    record: won ? (flag('record') === 'old' ? { isNew: false, prev: { stars: 3, money: 80 } } : { isNew: true, prev: { stars: 1, money: 40 } }) : null };
+}
 for (let i = 0; i < frames; i++) {
   frame();
   const um = scene._um;

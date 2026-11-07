@@ -69,8 +69,15 @@ def ic_combi():    # microbús
     im, d = new(16, 16); d.rectangle([1, 3, 14, 12], fill=OR, outline=K); d.rectangle([2, 5, 13, 7], fill=(190, 225, 250, 255))
     for x in (5, 9): d.line([x, 5, x, 7], fill=OR)
     d.rectangle([1, 9, 14, 9], fill=YE); d.ellipse([2, 11, 5, 14], fill=K); d.ellipse([10, 11, 13, 14], fill=K); d.point((14, 8), fill=YE); return im
+def _star_pts(cx, cy, ro, ri):
+    import math
+    return [(cx + (ro if i % 2 == 0 else ri) * math.sin(i * math.pi / 5), cy - (ro if i % 2 == 0 else ri) * math.cos(i * math.pi / 5)) for i in range(10)]
+def ic_estrella():   # estrella dorada (resultado del nivel)
+    im, d = new(16, 16); d.polygon(_star_pts(7.5, 8.4, 7.4, 3.2), fill=YE, outline=OR2); d.polygon(_star_pts(7.5, 8.2, 3.6, 1.6), fill=(255, 245, 170, 255)); return im
+def ic_estrella_vacia():   # estrella sin conseguir
+    im, d = new(16, 16); d.polygon(_star_pts(7.5, 8.4, 7.4, 3.2), fill=(44, 46, 70, 255), outline=(96, 100, 130, 255)); return im
 ICONS = {'moneda': ic_moneda, 'rayo': ic_rayo, 'reloj': ic_reloj, 'tienda': ic_tienda, 'meta': ic_meta, 'casa': ic_casa,
-         'bloqueo': ic_bloqueo, 'alerta': ic_alerta, 'noticia': ic_noticia, 'mapa': ic_mapa, 'saldo': ic_saldo, 'ajustes': ic_ajustes, 'sonido': ic_sonido, 'persona': ic_persona, 'celular': ic_celular, 'lineas': ic_lineas, 'combi': ic_combi}
+         'bloqueo': ic_bloqueo, 'alerta': ic_alerta, 'noticia': ic_noticia, 'mapa': ic_mapa, 'saldo': ic_saldo, 'ajustes': ic_ajustes, 'sonido': ic_sonido, 'persona': ic_persona, 'celular': ic_celular, 'estrella': ic_estrella, 'estrella_vacia': ic_estrella_vacia, 'lineas': ic_lineas, 'combi': ic_combi}
 for n, f in ICONS.items(): save(f(), f'icono_{n}')
 
 # ===========================================================================================================================

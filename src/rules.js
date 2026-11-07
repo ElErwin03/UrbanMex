@@ -7,6 +7,7 @@
   function setOf(list) { var o = {}; (list || []).forEach(function (k) { o[k] = true; }); return o; }
 
   var Rules = {
+    SAVER_KEEP: 0.65,                             // 2.ª estrella: terminar con al menos el 65 % del dinero que dejaría la mejor ruta (alcanza aunque compres un Monster)
     URGENT_BELOW: 0.15,                           // apuro: queda menos del 15 % del tiempo, el dinero o la stamina (ver urgency)
     createRun: function (data, levelIndex, rnd) {
       var lv = data.levels[levelIndex], cfg = data.config, rng = rnd || Math.random;
@@ -137,9 +138,8 @@
         run.money >= Rules.monsterPrice(run) + cfg.moneyPerStation;
       if (canRecover) return null;
       run.over = true; run.won = false;
-      run.endReason = reasons.night ? 'Anocheció y no llegaste a tiempo.'
-        : reasons.stamina ? 'Te quedaste sin stamina.'
-        : reasons.money ? 'Te quedaste sin dinero.' : 'Todas las rutas están bloqueadas.';
+      run.endCause = reasons.night ? 'night' : reasons.stamina ? 'stamina' : reasons.money ? 'money' : 'blocked';
+      run.endReason = { night: 'Anocheció y no llegaste a tiempo.', stamina: 'Te quedaste sin stamina.', money: 'Te quedaste sin dinero.', blocked: 'Todas las rutas están bloqueadas.' }[run.endCause];
       return run.endReason;
     },
 
@@ -163,12 +163,48 @@
       if (e.freeRide) run.freeRides += e.freeRide;
     },
 
+    /** Lo que más dinero te dejaría la mejor ruta (sin noticias ni asaltos): dinero inicial − el tramo más barato de salida a meta. null si no hay ruta. */
+    parMoney: function (run) {
+      var cfg = run.data.config, lv = run.level, blocked = setOf(lv.blocked), dist = {}, done = {};
+      dist[lv.start] = 0;
+      for (;;) {
+        var u = null; Object.keys(dist).forEach(function (k) { if (!done[k] && (u === null || dist[k] < dist[u])) u = k; });
+        if (u === null) return null;
+        if (u === lv.goal) return lv.moneyStart - dist[u];
+        done[u] = true;
+        G.neighbors(run.graph, u).forEach(function (v) {
+          if (blocked[v] || done[v]) return;
+          var combi = G.isCombi(run.graph, u, v), fare = combi ? G.fare(run.graph, u, v) : {};
+          var w = dist[u] + (combi ? (fare.money !== undefined ? fare.money : cfg.combi.money) : cfg.moneyPerStation);
+          if (dist[v] === undefined || w < dist[v]) dist[v] = w;
+        });
+      }
+    },
+
+    /** Estaciones que faltan de `from` a la meta (por el camino más corto sin bloqueos; si no hay, ignorando los bloqueos de noticias). */
+    hopsLeft: function (run, from, ignoreNews) {
+      var p = G.shortestPath(run.graph, from, run.level.goal, ignoreNews ? setOf(run.level.blocked) : run.blocked);
+      return p ? p.length - 1 : null;
+    },
+
+    /** Estrellas de la jornada (solo si ganaste): 1) llegar, 2) ahorrar (terminar con al menos SAVER_KEEP de lo que dejaría la mejor ruta), 3) sin asaltos. */
+    score: function (run) {
+      var par = Rules.parMoney(run), goal = par === null ? 0 : Math.ceil(par * Rules.SAVER_KEEP), won = !!run.won;
+      var st = { arrive: won, saver: won && run.money >= goal, safe: won && run.robbed === 0 };
+      return { stars: (st.arrive ? 1 : 0) + (st.saver ? 1 : 0) + (st.safe ? 1 : 0), got: st, moneyGoal: goal, moneyPar: par };
+    },
+
     summary: function (run) {
-      var cfg = run.data.config;
-      return { won: run.won, reason: run.endReason, levelIndex: run.levelIndex, day: run.level.day,
+      var cfg = run.data.config, sc = Rules.score(run), total = Rules.hopsLeft({ graph: run.graph, level: run.level, blocked: {} }, run.level.start, true);
+      var left = run.won ? 0 : Rules.hopsLeft(run, run.current);
+      if (left === null) left = Rules.hopsLeft(run, run.current, true);
+      return { won: run.won, reason: run.endReason, cause: run.endCause || '', levelIndex: run.levelIndex, day: run.level.day,
                arrival: util.clock(run.minute), travelTime: util.duration(run.minute - cfg.dayStartMinute),
                steps: run.steps, money: run.money, robbed: run.robbed, stolen: run.stolen,
-               newsRead: run.newsCount };
+               newsRead: run.newsCount, moneyStart: run.level.moneyStart, currency: cfg.currencyName || 'monedas',
+               stars: sc.stars, got: sc.got, moneyGoal: sc.moneyGoal,
+               hops: total || 0, left: left === null ? null : left,                 // estaciones del camino más corto y las que te faltaban al terminar
+               progress: total && left !== null ? Math.max(0, Math.min(1, 1 - left / total)) : 0 };
     },
 
     hasNextLevel: function (data, idx) { return idx + 1 < data.levels.length; }

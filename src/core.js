@@ -8,8 +8,8 @@
 
   U.VERSION = '2.0.0';
   // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)
-  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, loaded: false,
-    vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan
+  U.session = { levelIndex: 0, lastResult: null, completed: [], best: {}, dblTravel: true, loaded: false,
+    vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; best: mejor marca por nivel {estrellas, dinero}; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan
 
   /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,
    *  así que sobrevive entre partidas en el navegador y en las exportaciones de escritorio; sin almacenamiento solo dura la sesión. */
@@ -24,6 +24,11 @@
       var d = null; try { var st = this._store(), raw = st && st.getItem(this.KEY); d = raw ? JSON.parse(raw) : null; } catch (e) { d = null; }
       if (!d || d.v !== 1) return;
       U.session.completed = (d.completed || []).filter(function (i) { return typeof i === 'number' && i >= 0 && i % 1 === 0; });
+      var best = {}; if (d.best && typeof d.best === 'object') Object.keys(d.best).forEach(function (k) {   // mejores marcas (se validan una a una)
+        var v = d.best[k], i = +k;
+        if (i >= 0 && i % 1 === 0 && v && v.stars >= 1 && v.stars <= 3 && v.stars % 1 === 0 && typeof v.money === 'number' && v.money >= 0 && isFinite(v.money)) best[i] = { stars: v.stars, money: Math.round(v.money) };
+      });
+      U.session.best = best;
       if (d.seenTutorial) U.session.seenTutorial = true;
       if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;
       if (d.fx === 'high' || d.fx === 'low' || d.fx === 'off') U.session.fxQuality = d.fx;          // accesibilidad (se validan: un guardado viejo o dañado no rompe nada)
@@ -40,18 +45,30 @@
       try {
         var st = this._store(); if (!st) return;
         st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),
-                                               seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,
+                                               best: U.session.best || {}, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,
                                                fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true }));
       } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }
     },
     isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },
     markCompleted: function (idx) { if (!this.isCompleted(idx)) { U.session.completed.push(idx); this.persist(); } },
+    /** Guarda la mejor marca del nivel (más estrellas; a igual de estrellas, más dinero). → { isNew, prev } (prev: la marca anterior o null). */
+    record: function (idx, stars, money) {
+      var best = U.session.best = U.session.best || {}, prev = best[idx] || null;
+      var isNew = !prev || stars > prev.stars || (stars === prev.stars && money > prev.money);
+      if (isNew) { best[idx] = { stars: stars, money: Math.round(money) }; this.persist(); }
+      return { isNew: isNew, prev: prev };
+    },
+    bestOf: function (idx) { return (U.session.best || {})[idx] || null; },
+    /** Estrellas conseguidas en los primeros `total` niveles (su mejor marca de cada uno). */
+    totalStars: function (total) {
+      var n = 0; for (var i = 0; i < total; i++) { var b = this.bestOf(i); if (b) n += b.stars; } return n;
+    },
     /** Nivel al que lleva JUGAR: el primero que aún no has completado (o el último si ya completaste todos). */
     nextLevel: function (total) {
       for (var i = 0; i < total; i++) if (!this.isCompleted(i)) return i;
       return Math.max(0, total - 1);
     },
-    reset: function () { U.session.completed = []; this.persist(); }
+    reset: function () { U.session.completed = []; U.session.best = {}; this.persist(); }
   };
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
