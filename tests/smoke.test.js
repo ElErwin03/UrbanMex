@@ -170,15 +170,22 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
     assert.ok(guard > 0, `día ${day + 1}: el juego se atascó`);
     const [ch, name] = s.scene.changes[0]; assert.equal([ch, name].join(), '3,Resultado');
     outcomes.push(U.session.lastResult.won ? 'GANÓ' : 'perdió:' + U.session.lastResult.reason);
+    const lr = U.session.lastResult;                         // el resumen trae estrellas y marca, y la mejor marca queda guardada
+    if (lr.won) { assert.ok(lr.stars >= 1 && lr.stars <= 3, 'ganar da 1 a 3 estrellas'); assert.equal(lr.got.arrive, true); assert.deepEqual(U.session.best[day], { stars: lr.stars, money: lr.money }, 'la mejor marca se guarda'); assert.equal(lr.record.isNew, true); assert.equal(lr.record.prev, null); }
+    else { assert.equal(lr.stars, 0); assert.equal(lr.record, null); assert.ok(lr.cause, 'perder explica la causa'); assert.ok(lr.progress >= 0 && lr.progress <= 1 && lr.left > 0, 'perder dice cuánto faltaba'); assert.equal(U.session.best[day], undefined); }
   }
   console.log('   resultados del bot (clics reales):', outcomes.join(' | '));
   assert.ok(outcomes.filter((o) => o === 'GANÓ').length >= 3);
   } finally { Math.random = realRandom; }
 });
 
+// Resultado de prueba con todos los campos que produce Rules.summary
+const fakeResult = (over) => Object.assign({ won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h 30m', steps: 17, money: 60, robbed: 0, stolen: 0, newsRead: 3, reason: '', cause: '',
+  moneyStart: 150, currency: 'peje-coins', stars: 3, got: { arrive: true, saver: true, safe: true }, moneyGoal: 56, hops: 12, left: 0, progress: 1, record: null }, over || {});
+
 test('Resultado: botones según ganar/perder', () => {
   const s = session('Resultado'); s.frame(1); const U = s.U;
-  U.session.lastResult = { won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h 30m', steps: 17, money: 60, robbed: 0, stolen: 0, newsRead: 3, reason: '' };
+  U.session.lastResult = fakeResult({ stars: 2, got: { arrive: true, saver: true, safe: false } });
   s.frame(2); s.click(550, 586);
   assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 1);
   U.session.lastResult.won = false; U.session.lastResult.reason = 'Te quedaste sin stamina.'; s.frame(2); s.click(550, 586);
@@ -434,7 +441,7 @@ test('efectos: menú, tutorial y resultado (luz del tren, brillos de estrellas y
   assert.ok(fxObjs(m).length >= 30); m.frame(10); assert.notEqual(poolM['FX:th'].x, x0, 'el faro del tren se mueve con el tren');
   assert.ok(poolM['FX:logo'] && !poolM['FX:logo'].hidden, 'aura del logo en el menú principal'); m.scene._um.view = 'levels'; m.frame(2); assert.ok(poolM['FX:logo'].hidden, 'sin logo en el selector de niveles');
   const t = session('Tutorial'); t.frame(10); assert.ok(fxObjs(t).length >= 10);
-  const r = session('Resultado'); U.session.lastResult = { won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h', steps: 3, money: 5, robbed: 0, stolen: 0, newsRead: 1, reason: '' };
+  const r = session('Resultado'); U.session.lastResult = fakeResult({ steps: 3, money: 5 });
   r.frame(3); const win = r.scene._umFx.stage.pool['FX:top']._umColor; U.session.lastResult.won = false; r.frame(3);
   assert.notEqual(win, r.scene._umFx.stage.pool['FX:top']._umColor, 'el resplandor cambia entre ganar y perder');
 });
@@ -514,9 +521,9 @@ test('audio: efectos suaves en clics, selección, viaje, noticias y resultado (u
   assert.ok(SND.count(/^sfx_noticia/) > before, 'al llegar una noticia');
   // Resultado: fanfarria una sola vez (ganar / perder)
   audioReset(); const r = session('Resultado'); r.frame(1);
-  r.U.session.lastResult = { won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h', steps: 3, money: 5, robbed: 0, stolen: 0, newsRead: 1, reason: '' };
+  r.U.session.lastResult = fakeResult({ steps: 3, money: 5 });
   r.frame(30); assert.equal(SND.count(/^sfx_ganar/), 1); assert.equal(SND.count(/^sfx_perder/), 0);
-  audioReset(); const r2 = session('Resultado'); r2.frame(1); r2.U.session.lastResult = { won: false, levelIndex: 0, day: 'LUNES', arrival: '', travelTime: '', steps: 1, money: 0, robbed: 0, stolen: 0, newsRead: 0, reason: 'Sin stamina' };
+  audioReset(); const r2 = session('Resultado'); r2.frame(1); r2.U.session.lastResult = fakeResult({ won: false, stars: 0, got: { arrive: false, saver: false, safe: false }, steps: 1, money: 0, reason: 'Sin stamina', cause: 'stamina', left: 5, progress: 0.5 });
   r2.frame(30); assert.equal(SND.count(/^sfx_perder/), 1);
 });
 
@@ -875,4 +882,82 @@ test('accesibilidad (celular y pausa): también se llega desde AJUSTES y desde l
     KEYS.add('Escape'); s.frame(2); assert.equal(u.pauseView, 'main', 'Esc vuelve al menú de pausa'); assert.equal(u.paused, true);
     s.click(640, 314); assert.equal(u.paused, false, 'CONTINUAR sigue funcionando');
   } finally { a11yReset(U); delete globalThis.gdjs.UrbanMex; KEYS.clear(); }
+});
+
+// ---- Resultado más motivador
+const uiTexts = (scene) => { const ui = globalThis.gdjs.UrbanMex.UI.of(scene), out = {}; Object.keys(ui.pool.t).forEach((k) => { const o = ui.pool.t[k]; if (!o.hidden) out[k] = o.text; }); return out; };
+const uiIcons = (scene) => { const ui = globalThis.gdjs.UrbanMex.UI.of(scene), out = {}; Object.keys(ui.pool.i).forEach((k) => { const o = ui.pool.i[k]; if (!o.hidden) out[k] = o.anim; }); return out; };
+const hasText = (scene, re) => Object.values(uiTexts(scene)).some((t) => re.test(t));
+
+test('resultado (ganar): estrellas según lo conseguido, título, pista de cada estrella y consejo para la que falta', () => {
+  audioReset(); const s = session('Resultado'); s.frame(1); const U = s.U, star = () => ['st0', 'st1', 'st2'].map((k) => uiIcons(s.scene)['UI:' + k]), T = (k) => uiTexts(s.scene)['UI:' + k];
+  U.session.lastResult = fakeResult({ stars: 3 }); s.frame(40);
+  assert.deepEqual(star(), ['estrella', 'estrella', 'estrella'], '3 estrellas doradas'); assert.equal(T('t'), 'PERFECTO!'); assert.match(T('hl'), /Tres estrellas/);
+  U.session.lastResult = fakeResult({ stars: 2, got: { arrive: true, saver: true, safe: false }, robbed: 1, stolen: 40 }); s.frame(40);
+  assert.deepEqual(star(), ['estrella', 'estrella', 'estrella_vacia']); assert.equal(T('t'), 'MUY BIEN!'); assert.match(T('sh2:0'), /1 asalto/); assert.match(T('tp:0'), /peligrosas/, 'el consejo habla de la estrella que falta');
+  U.session.lastResult = fakeResult({ stars: 1, got: { arrive: true, saver: false, safe: true }, money: 30, moneyGoal: 56 }); s.frame(40);
+  assert.deepEqual(star(), ['estrella', 'estrella_vacia', 'estrella']); assert.equal(T('t'), 'LLEGASTE!'); assert.match(T('sh1:0'), /56/, 'dice cuánto dinero hacía falta'); assert.match(T('tp:0'), /Ahorra/);
+});
+
+test('resultado: las estrellas aparecen una por una con un "ding" cada una (con reducir movimiento también suenan, sin rebote)', () => {
+  audioReset(); const s = session('Resultado'); s.frame(1); const U = s.U; U.session.lastResult = fakeResult({ stars: 2, got: { arrive: true, saver: false, safe: true } });
+  SND.log.length = 0; s.frame(2); const anim = () => ['st0', 'st1', 'st2'].map((k) => uiIcons(s.scene)['UI:' + k]);
+  assert.deepEqual(anim(), ['estrella_vacia', 'estrella_vacia', 'estrella_vacia'], 'al entrar todas están vacías'); assert.equal(SND.count(/^sfx_moneda/), 0);
+  s.frame(8); assert.equal(anim()[0], 'estrella'); assert.equal(anim()[2], 'estrella_vacia', 'la 3.ª aún no'); s.frame(40);
+  assert.deepEqual(anim(), ['estrella', 'estrella_vacia', 'estrella']); assert.equal(SND.count(/^sfx_moneda/), 2, 'un ding por estrella ganada, una sola vez'); s.frame(40); assert.equal(SND.count(/^sfx_moneda/), 2);
+  // reducir movimiento: mismas estrellas, sin rebote (tamaño fijo); normal: la estrella crece un poco más antes de asentarse
+  const sizes = (calm) => { audioReset(); const c = session('Resultado'); c.frame(1); c.U.session.calm = calm; c.U.session.lastResult = fakeResult({ stars: 3 }); const u = c.U.UI.of(c.scene), orig = u.icon, out = [];
+    u.icon = function (key, a, x, y, sc) { if (/^st\d$/.test(key)) out.push(sc); return orig.apply(this, arguments); }; c.frame(40); c.U.session.calm = false; return out; };
+  assert.ok(sizes(true).every((v) => v === 5), 'sin rebote'); assert.ok(sizes(false).some((v) => v > 5), 'normal: rebota');
+});
+
+test('resultado (perder): "CASI!" si faltaron pocas estaciones, barra de avance y consejo según la causa', () => {
+  audioReset(); const s = session('Resultado'); s.frame(1); const U = s.U, T = (k) => uiTexts(s.scene)['UI:' + k], lose = (o) => { U.session.lastResult = fakeResult(Object.assign({ won: false, stars: 0, got: { arrive: false, saver: false, safe: false }, reason: 'Te quedaste sin stamina.', cause: 'stamina', hops: 12, left: 2, progress: 10 / 12 }, o)); s.frame(40); };
+  lose({}); assert.equal(T('t'), 'CASI!'); assert.match(T('hl'), /solo 2 estaciones/); assert.match(T('pt'), /10 de 12/); assert.match(T('tp:0'), /Monster/); assert.ok(!uiIcons(s.scene)['UI:st0'], 'sin estrellas al perder'); assert.ok(uiIcons(s.scene)['UI:pp'] && uiIcons(s.scene)['UI:pg'], 'la persona y la meta en la barra');
+  lose({ left: 1 }); assert.match(T('hl'), /solo 1 estación!/, 'singular');
+  lose({ left: 3, progress: 9 / 12 }); assert.equal(T('t'), 'CASI!', 'hasta 3 estaciones es casi'); lose({ left: 4, progress: 8 / 12 }); assert.equal(T('t'), 'NO LLEGASTE', 'con 4 ya no');
+  lose({ left: 8, progress: 4 / 12 }); assert.equal(T('t'), 'NO LLEGASTE'); assert.match(T('hl'), /ruta nueva/);
+  lose({ cause: 'money', stolen: 40 }); assert.match(T('tp:0'), /asaltos te quitaron 40/); lose({ cause: 'money', stolen: 0 }); assert.match(T('tp:0'), /saldo/);
+  lose({ cause: 'night' }); assert.match(T('tp:0'), /fallas/); lose({ cause: 'blocked' }); assert.match(T('tp:0'), /noticias/);
+});
+
+test('resultado: récord, mejor marca y botones (MEJORAR ESTRELLAS solo si faltan estrellas)', () => {
+  audioReset(); const s = session('Resultado'); s.frame(1); const U = s.U, T = (k) => uiTexts(s.scene)['UI:' + k];
+  U.session.lastResult = fakeResult({ stars: 2, got: { arrive: true, saver: true, safe: false }, record: { isNew: true, prev: { stars: 1, money: 40 } } }); s.frame(40);
+  assert.match(T('rec'), /NUEVO RECORD.*Antes: 1 estrella, 40/); assert.ok(hasText(s.scene, /MEJORAR ESTRELLAS/));
+  U.session.lastResult = fakeResult({ stars: 2, got: { arrive: true, saver: true, safe: false }, record: { isNew: false, prev: { stars: 3, money: 80 } } }); s.frame(2);
+  assert.match(T('rec'), /Tu mejor marca: 3 estrellas, 80 peje-coins/);
+  U.session.lastResult = fakeResult({ stars: 2, got: { arrive: true, saver: true, safe: false }, record: { isNew: true, prev: null } }); s.frame(2); assert.match(T('rec'), /PRIMERA MARCA/);
+  // MEJORAR ESTRELLAS repite el mismo nivel
+  U.session.lastResult = fakeResult({ levelIndex: 2, stars: 2, got: { arrive: true, saver: true, safe: false } }); s.frame(2); s.click(715, 600);
+  assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 2, 'repite el nivel 3');
+  // con 3 estrellas ya no hace falta
+  U.session.lastResult = fakeResult({ stars: 3 }); s.frame(2); assert.ok(!hasText(s.scene, /MEJORAR ESTRELLAS/));
+  // última jornada: resumen de la semana con las estrellas de toda la semana
+  U.session.best = { 0: { stars: 3, money: 1 }, 1: { stars: 2, money: 1 }, 2: { stars: 3, money: 1 }, 3: { stars: 1, money: 1 }, 4: { stars: 3, money: 1 } };
+  U.session.lastResult = fakeResult({ levelIndex: 4 }); s.frame(2); assert.match(T('w'), /COMPLETASTE LA SEMANA.*12\/15 estrellas/); assert.ok(hasText(s.scene, /JUGAR OTRA VEZ/));
+  U.session.best = {};
+});
+
+test('mejor marca: se guarda, solo mejora, sobrevive entre partidas, se valida y se ve en el menú', () => {
+  const store = store0(), KEY = 'UrbanMex_save_v1';
+  try {
+    audioReset(); const m = session('Menu'); m.frame(5); const U = m.U, S = U.Save, saved = () => JSON.parse(store[KEY]);
+    assert.deepEqual(S.record(0, 2, 70), { isNew: true, prev: null }); assert.deepEqual(saved().best, { 0: { stars: 2, money: 70 } }, 'se guarda');
+    assert.deepEqual(S.record(0, 1, 120), { isNew: false, prev: { stars: 2, money: 70 } }, 'menos estrellas no es récord, aunque tengas más dinero');
+    assert.equal(S.record(0, 2, 70).isNew, false, 'igual no es récord'); assert.equal(S.record(0, 2, 71).isNew, true, 'mismas estrellas y más dinero sí');
+    assert.equal(S.record(0, 3, 10).isNew, true); assert.deepEqual(S.bestOf(0), { stars: 3, money: 10 }); S.record(2, 1, 5); assert.equal(S.totalStars(5), 4); assert.equal(S.totalStars(2), 3, 'solo cuenta los niveles que existen');
+    // se recupera en otra sesión
+    U.session.best = {}; U.session.loaded = false; S.load(); assert.deepEqual(U.session.best, { 0: { stars: 3, money: 10 }, 2: { stars: 1, money: 5 } });
+    // datos dañados se ignoran uno por uno
+    store[KEY] = JSON.stringify({ v: 1, completed: [0], best: { 0: { stars: 4, money: 5 }, 1: { stars: 2, money: -3 }, x: { stars: 1, money: 1 }, 2: { stars: 1.5, money: 1 }, 3: { stars: 2, money: 'mucho' }, 4: { stars: 2, money: 33 } } });
+    U.session.loaded = false; S.load(); assert.deepEqual(U.session.best, { 4: { stars: 2, money: 33 } }); store[KEY] = JSON.stringify({ v: 1, completed: [], best: 'si' }); U.session.loaded = false; S.load(); assert.deepEqual(U.session.best, {});
+    // menú: la tarjeta del nivel muestra las estrellas (y el total en la pantalla principal)
+    U.session.completed = [0, 1]; U.session.best = { 0: { stars: 3, money: 9 }, 1: { stars: 1, money: 9 } }; const mm = session('Menu'); mm.frame(5);
+    assert.match(uiTexts(mm.scene)['UI:prog'], /2\/5 niveles completados.*4\/15 estrellas/); mm.scene._um.view = 'levels'; mm.frame(3);
+    const ic = uiIcons(mm.scene); assert.deepEqual([0, 1, 2].map((k) => ic['UI:ck0:' + k]), ['estrella', 'estrella', 'estrella']); assert.deepEqual([0, 1, 2].map((k) => ic['UI:ck1:' + k]), ['estrella', 'estrella_vacia', 'estrella_vacia']);
+    U.session.best = {}; mm.frame(3); assert.equal(uiIcons(mm.scene)['UI:ck0'], 'meta', 'un guardado anterior a las estrellas muestra la meta de siempre');
+    // borrar el progreso también borra las marcas
+    U.session.best = { 0: { stars: 3, money: 9 } }; S.reset(); assert.deepEqual(U.session.best, {}); assert.deepEqual(saved().best, {});
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
