@@ -36,6 +36,7 @@ function mockObject(def) {
       if (k === 'setBlendMode') { assert.ok([0, 1, 2, 3].includes(args[0]), 'modo de mezcla inválido ' + args[0]); t.blend = args[0]; }
       if (k === 'setScaleX') t.sx = args[0];
       if (k === 'setScaleY') t.sy = args[0];
+      if (k === 'setText') t.text = args[0];
       if (k === 'setZOrder') t.z = args[0];
       if (k === 'setPosition') { t.x = args[0]; t.y = args[1]; }
       if (k === 'setX') t.x = args[0];
@@ -682,4 +683,22 @@ test('celular: la app SONIDO (y el acceso desde AJUSTES) muestra los tres módul
     u.phone.app = 'config'; s.frame(2); s.click(1000, 140 + 232 + 15); s.frame(2); assert.equal(u.phone.app, 'snd');
     u.phone.app = 'config'; s.frame(2); s.click(1000, 140 + 340 + 14); assert.equal(u.exitToMenu, true);
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+// ---- créditos
+test('créditos: botón en el menú; muestra la Universidad Autónoma de Nayarit, la Unidad Académica de Economía y al equipo; VOLVER regresa', () => {
+  const m = session('Menu'); m.frame(5); const u = () => m.scene._um, C = m.U.CREDITS, txt = (k) => { const o = m.U.UI.of(m.scene).pool.t['UI:' + k]; return o && !o.hidden ? o.text : null; };
+  assert.equal(u().view, 'main'); m.click(1169, 29); assert.equal(u().view, 'credits', 'el botón CREDITOS abre la pantalla'); m.frame(2);
+  assert.equal(txt('cr:h'), 'CREDITOS'); assert.equal(txt('cr:e0'), 'Universidad Autónoma de Nayarit'); assert.equal(txt('cr:e1'), 'Unidad Académica de Economía');
+  assert.deepEqual(C.team.map((p) => p.name), ['Erwin', 'Edwin', 'Oscar']); C.team.forEach((p, i) => { assert.equal(txt('cr:n' + i), p.name); assert.ok(txt('cr:r' + i)); });
+  assert.equal(txt('cr:r1'), 'Compañero de curso'); assert.equal(txt('cr:r2'), 'Compañero de curso');
+    m.click(640, 598); assert.equal(u().view, 'main', 'VOLVER regresa al menú'); m.frame(2); assert.equal(txt('cr:h'), null, 'y la pantalla de créditos desaparece');
+});
+
+test('créditos: cada línea cabe en su recuadro y los datos están completos', () => {
+  const m = session('Menu'); m.frame(2); const C = m.U.CREDITS, fit = (str, size, max, what) => assert.ok(str.length * size <= max, `${what} no cabe (${str.length * size}px > ${max}px): ${str}`);
+  assert.ok(C.madeAt.length === 2 && /Nayarit/.test(C.madeAt[0].name) && /Econom/.test(C.madeAt[1].name), 'las dos entidades');
+  C.madeAt.forEach((e) => fit(e.name, e.size, 860, e.name)); fit(C.why, 8, 860, 'why'); C.madeWith.forEach((l) => fit(l, 8, 1000, l));
+  assert.equal(C.team.length, 3); C.team.forEach((p) => { fit(p.name, 16, 250, p.name); fit(p.role, 8, 250, p.role); assert.ok(p.name && p.role); });
+  assert.equal(new Set(C.team.map((p) => p.name)).size, 3, 'sin nombres repetidos');
 });
