@@ -300,6 +300,24 @@
       },
       {
         "alwaysLoaded": false,
+        "file": "assets/img/icono_estrella.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_estrella.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/img/icono_estrella_vacia.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_estrella_vacia.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_lineas.png",
         "kind": "image",
         "metadata": "",
@@ -1288,6 +1306,64 @@
                     {
                       "hasCustomCollisionMask": false,
                       "image": "icono_combi.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "estrella",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_estrella.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "estrella_vacia",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_estrella_vacia.png",
                       "points": [],
                       "originPoint": {
                         "name": "origine",
@@ -2697,6 +2773,64 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "estrella",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_estrella.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "estrella_vacia",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_estrella_vacia.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -3897,6 +4031,64 @@
                     {
                       "hasCustomCollisionMask": false,
                       "image": "icono_combi.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "estrella",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_estrella.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "estrella_vacia",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_estrella_vacia.png",
                       "points": [],
                       "originPoint": {
                         "name": "origine",
@@ -5636,6 +5828,64 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "estrella",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_estrella.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "estrella_vacia",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_estrella_vacia.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -6322,8 +6572,8 @@
             "",
             "  U.VERSION = '2.0.0';",
             "  // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)",
-            "  U.session = { levelIndex: 0, lastResult: null, completed: [], dblTravel: true, loaded: false,",
-            "    vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan",
+            "  U.session = { levelIndex: 0, lastResult: null, completed: [], best: {}, dblTravel: true, loaded: false,",
+            "    vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; best: mejor marca por nivel {estrellas, dinero}; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan",
             "",
             "  /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,",
             "   *  así que sobrevive entre partidas en el navegador y en las exportaciones de escritorio; sin almacenamiento solo dura la sesión. */",
@@ -6338,6 +6588,11 @@
             "      var d = null; try { var st = this._store(), raw = st && st.getItem(this.KEY); d = raw ? JSON.parse(raw) : null; } catch (e) { d = null; }",
             "      if (!d || d.v !== 1) return;",
             "      U.session.completed = (d.completed || []).filter(function (i) { return typeof i === 'number' && i >= 0 && i % 1 === 0; });",
+            "      var best = {}; if (d.best && typeof d.best === 'object') Object.keys(d.best).forEach(function (k) {   // mejores marcas (se validan una a una)",
+            "        var v = d.best[k], i = +k;",
+            "        if (i >= 0 && i % 1 === 0 && v && v.stars >= 1 && v.stars <= 3 && v.stars % 1 === 0 && typeof v.money === 'number' && v.money >= 0 && isFinite(v.money)) best[i] = { stars: v.stars, money: Math.round(v.money) };",
+            "      });",
+            "      U.session.best = best;",
             "      if (d.seenTutorial) U.session.seenTutorial = true;",
             "      if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;",
             "      if (d.fx === 'high' || d.fx === 'low' || d.fx === 'off') U.session.fxQuality = d.fx;          // accesibilidad (se validan: un guardado viejo o dañado no rompe nada)",
@@ -6360,12 +6615,24 @@
             "    },",
             "    isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },",
             "    markCompleted: function (idx) { if (!this.isCompleted(idx)) { U.session.completed.push(idx); this.persist(); } },",
+            "    /** Guarda la mejor marca del nivel (más estrellas; a igual de estrellas, más dinero). → { isNew, prev } (prev: la marca anterior o null). */",
+            "    record: function (idx, stars, money) {",
+            "      var best = U.session.best = U.session.best || {}, prev = best[idx] || null;",
+            "      var isNew = !prev || stars > prev.stars || (stars === prev.stars && money > prev.money);",
+            "      if (isNew) { best[idx] = { stars: stars, money: Math.round(money) }; this.persist(); }",
+            "      return { isNew: isNew, prev: prev };",
+            "    },",
+            "    bestOf: function (idx) { return (U.session.best || {})[idx] || null; },",
+            "    /** Estrellas conseguidas en los primeros `total` niveles (su mejor marca de cada uno). */",
+            "    totalStars: function (total) {",
+            "      var n = 0; for (var i = 0; i < total; i++) { var b = this.bestOf(i); if (b) n += b.stars; } return n;",
+            "    },",
             "    /** Nivel al que lleva JUGAR: el primero que aún no has completado (o el último si ya completaste todos). */",
             "    nextLevel: function (total) {",
             "      for (var i = 0; i < total; i++) if (!this.isCompleted(i)) return i;",
             "      return Math.max(0, total - 1);",
             "    },",
-            "    reset: function () { U.session.completed = []; this.persist(); }",
+            "    reset: function () { U.session.completed = []; U.session.best = {}; this.persist(); }",
             "  };",
             "",
             "  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }",
@@ -6895,9 +7162,8 @@
             "        run.money >= Rules.monsterPrice(run) + cfg.moneyPerStation;",
             "      if (canRecover) return null;",
             "      run.over = true; run.won = false;",
-            "      run.endReason = reasons.night ? 'Anocheció y no llegaste a tiempo.'",
-            "        : reasons.stamina ? 'Te quedaste sin stamina.'",
-            "        : reasons.money ? 'Te quedaste sin dinero.' : 'Todas las rutas están bloqueadas.';",
+            "      run.endCause = reasons.night ? 'night' : reasons.stamina ? 'stamina' : reasons.money ? 'money' : 'blocked';",
+            "      run.endReason = { night: 'Anocheció y no llegaste a tiempo.', stamina: 'Te quedaste sin stamina.', money: 'Te quedaste sin dinero.', blocked: 'Todas las rutas están bloqueadas.' }[run.endCause];",
             "      return run.endReason;",
             "    },",
             "",
@@ -6921,12 +7187,48 @@
             "      if (e.freeRide) run.freeRides += e.freeRide;",
             "    },",
             "",
+            "    /** Lo que más dinero te dejaría la mejor ruta (sin noticias ni asaltos): dinero inicial − el tramo más barato de salida a meta. null si no hay ruta. */",
+            "    parMoney: function (run) {",
+            "      var cfg = run.data.config, lv = run.level, blocked = setOf(lv.blocked), dist = {}, done = {};",
+            "      dist[lv.start] = 0;",
+            "      for (;;) {",
+            "        var u = null; Object.keys(dist).forEach(function (k) { if (!done[k] && (u === null || dist[k] < dist[u])) u = k; });",
+            "        if (u === null) return null;",
+            "        if (u === lv.goal) return lv.moneyStart - dist[u];",
+            "        done[u] = true;",
+            "        G.neighbors(run.graph, u).forEach(function (v) {",
+            "          if (blocked[v] || done[v]) return;",
+            "          var combi = G.isCombi(run.graph, u, v), fare = combi ? G.fare(run.graph, u, v) : {};",
+            "          var w = dist[u] + (combi ? (fare.money !== undefined ? fare.money : cfg.combi.money) : cfg.moneyPerStation);",
+            "          if (dist[v] === undefined || w < dist[v]) dist[v] = w;",
+            "        });",
+            "      }",
+            "    },",
+            "",
+            "    /** Estaciones que faltan de `from` a la meta (por el camino más corto sin bloqueos; si no hay, ignorando los bloqueos de noticias). */",
+            "    hopsLeft: function (run, from, ignoreNews) {",
+            "      var p = G.shortestPath(run.graph, from, run.level.goal, ignoreNews ? setOf(run.level.blocked) : run.blocked);",
+            "      return p ? p.length - 1 : null;",
+            "    },",
+            "",
+            "    /** Estrellas de la jornada (solo si ganaste): 1) llegar, 2) ahorrar (terminar con al menos SAVER_KEEP de lo que dejaría la mejor ruta), 3) sin asaltos. */",
+            "    score: function (run) {",
+            "      var par = Rules.parMoney(run), goal = par === null ? 0 : Math.ceil(par * Rules.SAVER_KEEP), won = !!run.won;",
+            "      var st = { arrive: won, saver: won && run.money >= goal, safe: won && run.robbed === 0 };",
+            "      return { stars: (st.arrive ? 1 : 0) + (st.saver ? 1 : 0) + (st.safe ? 1 : 0), got: st, moneyGoal: goal, moneyPar: par };",
+            "    },",
+            "",
             "    summary: function (run) {",
-            "      var cfg = run.data.config;",
-            "      return { won: run.won, reason: run.endReason, levelIndex: run.levelIndex, day: run.level.day,",
+            "      var cfg = run.data.config, sc = Rules.score(run), total = Rules.hopsLeft({ graph: run.graph, level: run.level, blocked: {} }, run.level.start, true);",
+            "      var left = run.won ? 0 : Rules.hopsLeft(run, run.current);",
+            "      if (left === null) left = Rules.hopsLeft(run, run.current, true);",
+            "      return { won: run.won, reason: run.endReason, cause: run.endCause || '', levelIndex: run.levelIndex, day: run.level.day,",
             "               arrival: util.clock(run.minute), travelTime: util.duration(run.minute - cfg.dayStartMinute),",
             "               steps: run.steps, money: run.money, robbed: run.robbed, stolen: run.stolen,",
-            "               newsRead: run.newsCount };",
+            "               newsRead: run.newsCount, moneyStart: run.level.moneyStart, currency: cfg.currencyName || 'monedas',",
+            "               stars: sc.stars, got: sc.got, moneyGoal: sc.moneyGoal,",
+            "               hops: total || 0, left: left === null ? null : left,                 // estaciones del camino más corto y las que te faltaban al terminar",
+            "               progress: total && left !== null ? Math.max(0, Math.min(1, 1 - left / total)) : 0 };",
             "    },",
             "",
             "    hasNextLevel: function (data, idx) { return idx + 1 < data.levels.length; }",
@@ -8437,7 +8739,8 @@
             "      var ok = U.Save.isCompleted(i);",
             "      ui.rect(640 - (total * 30 - 10) / 2 + i * 30, 312, 20, 20, { fill: ok ? '46;204;113' : i === next ? '255;200;60' : '40;40;70', border: '255;255;255', bw: 2 });",
             "    }",
-            "    ui.text('prog', done + '/' + total + ' niveles completados', 640, 342, { size: 8, align: 'center', color: PAL.dim });",
+            "    var stars = U.Save.totalStars(total);",
+            "    ui.text('prog', done + '/' + total + ' niveles completados' + (stars ? '  -  ' + stars + '/' + total * 3 + ' estrellas' : ''), 640, 342, { size: 8, align: 'center', color: PAL.dim });",
             "    var seen = U.session.seenTutorial;",
             "    if (ui.button('play', '', 440, 364, 400, 84, { size: 8 }) && lv) {",
             "      U.session.levelIndex = next; U.session.afterTutorial = 'Nivel'; go(scene, seen ? 'Nivel' : 'Tutorial');",
@@ -8489,7 +8792,9 @@
             "      ui.text('ml' + i, 'META', x + 14, y + 160, { size: 8, color: PAL.dim });",
             "      ui.lines('g' + i, util.wrap(lv.goal, 24), x + 14, y + 176, { size: 8, lineH: 12, color: ok || cur ? '230;234;250' : '90;90;120' });",
             "      if (ok) {",
-            "        ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 218, 2);",
+            "        var bs = U.Save.bestOf(i);                                                                   // mejor marca: tres estrellas (si el guardado es anterior a las estrellas, la meta de siempre)",
+            "        if (bs) for (var k = 0; k < 3; k++) ui.icon('ck' + i + ':' + k, k < bs.stars ? 'estrella' : 'estrella_vacia', x + W / 2 - 60 + k * 40, y + 214, 2);",
+            "        else ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 218, 2);",
             "        ui.text('st' + i, 'COMPLETADO', x + W / 2, y + 262, { size: 8, align: 'center', color: PAL.green });",
             "        if (ui.button('re' + i, 'REJUGAR', x + 14, y + 300, W - 28, 52, { size: 8, fill: '39;174;96' })) { U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }",
             "      } else if (cur) {",
@@ -8960,10 +9265,10 @@
             "    ui.end();",
             "",
             "    if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }",
-            "    if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); }   // guarda el progreso al ganar",
+            "    if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); um.record = U.Save.record(run.levelIndex, R.score(run).stars, run.money); }   // guarda el progreso y la mejor marca al ganar",
             "    if (run.over && !um.modal && !um.pending && !um.map.moving()) {",
             "      um.endTimer += dt;",
-            "      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }",
+            "      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }",
             "    }",
             "  };",
             "})();"
@@ -8998,16 +9303,61 @@
         {
           "type": "BuiltinCommonInstructions::JsCode",
           "inlineCode": [
-            "/* UrbanMex · escena Resultado — fin de cada jornada. Objetos: Texto, Icono, UIBase, UIModal. */",
+            "/* UrbanMex · escena Resultado — fin de cada jornada. Objetos: Texto, Icono, UIBase, UIModal.",
+            " * Ganar: hasta 3 estrellas (llegar / ahorrar / sin asaltos), mejor marca y aviso de récord, consejo para la estrella que falta.",
+            " * Perder: qué tan cerca quedaste (barra de avance) y un consejo según lo que te frenó. */",
             "(function () {",
-            "  var U = gdjs.UrbanMex, PAL = U.UI.PAL;",
+            "  var U = gdjs.UrbanMex, PAL = U.UI.PAL, util = U.util;",
             "  U.Scenes = U.Scenes || {};",
             "  if (U.Scenes.resultado) return;",
+            "",
+            "  var STAR = { size: 5, gap: 220, top: 126, first: 0.5, every: 0.5, pop: 0.4 };   // estrellas: escala (16 px × 5), separación, aparición escalonada",
+            "  function easeOutBack(p) { var c = 1.70158; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); }",
+            "",
+            "  /** Textos del resultado (puros: los usan la escena y las pruebas). */",
+            "  var Text = {",
+            "    title: function (r) {",
+            "      if (r.won) return r.stars >= 3 ? 'PERFECTO!' : r.stars === 2 ? 'MUY BIEN!' : 'LLEGASTE!';",
+            "      return r.left !== null && r.left <= 3 ? 'CASI!' : 'NO LLEGASTE';",
+            "    },",
+            "    /** Frase principal de la tarjeta de ánimo. */",
+            "    headline: function (r) {",
+            "      if (r.won) return r.stars >= 3 ? 'Tres estrellas: te mueves por la ciudad como nadie.'",
+            "        : r.stars === 2 ? 'Casi perfecto: te falta 1 estrella.' : 'Llegaste! Ahora ve por las 3 estrellas.';",
+            "      if (r.left === 0) return 'Estabas en la meta, pero ya no pudiste seguir.';",
+            "      if (r.left !== null && r.left <= 3) return 'Te faltaron solo ' + r.left + (r.left === 1 ? ' estación!' : ' estaciones!');",
+            "      return 'Cada intento te enseña una ruta nueva.';",
+            "    },",
+            "    /** Consejo concreto (según la estrella que falta o lo que te frenó). */",
+            "    tip: function (r) {",
+            "      if (r.won) {",
+            "        if (r.stars >= 3) return 'Prueba otro día de la semana o supera tu mejor marca de dinero.';",
+            "        if (!r.got.saver) return 'Ahorra: planea la ruta y revisa tu saldo antes de moverte (meta: ' + r.moneyGoal + ' o más).';",
+            "        return 'Evita las estaciones peligrosas: las noticias avisan dónde hay asaltos.';",
+            "      }",
+            "      if (r.cause === 'stamina') return 'Consejo: compra un Monster en una tienda antes de quedarte sin stamina.';",
+            "      if (r.cause === 'money') return r.stolen > 0 ? 'Consejo: los asaltos te quitaron ' + r.stolen + '. Evita las estaciones peligrosas.' : 'Consejo: revisa tu saldo y elige tramos baratos.';",
+            "      if (r.cause === 'night') return 'Consejo: las fallas de línea retrasan el viaje; busca rutas alternas a tiempo.';",
+            "      return 'Consejo: lee las noticias, avisan de cierres antes de que te afecten.';",
+            "    },",
+            "    /** Qué dice cada estrella: [etiqueta, pista]. */",
+            "    starInfo: function (r, i) {",
+            "      var cur = r.currency;",
+            "      if (i === 0) return ['LLEGAR', r.won ? 'Llegaste a la meta' : 'Llega a la meta'];",
+            "      if (i === 1) return ['AHORRAR', r.got.saver ? 'Terminaste con ' + r.money : 'Termina con ' + r.moneyGoal + ' o más'];",
+            "      return ['SIN ASALTOS', r.got.safe ? 'Nadie te robó' : (r.robbed ? r.robbed + (r.robbed === 1 ? ' asalto' : ' asaltos') + ' (-' + r.stolen + ')' : 'No te asaltes')];",
+            "    },",
+            "    record: function (r, cur) {",
+            "      if (!r.won || !r.record) return null;",
+            "      if (r.record.isNew) return { new: true, text: r.record.prev ? 'NUEVO RECORD!  Antes: ' + r.record.prev.stars + (r.record.prev.stars === 1 ? ' estrella, ' : ' estrellas, ') + r.record.prev.money : 'PRIMERA MARCA GUARDADA!' };",
+            "      var b = r.record.prev; return { new: false, text: 'Tu mejor marca: ' + b.stars + (b.stars === 1 ? ' estrella' : ' estrellas') + ', ' + b.money + ' ' + cur };",
+            "    }",
+            "  };",
             "",
             "  U.Scenes.resultado = function (scene) {",
             "    var ui = U.UI.of(scene), r = U.session.lastResult, data = U.Data.ready(scene);",
             "    ui.begin();",
-            "    var dt = Math.min(0.1, scene.getElapsedTime() / 1000);",
+            "    var dt = Math.min(0.1, scene.getElapsedTime() / 1000), t = scene._umT = (scene._umT || 0) + dt;",
             "    (scene._umFx || (scene._umFx = U.FX.ambient(scene, 'neutral'))).update(dt, !r ? 'neutral' : r.won ? 'win' : 'lose');   // resplandor verde / rojo según el resultado",
             "    U.Audio.tick(scene, 'menu', dt);",
             "    if (r && !scene._umJingle) { scene._umJingle = true; U.Audio.play(scene, r.won ? 'ganar' : 'perder'); }   // fanfarria suave, una vez",
@@ -9016,28 +9366,66 @@
             "      if (ui.button('m', 'MENU', 540, 400, 200, 44, {})) scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu');",
             "      ui.end(); return;",
             "    }",
-            "    var last = !U.Rules.hasNextLevel(data, r.levelIndex), week = r.won && last;",
-            "    ui.text('t', r.won ? 'LLEGASTE!' : 'GAME OVER', 640, 70, { size: 24, align: 'center', color: r.won ? PAL.green : PAL.red });",
-            "    ui.text('d', 'NIVEL ' + (r.levelIndex + 1) + ' - ' + r.day, 640, 118, { size: 8, align: 'center', color: PAL.dim });",
-            "    if (!r.won) ui.text('why', r.reason, 640, 150, { size: 8, align: 'center', color: PAL.yellow });",
+            "    var last = !U.Rules.hasNextLevel(data, r.levelIndex), week = r.won && last, calm = U.A11y.calm();",
+            "    ui.text('t', Text.title(r), 640, 56, { size: 24, align: 'center', color: r.won ? (r.stars >= 3 ? PAL.yellow : PAL.green) : r.left !== null && r.left <= 3 ? PAL.orange : PAL.red });",
+            "    ui.text('d', 'NIVEL ' + (r.levelIndex + 1) + ' - ' + r.day, 640, 100, { size: 8, align: 'center', color: PAL.dim });",
+            "",
+            "    if (r.won) {                                    // ---- tres estrellas",
+            "      scene._umStar = scene._umStar || {};",
+            "      for (var i = 0; i < 3; i++) {",
+            "        var cx = 640 + (i - 1) * STAR.gap, earned = !!r.got[['arrive', 'saver', 'safe'][i]], t0 = STAR.first + i * STAR.every;",
+            "        var p = util.clamp((t - t0) / STAR.pop, 0, 1), sc = STAR.size * (earned && p > 0 && p < 1 && !calm ? easeOutBack(p) : 1), px = 16 * sc;",
+            "        ui.icon('st' + i, earned && p > 0 ? 'estrella' : 'estrella_vacia', cx - px / 2, STAR.top + (80 - px) / 2, sc);",
+            "        if (earned && p > 0 && !scene._umStar[i]) { scene._umStar[i] = true; U.Audio.play(scene, 'moneda'); }   // un \"ding\" por estrella ganada",
+            "        var info = Text.starInfo(r, i);",
+            "        ui.text('sl' + i, info[0], cx, 224, { size: 8, align: 'center', color: earned && p > 0 ? PAL.yellow : PAL.dim });",
+            "        ui.lines('sh' + i, util.wrap(info[1], 22), cx, 244, { size: 8, lineH: 12, align: 'center', color: earned && p > 0 ? '230;234;250' : '120;124;150' });",
+            "      }",
+            "    } else {                                        // ---- qué tan lejos llegaste",
+            "      if (r.reason) ui.text('why', r.reason, 640, 132, { size: 8, align: 'center', color: PAL.yellow });",
+            "      var bx = 300, bw = 680, by = 196, fill = Math.max(0.02, r.progress) * Math.min(1, t / 0.9);   // la barra se llena al entrar",
+            "      ui.rect(bx, by, bw, 26, { fill: '24;24;46', border: '60;60;90', bw: 3 });",
+            "      if (fill > 0.001) ui.rect(bx + 3, by + 3, Math.max(4, (bw - 6) * fill), 20, { fill: r.left !== null && r.left <= 3 ? '230;140;40' : '200;60;50', border: '255;255;255', bw: 0 });",
+            "      ui.icon('pp', 'persona', util.clamp(bx + bw * fill - 16, bx - 4, bx + bw - 44), by - 40, 2);",
+            "      ui.icon('pg', 'meta', bx + bw - 16, by - 40, 2);",
+            "      var did = Math.max(0, r.hops - (r.left === null ? r.hops : r.left));",
+            "      ui.text('pt', r.left === null ? 'Avanzaste ' + r.steps + ' estaciones' : 'Avanzaste ' + did + ' de ' + r.hops + ' estaciones del camino más corto', 640, 236, { size: 8, align: 'center' });",
+            "    }",
+            "",
             "    var rows = [['reloj', 'Hora de llegada', r.arrival], ['reloj', 'Tiempo de viaje', r.travelTime], ['persona', 'Estaciones', String(r.steps)],",
-            "                ['moneda', 'Dinero', String(r.money)], ['alerta', 'Asaltos', r.robbed + ' (-' + r.stolen + ')'], ['noticia', 'Noticias recibidas', String(r.newsRead)]];",
-            "    rows.forEach(function (row, i) {",
-            "      var y = 190 + i * 50;",
-            "      ui.rect(380, y, 520, 42, { fill: '24;24;46', border: '60;60;90', bw: 2 });",
-            "      ui.icon('ri' + i, row[0], 394, y + 5, 2); ui.text('rl' + i, row[1], 440, y + 17, { size: 8, color: PAL.dim });",
-            "      ui.text('rv' + i, row[2], 884, y + 17, { size: 8, align: 'right' });",
+            "                ['moneda', 'Dinero', String(r.money)], ['alerta', 'Asaltos', (r.robbed ? r.robbed + ' (-' + r.stolen + ')' : '0')], ['noticia', 'Noticias recibidas', String(r.newsRead)]];",
+            "    rows.forEach(function (row, i) {                // 2 columnas × 3 filas",
+            "      var x = 300 + (i % 2) * 360, y = 292 + Math.floor(i / 2) * 46;",
+            "      ui.rect(x, y, 320, 38, { fill: '24;24;46', border: '60;60;90', bw: 2 });",
+            "      ui.icon('ri' + i, row[0], x + 10, y + 3, 2); ui.text('rl' + i, row[1], x + 52, y + 15, { size: 8, color: PAL.dim });",
+            "      ui.text('rv' + i, row[2], x + 306, y + 15, { size: 8, align: 'right' });",
             "    });",
-            "    if (week) ui.text('w', 'COMPLETASTE LA SEMANA! Eres un sobreviviente del transporte urbano.', 640, 506, { size: 8, align: 'center', color: PAL.yellow });",
+            "",
+            "    ui.rect(300, 436, 680, 70, { fill: r.won ? '22;48;38' : '48;30;24', border: r.won ? '46;204;113' : '230;140;40', bw: 3 });",
+            "    ui.text('hl', Text.headline(r), 640, 450, { size: 12, align: 'center', color: '255;255;255' });",
+            "    ui.lines('tp', util.wrap(Text.tip(r), 78), 640, 478, { size: 8, lineH: 12, align: 'center', color: '230;234;250' });",
+            "",
+            "    var rec = Text.record(r, r.currency);",
+            "    if (rec) ui.text('rec', rec.text, 640, 520, { size: 8, align: 'center', color: rec.new ? PAL.yellow : PAL.dim });",
+            "    if (week) ui.text('w', 'COMPLETASTE LA SEMANA!  ' + U.Save.totalStars(data.levels.length) + '/' + data.levels.length * 3 + ' estrellas', 640, 542, { size: 8, align: 'center', color: PAL.yellow });",
+            "",
             "    var go = function (name) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, name); };",
-            "    if (r.won && !last) {",
-            "      if (ui.button('n', 'SIGUIENTE NIVEL >', 400, 560, 300, 52, { size: 8, fill: '39;174;96' })) { U.session.levelIndex = r.levelIndex + 1; go('Nivel'); }",
-            "    } else if (!r.won) {",
-            "      if (ui.button('r', 'REINTENTAR', 400, 560, 300, 52, { size: 8 })) { U.session.levelIndex = r.levelIndex; go('Nivel'); }",
-            "    } else if (ui.button('a', 'JUGAR OTRA VEZ', 400, 560, 300, 52, { size: 8, fill: '39;174;96' })) { U.session.levelIndex = 0; go('Nivel'); }",
-            "    if (ui.button('m', 'MENU', 730, 560, 150, 52, { size: 8, fill: '70;70;100' })) go('Menu');",
+            "    var btns = r.won ? (last ? [['a', 'JUGAR OTRA VEZ', 300, '39;174;96']] : [['n', 'SIGUIENTE NIVEL >', 300, '39;174;96']]) : [['r', 'REINTENTAR', 300, '39;174;96']];",
+            "    if (r.won && r.stars < 3) btns.push(['rt', 'MEJORAR ESTRELLAS', 250, '70;100;160']);",
+            "    btns.push(['m', 'MENU', 150, '70;70;100']);",
+            "    var total = btns.reduce(function (s, b) { return s + b[2]; }, 0) + 20 * (btns.length - 1), x = (1280 - total) / 2;",
+            "    btns.forEach(function (b) {",
+            "      if (ui.button(b[0], b[1], x, 574, b[2], 52, { size: 8, fill: b[3] })) {",
+            "        if (b[0] === 'n') { U.session.levelIndex = r.levelIndex + 1; go('Nivel'); }",
+            "        else if (b[0] === 'r' || b[0] === 'rt') { U.session.levelIndex = r.levelIndex; go('Nivel'); }",
+            "        else if (b[0] === 'a') { U.session.levelIndex = 0; go('Nivel'); }",
+            "        else go('Menu');",
+            "      }",
+            "      x += b[2] + 20;",
+            "    });",
             "    ui.end();",
             "  };",
+            "  U.ResultText = Text;",
             "})();"
           ],
           "parameterObjects": "",

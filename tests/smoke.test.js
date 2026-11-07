@@ -170,15 +170,22 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
     assert.ok(guard > 0, `día ${day + 1}: el juego se atascó`);
     const [ch, name] = s.scene.changes[0]; assert.equal([ch, name].join(), '3,Resultado');
     outcomes.push(U.session.lastResult.won ? 'GANÓ' : 'perdió:' + U.session.lastResult.reason);
+    const lr = U.session.lastResult;                         // el resumen trae estrellas y marca, y la mejor marca queda guardada
+    if (lr.won) { assert.ok(lr.stars >= 1 && lr.stars <= 3, 'ganar da 1 a 3 estrellas'); assert.equal(lr.got.arrive, true); assert.deepEqual(U.session.best[day], { stars: lr.stars, money: lr.money }, 'la mejor marca se guarda'); assert.equal(lr.record.isNew, true); assert.equal(lr.record.prev, null); }
+    else { assert.equal(lr.stars, 0); assert.equal(lr.record, null); assert.ok(lr.cause, 'perder explica la causa'); assert.ok(lr.progress >= 0 && lr.progress <= 1 && lr.left > 0, 'perder dice cuánto faltaba'); assert.equal(U.session.best[day], undefined); }
   }
   console.log('   resultados del bot (clics reales):', outcomes.join(' | '));
   assert.ok(outcomes.filter((o) => o === 'GANÓ').length >= 3);
   } finally { Math.random = realRandom; }
 });
 
+// Resultado de prueba con todos los campos que produce Rules.summary
+const fakeResult = (over) => Object.assign({ won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h 30m', steps: 17, money: 60, robbed: 0, stolen: 0, newsRead: 3, reason: '', cause: '',
+  moneyStart: 150, currency: 'peje-coins', stars: 3, got: { arrive: true, saver: true, safe: true }, moneyGoal: 56, hops: 12, left: 0, progress: 1, record: null }, over || {});
+
 test('Resultado: botones según ganar/perder', () => {
   const s = session('Resultado'); s.frame(1); const U = s.U;
-  U.session.lastResult = { won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h 30m', steps: 17, money: 60, robbed: 0, stolen: 0, newsRead: 3, reason: '' };
+  U.session.lastResult = fakeResult({ stars: 2, got: { arrive: true, saver: true, safe: false } });
   s.frame(2); s.click(550, 586);
   assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 1);
   U.session.lastResult.won = false; U.session.lastResult.reason = 'Te quedaste sin stamina.'; s.frame(2); s.click(550, 586);
@@ -434,7 +441,7 @@ test('efectos: menú, tutorial y resultado (luz del tren, brillos de estrellas y
   assert.ok(fxObjs(m).length >= 30); m.frame(10); assert.notEqual(poolM['FX:th'].x, x0, 'el faro del tren se mueve con el tren');
   assert.ok(poolM['FX:logo'] && !poolM['FX:logo'].hidden, 'aura del logo en el menú principal'); m.scene._um.view = 'levels'; m.frame(2); assert.ok(poolM['FX:logo'].hidden, 'sin logo en el selector de niveles');
   const t = session('Tutorial'); t.frame(10); assert.ok(fxObjs(t).length >= 10);
-  const r = session('Resultado'); U.session.lastResult = { won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h', steps: 3, money: 5, robbed: 0, stolen: 0, newsRead: 1, reason: '' };
+  const r = session('Resultado'); U.session.lastResult = fakeResult({ steps: 3, money: 5 });
   r.frame(3); const win = r.scene._umFx.stage.pool['FX:top']._umColor; U.session.lastResult.won = false; r.frame(3);
   assert.notEqual(win, r.scene._umFx.stage.pool['FX:top']._umColor, 'el resplandor cambia entre ganar y perder');
 });
@@ -514,9 +521,9 @@ test('audio: efectos suaves en clics, selección, viaje, noticias y resultado (u
   assert.ok(SND.count(/^sfx_noticia/) > before, 'al llegar una noticia');
   // Resultado: fanfarria una sola vez (ganar / perder)
   audioReset(); const r = session('Resultado'); r.frame(1);
-  r.U.session.lastResult = { won: true, levelIndex: 0, day: 'LUNES', arrival: '9:00 AM', travelTime: '1h', steps: 3, money: 5, robbed: 0, stolen: 0, newsRead: 1, reason: '' };
+  r.U.session.lastResult = fakeResult({ steps: 3, money: 5 });
   r.frame(30); assert.equal(SND.count(/^sfx_ganar/), 1); assert.equal(SND.count(/^sfx_perder/), 0);
-  audioReset(); const r2 = session('Resultado'); r2.frame(1); r2.U.session.lastResult = { won: false, levelIndex: 0, day: 'LUNES', arrival: '', travelTime: '', steps: 1, money: 0, robbed: 0, stolen: 0, newsRead: 0, reason: 'Sin stamina' };
+  audioReset(); const r2 = session('Resultado'); r2.frame(1); r2.U.session.lastResult = fakeResult({ won: false, stars: 0, got: { arrive: false, saver: false, safe: false }, steps: 1, money: 0, reason: 'Sin stamina', cause: 'stamina', left: 5, progress: 0.5 });
   r2.frame(30); assert.equal(SND.count(/^sfx_perder/), 1);
 });
 
