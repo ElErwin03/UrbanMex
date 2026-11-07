@@ -16,6 +16,21 @@
     return m;
   }
 
+  /** CREDITOS: todo lo que dice la pantalla vive aquí (cambia un nombre o un rol y listo). Los nombres propios llevan su ortografía. */
+  U.CREDITS = {
+    madeAt: [                                                 // entidades donde (y por qué) se realizó el proyecto
+      { name: 'Universidad Autónoma de Nayarit', size: 16 },
+      { name: 'Unidad Académica de Economía', size: 12 }
+    ],
+    why: 'Proyecto escolar desarrollado en estas instituciones.',
+    team: [                                                   // quienes lo hicieron
+      { first: 'Fabian Enrique', last: 'Real Ramirez', role: 'Desarrollo del juego' },     // nombre y apellidos van en dos líneas para que quepan en la tarjeta
+      { first: 'Edwin Alberto', last: 'Barrera Franco', role: 'Diseñador' },
+      { first: 'Oscar', last: 'René Domínguez', role: 'Colaborador' }
+    ],
+    madeWith: ['Hecho con GDevelop 5. Arte y audio generados con codigo (carpeta tools).', 'Proyecto escolar sin fines de lucro, no afiliado al Metro de la CDMX.']
+  };
+
   var go = function (scene, name) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, name); };
 
   /** Pantalla principal: JUGAR siempre lleva al primer nivel sin completar y dice cuál es (como en Plants vs. Zombies). */
@@ -101,6 +116,27 @@
     }
   }
 
+  /** Créditos: las entidades donde se realizó, el equipo y con qué se hizo. */
+  function drawCredits(scene, ui, m) {
+    var C = U.CREDITS;
+    ui.text('cr:h', 'CREDITOS', 640, 40, { size: 24, align: 'center', color: PAL.yellow });
+    ui.rect(190, 104, 900, 190, { fill: '24;24;46', border: '60;60;90', bw: 2 });
+    ui.text('cr:a', 'REALIZADO EN', 640, 122, { size: 8, align: 'center', color: PAL.dim });
+    var y = 152; C.madeAt.forEach(function (e, i) { ui.text('cr:e' + i, e.name, 640, y, { size: e.size, align: 'center', color: i ? '255;235;180' : PAL.orange }); y += e.size + 22; });
+    ui.text('cr:w', C.why, 640, 250, { size: 8, align: 'center', color: '230;234;250' });
+    ui.text('cr:t', 'EQUIPO', 640, 322, { size: 8, align: 'center', color: PAL.dim });
+    var n = C.team.length, cw = 270, gap = 24, x0 = 640 - (n * cw + (n - 1) * gap) / 2;
+    C.team.forEach(function (p, i) {
+      var x = x0 + i * (cw + gap);
+      ui.rect(x, 346, cw, 110, { fill: '24;24;46', border: i ? '60;60;90' : PAL.orange, bw: 2 });
+      ui.text('cr:n' + i, p.first, x + cw / 2, 368, { size: 16, align: 'center' });
+      ui.text('cr:l' + i, p.last, x + cw / 2, 392, { size: 16, align: 'center' });
+      ui.text('cr:r' + i, p.role, x + cw / 2, 428, { size: 8, align: 'center', color: PAL.dim });
+    });
+    C.madeWith.forEach(function (l, i) { ui.text('cr:m' + i, l, 640, 492 + i * 24, { size: 8, align: 'center', color: i ? '120;120;150' : '230;234;250' }); });
+    if (ui.button('cback', 'VOLVER', 490, 574, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+  }
+
   /** Volumen y silencio de la música general, los sonidos generales y el sonido de peligro y apuro (se guardan). */
   function drawSound(scene, ui, m) {
     ui.text('h', 'SONIDO', 640, 70, { size: 24, align: 'center', color: PAL.yellow });
@@ -119,11 +155,12 @@
     m.stars.forEach(function (s) { ui.rect(s[0], s[1], 4, 4, { fill: Math.sin(m.t * 2 + s[2]) > 0 ? '255;255;255' : '120;120;160', bw: 0 }); });
     m.train.setX(((m.t * 220) % 1900) - 300);
     ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });
-    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else drawMain(scene, ui, m, data);
+    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else drawMain(scene, ui, m, data);
     ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });
     m.fx.update(dt, m);
     U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
-    if (m.view !== 'sound' && m.view !== 'bye' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
+    if (m.view === 'main' && ui.button('cred', 'CREDITOS', 1074, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'credits';
+    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
     ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);
     ui.end();
   };
