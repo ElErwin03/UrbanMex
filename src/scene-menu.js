@@ -25,8 +25,8 @@
     why: 'Proyecto escolar desarrollado en estas instituciones.',
     team: [                                                   // quienes lo hicieron
       { first: 'Fabian Enrique', last: 'Real Ramirez', role: 'Desarrollo del juego' },     // nombre y apellidos van en dos líneas para que quepan en la tarjeta
-      { first: 'Edwin Alberto', last: 'Barrera Franco', role: 'Compañero de curso' },
-      { first: 'Oscar René', last: 'Domínguez', role: 'Compañero de curso' }
+      { first: 'Edwin Alberto', last: 'Barrera Franco', role: 'Diseñador' },
+      { first: 'Oscar', last: 'René Domínguez', role: 'Colaborador' }
     ],
     madeWith: ['Hecho con GDevelop 5. Arte y audio generados con codigo (carpeta tools).', 'Proyecto escolar sin fines de lucro, no afiliado al Metro de la CDMX.']
   };

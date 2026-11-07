@@ -157,7 +157,7 @@ El costo que falta se pinta en rojo en la fila de costos. El doble clic en una v
 Botón **CREDITOS** arriba a la derecha del menú principal. Muestra:
 
 - **Realizado en:** Universidad Autónoma de Nayarit y Unidad Académica de Economía (las entidades donde y por las que se realizó el proyecto).
-- **Equipo:** Fabian Enrique Real Ramirez (desarrollo del juego) y sus compañeros de curso Edwin Alberto Barrera Franco y Oscar René Domínguez. Cada nombre va en dos líneas (nombres / apellidos) para que quepa en su tarjeta.
+- **Equipo:** Fabian Enrique Real Ramirez (desarrollo del juego), Edwin Alberto Barrera Franco (diseñador) y Oscar René Domínguez (colaborador). Cada nombre va en dos líneas (nombres / apellidos) para que quepa en su tarjeta.
 - **Hecho con:** GDevelop 5, con el arte y el audio generados por código (`tools/`), y la aclaración de que es un proyecto escolar sin fines de lucro y no afiliado al Metro de la CDMX.
 
 Todo el texto vive en un solo lugar, `U.CREDITS` (`src/scene-menu.js`): para cambiar un nombre o un rol basta editarlo ahí. Las instituciones van en formato título (con acentos) porque la fuente pixel del juego dibuja mal los acentos en mayúsculas. Vista previa: `node tools/dump_scene.js . Menu out.json --view credits`.
