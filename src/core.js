@@ -33,6 +33,7 @@
       if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;
       if (d.fx === 'high' || d.fx === 'low' || d.fx === 'off') U.session.fxQuality = d.fx;          // accesibilidad (se validan: un guardado viejo o dañado no rompe nada)
       if (typeof d.calm === 'boolean') U.session.calm = d.calm;
+      if (typeof d.bg === 'boolean') U.session.bgAudio = d.bg;                                      // seguir sonando al salir de la ventana
       var vol = d.vol && typeof d.vol === 'object' ? d.vol : null;                                  // volúmenes por módulo (se validan: un guardado viejo o dañado no rompe nada)
       ['music', 'sfx', 'alert'].forEach(function (g) {
         var v = vol && vol[g], t = U.session.vol[g];
@@ -46,7 +47,7 @@
         var st = this._store(); if (!st) return;
         st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),
                                                best: U.session.best || {}, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,
-                                               fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true }));
+                                               fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true, bg: U.session.bgAudio === true }));
       } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }
     },
     isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },
