@@ -45,8 +45,7 @@
       var ok = U.Save.isCompleted(i);
       ui.rect(640 - (total * 30 - 10) / 2 + i * 30, 312, 20, 20, { fill: ok ? '46;204;113' : i === next ? '255;200;60' : '40;40;70', border: '255;255;255', bw: 2 });
     }
-    var stars = U.Save.totalStars(total);
-    ui.text('prog', done + '/' + total + ' niveles completados' + (stars ? '  -  ' + stars + '/' + total * 3 + ' estrellas' : ''), 640, 342, { size: 8, align: 'center', color: PAL.dim });
+    ui.text('prog', done + '/' + total + ' niveles completados', 640, 342, { size: 8, align: 'center', color: PAL.dim });
     var seen = U.session.seenTutorial;
     if (ui.button('play', '', 440, 364, 400, 84, { size: 8 }) && lv) {
       U.session.levelIndex = next; U.session.afterTutorial = 'Nivel'; go(scene, seen ? 'Nivel' : 'Tutorial');
@@ -98,9 +97,7 @@
       ui.text('ml' + i, 'META', x + 14, y + 160, { size: 8, color: PAL.dim });
       ui.lines('g' + i, util.wrap(lv.goal, 24), x + 14, y + 176, { size: 8, lineH: 12, color: ok || cur ? '230;234;250' : '90;90;120' });
       if (ok) {
-        var bs = U.Save.bestOf(i);                                                                   // mejor marca: tres estrellas (si el guardado es anterior a las estrellas, la meta de siempre)
-        if (bs) for (var k = 0; k < 3; k++) ui.icon('ck' + i + ':' + k, k < bs.stars ? 'estrella' : 'estrella_vacia', x + W / 2 - 60 + k * 40, y + 214, 2);
-        else ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 218, 2);
+        ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 218, 2);
         ui.text('st' + i, 'COMPLETADO', x + W / 2, y + 262, { size: 8, align: 'center', color: PAL.green });
         if (ui.button('re' + i, 'REJUGAR', x + 14, y + 300, W - 28, 52, { size: 8, fill: '39;174;96' })) { U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
       } else if (cur) {
