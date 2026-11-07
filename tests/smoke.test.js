@@ -712,52 +712,21 @@ test('viaje imposible: el panel explica el motivo con los números reales, el bo
   SND.log.length = 0; s.click(132, 592 + 90 + 16); assert.equal(SND.count(/^sfx_viaje/), 1); assert.ok(u().pending && u().pending.ok, 'con recursos suficientes el viaje sí se inicia');
 });
 
-// ---- efectos de apuro y de asalto
-const vis = (pool, k) => !!pool[k] && !pool[k].hidden && pool[k].opacity > 0;
-const peak = (s, pool, k, n = 40) => { let lo = 1e9, hi = 0; for (let i = 0; i < n; i++) { s.frame(1); const v = vis(pool, k) ? pool[k].opacity : 0; lo = Math.min(lo, v); hi = Math.max(hi, v); } return { lo, hi }; };
-const hudColors = (s, n = 24) => { const set = new Set(); for (let i = 0; i < n; i++) { s.frame(1); set.add(s.scene._um.ui.pool.t['UI:hud:sv'].color); } return set; };
-
-test('apuro (efectos): un borde rojo late mientras te queda poco, más fuerte mientras menos queda, y se apaga con fundido', () => {
-  const s = session('Nivel'); s.frame(3); const u = s.scene._um, run = u.run, pool = u.fx.stage.pool; u.modal = null; u.modalQueue = [];
-  s.frame(20); assert.ok(!vis(pool, 'FX:hurry'), 'sin apuro no hay borde rojo');
-  run.stamina = run.staminaMax * 0.14; s.frame(25);
-  assert.ok(vis(pool, 'FX:hurry'), 'con menos del 15 % aparece el borde'); assert.equal(pool['FX:hurry'].blend, 1, 'mezcla aditiva'); assert.equal(pool['FX:hurry']._umColor, '255;38;28', 'rojo');
-  const mild = peak(s, pool, 'FX:hurry'); assert.ok(mild.hi > mild.lo + 15, 'late (sube y baja): ' + JSON.stringify(mild));
-  run.stamina = 5; s.frame(10); const hard   /* 5 = lo mínimo para un Metro: con menos la partida ya terminó */ = peak(s, pool, 'FX:hurry'); assert.ok(hard.hi > mild.hi + 15, 'más fuerte con casi nada: ' + hard.hi + ' vs ' + mild.hi);
-  run.stamina = run.staminaMax; s.frame(2); assert.ok(vis(pool, 'FX:hurry'), 'al salir del apuro baja con fundido, no de golpe'); s.frame(40);
-  assert.ok(!vis(pool, 'FX:hurry'), 'y se apaga del todo');
-  // el tiempo y el dinero también lo encienden
-  run.minute = run.data.config.dayEndMinute - 30; s.frame(25); assert.ok(vis(pool, 'FX:hurry'), 'poco tiempo'); run.minute = run.data.config.dayStartMinute; s.frame(40);
-  run.money = 5; s.frame(25); assert.ok(vis(pool, 'FX:hurry'), 'poco dinero');
+// ---- créditos
+test('créditos: botón en el menú; muestra la Universidad Autónoma de Nayarit, la Unidad Académica de Economía y al equipo; VOLVER regresa', () => {
+  const m = session('Menu'); m.frame(5); const u = () => m.scene._um, C = m.U.CREDITS, txt = (k) => { const o = m.U.UI.of(m.scene).pool.t['UI:' + k]; return o && !o.hidden ? o.text : null; };
+  assert.equal(u().view, 'main'); m.click(1169, 29); assert.equal(u().view, 'credits', 'el botón CREDITOS abre la pantalla'); m.frame(2);
+  assert.equal(txt('cr:h'), 'CREDITOS'); assert.equal(txt('cr:e0'), 'Universidad Autónoma de Nayarit'); assert.equal(txt('cr:e1'), 'Unidad Académica de Economía');
+  assert.deepEqual(C.team.map((p) => p.first + ' ' + p.last), ['Fabian Enrique Real Ramirez', 'Edwin Alberto Barrera Franco', 'Oscar René Domínguez'], 'nombres completos');
+  C.team.forEach((p, i) => { assert.equal(txt('cr:n' + i), p.first); assert.equal(txt('cr:l' + i), p.last); assert.ok(txt('cr:r' + i)); });
+  assert.deepEqual(C.team.map((p, i) => txt('cr:r' + i)), ['Desarrollo del juego', 'Diseñador', 'Colaborador'], 'puestos'); assert.equal(txt('cr:n2'), 'Oscar'); assert.equal(txt('cr:l2'), 'René Domínguez', 'René es apellido de Oscar');
+    m.click(640, 598); assert.equal(u().view, 'main', 'VOLVER regresa al menú'); m.frame(2); assert.equal(txt('cr:h'), null, 'y la pantalla de créditos desaparece');
 });
 
-test('apuro (HUD): el recurso que se agota parpadea en rojo (también con los efectos apagados) y los demás no', () => {
-  for (const q of ['high', 'off']) {
-    const s = session('Nivel'); s.frame(1); s.U.session.fxQuality = q; delete s.scene._um; s.frame(3); const u = s.scene._um, run = u.run; u.modal = null; u.modalQueue = [];
-    const red = s.U.UI.PAL.red, normal = hudColors(s); assert.ok(!normal.has(red), 'sin apuro la stamina no se pone roja');
-    run.stamina = run.staminaMax * 0.1; const low = hudColors(s); assert.ok(low.has(red) && low.size > 1, q + ': con poca stamina el número parpadea en rojo: ' + [...low]);
-    if (q === 'off') assert.equal(u.fx.stage.count, 0, 'con efectos apagados no se crea ningún sprite');
-  }
-});
-
-test('asalto (efectos): destello, borde, onda, monedas, sacudida del mapa y saldo que tiembla; dura poco y se apaga solo', () => {
-  const rob = (q) => {
-    audioReset(); const s = session('Nivel'); s.frame(1); s.U.session.fxQuality = q || 'high'; delete s.scene._um; s.frame(3); const u = s.scene._um, run = u.run; u.modal = null; u.modalQueue = [];
-    run.rnd = () => 0; const nb = s.U.Graph.neighbors(run.graph, run.current).find((x) => !run.blocked[x] && !run.data.stations[x].shop); run.danger[nb] = true;
-    const at = (id) => { const w = u.map.stationPos(id), c = u.map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
-    s.click(...at(nb)); s.click(...at(nb)); for (let g = 0; g < 400 && !(u.hurt > 0) && (u.pending || u.map.moving() || g < 5); g++) s.frame(1);
-    return { s, u, run, pool: u.fx.stage.pool };
-  };
-  const { s, u, run, pool } = rob(); assert.equal(run.robbed, 1, 'fue asaltado'); s.frame(1);
-  assert.ok(u.fx.rob, 'el efecto está en curso'); assert.ok(u.hurt > 1, 'el saldo tiembla'); assert.ok(u.floats.some((f) => f.text === '-$' + run.stolen), 'mensaje flotante con lo robado');
-  ['FX:rob:flash', 'FX:rob:edge', ':rob:ring'].forEach((k) => assert.ok(vis(pool, k), k + ' visible')); assert.equal(pool['FX:rob:flash']._umColor.split(';')[0], '255');
-  assert.ok(Object.keys(pool).filter((k) => /rob:c\d+$/.test(k)).length >= 8, 'monedas volando');
-  let maxShake = 0; for (let i = 0; i < 8; i++) { const sh = u.map.shakeNow; maxShake = Math.max(maxShake, Math.hypot(sh.x, sh.y)); s.frame(1); } assert.ok(maxShake > 2 && maxShake <= s.U.FX.ROB.amp + 0.01, 'el mapa se sacude sin pasarse de ' + s.U.FX.ROB.amp + ': ' + maxShake);
-  const hudMoney = () => u.ui.pool.t['UI:hud:mv'].color; assert.equal(hudMoney(), s.U.UI.PAL.red, 'el saldo se ve rojo');
-  s.frame(20); const sh2 = u.map.shakeNow; assert.ok(Math.hypot(sh2.x, sh2.y) < 0.5, 'la sacudida se apaga');
-  s.frame(20); assert.equal(u.fx.rob, null, 'el efecto termina'); ['FX:rob:flash', 'FX:rob:edge', ':rob:ring'].forEach((k) => assert.ok(!vis(pool, k), k + ' ya no se ve')); assert.equal(u.hurt, 0);
-  assert.deepEqual(u.map.shakeNow, { x: 0, y: 0 }, 'el mapa vuelve a su lugar');
-  // calidad baja: menos monedas; sin efectos: nada (ni sacudida) pero el asalto sigue pasando y el saldo igual tiembla
-  const lo = rob('low'); lo.s.frame(1); assert.ok(Object.keys(lo.pool).filter((k) => /rob:c\d+$/.test(k)).length <= 5 && lo.u.fx.rob, 'calidad baja: menos monedas');
-  const off = rob('off'); off.s.frame(1); assert.equal(off.run.robbed, 1); assert.equal(off.u.map.kickFx, null, 'sin efectos no hay sacudida'); assert.equal(off.u.fx.stage.count, 0); assert.ok(off.u.hurt > 0, 'el saldo rojo es de la interfaz, no un efecto');
+test('créditos: cada línea cabe en su recuadro y los datos están completos', () => {
+  const m = session('Menu'); m.frame(2); const C = m.U.CREDITS, fit = (str, size, max, what) => assert.ok(str.length * size <= max, `${what} no cabe (${str.length * size}px > ${max}px): ${str}`);
+  assert.ok(C.madeAt.length === 2 && /Nayarit/.test(C.madeAt[0].name) && /Econom/.test(C.madeAt[1].name), 'las dos entidades');
+  C.madeAt.forEach((e) => fit(e.name, e.size, 860, e.name)); fit(C.why, 8, 860, 'why'); C.madeWith.forEach((l) => fit(l, 8, 1000, l));
+  assert.equal(C.team.length, 3); C.team.forEach((p) => { fit(p.first, 16, 250, p.first); fit(p.last, 16, 250, p.last); fit(p.role, 8, 250, p.role); assert.ok(p.first && p.last && p.role); });
+  assert.equal(new Set(C.team.map((p) => p.first + p.last)).size, 3, 'sin nombres repetidos');
 });

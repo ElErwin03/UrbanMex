@@ -153,11 +153,11 @@ Cuando un viaje no se puede hacer, el panel de la estación ya no se queda mudo:
 
 El costo que falta se pinta en rojo en la fila de costos. El doble clic en una vecina que no puedes pagar tampoco viaja: abre el panel con el motivo. Para verlo sin jugar: `node tools/dump_scene.js . Nivel out.json --at Coyoacán --select Pantitlán --stamina 30` y luego `render_preview.py`.
 
-## Efectos de apuro y de asalto
-Lo que ya se **oía** ahora también se **ve**.
+## Créditos
+Botón **CREDITOS** arriba a la derecha del menú principal. Muestra:
 
-- **Apuro** (queda menos del 15 % del tiempo, del dinero o de la stamina): un borde rojo late en la pantalla (dos golpes por ciclo, 1.5 veces por segundo; menos de 3 destellos/s) y entra y sale con fundido. Es más fuerte mientras menos queda (a 15 % apenas se nota, a 0 % es máximo). En la barra de arriba, **el recurso que aprieta** parpadea en rojo (barra y número).
-- **Asalto:** destello rojo que se apaga en 0.35 s, borde rojo fuerte, onda roja desde el jugador, monedas doradas que salen disparadas y caen (más dinero robado, más monedas), sacudida corta del mapa (la interfaz no se mueve), «-$N» flotante y el saldo del HUD tiembla en rojo un momento. Todo dura 1.3 s.
-- **Una sola regla del apuro:** `Rules.urgency(run)` (0 sin apuro → 1 sin nada) la usan el sonido (`Audio.danger`), el borde (`fx.js`) y el HUD, así que nunca se desincronizan. El umbral es `Rules.URGENT_BELOW = 0.15`.
-- **Calidad de efectos** (Ajustes del celular): `high` todo; `low` menos monedas; `off` sin borde, destello, monedas ni sacudida. El parpadeo del HUD y el saldo rojo son de la interfaz y siguen aunque apagues los efectos.
-- Sprite nuevo `fx_edge.png` (borde blanco tintable, generado por `tools/make_art.py`). Vista previa: `node tools/dump_scene.js . Nivel out.json --stamina 5` (apuro) o `--rob 3` (asalto, 3 fotogramas después de que ocurre) y luego `render_preview.py`.
+- **Realizado en:** Universidad Autónoma de Nayarit y Unidad Académica de Economía (las entidades donde y por las que se realizó el proyecto).
+- **Equipo:** Fabian Enrique Real Ramirez (desarrollo del juego), Edwin Alberto Barrera Franco (diseñador) y Oscar René Domínguez (colaborador). Cada nombre va en dos líneas (nombres / apellidos) para que quepa en su tarjeta.
+- **Hecho con:** GDevelop 5, con el arte y el audio generados por código (`tools/`), y la aclaración de que es un proyecto escolar sin fines de lucro y no afiliado al Metro de la CDMX.
+
+Todo el texto vive en un solo lugar, `U.CREDITS` (`src/scene-menu.js`): para cambiar un nombre o un rol basta editarlo ahí. Las instituciones van en formato título (con acentos) porque la fuente pixel del juego dibuja mal los acentos en mayúsculas. Vista previa: `node tools/dump_scene.js . Menu out.json --view credits`.
