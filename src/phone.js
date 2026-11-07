@@ -151,6 +151,7 @@
 
     _snd: function (ui, um, run, x, y, w) {
       var h = U.Audio.panel(ui, um.ui.scene, 'ph:', x, y + 4, w, true);
+      h += U.Audio.focusRow(ui, um.ui.scene, 'ph:', x, y + 4 + h + 2, w) + 2;
       ui.lines('ph:sn', util.wrap('El apuro suena cuando te queda menos del 15% del tiempo, dinero o energia.', 31), x, y + h + 10, { size: 8, lineH: 12, color: PAL.dim });
     },
 

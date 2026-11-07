@@ -144,10 +144,11 @@
   function drawSound(scene, ui, m) {
     ui.text('h', 'SONIDO', 640, 70, { size: 24, align: 'center', color: PAL.yellow });
     ui.text('hs', 'Sube, baja o silencia cada parte por separado.', 640, 116, { size: 8, align: 'center', color: PAL.dim });
-    ui.rect(300, 150, 680, 276, { fill: '24;24;46', border: '60;60;90', bw: 2 });
-    U.Audio.panel(ui, scene, 'mn:', 330, 172, 620, true);
-    ui.text('hn', 'El apuro suena cuando te queda menos del 15% del tiempo, dinero o energia.', 640, 450, { size: 8, align: 'center', color: PAL.dim });
-    if (ui.button('sback', 'VOLVER', 490, 520, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+    ui.rect(300, 150, 680, 330, { fill: '24;24;46', border: '60;60;90', bw: 2 });
+    var sh = U.Audio.panel(ui, scene, 'mn:', 330, 172, 620, true);
+    U.Audio.focusRow(ui, scene, 'mn:', 330, 172 + sh + 4, 620);
+    ui.text('hn', 'El apuro suena cuando te queda menos del 15% del tiempo, dinero o energia.', 640, 500, { size: 8, align: 'center', color: PAL.dim });
+    if (ui.button('sback', 'VOLVER', 490, 536, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
   }
 
   /** Accesibilidad: efectos visuales y reducir movimiento (se guardan). */
