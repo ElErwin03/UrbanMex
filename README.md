@@ -141,11 +141,14 @@ Los ajustes (`K`, `PLAZA`, `CALM`, `BUILD_P`, pesos del puntaje) están al inici
 ## Salir del juego
 El menú principal tiene un botón **SALIR** hasta abajo. Abre la ventana «SALIR DEL JUEGO» (CANCELAR / SI, SALIR); con SI se guarda el progreso y se pide cerrar el juego (`STOP_GAME`, que cierra la ventana de GDevelop o la app de escritorio / móvil). Un navegador no deja que un juego cierre su propia pestaña, así que ahí se muestra «GRACIAS POR JUGAR! Ya puedes cerrar esta ventana.» con un botón para volver al menú. Mientras la ventana está abierta, nada de lo de abajo responde al ratón.
 
-## Pausa dentro del nivel
-Se pausa con **Esc**, con **P** o con el botón **PAUSA** de la barra de arriba (junto al celular). No hay pausa cuando el día ya terminó.
+## Por qué no puedes viajar
+Cuando un viaje no se puede hacer, el panel de la estación ya no se queda mudo: el botón sigue siendo tocable (suena el efecto de error) y el panel muestra, en rojo, **qué falta con los números reales** y qué hacer. Lo calcula `Rules.explain(run, destino)`, que usa el mismo `canTravel` que el viaje (así el texto nunca contradice a la regla):
 
-- **Qué se congela:** el mapa y el jugador (un viaje a medias espera y termina al continuar), los efectos, los mensajes flotantes y avisos del celular, y el reloj del tren de 60 s. El reloj del juego solo avanza al viajar, así que no corre mientras tanto.
-- **Audio en pausa:** la música baja a 35 % (`ALERT.pauseDuck`), el bucle de apuro se apaga con fundido y, al continuar, vuelve **sin repetir** el aviso de entrada.
-- **Menú:** CONTINUAR · SONIDO (los tres volúmenes con MUDO, el mismo panel del menú principal) · SALIR AL MENU, que pide confirmación (CANCELAR / SI, SALIR). En SONIDO o en la confirmación, Esc regresa un paso.
-- Lo de abajo se ve atenuado y no responde al ratón; un aviso pendiente (noticia, evento) reaparece al continuar.
-- Vista previa: `node tools/dump_scene.js . Nivel out.json --pause main|sound|confirm` y luego `render_preview.py`.
+| Motivo | Qué dice |
+|---|---|
+| Stamina | «Te faltan 25 de stamina.» + «La combi gasta 55 de stamina y tienes 30. Mejor el Metro.» (si ni para el Metro alcanza, no lo sugiere; en el Metro sugiere un Monster en una tienda) |
+| Dinero | «Te faltan 20 peje-coins.» + «La combi cuesta 40 y tienes 20. El Metro cuesta 5.» |
+| Anochece | «Ya no llegas a tiempo.» + cuánto dura el viaje y cuántos minutos quedan |
+| Bloqueada / sin ruta | «Estacion bloqueada» / «Sin ruta directa» (también al tocar esas estaciones en el mapa) |
+
+El costo que falta se pinta en rojo en la fila de costos. El doble clic en una vecina que no puedes pagar tampoco viaja: abre el panel con el motivo. Para verlo sin jugar: `node tools/dump_scene.js . Nivel out.json --at Coyoacán --select Pantitlán --stamina 30` y luego `render_preview.py`.
