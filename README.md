@@ -140,3 +140,12 @@ Los ajustes (`K`, `PLAZA`, `CALM`, `BUILD_P`, pesos del puntaje) están al inici
 
 ## Salir del juego
 El menú principal tiene un botón **SALIR** hasta abajo. Abre la ventana «SALIR DEL JUEGO» (CANCELAR / SI, SALIR); con SI se guarda el progreso y se pide cerrar el juego (`STOP_GAME`, que cierra la ventana de GDevelop o la app de escritorio / móvil). Un navegador no deja que un juego cierre su propia pestaña, así que ahí se muestra «GRACIAS POR JUGAR! Ya puedes cerrar esta ventana.» con un botón para volver al menú. Mientras la ventana está abierta, nada de lo de abajo responde al ratón.
+
+## Créditos
+Botón **CREDITOS** arriba a la derecha del menú principal. Muestra:
+
+- **Realizado en:** Universidad Autónoma de Nayarit y Unidad Académica de Economía (las entidades donde y por las que se realizó el proyecto).
+- **Equipo:** Erwin (desarrollo del juego) y sus compañeros de curso Edwin y Oscar.
+- **Hecho con:** GDevelop 5, con el arte y el audio generados por código (`tools/`), y la aclaración de que es un proyecto escolar sin fines de lucro y no afiliado al Metro de la CDMX.
+
+Todo el texto vive en un solo lugar, `U.CREDITS` (`src/scene-menu.js`): para cambiar un nombre o un rol basta editarlo ahí. Las instituciones van en formato título (con acentos) porque la fuente pixel del juego dibuja mal los acentos en mayúsculas. Vista previa: `node tools/dump_scene.js . Menu out.json --view credits`.
