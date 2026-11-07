@@ -21,7 +21,7 @@
   function init(scene, data) {
     U.Save.load();
     var um = scene._um = { data: data, run: R.createRun(data, U.session.levelIndex), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
-      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false,
+      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false, hurt: 0,
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
     um.map = new U.MapView(scene, data);
@@ -52,7 +52,7 @@
     if (item) { snd(um, 'noticia'); um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; }
     if (out.type === 'shop') { snd(um, 'tienda'); shopModal(um); }
     else if (out.type === 'robbery') {
-      snd(um, 'asalto');
+      snd(um, 'asalto'); um.fx.robbery(out.stolen); um.hurt = 1.3; float(um, '-$' + out.stolen, PAL.red);   // efectos: destello, sacudida, monedas y el saldo tiembla
       N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');
       modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', '', '"Debiste haber leido las noticias..."'],
                   buttons: [{ label: 'SEGUIR', kind: 'danger' }] });
@@ -96,12 +96,15 @@
     ui.rect(0, 0, 1280, 56, { fill: '12;10;24', border: PAL.orange, bw: 2, block: true });
     ui.text('hud:day', 'NIVEL ' + run.level.id + ' - ' + run.level.day, 14, 10, { size: 8, color: PAL.yellow });
     ui.text('hud:st', run.current, 14, 32, { size: 8 });
-    ui.icon('hud:i1', 'rayo', 330, 12, 2); ui.bar(368, 18, 150, 16, run.stamina / run.staminaMax, '243;156;18');
-    ui.text('hud:sv', Math.floor(run.stamina) + '', 528, 22, { size: 8 });
-    ui.icon('hud:i2', 'moneda', 600, 12, 2); ui.text('hud:mv', String(run.money), 640, 22, { size: 16, color: PAL.green });
+    // APURO: el recurso que aprieta (Rules.urgency, la misma regla del sonido) parpadea en rojo; el asalto hace temblar el saldo un momento
+    var u = R.urgency(run), flash = Math.floor(um.t * 3) % 2 === 0, hot = function (v) { return v > 0 && flash; }, hurt = um.hurt > 0;
+    ui.icon('hud:i1', 'rayo', 330, 12, 2); ui.bar(368, 18, 150, 16, run.stamina / run.staminaMax, u.stamina > 0 ? '215;45;35' : '243;156;18');
+    ui.text('hud:sv', Math.floor(run.stamina) + '', 528, 22, { size: 8, color: hot(u.stamina) ? PAL.red : undefined });
+    var jx = hurt ? Math.round(Math.sin(um.t * 60) * 4) : 0;
+    ui.icon('hud:i2', 'moneda', 600, 12, 2); ui.text('hud:mv', String(run.money), 640 + jx, 22, { size: 16, color: hurt || hot(u.money) ? PAL.red : PAL.green });
     ui.icon('hud:i3', 'reloj', 780, 12, 2);
-    ui.bar(818, 18, 200, 16, (run.minute - cfg.dayStartMinute) / (cfg.dayEndMinute - cfg.dayStartMinute), run.minute >= 1080 ? PAL.red : '230;126;34');
-    ui.text('hud:tv', util.clock(run.minute), 1030, 22, { size: 8, color: run.minute >= 1140 ? PAL.red : PAL.yellow });
+    ui.bar(818, 18, 200, 16, (run.minute - cfg.dayStartMinute) / (cfg.dayEndMinute - cfg.dayStartMinute), run.minute >= 1080 || u.time > 0 ? PAL.red : '230;126;34');
+    ui.text('hud:tv', util.clock(run.minute), 1030, 22, { size: 8, color: run.minute >= 1140 || hot(u.time) ? PAL.red : PAL.yellow });
   }
 
   /** Icono de la esquina superior derecha: oculta / muestra el celular. Con el celular oculto avisa (parpadea) si llegan noticias. */
@@ -195,7 +198,7 @@
     var um = scene._um || init(scene, data), run = um.run, dt = Math.min(0.1, scene.getElapsedTime() / 1000);
     ui.begin();
 
-    um.t = (um.t || 0) + dt;
+    um.t = (um.t || 0) + dt; um.hurt = Math.max(0, (um.hurt || 0) - dt);
     drawHUD(ui, um); drawPhoneToggle(ui, um, run); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);
     if (!um.modal) drawStationPanel(ui, um);
     U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt); drawModal(ui, um);

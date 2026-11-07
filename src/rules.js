@@ -7,6 +7,7 @@
   function setOf(list) { var o = {}; (list || []).forEach(function (k) { o[k] = true; }); return o; }
 
   var Rules = {
+    URGENT_BELOW: 0.15,                           // apuro: queda menos del 15 % del tiempo, el dinero o la stamina (ver urgency)
     createRun: function (data, levelIndex, rnd) {
       var lv = data.levels[levelIndex], cfg = data.config, rng = rnd || Math.random;
       var visited = {}; visited[lv.start] = true;
@@ -28,6 +29,19 @@
 
     monsterPrice: function (run) {
       var c = run.data.config; return run.monsterPromo ? c.monsterPromoPrice : c.monsterPrice;
+    },
+
+    /** APURO: cuánto te urge cada recurso. Con MENOS del 15 % (URGENT_BELOW) del tiempo del día, del dinero inicial o de la stamina máxima, ese
+     *  recurso "aprieta": 0 = sin apuro, y sube hasta 1 cuando ya casi no queda (a 15 % vale 0, a 0 % vale 1). level = el que más aprieta.
+     *  Es la ÚNICA regla del apuro: el sonido (audio.js), el borde rojo (fx.js) y el parpadeo del HUD la leen de aquí. Con la partida terminada, todo 0. */
+    urgency: function (run) {
+      var out = { level: 0, time: 0, money: 0, stamina: 0, any: false };
+      if (!run || run.over) return out;
+      var cfg = run.data.config, span = cfg.dayEndMinute - cfg.dayStartMinute, ms = run.level.moneyStart, sm = run.staminaMax, lo = Rules.URGENT_BELOW;
+      var sev = function (ratio) { return ratio < lo ? util.clamp(1 - Math.max(0, ratio) / lo, 0, 1) : 0; };
+      out.time = sev((cfg.dayEndMinute - run.minute) / span); out.money = ms > 0 ? sev(run.money / ms) : 0; out.stamina = sm > 0 ? sev(run.stamina / sm) : 0;
+      out.level = Math.max(out.time, out.money, out.stamina); out.any = out.time > 0 || out.money > 0 || out.stamina > 0;
+      return out;
     },
 
     /** ¿Puede viajar a `to`? → { ok, reason, cost:{time,stamina,money} } */
