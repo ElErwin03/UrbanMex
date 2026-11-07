@@ -147,6 +147,16 @@
     if (ui.button('sback', 'VOLVER', 490, 520, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
   }
 
+  /** Accesibilidad: efectos visuales y reducir movimiento (se guardan). */
+  function drawA11y(scene, ui, m) {
+    ui.text('h', 'ACCESIBILIDAD', 640, 70, { size: 24, align: 'center', color: PAL.yellow });
+    ui.text('hs', 'Ajusta los efectos y los destellos a tu gusto.', 640, 116, { size: 8, align: 'center', color: PAL.dim });
+    var ph = U.A11y.height(620);
+    ui.rect(300, 150, 680, ph + 44, { fill: '24;24;46', border: '60;60;90', bw: 2 });
+    U.A11y.panel(ui, scene, 'ma:', 330, 172, 620);
+    if (ui.button('aback', 'VOLVER', 490, 150 + ph + 44 + 24, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+  }
+
   U.Scenes.menu = function (scene) {
     var ui = U.UI.of(scene), m = scene._um || init(scene), dt = Math.min(0.1, scene.getElapsedTime() / 1000), data = U.Data.ready(scene);
     U.Save.load();
@@ -155,12 +165,13 @@
     m.stars.forEach(function (s) { ui.rect(s[0], s[1], 4, 4, { fill: Math.sin(m.t * 2 + s[2]) > 0 ? '255;255;255' : '120;120;160', bw: 0 }); });
     m.train.setX(((m.t * 220) % 1900) - 300);
     ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });
-    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else drawMain(scene, ui, m, data);
+    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else if (m.view === 'a11y') drawA11y(scene, ui, m); else drawMain(scene, ui, m, data);
     ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });
     m.fx.update(dt, m);
     U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
     if (m.view === 'main' && ui.button('cred', 'CREDITOS', 1074, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'credits';
-    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
+    if (m.view === 'main' && ui.button('a11y', 'ACCESIBILIDAD', 16, 52, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'a11y';
+    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && m.view !== 'a11y' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
     ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);
     ui.end();
   };

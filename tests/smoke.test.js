@@ -747,7 +747,7 @@ test('pausa: Esc / P y el botón PAUSA pausan y continúan; no hay pausa al term
   key('Escape'); assert.equal(u().paused, false, 'Esc otra vez continúa');
   key('p'); assert.equal(u().paused, true, 'P pausa'); key('p'); assert.equal(u().paused, false, 'P continúa');
   s.click(1169, 28); assert.equal(u().paused, true, 'el botón PAUSA pausa');
-  s.click(640, 343); assert.equal(u().paused, false, 'CONTINUAR continúa');
+  s.click(640, 314); assert.equal(u().paused, false, 'CONTINUAR continúa');
   u().run.over = true; u().run.won = false; s.frame(2); key('Escape'); assert.equal(u().paused, false, 'con el día terminado no hay pausa');
 });
 
@@ -777,20 +777,20 @@ test('pausa: un viaje a medias se congela y termina al continuar; el día no ava
   s.frame(120); assert.ok(u().map.moving(), 'sigue a medio camino'); assert.ok(u().pending, 'el viaje no se resuelve en pausa'); assert.equal(r.current, nb); assert.equal(pos(), p0, 'el jugador no se mueve');
   // aunque el recorrido ya hubiera terminado, la llegada espera a que continúes
   u().map.move = null; s.frame(30); assert.ok(u().pending, 'la llegada no se resuelve mientras está en pausa'); assert.ok(!u().modal, 'ni aparece el aviso de la estación');
-  s.click(640, 343); finishModals(s); assert.ok(!u().map.moving() && !u().pending, 'al continuar el viaje termina'); assert.equal(u().paused, false);
+  s.click(640, 314); finishModals(s); assert.ok(!u().map.moving() && !u().pending, 'al continuar el viaje termina'); assert.equal(u().paused, false);
 });
 
 test('pausa: menú SONIDO cambia los volúmenes; SALIR AL MENU pide confirmación y CANCELAR no sale', () => {
   const { s, u, U, key } = pauseSession();
-  key('Escape'); s.click(640, 401); assert.equal(u().pauseView, 'sound');
+  key('Escape'); s.click(640, 372); assert.equal(u().pauseView, 'sound');
   const v0 = U.session.vol.music.level; s.click(755, 265); assert.equal(U.session.vol.music.level, v0 + 1, '+ sube la música'); s.click(435, 265); s.click(435, 265); assert.equal(U.session.vol.music.level, v0 - 1, '- la baja');
   s.click(822, 265); assert.equal(U.session.vol.music.mute, true, 'MUDO silencia la música'); s.click(822, 265); assert.equal(U.session.vol.music.mute, false);
   key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en SONIDO vuelve al menú de pausa'); assert.equal(u().paused, true);
-  s.click(640, 401); s.click(640, 452); assert.equal(u().pauseView, 'main', 'VOLVER regresa');
-  s.click(640, 459); assert.equal(u().pauseView, 'confirm'); assert.equal(s.scene.changes.length, 0, 'todavía no sale');
+  s.click(640, 372); s.click(640, 452); assert.equal(u().pauseView, 'main', 'VOLVER regresa');
+  s.click(640, 488); assert.equal(u().pauseView, 'confirm'); assert.equal(s.scene.changes.length, 0, 'todavía no sale');
   s.click(520, 437); assert.equal(u().pauseView, 'main'); assert.equal(s.scene.changes.length, 0, 'CANCELAR no sale');
-  s.click(640, 459); key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en la confirmación también cancela'); assert.equal(s.scene.changes.length, 0);
-  s.click(640, 459); s.click(760, 437); assert.deepEqual(s.scene.changes.pop(), [3, 'Menu'], 'SI, SALIR vuelve al menú');
+  s.click(640, 488); key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en la confirmación también cancela'); assert.equal(s.scene.changes.length, 0);
+  s.click(640, 488); s.click(760, 437); assert.deepEqual(s.scene.changes.pop(), [3, 'Menu'], 'SI, SALIR vuelve al menú');
 });
 
 test('pausa: el tren de 60 s espera, la música baja, el apuro calla y al continuar no se repite el aviso', () => {
@@ -803,4 +803,76 @@ test('pausa: el tren de 60 s espera, la música baja, el apuro calla y al contin
   r.stamina = 5; s.frame(30); assert.equal(SND.count(/^sfx_alerta/), 1); assert.ok(SND.music[2] && SND.music[2].vol > 0, 'el apuro suena');
   key('Escape'); s.frame(60); assert.ok(A.state.al === null || A.state.alv < 0.001, 'el apuro calla en pausa');
   key('Escape'); s.frame(60); assert.ok(A.state.al && A.state.alv > 0.05, 'el apuro vuelve al continuar'); assert.equal(SND.count(/^sfx_alerta/), 1, 'sin repetir el aviso de entrada');
+});
+
+// ---- accesibilidad
+const a11yReset = (U) => { U.session.calm = false; U.session.fxQuality = 'high'; };
+
+test('accesibilidad: el menú tiene el panel (efectos visuales y reducir movimiento), cambia los ajustes, los guarda y los recupera; lo dañado se ignora', () => {
+  const store = store0(); const KEY = 'UrbanMex_save_v1';
+  try {
+    audioReset(); const m = session('Menu'); m.frame(5); const U = m.U, A = U.A11y, saved = () => JSON.parse(store[KEY]), ph = A.height(620);
+    assert.deepEqual([A.quality(), A.calm()], ['high', false], 'de fábrica: efectos altos, movimiento normal');
+    m.click(111, 67); m.frame(3); assert.equal(m.scene._um.view, 'a11y', 'el botón ACCESIBILIDAD abre el panel');
+    const bw = Math.floor((620 - 12) / 3), by = 172 + 20 + 15, cx = (i) => 330 + i * (bw + 6) + bw / 2;
+    m.click(cx(1), by); assert.equal(A.quality(), 'low'); assert.equal(saved().fx, 'low', 'se guarda al cambiar');
+    m.click(cx(2), by); assert.equal(A.quality(), 'off'); m.click(cx(0), by); assert.equal(A.quality(), 'high');
+    m.click(640, 172 + 120 + 15); assert.equal(A.calm(), true, 'REDUCIR MOVIMIENTO se enciende'); assert.equal(saved().calm, true);
+    m.click(cx(2), by);
+    m.click(640, 150 + ph + 44 + 24 + 24); assert.equal(m.scene._um.view, 'main', 'VOLVER regresa al menú');
+    // otra sesión: se recupera lo guardado
+    U.session.fxQuality = 'high'; U.session.calm = false; U.session.loaded = false; U.Save.load(); assert.deepEqual([A.quality(), A.calm()], ['off', true], 'se recupera al abrir el juego');
+    // un guardado dañado no rompe nada ni cambia los ajustes
+    store[KEY] = JSON.stringify({ v: 1, fx: 'ultra', calm: 'si' }); U.session.fxQuality = 'low'; U.session.calm = false; U.session.loaded = false; U.Save.load();
+    assert.deepEqual([A.quality(), A.calm()], ['low', false], 'valores desconocidos se ignoran');
+    assert.equal(U.session.fxQuality = 'raro', 'raro'); assert.equal(A.quality(), 'high', 'una calidad desconocida cuenta como alta');
+    // blink: con REDUCIR MOVIMIENTO queda fijo encendido; sin él alterna
+    U.session.calm = false; assert.deepEqual([0, 0.2, 0.4, 0.6].map((t) => A.blink(t, 3)), [true, true, false, false]); U.session.calm = true; assert.deepEqual([0, 0.2, 0.4, 0.6].map((t) => A.blink(t, 3)), [true, true, true, true]);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('accesibilidad (HUD): el apuro lleva un "!" además del rojo; con REDUCIR MOVIMIENTO el rojo queda fijo, sin parpadeo', () => {
+  audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Nivel'); s.frame(3); const u = s.scene._um, run = u.run, U = s.U, red = U.UI.PAL.red; u.modal = null; u.modalQueue = [];
+  const bang = (k) => { const o = u.ui.pool.t['UI:hud:w' + k]; return !!o && !o.hidden && o.text === '!'; };
+  const colors = () => { const set = new Set(); for (let i = 0; i < 24; i++) { s.frame(1); set.add(u.ui.pool.t['UI:hud:sv'].color); } return set; };
+  try {
+    s.frame(2); assert.ok(!bang('stamina') && !bang('money') && !bang('time'), 'sin apuro no hay "!"');
+    run.stamina = run.staminaMax * 0.1; run.money = run.level.moneyStart * 0.1; run.minute = run.data.config.dayEndMinute - 60; U.session.calm = false;
+    const normal = colors(); assert.ok(bang('stamina') && bang('money') && bang('time'), 'un "!" por cada recurso en apuro'); assert.ok(normal.has(red) && normal.size > 1, 'normal: parpadea');
+    U.session.calm = true; const calm = colors(); assert.deepEqual([...calm], [red], 'reducido: rojo fijo'); assert.ok(bang('stamina') && bang('money') && bang('time'), 'el "!" sigue');
+    run.stamina = run.staminaMax; s.frame(2); assert.ok(!bang('stamina') && bang('money'), 'el "!" solo va con lo que se agota');
+  } finally { a11yReset(U); delete globalThis.gdjs.UrbanMex; }
+});
+
+test('accesibilidad (efectos): con REDUCIR MOVIMIENTO el borde no late y el asalto no destella ni sacude; con efectos en NINGUNO no se crea nada', () => {
+  const vis = (pool, k) => !!pool[k] && !pool[k].hidden && pool[k].opacity > 0;
+  const boot = (calm, q) => { audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Nivel'); s.frame(1); s.U.session.calm = calm; s.U.session.fxQuality = q || 'high'; delete s.scene._um; s.frame(3); const u = s.scene._um; u.modal = null; u.modalQueue = []; return { s, u, run: u.run, pool: u.fx.stage.pool }; };
+  const range = (s, pool, k) => { let lo = 1e9, hi = 0; for (let i = 0; i < 40; i++) { s.frame(1); const v = vis(pool, k) ? pool[k].opacity : 0; lo = Math.min(lo, v); hi = Math.max(hi, v); } return hi - lo; };
+  try {
+    let t = boot(false); t.run.stamina = t.run.staminaMax * 0.1; t.s.frame(25); const wob = range(t.s, t.pool, 'FX:hurry'); assert.ok(wob > 15, 'normal: late (' + wob + ')');
+    t = boot(true); t.run.stamina = t.run.staminaMax * 0.1; t.s.frame(90); assert.ok(vis(t.pool, 'FX:hurry'), 'el borde sigue ahí'); assert.ok(range(t.s, t.pool, 'FX:hurry') < 1, 'pero fijo, sin latido');
+    // asalto
+    t.u.fx.robbery(60); t.u.hurt = 1.3; t.s.frame(2);
+    assert.equal(t.u.map.kickFx, null, 'sin sacudida'); assert.ok(!vis(t.pool, 'FX:rob:flash'), 'sin destello'); assert.ok(vis(t.pool, 'FX:rob:edge') && vis(t.pool, ':rob:ring'), 'el aviso (borde y onda) se queda, suave');
+    assert.deepEqual(t.u.map.shakeNow, { x: 0, y: 0 });
+    t = boot(false); t.u.fx.robbery(60); t.s.frame(2); assert.ok(t.u.map.kickFx && vis(t.pool, 'FX:rob:flash'), 'normal: sí sacude y destella (control)');
+    // efectos en NINGUNO (se elige en el panel; aplica al empezar el nivel)
+    t = boot(false, 'off'); assert.equal(t.u.fx.stage.count, 0); t.s.frame(10); assert.equal(t.u.fx.stage.count, 0);
+  } finally { a11yReset(globalThis.gdjs.UrbanMex); delete globalThis.gdjs.UrbanMex; }
+});
+
+test('accesibilidad (celular y pausa): también se llega desde AJUSTES y desde la pausa, y se puede volver', () => {
+  audioReset(); delete globalThis.gdjs.UrbanMex; KEYS.clear(); const s = session('Nivel'); s.frame(3); const u = s.scene._um, U = s.U; u.modal = null; u.modalQueue = [];
+  try {
+    // celular: AJUSTES → ACCESIBILIDAD > → REDUCIR MOVIMIENTO → <
+    u.phone.app = 'config'; s.frame(2); s.click(1090, 467); assert.equal(u.phone.app, 'a11y', 'AJUSTES tiene el botón ACCESIBILIDAD');
+    s.frame(2); s.click(1090, 144 + 120 + 15); assert.equal(U.A11y.calm(), true, 'el panel del celular cambia el ajuste'); s.click(1230, 114); assert.equal(u.phone.app, 'home', 'el botón < regresa');
+    U.A11y.setCalm(false);
+    // pausa: ACCESIBILIDAD → ajustar → Esc vuelve al menú de pausa
+    KEYS.add('Escape'); s.frame(2); assert.equal(u.paused, true); s.click(640, 430); assert.equal(u.pauseView, 'a11y', 'la pausa tiene el botón ACCESIBILIDAD');
+    const h = 70 + U.A11y.height(440) + 10 + 44 + 40, y = Math.round((720 - h) / 2);
+    s.click(640, y + 70 + 120 + 15); assert.equal(U.A11y.calm(), true, 'el panel de la pausa cambia el ajuste'); s.click(640, y + 70 + 120 + 15); assert.equal(U.A11y.calm(), false);
+    KEYS.add('Escape'); s.frame(2); assert.equal(u.pauseView, 'main', 'Esc vuelve al menú de pausa'); assert.equal(u.paused, true);
+    s.click(640, 314); assert.equal(u.paused, false, 'CONTINUAR sigue funcionando');
+  } finally { a11yReset(U); delete globalThis.gdjs.UrbanMex; KEYS.clear(); }
 });
