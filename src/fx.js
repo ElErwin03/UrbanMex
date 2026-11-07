@@ -23,7 +23,7 @@
   function mix(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
   function hexArr(h) { var n = parseInt(h.replace('#', ''), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
   function modpos(a, m) { return ((a % m) + m) % m; }
-  function quality() { var q = U.session.fxQuality; return q === 'low' || q === 'off' ? q : 'high'; }
+  function quality() { return U.A11y.quality(); }
 
   // ---- escenario: pool de sprites "Fx" (se reutilizan; los que no se usan en el fotograma se ocultan) ------------------------
   function Stage(scene) { this.scene = scene; this.pool = {}; this.used = {}; this.count = 0; }
@@ -180,14 +180,14 @@
     this.hurry = util.lerp(this.hurry, u.any ? 1 : 0, Math.min(1, dt * HURRY.fade));
     if (this.hurry < 0.01) this.hurry = u.any ? this.hurry : 0;
     if (this.hurry > 0) {
-      var b = beat(t), sev = 0.35 + 0.65 * u.level;
+      var b = U.A11y.calm() ? 0.5 : beat(t), sev = 0.35 + 0.65 * u.level;      // REDUCIR MOVIMIENTO: el borde queda fijo, sin latido
       st.spr('hurry', 'edge', W / 2, H / 2, W, H, { z: 45, color: '255;38;28', opacity: this.hurry * (HURRY.base + HURRY.gain * sev * (0.35 + 0.65 * b)), blend: BLEND.add });
     }
     var r = this.rob; if (!r) return;
     r.t += dt; var k = r.t / ROB.dur;
     if (k >= 1) { this.rob = null; return; }
     var pp = map.pp, f = clamp(1 - r.t / ROB.flash, 0, 1);
-    if (f > 0) st.spr('rob:flash', 'solid', W / 2, H / 2, W, H, { z: 46, color: '255;70;50', opacity: 170 * f * f, blend: BLEND.add });         // destello rojo que se apaga rápido
+    if (f > 0 && !U.A11y.calm()) st.spr('rob:flash', 'solid', W / 2, H / 2, W, H, { z: 46, color: '255;70;50', opacity: 170 * f * f, blend: BLEND.add });         // destello rojo que se apaga rápido
     st.spr('rob:edge', 'edge', W / 2, H / 2, W, H, { z: 47, color: '255;30;20', opacity: 230 * (1 - k) * (1 - k), blend: BLEND.add });       // el borde se enciende fuerte y baja
     st.spr('rob:ring', 'glow', pp.x, pp.y - 14, 70 + 330 * k, (70 + 330 * k) * 0.62, { layer: '', z: 90, color: '255;70;50', opacity: 210 * (1 - k) * (1 - k), blend: BLEND.add });   // onda desde el jugador
     var n = r.n.length;
@@ -204,7 +204,7 @@
     var rnd = util.seeded(900 + (stolen | 0)), n = this.q === 'low' ? 5 : clamp(6 + Math.round(stolen / 12), 8, 16), coins = [];
     for (var i = 0; i < n; i++) { var ang = -Math.PI / 2 + util.range(rnd, -1.25, 1.25), v = util.range(rnd, 170, 330); coins.push({ vx: Math.cos(ang) * v, vy: Math.sin(ang) * v - 60, size: util.range(rnd, 30, 46), ph: rnd() * 6.28 }); }
     this.rob = { t: 0, n: coins, stolen: stolen };
-    this.um.map.kick(ROB.amp, ROB.shake);                        // sacudida del mapa (la interfaz no se mueve)
+    if (!U.A11y.calm()) this.um.map.kick(ROB.amp, ROB.shake);                        // sacudida del mapa (la interfaz no se mueve)
   };
 
   // ====================================================================================================================

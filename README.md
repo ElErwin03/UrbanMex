@@ -32,6 +32,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `map` | mapa isométrico 2.5D (ciudad en relieve), cámara que encuadra toda la red, estaciones, jugador | sí |
 | `phone` | celular: Noticias, Ruta, Saldo, Ajustes | sí |
 | `fx` | efectos visuales: iluminación dinámica, partículas, bruma, viñeta (ver *Efectos visuales*) | sí |
+| `a11y` | ajustes de accesibilidad: calidad de efectos y reducir movimiento (ver *Accesibilidad*) | sí |
 | `audio` | música de fondo, tren lejano cada 60 s y efectos de interfaz (ver *Música y sonido*) | sí |
 | `scene-*` | controlador de cada escena (Menu, Tutorial, Nivel, Resultado) | sí |
 
@@ -94,7 +95,7 @@ Capa de acabado "alta fidelidad" sobre el dibujo original: **no cambia ningún p
 - **Iluminación dinámica (`src/fx.js`, capa `FX` entre el mapa y la interfaz)**: luz bajo cada estación (más fuerte en la actual, la meta, el inicio, las vecinas y las que señalas), luz cálida y sombra de contacto que siguen al jugador, haz de luz en la meta y **gradación según la hora del nivel** (mañana cálida → mediodía → hora dorada → anochecer violeta).
 - **Partículas sutiles**: polvo y bokeh con **paralaje** al mover la cámara, bancos de niebla a la deriva y destellos en la meta, el inicio y las tiendas. Sus posiciones son una función pura del tiempo (reproducibles).
 - **Profundidad de campo ligera**: bruma arriba (lo lejano), oscurecimiento abajo y viñeta; el menú suma resplandor de ciudad, luz del tren y estrellas que centellean; Tutorial y Resultado llevan viñeta, bruma y polvo (resplandor verde o rojo según ganes o pierdas).
-- **Calidad**: `U.session.fxQuality = 'high'` (por defecto) | `'low'` (menos partículas y luces) | `'off'` (sin efectos; vuelve la sombra original del jugador).
+- **Calidad**: `U.session.fxQuality = 'high'` (por defecto) | `'low'` (menos partículas y luces) | `'off'` (sin efectos; vuelve la sombra original del jugador). Se cambia desde el juego en *Accesibilidad* y se guarda.
 - **Vista previa sin GDevelop**: `node tools/dump_scene.js . Nivel salida.json --level 1 --minute 1150` y `python3 tools/render_preview.py salida.json . salida.png` generan un PNG aproximado (soporta mezcla aditiva y multiplicar). No es el render real de la GPU ni reproduce efectos de capa de GDevelop.
 
 ## Música y sonido
@@ -170,3 +171,13 @@ Se pausa con **Esc**, con **P** o con el botón **PAUSA** de la barra de arriba 
 - **Menú:** CONTINUAR · SONIDO (los tres volúmenes con MUDO, el mismo panel del menú principal) · SALIR AL MENU, que pide confirmación (CANCELAR / SI, SALIR). En SONIDO o en la confirmación, Esc regresa un paso.
 - Lo de abajo se ve atenuado y no responde al ratón; un aviso pendiente (noticia, evento) reaparece al continuar.
 - Vista previa: `node tools/dump_scene.js . Nivel out.json --pause main|sound|confirm` y luego `render_preview.py`.
+
+## Accesibilidad
+
+Dos ajustes, que se guardan en el navegador junto con el progreso (`fx` y `calm`; un valor dañado se ignora):
+
+- **Efectos visuales:** `ALTOS` (por defecto), `BAJOS` o `NINGUNO`. Aplica al empezar el siguiente nivel.
+- **Reducir movimiento:** apagado por defecto. Al encenderlo el borde rojo del apuro queda fijo (sin latido), el asalto no destella ni sacude el mapa (el borde y la onda siguen avisando), y los parpadeos y temblores del HUD y del celular se quedan fijos.
+- **Aviso que no depende del color:** cuando algo se agota, el HUD muestra además un `!` junto a la barra de energía, el dinero o la hora, con o sin reducir movimiento.
+- **Dónde está:** Menú → `ACCESIBILIDAD`; dentro del nivel, en la pausa (`ACCESIBILIDAD`) y en el celular (`AJUSTES` → `ACCESIBILIDAD >`). Esc vuelve al menú de pausa.
+- **Corrección incluida:** el botón `<` de las apps del celular intentaba dibujar una app inexistente en el mismo fotograma; ahora vuelve al inicio sin error.

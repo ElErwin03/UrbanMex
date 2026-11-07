@@ -13,7 +13,8 @@
     { id: 'saldo', label: 'SALDO', icon: 'saldo', fill: '30;90;60' },
     { id: 'lines', label: 'LINEAS', icon: 'lineas', fill: '90;50;110' },
     { id: 'snd', label: 'SONIDO', icon: 'sonido', fill: '30;80;100' },
-    { id: 'config', label: 'AJUSTES', icon: 'ajustes', fill: '70;70;90' }
+    { id: 'config', label: 'AJUSTES', icon: 'ajustes', fill: '70;70;90' },
+    { id: 'a11y', label: 'ACCESIBILIDAD', icon: 'ajustes', fill: '70;70;90', hidden: true }   // se entra desde AJUSTES (no cabe en la rejilla)
   ];
 
   /** Cuadritos con el color y la letra/número de cada línea afectada, alineados a la derecha en rx. */
@@ -46,7 +47,7 @@
 
       if (ph.app === 'home') {
         ui.text('ph:h', 'MI CELULAR', X + W / 2, top, { size: 8, align: 'center', color: PAL.dim });
-        APPS.forEach(function (a, i) {
+        APPS.filter(function (a) { return !a.hidden; }).forEach(function (a, i) {
           var ax = sx + 8 + (i % 2) * 158, ay = top + 28 + Math.floor(i / 2) * 124;
           ui.rect(ax, ay, 150, 112, { fill: a.fill, border: '255;255;255', bw: 2, block: true });
           ui.icon('ph:ai' + a.id, a.icon, ax + 51, ay + 16, 3);
@@ -63,7 +64,7 @@
         ui.icon('ph:hi', app.icon, sx + 8, sy + 8, 1);
         ui.text('ph:ht', app.label, sx + 34, sy + 12, { size: 8 });
         if (ui.button('ph:back', '<', sx + sw - 34, sy + 4, 28, 24, { fill: '60;60;90', size: 8 })) ph.app = 'home';
-        Phone['_' + ph.app](ui, um, run, sx + 8, sy + 42, sw - 16, H - 34 - 52 - 52);
+        if (ph.app !== 'home') Phone['_' + ph.app](ui, um, run, sx + 8, sy + 42, sw - 16, H - 34 - 52 - 52);   // (si se acaba de pulsar <, ya no hay app que dibujar)
       }
       if (ui.button('ph:homebtn', 'INICIO', X + W / 2 - 46, Y + H - 40, 92, 26, { fill: '60;60;90', size: 8 })) ph.app = 'home';
     },
@@ -153,6 +154,8 @@
       ui.lines('ph:sn', util.wrap('El apuro suena cuando te queda menos del 15% del tiempo, dinero o energia.', 31), x, y + h + 10, { size: 8, lineH: 12, color: PAL.dim });
     },
 
+    _a11y: function (ui, um, run, x, y, w) { U.A11y.panel(ui, um.ui.scene, 'ph:ax', x, y + 4, w); },
+
     _config: function (ui, um, run, x, y, w) {
       var rows = [['DIA', run.level.day], ['NIVEL', run.level.id + '/' + run.data.levels.length], ['PASOS', String(run.steps)],
                   ['NOTICIAS', String(run.newsCount)], ['VERSION', U.VERSION]];
@@ -165,7 +168,8 @@
       ui.lines('ph:dbh', util.wrap('Doble clic en una estacion vecina (la siguiente a la tuya): viajas ahi sin confirmar.', 31), x, y + 166, { size: 8, lineH: 12, color: PAL.dim });
       if (ui.button('ph:snd', 'SONIDO Y MUSICA >', x, y + 232, w, 30, { size: 8, fill: '30;80;100' })) { um.phone.app = 'snd'; um.phone.scroll = 0; }   // volumen y silencio de música, sonidos y peligro
       ui.lines('ph:sdh', util.wrap('Musica relajante de fondo y un tren lejano que pasa cada minuto, a volumen bajo.', 31), x, y + 270, { size: 8, lineH: 12, color: PAL.dim });
-      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 340, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;
+      if (ui.button('ph:a11y', 'ACCESIBILIDAD >', x, y + 312, w, 30, { size: 8, fill: '30;80;100' })) { um.phone.app = 'a11y'; um.phone.scroll = 0; }   // efectos y reducir movimiento
+      if (ui.button('ph:menu', 'SALIR AL MENU', x, y + 354, w, 28, { fill: '150;50;50' })) um.exitToMenu = true;
     }
   };
 
@@ -175,7 +179,7 @@
     if (!um.phone.open) { um.push = null; return; }
     p.t += dt; if (p.t > 6.5) { um.push = null; return; }
     var n = p.item, x = X + 16, y = Y + 40, w = W - 32, tl = util.wrap(n.title, 22).slice(0, 3), dl = util.wrap(n.desc, 22).slice(0, 4);
-    var h = 10 + 16 + 8 + tl.length * 16 + 4 + dl.length * 16 + 12, col = SEV[n.severity] || PAL.blue, blink = p.t < 0.8 && Math.floor(p.t * 8) % 2 === 0;
+    var h = 10 + 16 + 8 + tl.length * 16 + 4 + dl.length * 16 + 12, col = SEV[n.severity] || PAL.blue, blink = p.t < 0.8 && U.A11y.blink(p.t, 5);
     ui.rect(x, y, w, h, { fill: '30;30;52', border: blink ? '255;255;255' : col, bw: 3, modal: true, block: true });
     ui.icon('pn:i', n.icon || 'noticia', x + 8, y + 8, 1, { z: 330 });
     ui.text('pn:h', 'NOTICIA - ahora', x + 30, y + 12, { size: 8, color: PAL.dim, z: 330 });
