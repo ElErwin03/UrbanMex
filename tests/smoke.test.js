@@ -101,7 +101,10 @@ function session(sceneName) {
     get U() { return globalThis.gdjs.UrbanMex; } };
   return s;
 }
-globalThis.gdjs = { SceneChangeRequest: { CONTINUE: 0, PUSH_SCENE: 1, POP_SCENE: 2, REPLACE_SCENE: 3, CLEAR_SCENES: 4, STOP_GAME: 5 } };
+globalThis.gdjs = { SceneChangeRequest: { CONTINUE: 0, PUSH_SCENE: 1, POP_SCENE: 2, REPLACE_SCENE: 3, CLEAR_SCENES: 4, STOP_GAME: 5 },
+  // teclado simulado: las pruebas "sueltan" una tecla con KEYS.add('Escape') y vale solo para el siguiente fotograma
+  evtTools: { input: { wasKeyReleased: (scene, key) => { assert.equal(typeof key, 'string', 'GDevelop pide el nombre de la tecla como texto'); return KEYS.delete(key); } } } };
+const KEYS = new Set();
 
 test('el proyecto generado es coherente (recursos, objetos, capas, escena inicial)', () => {
   assert.equal(project.firstLayout, 'Menu');
