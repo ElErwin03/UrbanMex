@@ -60,6 +60,33 @@
       return { ok: true, cost: cost };
     },
 
+    /** Explica POR QUÉ no se puede viajar a `to` (null si sí se puede): { code, short, detail, missing }.
+     *  short = frase corta ("Te faltan 15 de stamina"); detail = qué hacer, de una sola línea (máx. 62 caracteres, cabe en el panel);
+     *  missing = cuánto falta de lo que impide el viaje (stamina, dinero o minutos). Todo con los números reales de la partida. */
+    explain: function (run, to) {
+      var chk = Rules.canTravel(run, to); if (chk.ok) return null;
+      var cfg = run.data.config, c = chk.cost || {}, cur = cfg.currencyName || 'monedas', out = { code: chk.reason, missing: 0 };
+      if (chk.reason === 'stamina') {
+        out.missing = Math.ceil(c.stamina - run.stamina); out.short = 'Te faltan ' + out.missing + ' de stamina';
+        var sHave = Math.floor(run.stamina);
+        out.detail = c.combi ? 'La combi gasta ' + c.stamina + ' de stamina y tienes ' + sHave + (sHave >= cfg.staminaPerStation ? '. Mejor el Metro.' : '.')
+                             : 'Cuesta ' + c.stamina + ' y tienes ' + sHave + '. Compra un Monster en una tienda.';
+      } else if (chk.reason === 'money') {
+        out.missing = Math.ceil(c.money - run.money); out.short = 'Te faltan ' + out.missing + ' ' + cur;
+        var mHave = Math.floor(run.money);
+        out.detail = c.combi ? 'La combi cuesta ' + c.money + ' y tienes ' + mHave + (mHave >= cfg.moneyPerStation ? '. El Metro cuesta ' + cfg.moneyPerStation + '.' : '.')
+                             : 'Cada estacion cuesta ' + c.money + ' y tienes ' + mHave + '.';
+      } else if (chk.reason === 'night') {
+        var left = Math.max(0, cfg.dayEndMinute - run.minute); out.missing = Math.ceil(c.time - left); out.short = 'Ya no llegas a tiempo';
+        out.detail = 'El viaje dura ' + c.time + ' min y solo quedan ' + left + ' min del dia.';
+      } else if (chk.reason === 'blocked') {
+        out.short = 'Estacion bloqueada'; out.detail = 'Hay un bloqueo ahi. Busca otra ruta o revisa las noticias.';
+      } else if (chk.reason === 'no_connection') {
+        out.short = 'Sin ruta directa'; out.detail = 'Solo puedes viajar a estaciones conectadas a la actual.';
+      } else { out.short = 'Partida terminada'; out.detail = ''; }
+      return out;
+    },
+
     /** Viaja a `to`. → { ok, type: 'goal'|'shop'|'robbery'|'lucky'|'arrive', cost, stolen? } */
     travel: function (run, to) {
       var chk = Rules.canTravel(run, to);

@@ -37,6 +37,7 @@ function mockObject(def) {
       if (k === 'setBlendMode') { assert.ok([0, 1, 2, 3].includes(args[0]), 'modo de mezcla inválido ' + args[0]); t.blend = args[0]; }
       if (k === 'setScaleX') t.sx = args[0];
       if (k === 'setScaleY') t.sy = args[0];
+      if (k === 'setText') t.text = args[0];
       if (k === 'setZOrder') t.z = args[0];
       if (k === 'setPosition') { t.x = args[0]; t.y = args[1]; }
       if (k === 'setX') t.x = args[0];
@@ -101,7 +102,10 @@ function session(sceneName) {
     get U() { return globalThis.gdjs.UrbanMex; } };
   return s;
 }
-globalThis.gdjs = { SceneChangeRequest: { CONTINUE: 0, PUSH_SCENE: 1, POP_SCENE: 2, REPLACE_SCENE: 3, CLEAR_SCENES: 4, STOP_GAME: 5 } };
+globalThis.gdjs = { SceneChangeRequest: { CONTINUE: 0, PUSH_SCENE: 1, POP_SCENE: 2, REPLACE_SCENE: 3, CLEAR_SCENES: 4, STOP_GAME: 5 },
+  // teclado simulado: las pruebas "sueltan" una tecla con KEYS.add('Escape') y vale solo para el siguiente fotograma
+  evtTools: { input: { wasKeyReleased: (scene, key) => { assert.equal(typeof key, 'string', 'GDevelop pide el nombre de la tecla como texto'); return KEYS.delete(key); } } } };
+const KEYS = new Set();
 
 test('el proyecto generado es coherente (recursos, objetos, capas, escena inicial)', () => {
   assert.equal(project.firstLayout, 'Menu');
@@ -683,6 +687,29 @@ test('celular: la app SONIDO (y el acceso desde AJUSTES) muestra los tres módul
     u.phone.app = 'config'; s.frame(2); s.click(1000, 140 + 232 + 15); s.frame(2); assert.equal(u.phone.app, 'snd');
     u.phone.app = 'config'; s.frame(2); s.click(1000, 140 + 340 + 14); assert.equal(u.exitToMenu, true);
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('viaje imposible: el panel explica el motivo con los números reales, el botón avisa con sonido y no viaja (ni con doble clic)', () => {
+  audioReset(); delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(3); const u = () => s.scene._um, U = s.U; u().modal = null; u().modalQueue = [];
+  const at = (id) => { const w = u().map.stationPos(id), c = u().map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
+  const txt = (k) => { const o = u().ui.pool.t['UI:' + k]; return o && !o.hidden ? o.text : null; };
+  const run = u().run; U.session.dblTravel = true;
+  // combi Coyoacán → Pantitlán con 30 de stamina: faltan 25
+  run.current = 'Coyoacán'; run.stamina = 30; run.money = 100; u().selected = 'Pantitlán'; s.frame(2);
+  assert.equal(txt('sp:w1'), 'Te faltan 25 de stamina.'); assert.ok(/55/.test(txt('sp:w2')) && /30/.test(txt('sp:w2')), txt('sp:w2')); assert.equal(txt('sp:d'), null, 'no debe mostrar la descripción normal');
+  SND.log.length = 0; s.click(132, 592 + 90 + 16);
+  assert.equal(SND.count(/^sfx_error/), 1, 'avisa con el sonido de error'); assert.equal(SND.count(/^sfx_viaje/), 0);
+  assert.equal(run.current, 'Coyoacán', 'no viaja'); assert.equal(u().selected, 'Pantitlán', 'el panel sigue abierto'); assert.ok(u().floats.some((f) => /25 de stamina/.test(f.text)), 'mensaje flotante con el motivo');
+  // sin dinero
+  run.stamina = 100; run.money = 20; s.frame(2); assert.equal(txt('sp:w1'), 'Te faltan 20 ' + run.data.config.currencyName + '.');
+  // doble clic en una vecina que no se puede pagar: no viaja y abre el panel con el motivo
+  u().selected = null; s.frame(2); SND.log.length = 0; s.click(...at('Pantitlán')); s.click(...at('Pantitlán')); s.frame(2);
+  assert.equal(run.current, 'Coyoacán', 'el doble clic tampoco viaja'); assert.equal(u().selected, 'Pantitlán'); assert.ok(SND.count(/^sfx_error/) >= 1);
+  assert.equal(txt('sp:w1'), 'Te faltan 20 ' + run.data.config.currencyName + '.');
+  // con recursos suficientes ya no hay explicación y sí viaja
+  run.money = 100; s.frame(2); assert.equal(txt('sp:w1'), null); assert.ok(txt('sp:d') !== null);
+  SND.log.length = 0; s.click(132, 592 + 90 + 16); assert.equal(SND.count(/^sfx_viaje/), 1); assert.ok(u().pending && u().pending.ok, 'con recursos suficientes el viaje sí se inicia');
 });
 
 // ---- efectos de apuro y de asalto

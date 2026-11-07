@@ -226,6 +226,38 @@ test('bloqueos de nivel: el 4 bloquea Pantitlán (línea 1) y el 5 bloquea Coyoa
   assert.ok(!U.Rules.canTravel(Object.assign(r5, { current: 'Viveros' }), 'Coyoacán').ok, 'no se puede viajar a una estación bloqueada');
 });
 
+test('explain: dice POR QUÉ no se puede viajar, con los números reales y en una línea que cabe en el panel', () => {
+  const R = U.Rules, mk = (cur, patch) => Object.assign(R.createRun(data, 2, U.util.seeded(4)), { current: cur }, patch || {});
+  const fits = (w) => { assert.ok(w.short.length <= 40, 'short muy largo: ' + w.short); assert.ok(w.detail.length <= 62, 'detail muy largo (' + w.detail.length + '): ' + w.detail); };
+  // si se puede viajar no hay nada que explicar
+  assert.equal(R.explain(mk('Coyoacán', { stamina: 100, money: 100 }), 'Pantitlán'), null);
+  // stamina (combi): faltan 55 - 30 = 25, y como aún alcanza para el Metro lo sugiere
+  let w = R.explain(mk('Coyoacán', { stamina: 30, money: 100 }), 'Pantitlán');
+  assert.equal(w.code, 'stamina'); assert.equal(w.missing, 25); assert.equal(w.short, 'Te faltan 25 de stamina'); assert.ok(w.detail.includes('55') && w.detail.includes('30') && /Metro/.test(w.detail)); fits(w);
+  // stamina (combi) sin siquiera para el Metro: no manda al Metro
+  w = R.explain(mk('Coyoacán', { stamina: 2, money: 100 }), 'Pantitlán'); assert.equal(w.code, 'stamina'); assert.ok(!/Metro/.test(w.detail)); fits(w);
+  // stamina (Metro): sugiere comprar un Monster
+  const nb = data.connections.find((c) => !c.combi && !c.transfer), r = mk(nb.a, { stamina: 3, money: 100 });
+  w = R.explain(r, nb.b); assert.equal(w.code, 'stamina'); assert.equal(w.missing, data.config.staminaPerStation - 3); assert.ok(/Monster/.test(w.detail)); fits(w);
+  // dinero (combi): faltan 40 - 20 = 20 y lo dice con el nombre de la moneda
+  w = R.explain(mk('Coyoacán', { stamina: 100, money: 20 }), 'Pantitlán');
+  assert.equal(w.code, 'money'); assert.equal(w.missing, 20); assert.equal(w.short, 'Te faltan 20 ' + data.config.currencyName); assert.ok(w.detail.includes('40') && w.detail.includes('20')); fits(w);
+  // dinero (Metro)
+  w = R.explain(mk(nb.a, { stamina: 100, money: 1 }), nb.b); assert.equal(w.code, 'money'); assert.equal(w.missing, data.config.moneyPerStation - 1); fits(w);
+  // anochece: el viaje dura más de lo que queda del día
+  w = R.explain(mk(nb.a, { stamina: 100, money: 100, minute: data.config.dayEndMinute - 2 }), nb.b);
+  assert.equal(w.code, 'night'); assert.equal(w.missing, 3); assert.ok(w.detail.includes('2 min')); fits(w);
+  // bloqueada y sin conexión
+  const rb = mk(nb.a, { stamina: 100, money: 100 }); rb.blocked[nb.b] = { id: 'x' };
+  w = R.explain(rb, nb.b); assert.equal(w.code, 'blocked'); fits(w);
+  w = R.explain(mk('Tacuba', { stamina: 100, money: 100 }), 'Pantitlán'); assert.equal(w.code, 'no_connection'); fits(w);
+  // partida terminada
+  w = R.explain(mk(nb.a, { over: true }), nb.b); assert.equal(w.code, 'over');
+  // coherente con canTravel: explain devuelve algo si y solo si canTravel dice que no, y con el mismo motivo
+  const run = mk('Coyoacán', { stamina: 30, money: 100 });
+  data.stationList.forEach((s) => { const c = R.canTravel(run, s.id), e = R.explain(run, s.id); assert.equal(!!e, !c.ok); if (e) assert.equal(e.code, c.reason); });
+});
+
 test('urgency: el apuro empieza al bajar de 15 % (tiempo, dinero o stamina), sube hasta 1 y es la misma regla que usa el sonido', () => {
   const R = U.Rules, run = R.createRun(data, 0, U.util.seeded(3)), cfg = data.config, span = cfg.dayEndMinute - cfg.dayStartMinute, ms = run.level.moneyStart, sm = run.staminaMax;
   const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, a + ' ≠ ' + b);
