@@ -53,7 +53,7 @@ def painter(name):
             "fillColor": "255;255;255", "outlineColor": "255;255;255", "fillOpacity": 255, "outlineOpacity": 255, "outlineSize": 0,
             "absoluteCoordinates": True, "clearBetweenFrames": False, "antialiasing": "none"}
 
-FX_ANIMS = ['glow', 'soft', 'fog', 'vignette', 'spark', 'shadow', 'beam', 'haze_t', 'haze_b', 'solid']   # = sprites fx_*.png (src/fx.js)
+FX_ANIMS = ['glow', 'soft', 'fog', 'vignette', 'edge', 'spark', 'shadow', 'beam', 'haze_t', 'haze_b', 'solid']   # = sprites fx_*.png (src/fx.js)
 ICONS = ['moneda', 'rayo', 'reloj', 'tienda', 'meta', 'casa', 'bloqueo', 'alerta', 'noticia', 'mapa', 'saldo', 'ajustes', 'sonido', 'persona', 'celular', 'lineas', 'combi']
 O = {
   'Texto': text('Texto'), 'TextoMapa': text('TextoMapa', outline=True), 'UIBase': painter('UIBase'), 'UIModal': painter('UIModal'), 'Mapa': painter('Mapa'),

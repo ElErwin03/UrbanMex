@@ -7,6 +7,7 @@
  *   · capa "FX" (sin cámara; entre el mapa y la interfaz): gradación, luz solar, bruma, niebla, polvo, bokeh y viñeta;
  *   · capa base ("", se mueve con el mapa): luces bajo estaciones y jugador, haz de la meta, destellos y sombra del jugador.
  * Objeto requerido: Fx (animaciones glow, soft, fog, vignette, spark, shadow, beam, haze_t, haze_b, solid). Capa requerida: "FX".
+ * APURO y ASALTO (solo en el nivel): borde rojo que late cuando queda poco (Rules.urgency) y, al asalto, destello, sacudida del mapa, onda roja y monedas.
  * Calidad: U.session.fxQuality = 'high' (por defecto) | 'low' (menos partículas y luces) | 'off' (sin efectos). */
 (function () {
   var U = gdjs.UrbanMex, util = U.util, clamp = util.clamp;
@@ -14,7 +15,7 @@
 
   var W = 1280, H = 720, LAYER = 'FX';
   var BLEND = { normal: 0, add: 1, multiply: 2, screen: 3 };
-  var SIZE = { glow: [128, 128], soft: [32, 32], fog: [256, 128], vignette: [320, 180], spark: [32, 32], shadow: [64, 32], beam: [32, 128],
+  var SIZE = { glow: [128, 128], soft: [32, 32], fog: [256, 128], vignette: [320, 180], edge: [320, 180], spark: [32, 32], shadow: [64, 32], beam: [32, 128],
                haze_t: [320, 64], haze_b: [320, 64], solid: [4, 4] };   // = tools/make_art.py (sprites fx_*)
 
   // ---- utilidades de color -------------------------------------------------------------------------------------------
@@ -106,6 +107,7 @@
 
   function LevelFX(scene, um) {
     this.um = um; this.q = quality(); this.t = 0; this.stage = new Stage(scene); this.atmos = new Atmos(ATMOS.level, this.q); this.sparks = [];
+    this.hurry = 0; this.rob = null;                            // hurry: 0..1 con fundido (apuro); rob: el asalto en curso {t, n, stolen}
     um.map.softShadow = true;                                    // la sombra dura del jugador cede su lugar a la sombra suave de este módulo
     var rnd = util.seeded(77), run = um.run, lv = run.level;
     um.data.stationList.forEach(function (st) {                  // brillos en la meta, el inicio y las tiendas
@@ -159,7 +161,50 @@
       var sz = s.size * (0.6 + 0.5 * a);
       st.spr('sp' + i, 'spark', p.x + s.ox, p.y + s.oy, sz, sz, { layer: '', z: 85, color: s.goal ? '190;255;215' : '255;246;220', opacity: 235 * a, blend: BLEND.add, angle: 0 });
     });
+    this.drawAlerts(st, dt, pulse);
     st.end();
+  };
+
+
+  // ---- APURO: borde rojo que late (como el latido del sonido de apuro). Entra y sale con fundido, y es más fuerte mientras menos queda. ----
+  var HURRY = { fade: 1.6, beatHz: 1.5, base: 56, gain: 100 };      // fade: unidades/s; latido a 1.5 Hz (menos de 3 destellos por segundo)
+  // ---- ASALTO: destello, onda roja, borde, monedas y sacudida del mapa (dura DUR segundos) ----
+  var ROB = { dur: 1.3, flash: 0.35, shake: 0.55, amp: 9 };
+  function bump(p, c, w) { var d = (p - c) / w; return Math.exp(-d * d); }
+  /** Latido 0..1: dos golpes seguidos (lub-dub) por ciclo. */
+  function beat(t) { var p = (t * HURRY.beatHz) % 1; return Math.max(bump(p, 0.12, 0.07), 0.7 * bump(p, 0.36, 0.07)); }
+
+  /** Apuro + asalto de este fotograma. */
+  LevelFX.prototype.drawAlerts = function (st, dt, pulse) {
+    var um = this.um, run = um.run, u = U.Rules.urgency(run), t = this.t, map = um.map;
+    this.hurry = util.lerp(this.hurry, u.any ? 1 : 0, Math.min(1, dt * HURRY.fade));
+    if (this.hurry < 0.01) this.hurry = u.any ? this.hurry : 0;
+    if (this.hurry > 0) {
+      var b = beat(t), sev = 0.35 + 0.65 * u.level;
+      st.spr('hurry', 'edge', W / 2, H / 2, W, H, { z: 45, color: '255;38;28', opacity: this.hurry * (HURRY.base + HURRY.gain * sev * (0.35 + 0.65 * b)), blend: BLEND.add });
+    }
+    var r = this.rob; if (!r) return;
+    r.t += dt; var k = r.t / ROB.dur;
+    if (k >= 1) { this.rob = null; return; }
+    var pp = map.pp, f = clamp(1 - r.t / ROB.flash, 0, 1);
+    if (f > 0) st.spr('rob:flash', 'solid', W / 2, H / 2, W, H, { z: 46, color: '255;70;50', opacity: 170 * f * f, blend: BLEND.add });         // destello rojo que se apaga rápido
+    st.spr('rob:edge', 'edge', W / 2, H / 2, W, H, { z: 47, color: '255;30;20', opacity: 230 * (1 - k) * (1 - k), blend: BLEND.add });       // el borde se enciende fuerte y baja
+    st.spr('rob:ring', 'glow', pp.x, pp.y - 14, 70 + 330 * k, (70 + 330 * k) * 0.62, { layer: '', z: 90, color: '255;70;50', opacity: 210 * (1 - k) * (1 - k), blend: BLEND.add });   // onda desde el jugador
+    var n = r.n.length;
+    for (var i = 0; i < n; i++) {                                // monedas que salen disparadas y caen
+      var c = r.n[i], x = pp.x + c.vx * r.t, y = pp.y - 20 + c.vy * r.t + 520 * r.t * r.t * 0.5, a = clamp(1 - Math.max(0, k - 0.55) / 0.45, 0, 1);
+      var sz = c.size * (0.8 + 0.4 * Math.abs(Math.sin(r.t * 14 + c.ph)));
+      st.spr('rob:d' + i, 'soft', x, y, sz * 1.5, sz * 1.5, { layer: '', z: 91, color: '255;196;50', opacity: 235 * a, blend: BLEND.add });     // disco dorado
+      st.spr('rob:c' + i, 'spark', x, y, sz * 1.3, sz * 1.3, { layer: '', z: 92, color: '255;206;72', opacity: 255 * a, blend: BLEND.add });
+    }
+  };
+
+  /** ¡Te asaltaron! stolen = dinero perdido (más dinero, más monedas volando). Lo llama la escena del nivel; con calidad "off" no hay efecto. */
+  LevelFX.prototype.robbery = function (stolen) {
+    var rnd = util.seeded(900 + (stolen | 0)), n = this.q === 'low' ? 5 : clamp(6 + Math.round(stolen / 12), 8, 16), coins = [];
+    for (var i = 0; i < n; i++) { var ang = -Math.PI / 2 + util.range(rnd, -1.25, 1.25), v = util.range(rnd, 170, 330); coins.push({ vx: Math.cos(ang) * v, vy: Math.sin(ang) * v - 60, size: util.range(rnd, 30, 46), ph: rnd() * 6.28 }); }
+    this.rob = { t: 0, n: coins, stolen: stolen };
+    this.um.map.kick(ROB.amp, ROB.shake);                        // sacudida del mapa (la interfaz no se mueve)
   };
 
   // ====================================================================================================================
@@ -204,10 +249,10 @@
   };
 
   /** Efectos nulos (calidad "off"): mismos métodos, no hacen nada y no crean ningún objeto. */
-  var NONE = { update: function () {}, stage: { count: 0 } };
+  var NONE = { update: function () {}, robbery: function () {}, stage: { count: 0 } };
 
   U.FX = {
-    BLEND: BLEND, lighting: lighting, quality: quality,
+    BLEND: BLEND, lighting: lighting, quality: quality, beat: beat, HURRY: HURRY, ROB: ROB,
     level: function (scene, um) { return quality() === 'off' ? ((um.map.softShadow = false), NONE) : new LevelFX(scene, um); },
     menu: function (scene) { return quality() === 'off' ? NONE : new MenuFX(scene); },
     ambient: function (scene, tone) { return quality() === 'off' ? NONE : new AmbientFX(scene, tone); }

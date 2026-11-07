@@ -257,3 +257,17 @@ test('explain: dice POR QUÉ no se puede viajar, con los números reales y en un
   const run = mk('Coyoacán', { stamina: 30, money: 100 });
   data.stationList.forEach((s) => { const c = R.canTravel(run, s.id), e = R.explain(run, s.id); assert.equal(!!e, !c.ok); if (e) assert.equal(e.code, c.reason); });
 });
+
+test('urgency: el apuro empieza al bajar de 15 % (tiempo, dinero o stamina), sube hasta 1 y es la misma regla que usa el sonido', () => {
+  const R = U.Rules, run = R.createRun(data, 0, U.util.seeded(3)), cfg = data.config, span = cfg.dayEndMinute - cfg.dayStartMinute, ms = run.level.moneyStart, sm = run.staminaMax;
+  const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, a + ' ≠ ' + b);
+  assert.equal(R.URGENT_BELOW, 0.15); let u = R.urgency(run); assert.deepEqual([u.level, u.any], [0, false], 'al empezar no hay apuro');
+  run.stamina = sm * 0.15; assert.equal(R.urgency(run).any, false, 'justo en 15 % todavía no');
+  run.stamina = sm * 0.075; u = R.urgency(run); near(u.stamina, 0.5); near(u.level, 0.5); assert.equal(u.any, true); assert.equal(u.money + u.time, 0);
+  run.stamina = 0; near(R.urgency(run).stamina, 1);
+  run.stamina = sm; run.money = ms * 0.03; u = R.urgency(run); near(u.money, 0.8); assert.equal(u.stamina, 0);
+  run.money = ms; run.minute = cfg.dayEndMinute - span * 0.03; u = R.urgency(run); near(u.time, 0.8);
+  run.money = ms * 0.12; run.stamina = sm * 0.03; u = R.urgency(run); assert.ok(u.level === Math.max(u.time, u.money, u.stamina) && u.level === u.stamina, 'level = el que más aprieta');
+  run.over = true; u = R.urgency(run); assert.deepEqual([u.level, u.any], [0, false], 'terminada la partida ya no hay apuro');
+  assert.deepEqual(R.urgency(null), { level: 0, time: 0, money: 0, stamina: 0, any: false });
+});
