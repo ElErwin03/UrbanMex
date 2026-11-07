@@ -29,6 +29,7 @@ function mockObject(def) {
       stats.calls++;
       args.forEach((a) => { if (typeof a === 'number') assert.ok(Number.isFinite(a), `${def.name}.${k}: argumento no numérico ${a}`); });
       if (COLOR_FN.includes(k)) assert.match(args[0], /^\d{1,3};\d{1,3};\d{1,3}$/, `${def.name}.${k}: color inválido ${args[0]}`);
+      if (COLOR_FN.includes(k)) t.color = args[0];
       if (k === 'setAnimationName') { assert.ok(anims.includes(args[0]), `${def.name}: animación inexistente "${args[0]}"`); t.anim = args[0]; }
       if (k === 'setFontName') assert.equal(resNames[args[0]] && resNames[args[0]].kind, 'font', 'fuente no declarada: ' + args[0]);
       if (k === 'setLayer') t.layer = args[0];
@@ -371,7 +372,7 @@ test('efectos: todas las escenas tienen la capa FX entre el mapa y la interfaz, 
   project.layouts.forEach((l) => {
     assert.deepEqual(l.layers.map((x) => x.name), ['', 'FX', 'UI'], 'orden de capas en ' + l.name);
     const fx = l.objects.find((o) => o.name === 'Fx'); assert.ok(fx, 'falta el objeto Fx en ' + l.name);
-    assert.deepEqual(fx.animations.map((a) => a.name).sort(), ['beam', 'fog', 'glow', 'haze_b', 'haze_t', 'shadow', 'soft', 'solid', 'spark', 'vignette']);
+    assert.deepEqual(fx.animations.map((a) => a.name).sort(), ['beam', 'edge', 'fog', 'glow', 'haze_b', 'haze_t', 'shadow', 'soft', 'solid', 'spark', 'vignette']);
   });
   project.resources.resources.filter((r) => r.kind === 'image').forEach((r) =>
     assert.equal(r.smoothed, r.name.startsWith('fx_'), `${r.name}: el pixel art debe quedar nítido (nearest) y los efectos suaves`));

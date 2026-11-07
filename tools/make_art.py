@@ -310,6 +310,8 @@ n = 0.55 * lowfreq(256, 128, rng, 48) + 0.30 * lowfreq(256, 128, rng, 24) + 0.15
 fx(np.clip((n - 0.30) / 0.55, 0, 1) * np.clip(1 - r, 0, 1) ** 1.4 * 0.92, (206, 216, 240), 'fx_fog')           # banco de niebla
 x, y = radius(320, 180); r = np.hypot(x, y) / 1.2
 t = np.clip((r - 0.35) / 0.85, 0, 1); fx((t * t * (3 - 2 * t)) ** 1.35 * 0.82, (6, 4, 16), 'fx_vignette')       # viñeta
+x, y = radius(320, 180); e = np.maximum(np.abs(x), np.abs(y)); q = 0.65 * e + 0.35 * np.hypot(x, y) / 1.414; t = np.clip((q - 0.5) / 0.5, 0, 1)
+fx((t * t * (3 - 2 * t)) ** 1.2, (255, 255, 255), 'fx_edge')                                                    # borde de pantalla que se enciende (apuro y asalto: se tiñe de rojo por código)
 x, y = radius(32, 32)
 fx(np.exp(-(x * x + y * y) / 0.02) + 0.9 * np.exp(-(y * y) / 0.0035 - (x * x) / 0.35) + 0.9 * np.exp(-(x * x) / 0.0035 - (y * y) / 0.35), (255, 248, 225), 'fx_spark')   # destello en cruz
 x, y = radius(64, 32)

@@ -275,6 +275,9 @@
 
   P.pan = function (dxScreen, dyScreen) { this.cam.x -= dxScreen / this.cam.zoom; this.cam.y -= dyScreen / this.cam.zoom; this.cam.follow = false; this.touched = true; };
 
+  /** Sacude el mapa `amp` píxeles durante `dur` segundos (se apaga solo). */
+  P.kick = function (amp, dur) { this.kickFx = { t: 0, dur: dur, amp: amp }; };
+
   P.update = function (dt, run, ui, hoverId, selId) {
     this.t += dt;
     if (this.move) {
@@ -290,7 +293,10 @@
       var tx = this.pp.x + (640 - this._cx()) / this.cam.zoom, ty = this.pp.y + (360 - this._cy()) / this.cam.zoom - 20;
       this.cam.x = util.lerp(this.cam.x, tx, Math.min(1, dt * 6)); this.cam.y = util.lerp(this.cam.y, ty, Math.min(1, dt * 6));
     }
-    this.layer.setCameraX(Math.round(this.cam.x)); this.layer.setCameraY(Math.round(this.cam.y)); this.layer.setCameraZoom(this.cam.zoom);
+    var sx = 0, sy = 0, k = this.kickFx;                                  // sacudida (asalto): oscila y se apaga; solo mueve el mapa, no la interfaz
+    if (k) { k.t += dt; if (k.t >= k.dur) this.kickFx = null; else { var f = 1 - k.t / k.dur; sx = Math.sin(k.t * 71) * k.amp * f * f; sy = Math.cos(k.t * 59) * k.amp * 0.7 * f * f; } }
+    this.shakeNow = { x: sx, y: sy };
+    this.layer.setCameraX(Math.round(this.cam.x + sx)); this.layer.setCameraY(Math.round(this.cam.y + sy)); this.layer.setCameraZoom(this.cam.zoom);
     this._drawRoutes(run, hoverId); this._updateStations(run, ui, hoverId, selId); this._updateCombis(run, ui);
   };
 
