@@ -161,3 +161,12 @@ Botón **CREDITOS** arriba a la derecha del menú principal. Muestra:
 - **Hecho con:** GDevelop 5, con el arte y el audio generados por código (`tools/`), y la aclaración de que es un proyecto escolar sin fines de lucro y no afiliado al Metro de la CDMX.
 
 Todo el texto vive en un solo lugar, `U.CREDITS` (`src/scene-menu.js`): para cambiar un nombre o un rol basta editarlo ahí. Las instituciones van en formato título (con acentos) porque la fuente pixel del juego dibuja mal los acentos en mayúsculas. Vista previa: `node tools/dump_scene.js . Menu out.json --view credits`.
+
+## Pausa dentro del nivel
+Se pausa con **Esc**, con **P** o con el botón **PAUSA** de la barra de arriba (junto al celular). No hay pausa cuando el día ya terminó.
+
+- **Qué se congela:** el mapa y el jugador (un viaje a medias espera y termina al continuar), los efectos, los mensajes flotantes y avisos del celular, y el reloj del tren de 60 s. El reloj del juego solo avanza al viajar, así que no corre mientras tanto.
+- **Audio en pausa:** la música baja a 35 % (`ALERT.pauseDuck`), el bucle de apuro se apaga con fundido y, al continuar, vuelve **sin repetir** el aviso de entrada.
+- **Menú:** CONTINUAR · SONIDO (los tres volúmenes con MUDO, el mismo panel del menú principal) · SALIR AL MENU, que pide confirmación (CANCELAR / SI, SALIR). En SONIDO o en la confirmación, Esc regresa un paso.
+- Lo de abajo se ve atenuado y no responde al ratón; un aviso pendiente (noticia, evento) reaparece al continuar.
+- Vista previa: `node tools/dump_scene.js . Nivel out.json --pause main|sound|confirm` y luego `render_preview.py`.
