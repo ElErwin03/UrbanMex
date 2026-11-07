@@ -126,7 +126,9 @@ test('Menú → Tutorial → Nivel con clics', () => {
   m.click(640, 376);   // JUGAR
   assert.deepEqual(m.scene.changes.pop(), [3, 'Tutorial']);
   const t = session('Tutorial'); t.frame(5);
-  t.click(640, 644);   // ENTENDIDO
+  for (let i = 0; i < 5; i++) t.click(640, 650);   // SIGUIENTE x5 hasta la última página
+  assert.deepEqual(t.scene.changes, [], 'todavía no se ha salido');
+  t.click(640, 650);   // A JUGAR!
   assert.deepEqual(t.scene.changes.pop(), [3, 'Nivel']);
 });
 
@@ -961,3 +963,59 @@ test('mejor marca: se guarda, solo mejora, sobrevive entre partidas, se valida y
     U.session.best = { 0: { stars: 3, money: 9 } }; S.reset(); assert.deepEqual(U.session.best, {}); assert.deepEqual(saved().best, {});
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
+
+// ---- Tutorial de 6 páginas
+const tutPage = (t) => t.scene._umTut.page;
+test('tutorial: 6 páginas con SIGUIENTE / ANTERIOR, puntos y teclado; solo la última lleva a jugar y marca el tutorial como visto', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; KEYS.clear(); const t = session('Tutorial'); t.frame(3); const U = t.U, T = (k) => uiTexts(t.scene)['UI:' + k], btn = (k) => uiTexts(t.scene)['UI:btn:' + k];
+    U.session.afterTutorial = 'Nivel'; U.session.seenTutorial = false; t.frame(2);
+    assert.equal(tutPage(t), 0); assert.match(T('h'), /1\/6/); assert.equal(T('t'), 'EL OBJETIVO'); assert.equal(btn('ok'), 'SIGUIENTE >'); assert.equal(btn('prev'), undefined, 'en la primera no hay ANTERIOR'); assert.equal(btn('skip'), 'SALTAR');
+    t.click(640, 650); assert.equal(tutPage(t), 1); assert.equal(T('t'), 'COMO MOVERTE'); assert.equal(btn('prev'), '< ANTERIOR');
+    t.click(170, 650); assert.equal(tutPage(t), 0, 'ANTERIOR');
+    KEYS.add('Left'); t.frame(2); assert.equal(tutPage(t), 0, 'la flecha izquierda no pasa de la primera página');
+    t.click(640 - (6 * 28 - 10) / 2 + 3 * 28 + 9, 593); assert.equal(tutPage(t), 3, 'los puntos saltan a la página'); assert.equal(T('t'), 'EL CELULAR');
+    KEYS.add('Right'); t.frame(2); assert.equal(tutPage(t), 4, 'flecha derecha'); KEYS.add('Left'); t.frame(2); assert.equal(tutPage(t), 3, 'flecha izquierda'); KEYS.add('Return'); t.frame(2); assert.equal(tutPage(t), 4, 'Enter avanza');
+    KEYS.add('Return'); t.frame(2); assert.equal(tutPage(t), 5); assert.equal(btn('ok'), 'A JUGAR!'); assert.equal(btn('skip'), undefined, 'en la última ya no hay SALTAR'); assert.deepEqual(t.scene.changes, [], 'las flechas no se pasan de largo hasta la última');
+    assert.ok(!U.session.seenTutorial); KEYS.add('Left'); t.frame(2); KEYS.add('Right'); t.frame(2); assert.equal(tutPage(t), 5); assert.deepEqual(t.scene.changes, []);
+    t.click(640, 650); assert.deepEqual(t.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.seenTutorial, true); assert.equal(JSON.parse(store['UrbanMex_save_v1']).seenTutorial, true, 'se guarda');
+    // desde COMO JUGAR (menú) vuelve al menú y el último botón dice ENTENDIDO!
+    audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Tutorial'); m.frame(3); m.U.session.afterTutorial = 'Menu'; m.scene._umTut.page = 5; m.frame(2); assert.equal(uiTexts(m.scene)['UI:btn:ok'], 'ENTENDIDO!'); m.click(640, 650); assert.deepEqual(m.scene.changes.pop(), [3, 'Menu']);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; KEYS.clear(); SND.reset(); }
+});
+
+test('tutorial: SALTAR y Esc salen en cualquier página; el Enter de la última página termina', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; KEYS.clear(); let t = session('Tutorial'); t.frame(3); t.U.session.afterTutorial = 'Nivel'; t.U.session.seenTutorial = false; t.scene._umTut.page = 2; t.frame(2);
+    t.click(1135, 33); assert.deepEqual(t.scene.changes.pop(), [3, 'Nivel'], 'SALTAR'); assert.equal(t.U.session.seenTutorial, true);
+    audioReset(); delete globalThis.gdjs.UrbanMex; t = session('Tutorial'); t.frame(3); t.U.session.afterTutorial = 'Menu'; t.U.session.seenTutorial = false; KEYS.add('Escape'); t.frame(2);
+    assert.deepEqual(t.scene.changes.pop(), [3, 'Menu'], 'Esc'); assert.equal(t.U.session.seenTutorial, true);
+    audioReset(); delete globalThis.gdjs.UrbanMex; t = session('Tutorial'); t.frame(3); t.U.session.afterTutorial = 'Nivel'; t.scene._umTut.page = 5; t.frame(2); KEYS.add('Return'); t.frame(2); assert.deepEqual(t.scene.changes.pop(), [3, 'Nivel'], 'Enter en la última');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; KEYS.clear(); SND.reset(); }
+});
+
+test('tutorial: los números salen de la configuración real y el texto cabe en cada tarjeta', () => {
+  audioReset(); delete globalThis.gdjs.UrbanMex; const t = session('Tutorial'); t.frame(3); const U = t.U, cfg = t.scene._umData ? t.scene._umData.config : U.Data.ready(t.scene).config, pg = U.TutorialPages(cfg), all = JSON.stringify(pg);
+  assert.equal(pg.length, 6); assert.ok(all.includes('7:00 AM') && all.includes('8:00 PM'), 'hora de salida y límite');
+  assert.ok(all.includes('$' + cfg.monsterPrice + ' = +' + cfg.monsterStamina), 'Monster'); assert.ok(all.includes('de ' + cfg.robbery.minLoss + ' a ' + cfg.robbery.maxLoss), 'robos'); assert.ok(all.includes('$' + cfg.combi.money + ' y ' + cfg.combi.stamina), 'combi');
+  assert.ok(all.includes(Math.round(U.Rules.URGENT_BELOW * 100) + ' %'), 'umbral de apuro');
+  // con otra configuración, el texto cambia (nada está escrito a mano)
+  const other = JSON.parse(JSON.stringify(cfg)); other.monsterPrice = 99; other.combi.money = 77; other.robbery.maxLoss = 88; other.dayEndMinute = 1260; const o = JSON.stringify(U.TutorialPages(other));
+  assert.ok(o.includes('$99 =') && o.includes('$77 y') && o.includes('a 88') && o.includes('9:00 PM'));
+  pg.forEach((p) => p.items.forEach((it) => assert.ok(U.util.wrap(it[2], U.TutorialLayout.cols).length <= U.TutorialLayout.lines, 'cabe en la tarjeta: ' + it[1])));
+  pg.forEach((p) => p.items.forEach((it) => assert.ok(!/[ÁÉÍÓÚ]/.test(it[1]) && !/[ÁÉÍÓÚ]/.test(p.title), 'sin acentos en mayúsculas (la fuente los dibuja mal): ' + it[1])));
+});
+
+test('tutorial: cada página dibuja su demo; con REDUCIR MOVIMIENTO la demo queda fija y sin él se anima', () => {
+  const snap = (calm, page, frames) => { audioReset(); delete globalThis.gdjs.UrbanMex; const t = session('Tutorial'); t.frame(2); t.U.session.calm = calm; t.scene._umTut.page = page; t.frame(frames); return t; };
+  const pos = (t) => { const ui = t.U.UI.of(t.scene), out = {}; Object.keys(ui.pool.i).forEach((k) => { const o = ui.pool.i[k]; if (!o.hidden) out[k] = o.x + ',' + o.y + ',' + o.anim; }); return JSON.stringify([out, uiTexts(t.scene)]); };
+  for (let p = 0; p < 6; p++) { const t = snap(false, p, 20); assert.ok(Object.keys(uiIcons(t.scene)).length >= 4, 'la página ' + (p + 1) + ' dibuja iconos'); }
+  // páginas animadas: la posición de la persona (0) o la app resaltada (3) cambia con el tiempo; con reducir movimiento no
+  [0, 1, 3, 5].forEach((p) => { const a = snap(false, p, 10), b = (a.frame(23), pos(a)); assert.notEqual(pos(snap(false, p, 10)), b, 'normal: la página ' + (p + 1) + ' se anima'); const c = snap(true, p, 10), d = pos(c); c.frame(40); assert.equal(pos(c), d, 'reducir movimiento: la página ' + (p + 1) + ' queda fija'); });
+  // página de recursos: las barras se vacían y, por debajo del 15 %, se ponen rojas con un "!" (lo mismo que el HUD)
+  const r = snap(false, 2, 10); r.scene._umT = 6.6; r.frame(1); assert.ok(!['drw0', 'drw1', 'drw2'].some((k) => uiTexts(r.scene)['UI:' + k]), 'con ~30 % todavía no hay "!"'); r.scene._umT = 0; r.frame(1); assert.ok(!['drw0', 'drw1', 'drw2'].some((k) => uiTexts(r.scene)['UI:' + k]), 'al inicio no hay "!"'); r.scene._umT = 8.6; r.frame(1);
+  assert.deepEqual(['drw0', 'drw1', 'drw2'].map((k) => uiTexts(r.scene)['UI:' + k]), ['!', '!', '!'], 'casi vacías: "!" en las tres'); assert.match(uiTexts(r.scene)['UI:drn'] + ' ' + uiTexts(r.scene)['UI:drn:0'], /Rojo y "!"/);
+});
+

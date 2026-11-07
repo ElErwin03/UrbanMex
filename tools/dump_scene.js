@@ -67,6 +67,7 @@ if (flag('result')) {                                         // escena Resultad
 for (let i = 0; i < frames; i++) {
   frame();
   const um = scene._um;
+  if (flag('page') && scene._umTut) scene._umTut.page = +flag('page');       // escena Tutorial: --page 0..5
   if (flag('view') && um && !um.run) um.view = flag('view');
   if (flag('confirm') && um && !um.run) um.confirmExit = true;                 // escena Menú: abre la ventana "SALIR DEL JUEGO"                  // escena Menú: abre una vista (sound = volumen de los tres módulos)
   if (um && um.run) {
