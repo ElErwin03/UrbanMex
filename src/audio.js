@@ -17,7 +17,7 @@
   var TRAINS = ['tren_a.ogg', 'tren_b.ogg'], TRAIN_VOL = 28, TRAIN_EVERY = 60, TRAIN_FIRST = 20;     // segundos
   var SFX = { click: 34, select: 40, viaje: 42, noticia: 44, moneda: 44, tienda: 40, suerte: 40, error: 36, ganar: 48, perder: 44, asalto: 46, alerta: 46 };   // sfx_<nombre>.ogg
   var GROUP_OF = { asalto: 'alert', alerta: 'alert' };                        // todo lo demás de SFX es "sfx"
-  var ALERT = { file: 'peligro_loop.ogg', vol: 46, ch: 2, fadeIn: 1.6, fadeOut: 1.2, low: 0.15, duck: 0.6 };   // bucle de apuro, canal de música propio; low: umbral; duck: la música baja a 60 %
+  var ALERT = { file: 'peligro_loop.ogg', vol: 46, ch: 2, fadeIn: 1.6, fadeOut: 1.2, low: 0.15, duck: 0.6, pauseDuck: 0.35 };   // bucle de apuro, canal de música propio; low: umbral; duck: la música baja a 60 %; pauseDuck: en PAUSA baja a 35 %
   var STEPS = 10, DEFAULT = 7;                                // niveles 0..10; el 7 deja los volúmenes base tal cual
   var FADE = 1.8, PREVIEW_GAP = 0.7;
   var GROUPS = [
@@ -45,8 +45,8 @@
   }
 
   /** Volumen vivo de la música: sigue al nivel del módulo y baja mientras suena el apuro; el cambio es suave (sin saltos). */
-  function musicLevel(m, dt, alertOn) {
-    var want = gain('music') * (alertOn ? ALERT.duck : 1);
+  function musicLevel(m, dt, alertOn, paused) {
+    var want = gain('music') * (alertOn ? ALERT.duck : 1) * (paused ? ALERT.pauseDuck : 1);
     st.mv += (want - st.mv) * Math.min(1, dt * 3);
     if (Math.abs(want - st.mv) < 0.002) st.mv = want;
     if (st.mv !== st.mvApplied && st.music !== null) {
@@ -84,12 +84,12 @@
       var m = mgr(scene); if (!m) return;
       U.Save.load();                                                       // los volúmenes guardados valen desde el primer fotograma (no hay "salto" al arrancar)
       if (!st.ready) { st.ready = true; st.mv = gain('music'); }
-      var wantAlert = !!(opts && opts.alert), alertOn = wantAlert && gain('alert') > 0;
+      var paused = !!(opts && opts.paused), wantAlert = !!(opts && opts.alert) && !paused, alertOn = wantAlert && gain('alert') > 0;   // en PAUSA el apuro calla (con fundido)
       if (wantAlert && !st.wasDanger) this.play(scene, 'alerta');             // aviso de dos pitidos, una sola vez al ENTRAR en apuro
-      st.wasDanger = wantAlert;
-      st.t += dt; musicLevel(m, dt, alertOn); setMusic(m, track); alertLoop(m, dt, wantAlert);
+      if (!paused) st.wasDanger = wantAlert;                                 // en pausa no cambia: al continuar no se repite el aviso
+      st.t += dt; musicLevel(m, dt, alertOn, paused); setMusic(m, track); alertLoop(m, dt, wantAlert);
       st.fading = st.fading.filter(function (f) { f.left -= dt; if (f.left > 0) return true; f.s.stop(); return false; });
-      st.trainIn -= dt;
+      if (!paused) st.trainIn -= dt;                                          // el tren de 60 s también espera en pausa
       if (st.trainIn <= 0) { st.trainIn += TRAIN_EVERY; st.trains++; if (gain('sfx') > 0) m.playSound(TRAINS[st.trains % 2], false, pct(TRAIN_VOL, gain('sfx')), 1); }
     },
 
@@ -119,24 +119,24 @@
 
     /** Los tres módulos (música general, sonidos generales, peligro y apuro): nombre y %, barra de 10 pasos (se toca un paso), − / + y MUDO.
      *  Devuelve el alto que ocupa. `id` distingue los botones; `hints` muestra la línea de descripción. */
-    panel: function (ui, scene, id, x, y, w, hints) {
-      var self = this, rowH = hints === false ? 62 : 80;
+    panel: function (ui, scene, id, x, y, w, hints, modal) {   // modal: dibuja sobre una ventana (capa de arriba)
+      var self = this, rowH = hints === false ? 62 : 80, mo = modal ? { modal: true } : {}, tz = modal ? { z: 330 } : {};
       GROUPS.forEach(function (G, i) {
         var s = slot(G.id), ry = y + i * rowH, muted = s.mute, k = id + G.id;
-        ui.text(k + 't', G.label, x, ry, { size: 8, color: muted ? PAL.dim : '255;255;255' });
-        ui.text(k + 'p', muted ? 'MUDO' : s.level * 10 + '%', x + w, ry, { size: 8, align: 'right', color: muted ? PAL.red : PAL.yellow });
+        ui.text(k + 't', G.label, x, ry, Object.assign({ size: 8, color: muted ? PAL.dim : '255;255;255' }, tz));
+        ui.text(k + 'p', muted ? 'MUDO' : s.level * 10 + '%', x + w, ry, Object.assign({ size: 8, align: 'right', color: muted ? PAL.red : PAL.yellow }, tz));
         var cy = ry + (hints === false ? 16 : 32);
-        if (hints !== false) ui.text(k + 'h', G.hint, x, ry + 15, { size: 8, color: PAL.dim });
+        if (hints !== false) ui.text(k + 'h', G.hint, x, ry + 15, Object.assign({ size: 8, color: PAL.dim }, tz));
         var bw = 30, mw = 76, gap = 4, barW = w - 2 * bw - mw - 3 * gap - 4, seg = Math.floor(barW / STEPS), bx = x + bw + gap;
-        if (ui.button(k + '-', '-', x, cy, bw, 30, { size: 12, fill: '70;70;100' })) self.step(scene, G.id, -1);
-        ui.rect(bx - 2, cy, seg * STEPS + 4, 30, { fill: '10;10;20', border: '90;90;120', bw: 2 });
+        if (ui.button(k + '-', '-', x, cy, bw, 30, Object.assign({ size: 12, fill: '70;70;100' }, mo))) self.step(scene, G.id, -1);
+        ui.rect(bx - 2, cy, seg * STEPS + 4, 30, Object.assign({ fill: '10;10;20', border: '90;90;120', bw: 2 }, mo));
         for (var j = 0; j < STEPS; j++) {                                           // barra de 10 pasos: tocar uno fija ese volumen
           var sx = bx + j * seg, on = j < s.level && !muted;
-          ui.rect(sx + 1, cy + 5, seg - 2, 20, { fill: on ? G.color : '34;34;58', bw: 0 });
+          ui.rect(sx + 1, cy + 5, seg - 2, 20, Object.assign({ fill: on ? G.color : '34;34;58', bw: 0 }, mo));
           if (ui.inside(sx, cy, seg, 30) && ui.released) self.setLevel(scene, G.id, j + 1);
         }
-        if (ui.button(k + '+', '+', bx + seg * STEPS + gap + 2, cy, bw, 30, { size: 12, fill: '70;70;100' })) self.step(scene, G.id, 1);
-        if (ui.button(k + 'm', muted ? 'ACTIVAR' : 'MUDO', x + w - mw, cy, mw, 30, { size: 8, fill: muted ? '39;174;96' : '110;60;60' })) self.toggleMute(scene, G.id);
+        if (ui.button(k + '+', '+', bx + seg * STEPS + gap + 2, cy, bw, 30, Object.assign({ size: 12, fill: '70;70;100' }, mo))) self.step(scene, G.id, 1);
+        if (ui.button(k + 'm', muted ? 'ACTIVAR' : 'MUDO', x + w - mw, cy, mw, 30, Object.assign({ size: 8, fill: muted ? '39;174;96' : '110;60;60' }, mo))) self.toggleMute(scene, G.id);
       });
       return GROUPS.length * rowH;
     }
