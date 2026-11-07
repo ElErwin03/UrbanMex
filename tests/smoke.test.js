@@ -718,7 +718,7 @@ test('créditos: botón en el menú; muestra la Universidad Autónoma de Nayarit
   assert.equal(txt('cr:h'), 'CREDITOS'); assert.equal(txt('cr:e0'), 'Universidad Autónoma de Nayarit'); assert.equal(txt('cr:e1'), 'Unidad Académica de Economía');
   assert.deepEqual(C.team.map((p) => p.first + ' ' + p.last), ['Fabian Enrique Real Ramirez', 'Edwin Alberto Barrera Franco', 'Oscar René Domínguez'], 'nombres completos');
   C.team.forEach((p, i) => { assert.equal(txt('cr:n' + i), p.first); assert.equal(txt('cr:l' + i), p.last); assert.ok(txt('cr:r' + i)); });
-  assert.equal(txt('cr:r1'), 'Compañero de curso'); assert.equal(txt('cr:r2'), 'Compañero de curso');
+  assert.deepEqual(C.team.map((p, i) => txt('cr:r' + i)), ['Desarrollo del juego', 'Diseñador', 'Colaborador'], 'puestos'); assert.equal(txt('cr:n2'), 'Oscar'); assert.equal(txt('cr:l2'), 'René Domínguez', 'René es apellido de Oscar');
     m.click(640, 598); assert.equal(u().view, 'main', 'VOLVER regresa al menú'); m.frame(2); assert.equal(txt('cr:h'), null, 'y la pantalla de créditos desaparece');
 });
 
