@@ -21,7 +21,7 @@
   function init(scene, data) {
     U.Save.load();
     var um = scene._um = { data: data, run: R.createRun(data, U.session.levelIndex), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
-      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false,
+      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false, paused: false, pauseView: 'main',
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
     um.map = new U.MapView(scene, data);
@@ -41,7 +41,7 @@
 
   function travel(um, id) {
     var run = um.run, from = run.current, out = R.travel(run, id);
-    if (!out.ok) { float(um, REASON[out.reason] || 'NO SE PUEDE', PAL.red); snd(um, 'error'); return; }
+    if (!out.ok) { var why = R.explain(run, id); float(um, why ? why.short : 'NO SE PUEDE', PAL.red); snd(um, 'error'); return; }   // el panel de la estación (ya abierta por el primer clic) explica el motivo
     snd(um, 'viaje'); um.selected = null; if (um.map.cam.zoom > um.map.fitZoom + 0.05) um.map.followPlayer(); um.map.walk(from, id, 0.45);   // con toda la red a la vista la cámara no se mueve
     um.pending = out; float(um, id + '  -' + out.cost.time + ' min', PAL.blue);
   }
@@ -79,8 +79,8 @@
     var run = um.run;
     if (!id) { um.selected = null; return; }
     if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }
-    if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); snd(um, 'error'); return; }
-    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, 'No conectada', PAL.red); snd(um, 'error'); return; }
+    if (run.blocked[id]) { float(um, R.explain(run, id).short, PAL.purple); snd(um, 'error'); return; }
+    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, R.explain(run, id).short, PAL.red); snd(um, 'error'); return; }
     select(um, id); snd(um, 'select');
   }
 
@@ -148,15 +148,17 @@
       if (c.combi && id !== run.level.goal) desc = 'Ruta de COMBI desde ' + run.current + ': $' + c.money + ' pero salta varias estaciones. Viajar aqui?';
       ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });
       ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });
-      ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });
+      var why = chk.ok ? null : R.explain(run, id);                          // por qué NO se puede viajar (con los números reales)
+      if (why) { ui.text('sp:w1', why.short + '.', x + 16, y + 34, { size: 8, color: PAL.red }); ui.text('sp:w2', why.detail, x + 16, y + 48, { size: 8, color: '200;205;225' }); }
+      else ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });
       var base = c.combi ? c.time : c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base;
-      ui.icon('sp:i1', 'reloj', x + 16, y + 62, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 70, { size: 8, color: delay > 2 ? PAL.red : PAL.blue });
-      ui.icon('sp:i2', 'rayo', x + 220, y + 62, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 70, { size: 8 });
-      ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8 });
+      ui.icon('sp:i1', 'reloj', x + 16, y + 62, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 70, { size: 8, color: delay > 2 || (why && why.code === 'night') ? PAL.red : PAL.blue });
+      ui.icon('sp:i2', 'rayo', x + 220, y + 62, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 70, { size: 8, color: why && why.code === 'stamina' ? PAL.red : '255;255;255' });
+      ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8, color: why && why.code === 'money' ? PAL.red : '255;255;255' });
       if (c.combi) ui.text('sp:tr', 'COMBI', x + 400, y + 70, { size: 8, color: '255;170;40' });
       else if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });
       var label = chk.ok ? 'VIAJAR' : (REASON[chk.reason] || 'NO');
-      if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, disabled: !chk.ok })) travel(um, id);
+      if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, fill: chk.ok ? undefined : '90;60;60' })) travel(um, id);   // sin poder viajar sigue siendo tocable: avisa con sonido y mensaje, no se queda mudo
       if (ui.button('sp:no', 'CANCELAR', x + 232, y + 90, 150, 32, { size: 8, fill: '70;70;100' })) um.selected = null;
     } else if (run.data.stations[run.current].shop) {
       var price = R.monsterPrice(run), can = run.money >= price && run.stamina < run.staminaMax;
@@ -180,6 +182,46 @@
     });
   }
 
+  // ---------------------------------------------------------------- pausa
+  /** ¿Se soltó esa tecla en este fotograma? (nombres de GDevelop: 'Escape', 'p'). */
+  function keyUp(scene, name) { var K = gdjs.evtTools && gdjs.evtTools.input; return !!(K && K.wasKeyReleased(scene, name)); }
+
+  /** Pausa / continúa. Al pausar se suelta cualquier arrastre del mapa y se vuelve al menú principal de la pausa. */
+  function setPause(um, on) { um.paused = on; um.pauseView = 'main'; um.drag.active = false; um.lastClick = null; um.hover = null; }
+
+  /** Botón PAUSA en la barra de arriba, entre el reloj y el celular. */
+  function drawPauseButton(ui, um) {
+    if (ui.button('pa:go', 'PAUSA', 1126, 6, 86, 44, { size: 8, fill: '60;60;90' })) setPause(um, true);
+  }
+
+  /** Ventana de pausa: CONTINUAR / SONIDO (los tres volúmenes) / SALIR AL MENU (con confirmación). Todo lo de abajo queda congelado. */
+  function drawPause(ui, um) {
+    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? 392 : v === 'confirm' ? 250 : 330, y = Math.round((720 - h) / 2);
+    ui.rect(0, 0, 1280, 720, { fill: '0;0;0', alpha: 170, bw: 0, modal: true, block: true });
+    ui.rect(x, y, w, h, { fill: '16;14;32', border: PAL.orange, bw: 4, modal: true, block: true });
+    var T = function (k, str, ty, o) { ui.text(k, str, x + w / 2, ty, Object.assign({ align: 'center', z: 330 }, o)); };
+    var B = function (k, label, bx, by, bw, fill) { return ui.button(k, label, bx, by, bw, 44, { size: 8, fill: fill, modal: true }); };
+    if (v === 'sound') {
+      T('pa:t', 'SONIDO', y + 22, { size: 16, color: PAL.orange });
+      var used = U.Audio.panel(ui, ui.scene, 'pa:', x + 40, y + 70, w - 80, false, true);
+      if (B('pa:back', 'VOLVER', x + 130, y + 70 + used + 10, 260, '70;70;100')) um.pauseView = 'main';
+    } else if (v === 'confirm') {
+      T('pa:t', 'SALIR AL MENU', y + 24, { size: 16, color: PAL.orange });
+      T('pa:c1', 'Seguro que quieres salir del nivel?', y + 86, { size: 8, color: '230;234;250' });
+      T('pa:c2', 'Perderas el avance de este dia.', y + 112, { size: 8, color: PAL.dim });
+      if (B('pa:no', 'CANCELAR', x + 30, y + h - 70, 220, '70;70;100')) um.pauseView = 'main';
+      if (B('pa:si', 'SI, SALIR', x + w - 250, y + h - 70, 220, '192;57;43')) um.exitToMenu = true;
+    } else {
+      T('pa:t', 'PAUSA', y + 22, { size: 24, color: PAL.orange });
+      T('pa:l1', 'NIVEL ' + run.level.id + ' - ' + run.level.day, y + 76, { size: 8, color: PAL.yellow });
+      T('pa:l2', run.current + '  >  ' + run.level.goal, y + 96, { size: 8, color: PAL.dim });
+      if (B('pa:cont', 'CONTINUAR', x + 110, y + 126, 300, '39;174;96')) setPause(um, false);
+      if (B('pa:snd', 'SONIDO', x + 110, y + 184, 300, '60;60;90')) um.pauseView = 'sound';
+      if (B('pa:menu', 'SALIR AL MENU', x + 110, y + 242, 300, '110;50;50')) um.pauseView = 'confirm';
+    }
+    if (v !== 'confirm') T('pa:hint', v === 'sound' ? 'ESC: volver' : 'ESC o P: continuar', y + h - 22, { size: 8, color: PAL.dim });
+  }
+
   function drawFloats(ui, um, dt) {
     um.floats = um.floats.filter(function (f) { f.t += dt; return f.t < 1.8; });
     for (var i = 0; i < 4; i++) {
@@ -192,15 +234,27 @@
   U.Scenes.nivel = function (scene) {
     var data = U.Data.ready(scene), ui = U.UI.of(scene);
     if (!data) { ui.begin(); ui.text('load', 'CARGANDO...', 640, 340, { size: 16, align: 'center' }); ui.end(); return; }
-    var um = scene._um || init(scene, data), run = um.run, dt = Math.min(0.1, scene.getElapsedTime() / 1000);
+    var um = scene._um || init(scene, data), run = um.run, rdt = Math.min(0.1, scene.getElapsedTime() / 1000), dt = um.paused ? 0 : rdt;
     ui.begin();
 
-    um.t = (um.t || 0) + dt;
-    drawHUD(ui, um); drawPhoneToggle(ui, um, run); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);
-    if (!um.modal) drawStationPanel(ui, um);
-    U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt); drawModal(ui, um);
+    // Esc o P: pausa / continúa (en la ventana de SONIDO o de confirmación, Esc vuelve al menú de pausa); no hay pausa al terminar el día
+    if (!run.over && !um.exitToMenu) {
+      var esc = keyUp(scene, 'Escape'), pk = keyUp(scene, 'p');
+      if (esc || pk) { if (!um.paused) { setPause(um, true); snd(um, 'click'); } else if (esc && um.pauseView !== 'main') um.pauseView = 'main'; else { setPause(um, false); snd(um, 'click'); } }
+    }
+    dt = um.paused ? 0 : rdt;                                   // el fotograma en que se pulsa Esc ya no avanza
 
-    var busy = !!um.modal || um.map.moving() || !!um.pending || run.over, d = um.drag;
+    um.t = (um.t || 0) + dt;
+    // en pausa lo de abajo se dibuja congelado y "inerte": el cursor se esconde para que nada responda (solo la ventana de pausa)
+    var cur = { x: ui.px, y: ui.py, rel: ui.released, prs: ui.pressed, whl: ui.wheel };
+    if (um.paused) { ui.px = ui.py = -9999; ui.released = ui.pressed = false; ui.wheel = 0; }
+    drawHUD(ui, um); drawPhoneToggle(ui, um, run); if (!run.over) drawPauseButton(ui, um); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);
+    if (!um.modal) drawStationPanel(ui, um);
+    U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt);
+    if (um.paused) { ui.px = cur.x; ui.py = cur.y; ui.released = cur.rel; ui.pressed = cur.prs; ui.wheel = cur.whl; drawPause(ui, um); }
+    else drawModal(ui, um);
+
+    var busy = !!um.modal || um.map.moving() || !!um.pending || run.over || um.paused, d = um.drag;
     if (!busy) {
       if (ui.pressed && !ui.consumed) { d.active = true; d.moved = false; d.sx = d.lx = ui.px; d.sy = d.ly = ui.py; }
       if (d.active && ui.down) {
@@ -220,12 +274,12 @@
       um.hover = !ui.consumed ? um.map.pick(ui.px, ui.py) : null;
     } else { d.active = false; um.hover = null; }
 
-    if (um.pending && !um.map.moving()) resolve(um);
-    if (!um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
+    if (!um.paused && um.pending && !um.map.moving()) resolve(um);
+    if (!um.paused && !um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
 
     um.map.update(dt, run, ui, um.hover, um.selected);
     um.fx.update(dt, um.hover, um.selected);
-    U.Audio.tick(scene, 'nivel', dt, { alert: U.Audio.danger(run) });   // música del nivel, tren lejano cada 60 s y latido de apuro con < 15 % de tiempo o dinero
+    U.Audio.tick(scene, 'nivel', rdt, { alert: U.Audio.danger(run), paused: um.paused });   // música del nivel, tren lejano cada 60 s y latido de apuro con < 15 % de tiempo o dinero
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }
