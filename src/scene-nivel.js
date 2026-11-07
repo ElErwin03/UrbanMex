@@ -97,10 +97,12 @@
     ui.text('hud:day', 'NIVEL ' + run.level.id + ' - ' + run.level.day, 14, 10, { size: 8, color: PAL.yellow });
     ui.text('hud:st', run.current, 14, 32, { size: 8 });
     // APURO: el recurso que aprieta (Rules.urgency, la misma regla del sonido) parpadea en rojo; el asalto hace temblar el saldo un momento
-    var u = R.urgency(run), flash = Math.floor(um.t * 3) % 2 === 0, hot = function (v) { return v > 0 && flash; }, hurt = um.hurt > 0;
+    var u = R.urgency(run), flash = U.A11y.blink(um.t, 3), hot = function (v) { return v > 0 && flash; }, hurt = um.hurt > 0;
     ui.icon('hud:i1', 'rayo', 330, 12, 2); ui.bar(368, 18, 150, 16, run.stamina / run.staminaMax, u.stamina > 0 ? '215;45;35' : '243;156;18');
     ui.text('hud:sv', Math.floor(run.stamina) + '', 528, 22, { size: 8, color: hot(u.stamina) ? PAL.red : undefined });
-    var jx = hurt ? Math.round(Math.sin(um.t * 60) * 4) : 0;
+    var jx = hurt && !U.A11y.calm() ? Math.round(Math.sin(um.t * 60) * 4) : 0;
+    // el apuro no depende solo del color: un "!" fijo junto al recurso que se agota
+    [['stamina', 566, 22, 8], ['money', 724, 20, 16], ['time', 1104, 20, 16]].forEach(function (w) { if (u[w[0]] > 0) ui.text('hud:w' + w[0], '!', w[1], w[2], { size: w[3], color: PAL.red }); });
     ui.icon('hud:i2', 'moneda', 600, 12, 2); ui.text('hud:mv', String(run.money), 640 + jx, 22, { size: 16, color: hurt || hot(u.money) ? PAL.red : PAL.green });
     ui.icon('hud:i3', 'reloj', 780, 12, 2);
     ui.bar(818, 18, 200, 16, (run.minute - cfg.dayStartMinute) / (cfg.dayEndMinute - cfg.dayStartMinute), run.minute >= 1080 || u.time > 0 ? PAL.red : '230;126;34');
@@ -109,7 +111,7 @@
 
   /** Icono de la esquina superior derecha: oculta / muestra el celular. Con el celular oculto avisa (parpadea) si llegan noticias. */
   function drawPhoneToggle(ui, um, run) {
-    var open = um.phone.open, alert = !open && run.unread > 0, flash = alert && Math.floor(um.t * 3) % 2 === 0;
+    var open = um.phone.open, alert = !open && run.unread > 0, flash = alert && U.A11y.blink(um.t, 3);
     var fill = open ? '70;70;110' : flash ? '192;57;43' : '60;60;90';
     if (ui.button('phone:tg', '', 1222, 6, 52, 44, { fill: fill })) {
       um.setPhone(!open);
@@ -199,7 +201,7 @@
 
   /** Ventana de pausa: CONTINUAR / SONIDO (los tres volúmenes) / SALIR AL MENU (con confirmación). Todo lo de abajo queda congelado. */
   function drawPause(ui, um) {
-    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? 392 : v === 'confirm' ? 250 : 330, y = Math.round((720 - h) / 2);
+    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? 392 : v === 'a11y' ? 70 + U.A11y.height(440) + 10 + 44 + 40 : v === 'confirm' ? 250 : 388, y = Math.round((720 - h) / 2);
     ui.rect(0, 0, 1280, 720, { fill: '0;0;0', alpha: 170, bw: 0, modal: true, block: true });
     ui.rect(x, y, w, h, { fill: '16;14;32', border: PAL.orange, bw: 4, modal: true, block: true });
     var T = function (k, str, ty, o) { ui.text(k, str, x + w / 2, ty, Object.assign({ align: 'center', z: 330 }, o)); };
@@ -208,6 +210,10 @@
       T('pa:t', 'SONIDO', y + 22, { size: 16, color: PAL.orange });
       var used = U.Audio.panel(ui, ui.scene, 'pa:', x + 40, y + 70, w - 80, false, true);
       if (B('pa:back', 'VOLVER', x + 130, y + 70 + used + 10, 260, '70;70;100')) um.pauseView = 'main';
+    } else if (v === 'a11y') {
+      T('pa:t', 'ACCESIBILIDAD', y + 22, { size: 16, color: PAL.orange });
+      var ah = U.A11y.panel(ui, ui.scene, 'pa:ax', x + 40, y + 70, w - 80, true);
+      if (B('pa:aback', 'VOLVER', x + 130, y + 70 + ah + 10, 260, '70;70;100')) um.pauseView = 'main';
     } else if (v === 'confirm') {
       T('pa:t', 'SALIR AL MENU', y + 24, { size: 16, color: PAL.orange });
       T('pa:c1', 'Seguro que quieres salir del nivel?', y + 86, { size: 8, color: '230;234;250' });
@@ -220,9 +226,10 @@
       T('pa:l2', run.current + '  >  ' + run.level.goal, y + 96, { size: 8, color: PAL.dim });
       if (B('pa:cont', 'CONTINUAR', x + 110, y + 126, 300, '39;174;96')) setPause(um, false);
       if (B('pa:snd', 'SONIDO', x + 110, y + 184, 300, '60;60;90')) um.pauseView = 'sound';
-      if (B('pa:menu', 'SALIR AL MENU', x + 110, y + 242, 300, '110;50;50')) um.pauseView = 'confirm';
+      if (B('pa:a11y', 'ACCESIBILIDAD', x + 110, y + 242, 300, '60;60;90')) um.pauseView = 'a11y';
+      if (B('pa:menu', 'SALIR AL MENU', x + 110, y + 300, 300, '110;50;50')) um.pauseView = 'confirm';
     }
-    if (v !== 'confirm') T('pa:hint', v === 'sound' ? 'ESC: volver' : 'ESC o P: continuar', y + h - 22, { size: 8, color: PAL.dim });
+    if (v !== 'confirm') T('pa:hint', v === 'sound' || v === 'a11y' ? 'ESC: volver' : 'ESC o P: continuar', y + h - 22, { size: 8, color: PAL.dim });
   }
 
   function drawFloats(ui, um, dt) {
