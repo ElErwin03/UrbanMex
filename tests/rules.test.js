@@ -271,3 +271,35 @@ test('urgency: el apuro empieza al bajar de 15 % (tiempo, dinero o stamina), sub
   run.over = true; u = R.urgency(run); assert.deepEqual([u.level, u.any], [0, false], 'terminada la partida ya no hay apuro');
   assert.deepEqual(R.urgency(null), { level: 0, time: 0, money: 0, stamina: 0, any: false });
 });
+
+// ---- Resultado: estrellas, avance y causa
+test('estrellas: llegar, ahorrar (65 % de lo que deja la mejor ruta) y sin asaltos', () => {
+  const par = [85, 105, 105, 100, 75];                                                  // dinero inicial − ruta más barata (sin noticias)
+  data.levels.forEach((lv, i) => {
+    const run = U.Rules.createRun(data, i, Math.random); assert.equal(U.Rules.parMoney(run), par[i], 'par del nivel ' + (i + 1));
+    const goal = Math.ceil(par[i] * U.Rules.SAVER_KEEP); assert.equal(U.Rules.score(run).moneyGoal, goal);
+    assert.deepEqual(U.Rules.score(run), { stars: 0, got: { arrive: false, saver: false, safe: false }, moneyGoal: goal, moneyPar: par[i] }, 'sin ganar no hay estrellas');
+    run.won = true; run.over = true; run.money = goal; assert.equal(U.Rules.score(run).stars, 3, 'justo en la meta de ahorro');
+    run.money = goal - 1; assert.deepEqual(U.Rules.score(run).got, { arrive: true, saver: false, safe: true }); assert.equal(U.Rules.score(run).stars, 2);
+    run.robbed = 1; assert.equal(U.Rules.score(run).stars, 1, 'ni ahorro ni sin asaltos: solo llegar'); run.money = goal; assert.deepEqual(U.Rules.score(run).got, { arrive: true, saver: true, safe: false });
+  });
+  // los niveles que obligan a comprar un Monster (30) siguen pudiendo dar las 3 estrellas
+  [1, 3].forEach((i) => { const run = U.Rules.createRun(data, i, Math.random), par = U.Rules.parMoney(run); assert.ok(par - 30 >= Math.ceil(par * U.Rules.SAVER_KEEP), 'con un Monster aún se ahorra en el nivel ' + (i + 1)); });
+});
+
+test('resumen: causa del final, estaciones que faltaban y avance', () => {
+  const run = U.Rules.createRun(data, 0, Math.random), lv = run.level;
+  let sm = U.Rules.summary(run); assert.equal(sm.left, sm.hops); assert.equal(sm.progress, 0); assert.ok(sm.hops > 3);
+  const path = U.Graph.shortestPath(run.graph, lv.start, lv.goal, run.blocked); assert.equal(sm.hops, path.length - 1);
+  run.current = path[path.length - 3]; sm = U.Rules.summary(run); assert.equal(sm.left, 2); assert.ok(Math.abs(sm.progress - (1 - 2 / sm.hops)) < 1e-9);
+  run.current = lv.goal; run.won = true; run.over = true; sm = U.Rules.summary(run); assert.equal(sm.left, 0); assert.equal(sm.progress, 1); assert.equal(sm.stars, U.Rules.score(run).stars); assert.equal(sm.cause, '');
+  // causa del fin de partida
+  const mk = (f) => { const r = U.Rules.createRun(data, 0, Math.random); f(r); U.Rules.checkStuck(r); return r; };
+  let r = mk((x) => { x.stamina = 0; }); assert.equal(r.over, true); assert.equal(U.Rules.summary(r).cause, 'stamina'); assert.equal(r.endReason, 'Te quedaste sin stamina.');
+  r = mk((x) => { x.money = 0; }); assert.equal(U.Rules.summary(r).cause, 'money'); assert.equal(r.endReason, 'Te quedaste sin dinero.');
+  r = mk((x) => { x.minute = x.data.config.dayEndMinute - 1; }); assert.equal(U.Rules.summary(r).cause, 'night');
+  r = mk((x) => { U.Graph.neighbors(x.graph, x.current).forEach((n) => { x.blocked[n] = true; }); }); assert.equal(U.Rules.summary(r).cause, 'blocked');
+  // sin ruta por los bloqueos de las noticias: cuenta las estaciones ignorándolos y no truena
+  r = U.Rules.createRun(data, 0, Math.random); U.Graph.neighbors(r.graph, r.current).forEach((n) => { r.blocked[n] = true; }); sm = U.Rules.summary(r); assert.ok(sm.left > 0 && sm.progress >= 0 && sm.progress <= 1);
+});
+
