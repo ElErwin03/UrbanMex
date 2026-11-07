@@ -716,7 +716,8 @@ test('créditos: botón en el menú; muestra la Universidad Autónoma de Nayarit
   const m = session('Menu'); m.frame(5); const u = () => m.scene._um, C = m.U.CREDITS, txt = (k) => { const o = m.U.UI.of(m.scene).pool.t['UI:' + k]; return o && !o.hidden ? o.text : null; };
   assert.equal(u().view, 'main'); m.click(1169, 29); assert.equal(u().view, 'credits', 'el botón CREDITOS abre la pantalla'); m.frame(2);
   assert.equal(txt('cr:h'), 'CREDITOS'); assert.equal(txt('cr:e0'), 'Universidad Autónoma de Nayarit'); assert.equal(txt('cr:e1'), 'Unidad Académica de Economía');
-  assert.deepEqual(C.team.map((p) => p.name), ['Erwin', 'Edwin', 'Oscar']); C.team.forEach((p, i) => { assert.equal(txt('cr:n' + i), p.name); assert.ok(txt('cr:r' + i)); });
+  assert.deepEqual(C.team.map((p) => p.first + ' ' + p.last), ['Fabian Enrique Real Ramirez', 'Edwin Alberto Barrera Franco', 'Oscar René Domínguez'], 'nombres completos');
+  C.team.forEach((p, i) => { assert.equal(txt('cr:n' + i), p.first); assert.equal(txt('cr:l' + i), p.last); assert.ok(txt('cr:r' + i)); });
   assert.equal(txt('cr:r1'), 'Compañero de curso'); assert.equal(txt('cr:r2'), 'Compañero de curso');
     m.click(640, 598); assert.equal(u().view, 'main', 'VOLVER regresa al menú'); m.frame(2); assert.equal(txt('cr:h'), null, 'y la pantalla de créditos desaparece');
 });
@@ -725,6 +726,6 @@ test('créditos: cada línea cabe en su recuadro y los datos están completos', 
   const m = session('Menu'); m.frame(2); const C = m.U.CREDITS, fit = (str, size, max, what) => assert.ok(str.length * size <= max, `${what} no cabe (${str.length * size}px > ${max}px): ${str}`);
   assert.ok(C.madeAt.length === 2 && /Nayarit/.test(C.madeAt[0].name) && /Econom/.test(C.madeAt[1].name), 'las dos entidades');
   C.madeAt.forEach((e) => fit(e.name, e.size, 860, e.name)); fit(C.why, 8, 860, 'why'); C.madeWith.forEach((l) => fit(l, 8, 1000, l));
-  assert.equal(C.team.length, 3); C.team.forEach((p) => { fit(p.name, 16, 250, p.name); fit(p.role, 8, 250, p.role); assert.ok(p.name && p.role); });
-  assert.equal(new Set(C.team.map((p) => p.name)).size, 3, 'sin nombres repetidos');
+  assert.equal(C.team.length, 3); C.team.forEach((p) => { fit(p.first, 16, 250, p.first); fit(p.last, 16, 250, p.last); fit(p.role, 8, 250, p.role); assert.ok(p.first && p.last && p.role); });
+  assert.equal(new Set(C.team.map((p) => p.first + p.last)).size, 3, 'sin nombres repetidos');
 });
