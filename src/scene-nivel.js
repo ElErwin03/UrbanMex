@@ -201,7 +201,7 @@
 
   /** Ventana de pausa: CONTINUAR / SONIDO (los tres volúmenes) / SALIR AL MENU (con confirmación). Todo lo de abajo queda congelado. */
   function drawPause(ui, um) {
-    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? 392 : v === 'a11y' ? 70 + U.A11y.height(440) + 10 + 44 + 40 : v === 'confirm' ? 250 : 388, y = Math.round((720 - h) / 2);
+    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? 440 : v === 'a11y' ? 70 + U.A11y.height(440) + 10 + 44 + 40 : v === 'confirm' ? 250 : 388, y = Math.round((720 - h) / 2);
     ui.rect(0, 0, 1280, 720, { fill: '0;0;0', alpha: 170, bw: 0, modal: true, block: true });
     ui.rect(x, y, w, h, { fill: '16;14;32', border: PAL.orange, bw: 4, modal: true, block: true });
     var T = function (k, str, ty, o) { ui.text(k, str, x + w / 2, ty, Object.assign({ align: 'center', z: 330 }, o)); };
@@ -209,6 +209,7 @@
     if (v === 'sound') {
       T('pa:t', 'SONIDO', y + 22, { size: 16, color: PAL.orange });
       var used = U.Audio.panel(ui, ui.scene, 'pa:', x + 40, y + 70, w - 80, false, true);
+      used += U.Audio.focusRow(ui, ui.scene, 'pa:', x + 40, y + 70 + used + 2, w - 80, true) + 2;
       if (B('pa:back', 'VOLVER', x + 130, y + 70 + used + 10, 260, '70;70;100')) um.pauseView = 'main';
     } else if (v === 'a11y') {
       T('pa:t', 'ACCESIBILIDAD', y + 22, { size: 16, color: PAL.orange });

@@ -53,7 +53,7 @@ function mockObject(def) {
 // recurso de audio declarado en el proyecto, los volúmenes van de 0 a 100 (de 0 a 1 en fade) y la música debe ir en bucle.
 const audioCheck = (n) => { assert.ok(resNames[n] && resNames[n].kind === 'audio', 'recurso de audio no declarado: ' + n); assert.ok(fs.existsSync(fileOf(n)), 'falta el archivo de ' + n); };
 const SND = { log: [], music: {}, gv: 100,
-  reset() { this.log = []; this.music = {}; this.gv = 100; },
+  reset() { this.log = []; this.music = {}; this.gv = 100; this.paused = false; this.pauses = 0; this.resumes = 0; this.pauseCalls = 0; this.resumeCalls = 0; },
   playSound(n, loop, v, p) { audioCheck(n); assert.equal(loop, false); assert.ok(v >= 0 && v <= 100 && p === 1, 'volumen/tono de ' + n); this.log.push({ k: 'sound', n, v }); },
   playMusicOnChannel(n, ch, loop, v, p) {
     audioCheck(n); assert.equal(loop, true, 'la música va en bucle'); assert.ok(v >= 0 && v <= 100 && [0, 1, 2].includes(ch));
@@ -63,6 +63,10 @@ const SND = { log: [], music: {}, gv: 100,
   },
   getMusicOnChannel(ch) { return this.music[ch] || null; },
   setGlobalVolume(v) { assert.ok(v >= 0 && v <= 100); this.gv = v; },
+  paused: false, pauses: 0, resumes: 0,
+  pauseAllActiveSounds() { this.pauseCalls++; assert.equal(this.paused, false, 'no se pausa dos veces'); this.paused = true; this.pauses++; },
+  resumeAllActiveSounds() { this.resumeCalls++; assert.equal(this.paused, true, 'solo se reanuda lo pausado'); this.paused = false; this.resumes++; },
+  pauseCalls: 0, resumeCalls: 0,
   count(re) { return this.log.filter((e) => re.test(e.n)).length; } };
 
 function makeScene(layout, input, json) {
@@ -792,10 +796,10 @@ test('pausa: un viaje a medias se congela y termina al continuar; el día no ava
 test('pausa: menú SONIDO cambia los volúmenes; SALIR AL MENU pide confirmación y CANCELAR no sale', () => {
   const { s, u, U, key } = pauseSession();
   key('Escape'); s.click(640, 372); assert.equal(u().pauseView, 'sound');
-  const v0 = U.session.vol.music.level; s.click(755, 265); assert.equal(U.session.vol.music.level, v0 + 1, '+ sube la música'); s.click(435, 265); s.click(435, 265); assert.equal(U.session.vol.music.level, v0 - 1, '- la baja');
-  s.click(822, 265); assert.equal(U.session.vol.music.mute, true, 'MUDO silencia la música'); s.click(822, 265); assert.equal(U.session.vol.music.mute, false);
+  const v0 = U.session.vol.music.level; s.click(755, 241); assert.equal(U.session.vol.music.level, v0 + 1, '+ sube la música'); s.click(435, 241); s.click(435, 241); assert.equal(U.session.vol.music.level, v0 - 1, '- la baja');
+  s.click(822, 241); assert.equal(U.session.vol.music.mute, true, 'MUDO silencia la música'); s.click(822, 241); assert.equal(U.session.vol.music.mute, false);
   key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en SONIDO vuelve al menú de pausa'); assert.equal(u().paused, true);
-  s.click(640, 372); s.click(640, 452); assert.equal(u().pauseView, 'main', 'VOLVER regresa');
+  s.click(640, 372); s.click(640, 476); assert.equal(u().pauseView, 'main', 'VOLVER regresa');
   s.click(640, 488); assert.equal(u().pauseView, 'confirm'); assert.equal(s.scene.changes.length, 0, 'todavía no sale');
   s.click(520, 437); assert.equal(u().pauseView, 'main'); assert.equal(s.scene.changes.length, 0, 'CANCELAR no sale');
   s.click(640, 488); key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en la confirmación también cancela'); assert.equal(s.scene.changes.length, 0);
@@ -1019,3 +1023,70 @@ test('tutorial: cada página dibuja su demo; con REDUCIR MOVIMIENTO la demo qued
   assert.deepEqual(['drw0', 'drw1', 'drw2'].map((k) => uiTexts(r.scene)['UI:' + k]), ['!', '!', '!'], 'casi vacías: "!" en las tres'); assert.match(uiTexts(r.scene)['UI:drn'] + ' ' + uiTexts(r.scene)['UI:drn:0'], /Rojo y "!"/);
 });
 
+
+// ---- audio: al perder el foco de la ventana
+const focusSession = (track) => { audioReset(); const s = session('Menu'); s.frame(3); return s; };
+const fakeWindow = () => { const mk = () => ({ listeners: {}, addEventListener(e, f) { (this.listeners[e] = this.listeners[e] || []).push(f); }, fire(e) { (this.listeners[e] || []).forEach((f) => f()); } }); globalThis.window = mk(); globalThis.document = Object.assign(mk(), { hidden: false }); };
+const dropWindow = () => { delete globalThis.window; delete globalThis.document; };
+
+test('audio (foco): al perder el foco todo el audio se pausa una sola vez, nada nuevo suena ni cuenta el tren, y al volver se reanuda', () => {
+  const s = focusSession(), A = s.U.Audio, st = A.state; s.U.session.bgAudio = false; s.frame(5);
+  assert.ok(SND.music[0] || SND.music[1], 'la música suena'); const n0 = SND.log.length, train0 = st.trainIn, t0 = st.t;
+  A.away(true); assert.deepEqual([SND.paused, SND.pauseCalls], [true, 1], 'se pausa'); A.away(true); assert.equal(SND.pauseCalls, 1, 'avisar dos veces no pausa dos veces'); assert.equal(A.isHeld(), true);
+  s.frame(40); A.play(s.scene, 'click'); A.play(s.scene, 'ganar');
+  assert.equal(SND.log.length, n0, 'sin foco no empieza ningún sonido'); assert.equal(st.trainIn, train0, 'el tren de 60 s espera'); assert.equal(st.t, t0, 'el reloj del audio también');
+  A.away(false); assert.deepEqual([SND.paused, SND.resumes], [false, 1], 'al volver se reanuda'); assert.equal(A.isHeld(), false); A.away(false); assert.equal(SND.resumes, 1);
+  s.frame(5); assert.ok(st.trainIn < train0 && st.t > t0, 'y todo sigue corriendo'); A.play(s.scene, 'click'); assert.equal(SND.log.length, n0 + 1, 'suenan de nuevo los efectos');
+  // el tren que tocaba durante la ausencia no suena de golpe al volver: sigue la cuenta donde iba
+  st.trainIn = 0.05; A.away(true); s.frame(30); assert.equal(SND.count(/^tren_/), 0); A.away(false); s.frame(1); assert.equal(SND.count(/^tren_/), 1, 'el tren llega al volver, una sola vez');
+});
+
+test('audio (foco): con "seguir sonando" no se pausa nada y el audio continúa', () => {
+  const s = focusSession(), A = s.U.Audio, st = A.state; s.U.session.bgAudio = true; s.frame(5); const t0 = st.t;
+  A.away(true); assert.deepEqual([SND.paused, SND.pauseCalls], [false, 0]); assert.equal(A.isHeld(), false); s.frame(10); assert.ok(st.t > t0, 'sigue corriendo'); const n = SND.log.length; A.play(s.scene, 'click'); assert.equal(SND.log.length, n + 1, 'los efectos suenan');
+  A.away(false); assert.equal(SND.resumeCalls, 0, 'no hay nada que reanudar (ni se intenta)');
+});
+
+test('audio (foco): si el aviso de pérdida de foco llega antes de que el audio conozca el gestor, no arranca nada hasta volver', () => {
+  const s = focusSession(), A = s.U.Audio, st = A.state; s.U.session.bgAudio = false;
+  Object.assign(st, { mgr: null, held: false, away: false, music: null, ready: false, hooked: true }); SND.reset();             // como al abrir el juego: aún no hay gestor
+  A.away(true); assert.equal(SND.pauses, 0, 'sin gestor no hay nada que pausar'); st.mgr = SND;                                 // el primer fotograma de audio ya lo encuentra
+  s.frame(10); assert.equal(SND.log.length, 0, 'ni música ni efectos'); A.play(s.scene, 'click'); assert.equal(SND.log.length, 0);
+  A.away(false); s.frame(3); assert.ok(SND.music[0] || SND.music[1], 'al volver empieza la música'); assert.equal(SND.pauses, 0); assert.equal(SND.resumes, 0, 'nunca hubo nada que reanudar');
+});
+
+test('audio (foco): escucha blur / focus / visibilitychange (una sola vez) y un gestor de sonido que falla no rompe el juego', () => {
+  fakeWindow();
+  try {
+    const s = focusSession(), A = s.U.Audio; s.U.session.bgAudio = false; s.frame(30);
+    assert.deepEqual(['blur', 'focus'].map((e) => globalThis.window.listeners[e].length), [1, 1], 'un solo oyente por evento, aunque haya muchos fotogramas'); assert.equal(globalThis.document.listeners.visibilitychange.length, 1);
+    globalThis.window.fire('blur'); assert.equal(SND.paused, true, 'blur pausa'); globalThis.window.fire('focus'); assert.equal(SND.paused, false, 'focus reanuda');
+    globalThis.document.hidden = true; globalThis.document.fire('visibilitychange'); assert.equal(SND.paused, true, 'pestaña oculta pausa'); globalThis.document.hidden = false; globalThis.document.fire('visibilitychange'); assert.equal(SND.paused, false, 'pestaña visible reanuda sin exigir foco');
+    // si reanudar falla, no se queda "pausado" para siempre: el siguiente blur vuelve a pausar
+    const oldR = SND.resumeAllActiveSounds; SND.resumeAllActiveSounds = () => { throw new Error('falla'); };
+    try { globalThis.window.fire('blur'); assert.equal(SND.paused, true); globalThis.window.fire('focus'); assert.equal(A.isHeld(), false); } finally { SND.resumeAllActiveSounds = oldR; }
+    SND.paused = false; const p0 = SND.pauseCalls; globalThis.window.fire('blur'); assert.equal(SND.pauseCalls, p0 + 1, 'tras un fallo al reanudar, vuelve a poder pausar'); globalThis.window.fire('focus');
+    // un gestor que no sabe pausar (otra versión del motor): no truena y el audio no se queda mudo
+    const old = SND.pauseAllActiveSounds; SND.pauseAllActiveSounds = () => { throw new Error('no existe'); };
+    try { globalThis.window.fire('blur'); globalThis.window.fire('focus'); s.frame(3); assert.equal(A.isHeld(), false); } finally { SND.pauseAllActiveSounds = old; }
+  } finally { dropWindow(); }
+});
+
+test('audio (foco): el ajuste AL SALIR DE LA VENTANA se guarda, se valida y se cambia desde el menú, la pausa y el celular', () => {
+  const store = store0(), KEY = 'UrbanMex_save_v1';
+  try {
+    audioReset(); const m = session('Menu'); m.frame(5); const U = m.U, saved = () => JSON.parse(store[KEY]), txt = (s) => uiTexts(s.scene);
+    assert.equal(!!U.session.bgAudio, false, 'de fábrica: pausar');
+    // menú SONIDO: botón en (900, 431)
+    m.scene._um.view = 'sound'; m.frame(3); assert.equal(txt(m)['UI:btn:mn:bg'], 'PAUSAR'); m.click(900, 431); assert.equal(U.session.bgAudio, true); assert.equal(saved().bg, true, 'se guarda'); assert.equal(txt(m)['UI:btn:mn:bg'], 'SEGUIR'); m.click(900, 431); assert.equal(U.session.bgAudio, false); assert.equal(saved().bg, false);
+    // se recupera y un valor dañado se ignora
+    U.session.bgAudio = true; U.Save.persist(); U.session.bgAudio = false; U.session.loaded = false; U.Save.load(); assert.equal(U.session.bgAudio, true, 'se recupera');
+    store[KEY] = JSON.stringify({ v: 1, bg: 'si' }); U.session.bgAudio = false; U.session.loaded = false; U.Save.load(); assert.equal(U.session.bgAudio, false, 'un valor dañado se ignora');
+    // pausa del nivel: SONIDO → botón en (810, 413)
+    audioReset(); delete globalThis.gdjs.UrbanMex; KEYS.clear(); const s = session('Nivel'); s.frame(3); const u = s.scene._um; u.modal = null; u.modalQueue = [];
+    KEYS.add('Escape'); s.frame(2); s.click(640, 372); assert.equal(u.pauseView, 'sound'); assert.equal(txt(s)['UI:btn:pa:bg'], 'PAUSAR'); s.click(810, 413); assert.equal(s.U.session.bgAudio, true, 'la pausa cambia el ajuste'); assert.equal(txt(s)['UI:btn:pa:bg'], 'SEGUIR');
+    s.click(640, 476); assert.equal(u.pauseView, 'main', 'VOLVER sigue funcionando con la fila nueva'); KEYS.clear();
+    // celular: AJUSTES → SONIDO, botón en (1192, 401)
+    s.U.session.bgAudio = false; u.paused = false; u.phone.open = true; u.phone.app = 'snd'; s.frame(2); assert.equal(txt(s)['UI:btn:ph:bg'], 'PAUSAR'); s.click(1192, 401); assert.equal(s.U.session.bgAudio, true, 'el celular cambia el ajuste');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; KEYS.clear(); SND.reset(); }
+});

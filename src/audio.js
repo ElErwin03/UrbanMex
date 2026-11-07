@@ -8,7 +8,10 @@
  * El volumen real de cada sonido es (su volumen base de esta tabla) × (nivel / 7); silenciado = 0. Se guarda con el progreso (U.session.vol).
  * Los archivos viven en assets/audio (los genera tools/make_audio.py) y son recursos de audio del proyecto. Los volúmenes base (0 a 100) están
  * aquí abajo, a propósito bajos: la música es de fondo y el tren apenas se nota.
- * API de GDevelop usada (verificada en howler-sound-manager.ts): playSound, playMusicOnChannel, getMusicOnChannel; del sonido: setVolume, fade, stop. */
+ * SEGUNDO PLANO: al perder el foco la ventana (cambiar de ventana o de pestaña, minimizar) todo el audio se pausa con pauseAllActiveSounds y se reanuda
+ *   con resumeAllActiveSounds al volver; mientras tanto no suena nada nuevo y el tren de 60 s espera. Se puede apagar (U.session.bgAudio, se guarda).
+ * API de GDevelop usada (verificada en howler-sound-manager.ts y en la documentación de GDJS): playSound, playMusicOnChannel, getMusicOnChannel,
+ *   pauseAllActiveSounds, resumeAllActiveSounds; del sonido: setVolume, fade, stop. */
 (function () {
   var U = gdjs.UrbanMex, PAL = U.UI.PAL;
   if (U.Audio) return;
@@ -26,7 +29,7 @@
     { id: 'alert', label: 'PELIGRO Y APURO', hint: 'Apuro y golpe de asalto', color: '235;120;50' }
   ];
 
-  var st = { t: 0, music: null, ch: 0, mv: 1, mvApplied: -1, trainIn: TRAIN_FIRST, trains: 0, fading: [], al: null, alv: 0, alApplied: -1, wasDanger: false, lastPreview: -9 };
+  var st = { t: 0, music: null, ch: 0, mv: 1, mvApplied: -1, trainIn: TRAIN_FIRST, trains: 0, fading: [], al: null, alv: 0, alApplied: -1, wasDanger: false, lastPreview: -9, away: false, held: false, mgr: null, hooked: false };
 
   function mgr(scene) { try { var g = scene.getGame(), m = g && g.getSoundManager && g.getSoundManager(); return m || null; } catch (e) { return null; } }
   function slot(g) { return U.session.vol[g]; }
@@ -66,9 +69,29 @@
     if (!on && st.alv <= 0.0005) { st.al.stop(); st.al = null; st.alv = 0; }
   }
 
+  /** ¿Estamos sin foco y con la opción de pausar? Mientras sí, no empieza ni cambia ningún sonido (aunque el aviso de pausa llegara antes de que hubiera sonidos). */
+  function held() { return st.away && !U.session.bgAudio; }
+  /** La ventana pierde o recupera el foco. Con la opción "seguir sonando" encendida no se toca nada. */
+  function setAway(away) {
+    away = !!away; if (away === st.away) return;
+    st.away = away;
+    var m = st.mgr; if (!m) return;
+    try {
+      if (away && !U.session.bgAudio && !st.held) { m.pauseAllActiveSounds(); st.held = true; }
+      else if (!away && st.held) { m.resumeAllActiveSounds(); st.held = false; }
+    } catch (e) { st.held = false; }
+  }
+  /** Escucha (una sola vez) cuándo la ventana pierde o recupera el foco o se oculta. Al volver a una pestaña visible se reanuda sin más (no se exige foco: en un iframe podría no llegar nunca). */
+  function hook() {
+    if (st.hooked) return; st.hooked = true;
+    var w = typeof window !== 'undefined' ? window : null, d = typeof document !== 'undefined' ? document : null;
+    if (w && w.addEventListener) { w.addEventListener('blur', function () { setAway(true); }); w.addEventListener('focus', function () { setAway(false); }); }
+    if (d && d.addEventListener) d.addEventListener('visibilitychange', function () { setAway(!!d.hidden); });
+  }
+
   U.Audio = {
     state: st, MUSIC: MUSIC, SFX: SFX, TRAINS: TRAINS, TRAIN_EVERY: TRAIN_EVERY, TRAIN_FIRST: TRAIN_FIRST, ALERT: ALERT, GROUPS: GROUPS, STEPS: STEPS, DEFAULT: DEFAULT,
-    gain: gain, level: function (g) { return slot(g).level; }, muted: function (g) { return slot(g).mute; },
+    gain: gain, away: setAway, isHeld: held, level: function (g) { return slot(g).level; }, muted: function (g) { return slot(g).mute; },
 
     /** ¿Estás en apuro? Queda menos del 15 % del tiempo del día, del dinero con el que empezó el nivel o de la energía (stamina) máxima, y la
      *  partida sigue (con 0 de dinero o de energía la partida termina y ya no hay nada que apurar). */
@@ -78,6 +101,8 @@
      *  Mantiene la música, los fundidos, el bucle de apuro y el tren de cada 60 s. */
     tick: function (scene, track, dt, opts) {
       var m = mgr(scene); if (!m) return;
+      st.mgr = m; hook();
+      if (held()) return;                                                  // sin foco: audio en pausa; no cambia de pista ni cuenta el tren hasta volver
       U.Save.load();                                                       // los volúmenes guardados valen desde el primer fotograma (no hay "salto" al arrancar)
       if (!st.ready) { st.ready = true; st.mv = gain('music'); }
       var paused = !!(opts && opts.paused), wantAlert = !!(opts && opts.alert) && !paused, alertOn = wantAlert && gain('alert') > 0;   // en PAUSA el apuro calla (con fundido)
@@ -92,6 +117,7 @@
     /** Efecto de sonido (nombre de SFX); suena con el volumen de su módulo y nada si está en silencio. */
     play: function (scene, name) {
       var m = mgr(scene); if (!m || SFX[name] === undefined) return;
+      if (held()) return;
       var g = gain(GROUP_OF[name] || 'sfx'); if (g <= 0) return;
       m.playSound('sfx_' + name + '.ogg', false, pct(SFX[name], g), 1);
     },
@@ -111,6 +137,14 @@
     preview: function (scene, g) {
       if (g === 'music' || st.t - st.lastPreview < PREVIEW_GAP) return;
       st.lastPreview = st.t; this.play(scene, g === 'alert' ? 'asalto' : 'select');
+    },
+
+    /** Ajuste "al salir de la ventana": PAUSAR (por defecto) o SEGUIR sonando. Devuelve el alto que ocupa (46). */
+    focusRow: function (ui, scene, id, x, y, w, modal) {
+      var keep = !!U.session.bgAudio, mo = modal ? { modal: true } : {}, tz = modal ? { z: 330 } : {};
+      ui.text(id + 'bgt', 'AL SALIR DE LA VENTANA', x, y + 11, Object.assign({ size: 8, color: '255;255;255' }, tz));
+      if (ui.button(id + 'bg', keep ? 'SEGUIR' : 'PAUSAR', x + w - 100, y, 100, 30, Object.assign({ size: 8, fill: keep ? '110;60;60' : '39;174;96' }, mo))) { U.session.bgAudio = !keep; U.Save.persist(); }
+      return 46;
     },
 
     /** Los tres módulos (música general, sonidos generales, peligro y apuro): nombre y %, barra de 10 pasos (se toca un paso), − / + y MUDO.
