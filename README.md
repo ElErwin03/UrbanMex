@@ -194,3 +194,19 @@ Al terminar la jornada la pantalla Resultado muestra cómo te fue y qué hacer p
 - Al ganar la última jornada: `COMPLETASTE LA SEMANA!` con las estrellas de toda la semana.
 - Vista previa: `node tools/dump_scene.js . Resultado r.json --result win --stars 2 --record old --frames 40` (o `--result lose --left 2 --cause money`).
 
+## Tutorial
+
+`COMO JUGAR` (y la primera vez que pulsas `JUGAR`) abre un tutorial de **6 páginas**, cada una con una demo animada a la derecha:
+
+1. **El objetivo:** sales a las 7:00 AM y llegas antes del límite (barra de tiempo).
+2. **Cómo moverte:** las estaciones vecinas se iluminan, `VIAJAR`, doble clic, combis y transbordos.
+3. **Tus recursos:** tiempo, stamina y dinero se gastan al viajar; con menos del 15 % se ponen rojos con `!`, igual que en el HUD.
+4. **El celular:** las seis apps, resaltadas una a una, y que las noticias son la guía.
+5. **Peligro y apuro:** noticia de robo, atajo peligroso frente a rodeo seguro, bloqueos y señales de apuro.
+6. **Estrellas y controles:** las tres estrellas, `Esc`/`P` para pausar y doble clic.
+
+- **Navegación:** `SIGUIENTE >` / `< ANTERIOR`, los puntos de abajo (saltan a una página), `SALTAR` (o `Esc`) para salir y las teclas `←` `→` y `Enter`. Solo la última página lleva a jugar (`A JUGAR!`, o `ENTENDIDO!` si vienes del menú). Al terminar o saltar se marca el tutorial como visto (`seenTutorial`).
+- **Los números no están escritos a mano:** tiempos, costos, Monster, combi, pérdida por robo y umbral de apuro salen de `config.json` y de `Rules.URGENT_BELOW` (`U.TutorialPages(config)`); si cambias el balance, el tutorial se actualiza solo. Una prueba comprueba que cada texto cabe en su tarjeta.
+- **Accesibilidad:** con *Reducir movimiento* las demos quedan fijas.
+- **Vista previa:** `node tools/dump_scene.js . Tutorial t.json --page 2 --frames 30` (páginas 0 a 5).
+
