@@ -41,7 +41,7 @@
 
   function travel(um, id) {
     var run = um.run, from = run.current, out = R.travel(run, id);
-    if (!out.ok) { float(um, REASON[out.reason] || 'NO SE PUEDE', PAL.red); snd(um, 'error'); return; }
+    if (!out.ok) { var why = R.explain(run, id); float(um, why ? why.short : 'NO SE PUEDE', PAL.red); snd(um, 'error'); return; }   // el panel de la estación (ya abierta por el primer clic) explica el motivo
     snd(um, 'viaje'); um.selected = null; if (um.map.cam.zoom > um.map.fitZoom + 0.05) um.map.followPlayer(); um.map.walk(from, id, 0.45);   // con toda la red a la vista la cámara no se mueve
     um.pending = out; float(um, id + '  -' + out.cost.time + ' min', PAL.blue);
   }
@@ -79,8 +79,8 @@
     var run = um.run;
     if (!id) { um.selected = null; return; }
     if (id === run.current) { float(um, 'Ya estas aqui', PAL.dim); return; }
-    if (run.blocked[id]) { float(um, 'Estacion bloqueada', PAL.purple); snd(um, 'error'); return; }
-    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, 'No conectada', PAL.red); snd(um, 'error'); return; }
+    if (run.blocked[id]) { float(um, R.explain(run, id).short, PAL.purple); snd(um, 'error'); return; }
+    if (!U.Graph.connected(run.graph, run.current, id)) { float(um, R.explain(run, id).short, PAL.red); snd(um, 'error'); return; }
     select(um, id); snd(um, 'select');
   }
 
@@ -148,15 +148,17 @@
       if (c.combi && id !== run.level.goal) desc = 'Ruta de COMBI desde ' + run.current + ': $' + c.money + ' pero salta varias estaciones. Viajar aqui?';
       ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });
       ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });
-      ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });
+      var why = chk.ok ? null : R.explain(run, id);                          // por qué NO se puede viajar (con los números reales)
+      if (why) { ui.text('sp:w1', why.short + '.', x + 16, y + 34, { size: 8, color: PAL.red }); ui.text('sp:w2', why.detail, x + 16, y + 48, { size: 8, color: '200;205;225' }); }
+      else ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });
       var base = c.combi ? c.time : c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base;
-      ui.icon('sp:i1', 'reloj', x + 16, y + 62, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 70, { size: 8, color: delay > 2 ? PAL.red : PAL.blue });
-      ui.icon('sp:i2', 'rayo', x + 220, y + 62, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 70, { size: 8 });
-      ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8 });
+      ui.icon('sp:i1', 'reloj', x + 16, y + 62, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 70, { size: 8, color: delay > 2 || (why && why.code === 'night') ? PAL.red : PAL.blue });
+      ui.icon('sp:i2', 'rayo', x + 220, y + 62, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 70, { size: 8, color: why && why.code === 'stamina' ? PAL.red : '255;255;255' });
+      ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8, color: why && why.code === 'money' ? PAL.red : '255;255;255' });
       if (c.combi) ui.text('sp:tr', 'COMBI', x + 400, y + 70, { size: 8, color: '255;170;40' });
       else if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });
       var label = chk.ok ? 'VIAJAR' : (REASON[chk.reason] || 'NO');
-      if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, disabled: !chk.ok })) travel(um, id);
+      if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, fill: chk.ok ? undefined : '90;60;60' })) travel(um, id);   // sin poder viajar sigue siendo tocable: avisa con sonido y mensaje, no se queda mudo
       if (ui.button('sp:no', 'CANCELAR', x + 232, y + 90, 150, 32, { size: 8, fill: '70;70;100' })) um.selected = null;
     } else if (run.data.stations[run.current].shop) {
       var price = R.monsterPrice(run), can = run.money >= price && run.stamina < run.staminaMax;

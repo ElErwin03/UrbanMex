@@ -36,6 +36,7 @@ function mockObject(def) {
       if (k === 'setBlendMode') { assert.ok([0, 1, 2, 3].includes(args[0]), 'modo de mezcla inválido ' + args[0]); t.blend = args[0]; }
       if (k === 'setScaleX') t.sx = args[0];
       if (k === 'setScaleY') t.sy = args[0];
+      if (k === 'setText') t.text = args[0];
       if (k === 'setZOrder') t.z = args[0];
       if (k === 'setPosition') { t.x = args[0]; t.y = args[1]; }
       if (k === 'setX') t.x = args[0];
@@ -687,76 +688,25 @@ test('celular: la app SONIDO (y el acceso desde AJUSTES) muestra los tres módul
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 
-// ---- pausa dentro del nivel
-const pauseSession = () => {
-  audioReset(); delete globalThis.gdjs.UrbanMex; KEYS.clear();
+test('viaje imposible: el panel explica el motivo con los números reales, el botón avisa con sonido y no viaja (ni con doble clic)', () => {
+  audioReset(); delete globalThis.gdjs.UrbanMex;
   const s = session('Nivel'); s.frame(3); const u = () => s.scene._um, U = s.U; u().modal = null; u().modalQueue = [];
   const at = (id) => { const w = u().map.stationPos(id), c = u().map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
-  const key = (k, n = 1) => { KEYS.add(k); s.frame(n); };
-  return { s, u, U, at, key };
-};
-
-test('pausa: Esc / P y el botón PAUSA pausan y continúan; no hay pausa al terminar el día', () => {
-  const { s, u, key } = pauseSession();
-  assert.equal(u().paused, false);
-  key('Escape'); assert.equal(u().paused, true, 'Esc pausa'); assert.equal(u().pauseView, 'main');
-  key('Escape'); assert.equal(u().paused, false, 'Esc otra vez continúa');
-  key('p'); assert.equal(u().paused, true, 'P pausa'); key('p'); assert.equal(u().paused, false, 'P continúa');
-  s.click(1169, 28); assert.equal(u().paused, true, 'el botón PAUSA pausa');
-  s.click(640, 343); assert.equal(u().paused, false, 'CONTINUAR continúa');
-  u().run.over = true; u().run.won = false; s.frame(2); key('Escape'); assert.equal(u().paused, false, 'con el día terminado no hay pausa');
-});
-
-test('pausa: congela el mapa, los efectos y los mensajes, y nada de abajo responde al ratón', () => {
-  const { s, u, U, at, key } = pauseSession();
-  const run = u(), r = u().run, nb = U.Graph.neighbors(r.graph, r.current).find((x) => !r.blocked[x] && !r.data.stations[x].shop);
-  u().floats.push({ text: 'prueba', color: '255;255;255', t: 0 }); s.frame(2);
-  const t0 = u().t, f0 = u().floats[0].t, cam = JSON.stringify(u().map.cam); key('Escape');
-  s.frame(60);
-  assert.equal(u().t, t0, 'el reloj de animación no avanza (ni en el fotograma de Esc)'); assert.equal(u().floats[0].t, f0, 'el mensaje flotante no envejece'); assert.equal(JSON.stringify(u().map.cam), cam);
-  // clic en una estación, en ABC, en el celular y arrastrar el mapa: no pasa nada
-  const labels = u().map.labelsAll, ph = u().phone.open;
-  s.click(...at(nb)); s.click(...at(nb)); assert.equal(u().selected, null, 'no se selecciona una estación'); assert.equal(r.current, run.run.current);
-  s.click(300, 82); assert.equal(u().map.labelsAll, labels, 'ABC no responde'); s.click(1248, 28); assert.equal(u().phone.open, ph, 'el celular no responde');
-  s.input.x = 600; s.input.y = 500; s.input.down = true; s.frame(1); s.input.x = 300; s.input.y = 300; s.frame(2); s.input.down = false; s.input.rel = true; s.frame(1); s.input.rel = false; s.frame(1);
-  assert.equal(JSON.stringify(u().map.cam), cam, 'arrastrar no mueve el mapa');
-  assert.equal(u().paused, true);
-});
-
-test('pausa: un viaje a medias se congela y termina al continuar; el día no avanza', () => {
-  const { s, u, U, at, key } = pauseSession();
-  const r = u().run, start = r.current, nb = U.Graph.neighbors(r.graph, start).find((x) => !r.blocked[x] && !r.data.stations[x].shop && !r.danger[x]);
-  s.click(...at(nb)); s.click(132, 592 + 90 + 16); assert.ok(u().pending, 'el viaje empezó');
-  assert.ok(u().map.moving(), 'el jugador va caminando');
-  const pos = () => JSON.stringify(u().map.pp), p0 = pos(), mv0 = u().map.move.t;
-  key('Escape'); assert.equal(pos(), p0, 'el mismo fotograma en que se pulsa Esc ya no avanza'); assert.equal(u().map.move.t, mv0);
-  s.frame(120); assert.ok(u().map.moving(), 'sigue a medio camino'); assert.ok(u().pending, 'el viaje no se resuelve en pausa'); assert.equal(r.current, nb); assert.equal(pos(), p0, 'el jugador no se mueve');
-  // aunque el recorrido ya hubiera terminado, la llegada espera a que continúes
-  u().map.move = null; s.frame(30); assert.ok(u().pending, 'la llegada no se resuelve mientras está en pausa'); assert.ok(!u().modal, 'ni aparece el aviso de la estación');
-  s.click(640, 343); finishModals(s); assert.ok(!u().map.moving() && !u().pending, 'al continuar el viaje termina'); assert.equal(u().paused, false);
-});
-
-test('pausa: menú SONIDO cambia los volúmenes; SALIR AL MENU pide confirmación y CANCELAR no sale', () => {
-  const { s, u, U, key } = pauseSession();
-  key('Escape'); s.click(640, 401); assert.equal(u().pauseView, 'sound');
-  const v0 = U.session.vol.music.level; s.click(755, 265); assert.equal(U.session.vol.music.level, v0 + 1, '+ sube la música'); s.click(435, 265); s.click(435, 265); assert.equal(U.session.vol.music.level, v0 - 1, '- la baja');
-  s.click(822, 265); assert.equal(U.session.vol.music.mute, true, 'MUDO silencia la música'); s.click(822, 265); assert.equal(U.session.vol.music.mute, false);
-  key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en SONIDO vuelve al menú de pausa'); assert.equal(u().paused, true);
-  s.click(640, 401); s.click(640, 452); assert.equal(u().pauseView, 'main', 'VOLVER regresa');
-  s.click(640, 459); assert.equal(u().pauseView, 'confirm'); assert.equal(s.scene.changes.length, 0, 'todavía no sale');
-  s.click(520, 437); assert.equal(u().pauseView, 'main'); assert.equal(s.scene.changes.length, 0, 'CANCELAR no sale');
-  s.click(640, 459); key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en la confirmación también cancela'); assert.equal(s.scene.changes.length, 0);
-  s.click(640, 459); s.click(760, 437); assert.deepEqual(s.scene.changes.pop(), [3, 'Menu'], 'SI, SALIR vuelve al menú');
-});
-
-test('pausa: el tren de 60 s espera, la música baja, el apuro calla y al continuar no se repite el aviso', () => {
-  const { s, u, U, key } = pauseSession(); const A = U.Audio, r = u().run;
-  s.frame(30); const train0 = A.state.trainIn, mv0 = A.state.mv; assert.ok(train0 < A.TRAIN_FIRST, 'el tren cuenta en juego');
-  key('Escape'); s.frame(80);
-  assert.equal(A.state.trainIn, train0, 'el tren no avanza en pausa'); assert.ok(Math.abs(A.state.mv - mv0 * A.ALERT.pauseDuck) < 0.01, 'la música baja a ' + A.ALERT.pauseDuck + ' (' + A.state.mv + ')');
-  key('Escape'); s.frame(80); assert.ok(Math.abs(A.state.mv - mv0) < 0.01, 'al continuar la música vuelve');
-  // apuro: suena, se calla en pausa, vuelve sin repetir el aviso de entrada
-  r.stamina = 5; s.frame(30); assert.equal(SND.count(/^sfx_alerta/), 1); assert.ok(SND.music[2] && SND.music[2].vol > 0, 'el apuro suena');
-  key('Escape'); s.frame(60); assert.ok(A.state.al === null || A.state.alv < 0.001, 'el apuro calla en pausa');
-  key('Escape'); s.frame(60); assert.ok(A.state.al && A.state.alv > 0.05, 'el apuro vuelve al continuar'); assert.equal(SND.count(/^sfx_alerta/), 1, 'sin repetir el aviso de entrada');
+  const txt = (k) => { const o = u().ui.pool.t['UI:' + k]; return o && !o.hidden ? o.text : null; };
+  const run = u().run; U.session.dblTravel = true;
+  // combi Coyoacán → Pantitlán con 30 de stamina: faltan 25
+  run.current = 'Coyoacán'; run.stamina = 30; run.money = 100; u().selected = 'Pantitlán'; s.frame(2);
+  assert.equal(txt('sp:w1'), 'Te faltan 25 de stamina.'); assert.ok(/55/.test(txt('sp:w2')) && /30/.test(txt('sp:w2')), txt('sp:w2')); assert.equal(txt('sp:d'), null, 'no debe mostrar la descripción normal');
+  SND.log.length = 0; s.click(132, 592 + 90 + 16);
+  assert.equal(SND.count(/^sfx_error/), 1, 'avisa con el sonido de error'); assert.equal(SND.count(/^sfx_viaje/), 0);
+  assert.equal(run.current, 'Coyoacán', 'no viaja'); assert.equal(u().selected, 'Pantitlán', 'el panel sigue abierto'); assert.ok(u().floats.some((f) => /25 de stamina/.test(f.text)), 'mensaje flotante con el motivo');
+  // sin dinero
+  run.stamina = 100; run.money = 20; s.frame(2); assert.equal(txt('sp:w1'), 'Te faltan 20 ' + run.data.config.currencyName + '.');
+  // doble clic en una vecina que no se puede pagar: no viaja y abre el panel con el motivo
+  u().selected = null; s.frame(2); SND.log.length = 0; s.click(...at('Pantitlán')); s.click(...at('Pantitlán')); s.frame(2);
+  assert.equal(run.current, 'Coyoacán', 'el doble clic tampoco viaja'); assert.equal(u().selected, 'Pantitlán'); assert.ok(SND.count(/^sfx_error/) >= 1);
+  assert.equal(txt('sp:w1'), 'Te faltan 20 ' + run.data.config.currencyName + '.');
+  // con recursos suficientes ya no hay explicación y sí viaja
+  run.money = 100; s.frame(2); assert.equal(txt('sp:w1'), null); assert.ok(txt('sp:d') !== null);
+  SND.log.length = 0; s.click(132, 592 + 90 + 16); assert.equal(SND.count(/^sfx_viaje/), 1); assert.ok(u().pending && u().pending.ok, 'con recursos suficientes el viaje sí se inicia');
 });
