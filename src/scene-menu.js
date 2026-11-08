@@ -58,7 +58,9 @@
     var open = U.Infinite.unlocked(total), ib = U.session.inf || { best: 0, stars: 0 };           // MODO INFINITO: se desbloquea al completar todos los niveles
     if (ui.button('inf', open ? 'MODO INFINITO' : 'MODO INFINITO - BLOQUEADO', 490, 514, 300, 44, { size: 8, fill: open ? '120;60;160' : '50;50;70', disabled: !open })) { U.Infinite.start(); U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
     ui.text('infh', open ? (ib.best ? 'Mejor racha: ' + ib.best + (ib.best === 1 ? ' ronda' : ' rondas') + ' - ' + ib.stars + ' estrellas' : 'Rutas al azar. Cuantas rondas aguantes?') : 'Completa los ' + total + ' niveles para desbloquearlo', 640, 566, { size: 8, align: 'center', color: open ? '210;170;240' : '110;110;140' });
-    if (ui.button('how', 'COMO JUGAR', 490, 584, 300, 36, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }
+    if (ui.button('how', 'COMO JUGAR', 490, 584, 146, 36, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }
+    var ac = U.Achievements.count();                                                                // LOGROS: pantalla con todos y cuántos llevas
+    if (ui.button('ach', 'LOGROS ' + ac.got + '/' + ac.total, 644, 584, 146, 36, { size: 8, fill: '150;110;20' })) m.view = 'ach';
     if (ui.button('quit', 'SALIR', 490, 630, 300, 36, { size: 8, fill: '110;50;50' })) m.confirmExit = true;      // pide confirmación antes de cerrar
   }
 
@@ -123,6 +125,25 @@
     }
   }
 
+  /** LOGROS: todos en una cuadrícula; los conseguidos brillan y los pendientes dicen qué hacer (con su avance si cuentan algo). */
+  var ACH = { w: 300, h: 78, gap: 12, cols: 4, y0: 104, step: 84 }, GROUP_COLOR = { progreso: '46;204;113', estilo: '90;170;255', eventos: '243;156;18', infinito: '190;110;230' };
+  function drawAchievements(scene, ui, m) {
+    var A = U.Achievements, c = A.count(), x0 = (1280 - (ACH.cols * ACH.w + (ACH.cols - 1) * ACH.gap)) / 2;
+    ui.text('ah', 'LOGROS', 640, 28, { size: 24, align: 'center', color: PAL.yellow });
+    ui.text('ac', c.got + ' de ' + c.total + ' desbloqueados', 640, 70, { size: 8, align: 'center', color: PAL.dim });
+    ui.rect(440, 84, 400, 8, { fill: '24;24;46', border: '60;60;90', bw: 2 }); if (c.got) ui.rect(442, 86, Math.max(4, 396 * c.got / c.total), 4, { fill: '255;200;60', bw: 0 });
+    A.LIST.forEach(function (a, i) {
+      var x = x0 + (i % ACH.cols) * (ACH.w + ACH.gap), y = ACH.y0 + Math.floor(i / ACH.cols) * ACH.step, on = A.has(a.id), pr = A.progress(a);
+      ui.rect(x, y, ACH.w, ACH.h, { fill: on ? '44;38;14' : '20;20;38', border: on ? '255;200;60' : '60;60;90', bw: on ? 3 : 2 });
+      ui.rect(x + 3, y + 3, 5, ACH.h - 6, { fill: on ? GROUP_COLOR[a.group] : '50;50;70', bw: 0 });
+      ui.icon('ai' + i, on ? 'trofeo' : 'bloqueo', x + 16, y + 12, 2, on ? {} : { opacity: 110 });
+      ui.text('an' + i, a.name, x + 60, y + 10, { size: 8, color: on ? '255;230;120' : '150;150;180' });
+      ui.lines('ad' + i, util.wrap(a.desc, 27), x + 60, y + 28, { size: 8, lineH: 12, color: on ? '230;234;250' : '110;110;140' });
+      if (pr && !on) ui.text('ap' + i, pr[0] + '/' + pr[1], x + ACH.w - 10, y + ACH.h - 16, { size: 8, align: 'right', color: PAL.orange });
+    });
+    if (ui.button('aback', 'VOLVER', 490, 618, 300, 40, { size: 8, fill: '70;70;100' })) m.view = 'main';
+  }
+
   /** Créditos: las entidades donde se realizó, el equipo y con qué se hizo. */
   function drawCredits(scene, ui, m) {
     var C = U.CREDITS;
@@ -167,19 +188,19 @@
 
   U.Scenes.menu = function (scene) {
     var ui = U.UI.of(scene), m = scene._um || init(scene), dt = Math.min(0.1, scene.getElapsedTime() / 1000), data = U.Data.ready(scene);
-    U.Save.load();
+    U.Save.load(); if (!U.session.swept) { U.session.swept = true; U.Achievements.sweep(); }   // logros de progreso que ya se cumplían antes de existir
     m.t += dt; ui.begin();
     var rx = ui.px, ry = ui.py; if (m.confirmExit) { ui.px = -9999; ui.py = -9999; }   // con la ventana de salida abierta, nada de abajo responde al ratón
     m.stars.forEach(function (s) { ui.rect(s[0], s[1], 4, 4, { fill: Math.sin(m.t * 2 + s[2]) > 0 ? '255;255;255' : '120;120;160', bw: 0 }); });
     m.train.setX(((m.t * 220) % 1900) - 300);
     ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });
-    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else if (m.view === 'a11y') drawA11y(scene, ui, m); else drawMain(scene, ui, m, data);
+    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else if (m.view === 'ach') drawAchievements(scene, ui, m); else if (m.view === 'a11y') drawA11y(scene, ui, m); else drawMain(scene, ui, m, data);
     ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });
     m.fx.update(dt, m);
     U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
     if (m.view === 'main' && ui.button('cred', 'CREDITOS', 1074, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'credits';
     if (m.view === 'main' && ui.button('a11y', 'ACCESIBILIDAD', 16, 52, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'a11y';
-    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && m.view !== 'a11y' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
+    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && m.view !== 'ach' && m.view !== 'a11y' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
     ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);
     ui.end();
   };

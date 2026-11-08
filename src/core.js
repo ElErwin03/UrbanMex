@@ -8,7 +8,7 @@
 
   U.VERSION = '2.0.0';
   // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)
-  U.session = { levelIndex: 0, lastResult: null, completed: [], best: {}, inf: { best: 0, stars: 0 }, infinite: null, dblTravel: true, loaded: false,
+  U.session = { levelIndex: 0, lastResult: null, completed: [], best: {}, inf: { best: 0, stars: 0 }, infinite: null, ach: {}, stats: null, dblTravel: true, loaded: false,
     vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; best: mejor marca por nivel {estrellas, dinero}; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan
 
   /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,
@@ -33,6 +33,14 @@
         var ib = d.inf.best, is = d.inf.stars;
         U.session.inf = { best: typeof ib === 'number' && ib >= 0 && ib % 1 === 0 && ib < 1e6 ? ib : 0, stars: typeof is === 'number' && is >= 0 && is % 1 === 0 && is < 1e7 ? is : 0 };
       }
+      if (d.ach && typeof d.ach === 'object' && U.Achievements) {                                    // logros desbloqueados (solo ids conocidos) y estadísticas (enteros no negativos)
+        var ach = {}; Object.keys(d.ach).forEach(function (k) { if (d.ach[k] === true && U.Achievements.byId(k)) ach[k] = true; });
+        U.session.ach = ach;
+      }
+      if (d.stats && typeof d.stats === 'object' && U.Achievements) {
+        var stt = U.Achievements.zero(); U.Achievements.STAT_KEYS.forEach(function (k) { var v = d.stats[k]; if (typeof v === 'number' && v >= 0 && v % 1 === 0 && v < 1e9) stt[k] = v; });
+        U.session.stats = stt;
+      }
       if (d.seenTutorial) U.session.seenTutorial = true;
       if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;
       if (d.fx === 'high' || d.fx === 'low' || d.fx === 'off') U.session.fxQuality = d.fx;          // accesibilidad (se validan: un guardado viejo o dañado no rompe nada)
@@ -50,7 +58,7 @@
       try {
         var st = this._store(); if (!st) return;
         st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),
-                                               best: U.session.best || {}, inf: U.session.inf || { best: 0, stars: 0 }, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,
+                                               best: U.session.best || {}, inf: U.session.inf || { best: 0, stars: 0 }, ach: U.session.ach || {}, stats: U.session.stats || {}, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,
                                                fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true, bg: U.session.bgAudio === true }));
       } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }
     },
@@ -82,7 +90,7 @@
       for (var i = 0; i < total; i++) if (!this.isCompleted(i)) return i;
       return Math.max(0, total - 1);
     },
-    reset: function () { U.session.completed = []; U.session.best = {}; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; this.persist(); }
+    reset: function () { U.session.completed = []; U.session.best = {}; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; U.session.ach = {}; U.session.stats = null; this.persist(); }
   };
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }

@@ -9,7 +9,7 @@ import json, os, glob
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJ = os.path.join(ROOT, 'My project')
 SRC = os.path.join(ROOT, 'src')
-MODULES = ['core', 'data', 'graph', 'events', 'layout', 'rules', 'news', 'infinite', 'ui', 'a11y', 'map', 'phone', 'fx', 'audio', 'scene-menu', 'scene-tutorial', 'scene-nivel', 'scene-resultado']
+MODULES = ['core', 'data', 'graph', 'events', 'layout', 'rules', 'news', 'infinite', 'achievements', 'ui', 'a11y', 'map', 'phone', 'fx', 'audio', 'scene-menu', 'scene-tutorial', 'scene-nivel', 'scene-resultado']
 FONT = 'PressStart2P-Regular.ttf'
 
 # ------------------------------------------------------------------ recursos
@@ -54,7 +54,7 @@ def painter(name):
             "absoluteCoordinates": True, "clearBetweenFrames": False, "antialiasing": "none"}
 
 FX_ANIMS = ['glow', 'soft', 'fog', 'vignette', 'edge', 'spark', 'shadow', 'beam', 'haze_t', 'haze_b', 'solid']   # = sprites fx_*.png (src/fx.js)
-ICONS = ['moneda', 'rayo', 'reloj', 'tienda', 'meta', 'casa', 'bloqueo', 'alerta', 'noticia', 'mapa', 'saldo', 'ajustes', 'sonido', 'persona', 'celular', 'lineas', 'combi', 'estrella', 'estrella_vacia', 'lluvia', 'multitud']
+ICONS = ['moneda', 'rayo', 'reloj', 'tienda', 'meta', 'casa', 'bloqueo', 'alerta', 'noticia', 'mapa', 'saldo', 'ajustes', 'sonido', 'persona', 'celular', 'lineas', 'combi', 'estrella', 'estrella_vacia', 'lluvia', 'multitud', 'trofeo']
 O = {
   'Texto': text('Texto'), 'TextoMapa': text('TextoMapa', outline=True), 'UIBase': painter('UIBase'), 'UIModal': painter('UIModal'), 'Mapa': painter('Mapa'),
   'Icono': sprite('Icono', [(i, [f'icono_{i}.png']) for i in ICONS]),
