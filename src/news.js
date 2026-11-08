@@ -17,12 +17,15 @@
              severity: item.severity, icon: item.icon, time: util.clock(run.minute), lines: linesOf(run, item) };
   }
 
+  /** Bloqueos permanentes (los de una huelga reabren solos: no cuentan para decidir si una noticia es segura). */
+  function permBlocked(run) { var o = {}; Object.keys(run.blocked).forEach(function (k) { if (!run.striking || !run.striking[k]) o[k] = true; }); return o; }
+
   var News = {
     /** ¿Es seguro aplicar esta noticia? (no bloquea la meta ni aísla al jugador de ella) */
     isSafe: function (run, item) {
       var blocks = (item.effects && item.effects.block) || [];
       if (!blocks.length) return true;
-      var nb = {}; Object.keys(run.blocked).forEach(function (k) { nb[k] = true; });
+      var nb = permBlocked(run);
       blocks.forEach(function (s) { nb[s] = true; });
       if (nb[run.level.goal]) return false;
       return G.reachable(run.graph, run.current, run.level.goal, nb);
@@ -47,9 +50,32 @@
     eligible: function (run, onlyType) {
       return run.data.news.filter(function (n) {
         var blocks = (n.effects && n.effects.block) || [];
-        var redundant = blocks.length > 0 && blocks.every(function (b) { return run.blocked[b]; });   // no repetir un bloqueo que ya existe
+        var pb = permBlocked(run), redundant = blocks.length > 0 && blocks.every(function (b) { return pb[b]; });   // no repetir un bloqueo que ya existe
         return !run.newsUsed[n.id] && !redundant && (!onlyType || n.type === onlyType) && News.isSafe(run, n);
       });
+    },
+
+    /** Noticia de un EVENTO DEL DÍA (events.js): kind 'start' | 'end' | 'now' | 'soon'. Con unread = true suma al globo del celular. */
+    event: function (run, ev, kind, unread) {
+      var t = U.Events.text(run, ev, kind);
+      run.newsLog.unshift(stamp(run, { id: 'ev:' + ev.id + ':' + kind, type: 'evento', title: t.title, desc: t.desc, impact: t.impact, severity: t.severity,
+                                       icon: ev.icon, effects: {} }));
+      if (ev.line) run.newsLog[0].lines = [ev.line];
+      if (unread) { run.unread++; run.newsCount++; }
+      return t;
+    },
+
+    /** Vacía la cola de cambios de eventos (los deja Rules al correr el reloj) en el celular. Devuelve lo anunciado: [{ id, kind, title, severity }]. */
+    drain: function (run) {
+      var q = run.eventQueue || [], out = [], byId = {};
+      run.eventQueue = [];
+      U.Events.list(run).forEach(function (e) { byId[e.id] = e; });
+      q.forEach(function (t) {
+        var ev = byId[t.id]; if (!ev) return;
+        if (t.kind === 'wait') { News.info(run, 'ESPERASTE A QUE REABRA', 'Sin otra salida, esperaste de ' + util.clock(t.from) + ' a ' + util.clock(t.to) + '.', 'Perdiste ' + (t.to - t.from) + ' min'); out.push({ id: t.id, kind: 'wait', title: 'ESPERASTE ' + (t.to - t.from) + ' MIN', severity: 'warning', entry: run.newsLog[0] }); return; }
+        var x = News.event(run, ev, t.kind, true); out.push({ id: t.id, kind: t.kind, title: x.title, severity: x.severity, entry: run.newsLog[0] });
+      });
+      return out;
     },
 
     /** Mensajes iniciales del nivel. */
@@ -57,6 +83,7 @@
       var lv = run.level, cfg = run.data.config;
       News.info(run, 'Nivel ' + lv.id + ': ' + lv.day, lv.startDesc,
         'Meta: ' + lv.goal + ' | Tienes hasta las ' + util.clock(cfg.dayEndMinute));
+      U.Events.list(run).forEach(function (ev) { News.event(run, ev, run.minute >= ev.from ? 'now' : 'soon', false); });   // eventos del día (sin globo de no leídas)
       News.info(run, 'Tip del dia', 'Revisa las noticias ANTES de viajar. El mapa no te avisa de peligros ni bloqueos.',
         'Abre la app de Noticias');
     },

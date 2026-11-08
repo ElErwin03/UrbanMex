@@ -8,7 +8,12 @@
   "goalDesc": "¡Llegaste a la escuela!",
   "moneyStart": 150,
   "staminaMax": 100,
-  "blocked": []
+  "blocked": [],
+  "events": [
+   {
+    "id": "horaPico"
+   }
+  ]
  },
  {
   "id": 2,
@@ -22,6 +27,13 @@
   "blocked": [
    "Juárez",
    "Zócalo"
+  ],
+  "events": [
+   {
+    "id": "lluvia",
+    "from": 480,
+    "to": 660
+   }
   ]
  },
  {
@@ -35,6 +47,13 @@
   "staminaMax": 90,
   "blocked": [
    "Allende"
+  ],
+  "events": [
+   {
+    "id": "huelga",
+    "line": "3",
+    "until": 630
+   }
   ]
  },
  {
@@ -49,6 +68,18 @@
   "blocked": [
    "Tlatelolco",
    "Pantitlán"
+  ],
+  "events": [
+   {
+    "id": "lluvia",
+    "from": 480,
+    "to": 600
+   },
+   {
+    "id": "huelga",
+    "line": "1",
+    "until": 570
+   }
   ]
  },
  {
@@ -58,7 +89,7 @@
   "goal": "Pantitlán",
   "startDesc": "Tu casa en Observatorio. Llega a una fiesta en Pantitlán.",
   "goalDesc": "¡Llegaste a la fiesta!",
-  "moneyStart": 170,
+  "moneyStart": 190,
   "staminaMax": 90,
   "blocked": [
    "Isabel la Católica",
@@ -68,6 +99,21 @@
    "Candelaria LB",
    "Candelaria LB2",
    "Coyoacán"
+  ],
+  "events": [
+   {
+    "id": "horaPico"
+   },
+   {
+    "id": "lluvia",
+    "from": 540,
+    "to": 720
+   },
+   {
+    "id": "huelga",
+    "line": "3",
+    "until": 600
+   }
   ]
  }
 ]

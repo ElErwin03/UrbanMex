@@ -27,5 +27,28 @@
  "combi": {
   "money": 10,
   "stamina": 5
+ },
+ "events": {
+  "horaPico": {
+   "label": "HORA PICO",
+   "from": 420,
+   "to": 570,
+   "extraTime": 4,
+   "combiExtraTime": 0,
+   "extraStamina": 0,
+   "robberyBonus": 0.15
+  },
+  "lluvia": {
+   "label": "LLUVIA",
+   "from": 480,
+   "to": 660,
+   "extraTime": 2,
+   "combiExtraTime": 10,
+   "extraStamina": 1,
+   "robberyBonus": 0
+  },
+  "huelga": {
+   "label": "HUELGA"
+  }
  }
 }

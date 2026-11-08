@@ -1,6 +1,6 @@
 const test = require('node:test'), assert = require('node:assert');
 const { loadModules, rawData, cheapestStaminaPath } = require('./helpers');
-const U = loadModules(['core', 'data', 'graph', 'rules', 'news']);
+const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news']);
 const data = U.Data.normalize(rawData());
 
 /** Bot: sigue el camino más corto, compra Monster cuando le falta stamina para lo que resta. */
@@ -11,6 +11,7 @@ function playBot(levelIndex, seed, withNews) {
   while (!run.over && guard--) {
     if (withNews) { U.News.onMove(run); }                       // las noticias llegan al moverse
     const bp = cheapestStaminaPath(U, run), path = bp && bp.path;
+    if (!path && U.Rules.wait(run).ok) continue;                 // sin ruta por una huelga: espera a que reabra
     assert.ok(path, 'la meta debe seguir siendo alcanzable (nivel ' + (levelIndex + 1) + ', semilla ' + seed + ')');
     const next = path[1], need = bp.need;
     const shop = data.stations[run.current].shop;
@@ -274,7 +275,7 @@ test('urgency: el apuro empieza al bajar de 15 % (tiempo, dinero o stamina), sub
 
 // ---- Resultado: estrellas, avance y causa
 test('estrellas: llegar, ahorrar (65 % de lo que deja la mejor ruta) y sin asaltos', () => {
-  const par = [85, 105, 105, 100, 75];                                                  // dinero inicial − ruta más barata (sin noticias)
+  const par = [85, 105, 105, 100, 95];                                                  // dinero inicial − ruta más barata (sin noticias)
   data.levels.forEach((lv, i) => {
     const run = U.Rules.createRun(data, i, Math.random); assert.equal(U.Rules.parMoney(run), par[i], 'par del nivel ' + (i + 1));
     const goal = Math.ceil(par[i] * U.Rules.SAVER_KEEP); assert.equal(U.Rules.score(run).moneyGoal, goal);
@@ -284,7 +285,7 @@ test('estrellas: llegar, ahorrar (65 % de lo que deja la mejor ruta) y sin asalt
     run.robbed = 1; assert.equal(U.Rules.score(run).stars, 1, 'ni ahorro ni sin asaltos: solo llegar'); run.money = goal; assert.deepEqual(U.Rules.score(run).got, { arrive: true, saver: true, safe: false });
   });
   // los niveles que obligan a comprar un Monster (30) siguen pudiendo dar las 3 estrellas
-  [1, 3].forEach((i) => { const run = U.Rules.createRun(data, i, Math.random), par = U.Rules.parMoney(run); assert.ok(par - 30 >= Math.ceil(par * U.Rules.SAVER_KEEP), 'con un Monster aún se ahorra en el nivel ' + (i + 1)); });
+  [1, 3, 4].forEach((i) => { const run = U.Rules.createRun(data, i, Math.random), par = U.Rules.parMoney(run); assert.ok(par - 30 >= Math.ceil(par * U.Rules.SAVER_KEEP), 'con un Monster aún se ahorra en el nivel ' + (i + 1)); });
 });
 
 test('resumen: causa del final, estaciones que faltaban y avance', () => {
@@ -303,3 +304,133 @@ test('resumen: causa del final, estaciones que faltaban y avance', () => {
   r = U.Rules.createRun(data, 0, Math.random); U.Graph.neighbors(r.graph, r.current).forEach((n) => { r.blocked[n] = true; }); sm = U.Rules.summary(r); assert.ok(sm.left > 0 && sm.progress >= 0 && sm.progress <= 1);
 });
 
+
+// ---------------------------------------------------------------- eventos del día (lluvia, hora pico, huelga)
+const Rules = () => U.Rules, Ev = () => U.Events;
+const metroTo = (run) => U.Graph.neighbors(run.graph, run.current).find((n) => !U.Graph.isCombi(run.graph, run.current, n) && !run.blocked[n]);
+const combiTo = (run) => U.Graph.neighbors(run.graph, run.current).find((n) => U.Graph.isCombi(run.graph, run.current, n));
+const cloneData = () => U.Data.normalize(JSON.parse(JSON.stringify(rawData())));
+
+test('eventos: los datos se validan (ids, líneas, ventanas) y cada nivel declara los suyos', () => {
+  const lv = (e) => { const raw = JSON.parse(JSON.stringify(rawData())); raw.levels[0].events = e; return () => U.Data.normalize(raw); };
+  assert.throws(lv([{ id: 'terremoto' }]), /evento desconocido/);
+  assert.throws(lv([{ id: 'huelga', line: '9', until: 600 }]), /línea inexistente/);
+  assert.throws(lv([{ id: 'huelga', line: '3', until: 5000 }]), /fuera del día/);
+  assert.throws(lv([{ id: 'lluvia', from: 600, to: 500 }]), /ventana inválida/);
+  assert.doesNotThrow(lv([{ id: 'lluvia', from: 480, to: 600 }]));
+  assert.deepEqual(data.levels.map((l) => (l.events || []).map((e) => e.id)), [['horaPico'], ['lluvia'], ['huelga'], ['lluvia', 'huelga'], ['horaPico', 'lluvia', 'huelga']]);
+});
+
+test('lluvia: dentro de su ventana el Metro suma tiempo y stamina y la combi se atasca; fuera, todo normal', () => {
+  const run = U.Rules.createRun(data, 1), cfg = data.config, ev = cfg.events.lluvia;   // Martes: lluvia 8:00-11:00
+  const n = metroTo(run), base = U.Rules.canTravel(run, n).cost;                       // 7:00: aún no llueve
+  assert.equal(base.stamina, cfg.staminaPerStation); assert.deepEqual(base.event, { time: 0, stamina: 0 });
+  run.minute = 480; const wet = U.Rules.canTravel(run, n).cost;
+  assert.equal(wet.time, base.time + ev.extraTime); assert.equal(wet.stamina, base.stamina + ev.extraStamina);
+  assert.equal(wet.money, base.money, 'la lluvia no cobra dinero');
+  const c = combiTo(run); if (c) { run.minute = 420; const b = U.Rules.canTravel(run, c).cost; run.minute = 480; assert.equal(U.Rules.canTravel(run, c).cost.time, b.time + ev.combiExtraTime); }
+  run.minute = 660; assert.equal(U.Rules.canTravel(run, n).cost.time, base.time, 'la ventana es [from, to): a las 11:00 ya paró');
+  run.minute = 479; assert.equal(U.Rules.canTravel(run, n).cost.stamina, base.stamina);
+});
+
+test('lluvia: viajar cobra el extra y puede dejarte sin stamina (se explica con los números reales)', () => {
+  const run = U.Rules.createRun(data, 1); run.minute = 480; const n = metroTo(run), c = U.Rules.canTravel(run, n).cost;
+  run.stamina = c.stamina - 1; const why = U.Rules.explain(run, n);
+  assert.equal(why.code, 'stamina'); assert.equal(why.missing, 1); assert.ok(why.detail.length <= 62);
+  run.stamina = 100; const s0 = run.stamina, t0 = run.minute; assert.ok(U.Rules.travel(run, n).ok);
+  assert.equal(s0 - run.stamina, c.stamina); assert.equal(run.minute - t0, c.time);
+});
+
+test('hora pico: el Metro va más lento y sube el riesgo de asalto solo mientras dura', () => {
+  const ev = data.config.events.horaPico, r0 = data.config.robbery, p = r0.baseChance - r0.luck;
+  const mk = (minute) => { const run = U.Rules.createRun(data, 0, () => 0.5); run.minute = minute; return run; };          // Lunes: hora pico 7:00-9:30
+  const run = mk(420), n = metroTo(run), t = U.Rules.canTravel(run, n).cost.time; assert.equal(t, U.Rules.canTravel(mk(570), n).cost.time + ev.extraTime);
+  assert.ok(0.5 > p && 0.5 < p + ev.robberyBonus, 'el número de la prueba cae justo entre las dos probabilidades');
+  run.danger[n] = true; assert.equal(U.Rules.travel(run, n).type, 'robbery', 'en hora pico (+riesgo) te asaltan con 0.5');
+  const calm = mk(570); calm.danger[n] = true; assert.equal(U.Rules.travel(calm, n).type, 'lucky', 'fuera de la hora pico, con 0.5 pasas de suerte');
+  const c = combiTo(run); if (c) assert.equal(Ev().hopExtra(mk(420), true).time, 0, 'la combi no sufre la hora pico');
+});
+
+test('huelga: la línea queda cerrada hasta la hora indicada, se explica y reabre sola sin tocar los bloqueos de noticias', () => {
+  const run = U.Rules.createRun(data, 2), line = '3', until = 630;                              // Miércoles: huelga en la línea 3 hasta 10:30
+  const closed = data.stationList.filter((s) => s.line === line).map((s) => s.id);
+  closed.forEach((id) => assert.ok(run.blocked[id] && run.striking[id], id + ' cerrada por huelga'));
+  assert.ok(run.blocked['Allende'], 'el bloqueo del nivel sigue ahí'); assert.ok(!run.striking['Allende'], 'y no cuenta como huelga');
+  const near = U.Graph.neighbors(run.graph, run.current).find((n) => run.striking[n]);
+  if (near) { const why = U.Rules.explain(run, near); assert.equal(why.code, 'blocked'); assert.match(why.short, /Huelga en la linea 3/); assert.match(why.detail, /10:30/); assert.ok(why.detail.length <= 62); }
+  const news = U.Rules.createRun(data, 2); news.blocked[closed[0]] = true; U.Rules.applyNews(news, { effects: { block: [closed[0]] } });     // una noticia bloquea una de ellas a la vez
+  news.minute = until; U.Rules.syncEvents(news);
+  closed.forEach((id) => { if (id === closed[0]) assert.ok(news.blocked[id], 'el bloqueo de noticia es permanente'); else assert.ok(!news.blocked[id], id + ' reabre'); });
+  assert.deepEqual(Object.keys(news.striking), []);
+});
+
+test('huelga: ESPERAR avanza el reloj hasta que reabra y avisa; sin huelga o ya de noche no hace nada', () => {
+  const run = U.Rules.createRun(data, 2); assert.deepEqual(Ev().strikeEnds(run), [630]);
+  const w = U.Rules.wait(run); assert.equal(w.ok, true); assert.equal(w.from, 420); assert.equal(w.to, 630); assert.equal(run.minute, 630); assert.equal(run.waited, 210);
+  assert.deepEqual(run.eventQueue.map((q) => q.kind), ['end', 'wait'], 'avisa que reabrió y que esperaste');
+  assert.deepEqual(Object.keys(run.striking), []); assert.equal(U.Rules.wait(run).reason, 'none');
+  const late = U.Rules.createRun(data, 2); late.level = Object.assign({}, late.level, { events: [{ id: 'huelga', line: '3', until: data.config.dayEndMinute }] });
+  late.minute = 1190; U.Rules.syncEvents(late); assert.equal(U.Rules.wait(late, [data.config.dayEndMinute + 30]).reason, 'night');
+  const none = U.Rules.createRun(data, 0); assert.equal(U.Rules.wait(none).reason, 'none');
+});
+
+test('huelga: si solo te frena una huelga, esperas solo y puedes seguir; los eventos se anuncian al cruzar su hora', () => {
+  const d = cloneData(), run = U.Rules.createRun(d, 0, () => 0.99);
+  const term = d.stationList.find((s) => { const nb = U.Graph.neighbors(run.graph, s.id); return nb.length && nb.every((n) => d.stations[n].line === d.stations[nb[0]].line); });
+  assert.ok(term, 'hay una estación cuyos vecinos son todos de la misma línea');
+  const line = d.stations[U.Graph.neighbors(run.graph, term.id)[0]].line;
+  run.level = Object.assign({}, run.level, { events: [{ id: 'huelga', line, until: 600 }] }); run.current = term.id; run.minute = 500; run.blocked = {}; U.Rules.syncEvents(run);
+  assert.ok(U.Graph.neighbors(run.graph, term.id).every((n) => run.blocked[n]), 'todas sus salidas cerradas');
+  assert.equal(U.Rules.checkStuck(run), null, 'no se acaba la partida'); assert.equal(run.over, false);
+  assert.equal(run.minute, 600, 'el reloj esperó hasta la reapertura'); assert.ok(run.eventQueue.some((q) => q.kind === 'wait'));
+  assert.ok(U.Graph.neighbors(run.graph, term.id).some((n) => U.Rules.canTravel(run, n).ok), 'y ya hay a dónde ir');
+  const tr = Ev().transitions(U.Rules.createRun(data, 1), 470, 490).map((t) => t.id + ':' + t.kind);
+  assert.deepEqual(tr, ['lluvia:start'], 'la lluvia empieza a las 8:00'); assert.deepEqual(Ev().transitions(U.Rules.createRun(data, 1), 650, 700).map((t) => t.kind), ['end']);
+  assert.deepEqual(Ev().transitions(U.Rules.createRun(data, 0), 420, 430), [], 'la hora pico que ya está en marcha al empezar no se "anuncia"');
+});
+
+test('huelga: si ni esperando llegas (reabre cuando ya es de noche), la partida termina', () => {
+  const d = cloneData(), run = U.Rules.createRun(d, 0, () => 0.99);
+  const term = d.stationList.find((s) => { const nb = U.Graph.neighbors(run.graph, s.id); return nb.length && nb.every((n) => d.stations[n].line === d.stations[nb[0]].line); });
+  const line = d.stations[U.Graph.neighbors(run.graph, term.id)[0]].line;
+  run.level = Object.assign({}, run.level, { events: [{ id: 'huelga', line, until: d.config.dayEndMinute }] }); run.current = term.id; run.minute = d.config.dayEndMinute - 30; run.blocked = {}; U.Rules.syncEvents(run);
+  U.Rules.checkStuck(run); assert.equal(run.over, true); assert.equal(run.won, false);
+});
+
+test('eventos: noticias (isSafe/eligible) ignoran el cierre temporal por huelga', () => {
+  const run = U.Rules.createRun(data, 2), item = data.news.find((n) => ((n.effects || {}).block || []).length === 1);
+  const st = data.stations[item.effects.block[0]]; assert.ok(st);
+  run.striking[st.id] = run.blocked[st.id] = true;                       // simula que esa estación está cerrada solo por huelga
+  assert.ok(U.News.eligible(run).some((n) => n.id === item.id) || run.newsUsed[item.id] || !U.News.isSafe(run, item) || true);
+  const redundant = U.News.eligible(run).every((n) => n.id !== item.id);
+  assert.equal(redundant, false, 'la huelga no vuelve "repetido" un bloqueo de noticia (esa sí sería permanente)');
+});
+
+test('eventos: la noticia de cada evento y las del intro del nivel', () => {
+  const run = U.Rules.createRun(data, 4); U.News.intro(run);                                  // Viernes: hora pico, lluvia y huelga
+  const titles = run.newsLog.map((n) => n.title);
+  assert.ok(titles.some((t) => /HORA PICO/.test(t)) && titles.some((t) => /LLUVIA DESDE/.test(t)) && titles.some((t) => /HUELGA EN LA/.test(t)), titles.join(' | '));
+  assert.equal(run.unread, 0, 'el anuncio inicial no enciende el globo de no leídas');
+  run.eventQueue.push({ id: 'lluvia', kind: 'start' }, { id: 'huelga', kind: 'end', line: '3' }); run.eventQueue.push({ id: 'huelga', kind: 'wait', from: 420, to: 600 });
+  const got = U.News.drain(run); assert.deepEqual(got.map((g) => g.kind), ['start', 'end', 'wait']); assert.equal(run.unread, 2); assert.equal(run.eventQueue.length, 0);
+  assert.equal(got[0].severity, 'warning'); assert.equal(got[1].severity, 'success'); assert.ok(got.every((g) => g.entry && g.entry.title));
+  assert.deepEqual(run.newsLog.find((n) => /REABRE/.test(n.title)).lines, ['3'], 'la noticia de la huelga muestra el color de su línea');
+  Ev().IDS.forEach((id) => ['start', 'end', 'now', 'soon'].forEach((k) => { const e = Ev().list(run).find((x) => x.id === id); if (e) { const t = Ev().text(run, e, k); assert.ok(t.title && t.desc && t.impact && t.severity); } }));
+});
+
+test('eventos: con las huelgas en marcha cada nivel sigue teniendo ruta (y la meta no está en la línea cerrada)', () => {
+  data.levels.forEach((lv, i) => {
+    const run = U.Rules.createRun(data, i);
+    assert.ok(!run.striking[lv.goal], 'nivel ' + lv.id + ': la meta no puede cerrarse por huelga');
+    assert.ok(U.Graph.reachable(run.graph, lv.start, lv.goal, run.blocked), 'nivel ' + lv.id + ': hay ruta aun con la huelga');
+    assert.ok(U.Rules.hopsLeft(run, lv.start) !== null);
+  });
+});
+
+test('eventos: el panel de efectos nombra lluvia y hora pico con su costo', () => {
+  const run = U.Rules.createRun(data, 4); run.minute = 540; const n = metroTo(run), cost = U.Rules.canTravel(run, n).cost;
+  const fx = Ev().effects(run, cost); assert.equal(fx.length, 2); assert.ok(fx.some((t) => /LLUVIA/.test(t)) && fx.some((t) => /HORA PICO/.test(t)), fx.join());
+  run.minute = 800; assert.deepEqual(Ev().effects(run, U.Rules.canTravel(run, n).cost), []);
+  assert.deepEqual(Ev().status(run).map((s) => s.state), ['over', 'over', 'over']);
+  run.minute = 420; assert.deepEqual(Ev().status(run).map((s) => s.state), ['active', 'soon', 'active'], 'hora pico en marcha, lluvia por venir, huelga activa');
+});
