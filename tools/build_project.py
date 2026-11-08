@@ -9,7 +9,7 @@ import json, os, glob
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJ = os.path.join(ROOT, 'My project')
 SRC = os.path.join(ROOT, 'src')
-MODULES = ['core', 'data', 'graph', 'events', 'layout', 'rules', 'news', 'ui', 'a11y', 'map', 'phone', 'fx', 'audio', 'scene-menu', 'scene-tutorial', 'scene-nivel', 'scene-resultado']
+MODULES = ['core', 'data', 'graph', 'events', 'layout', 'rules', 'news', 'infinite', 'ui', 'a11y', 'map', 'phone', 'fx', 'audio', 'scene-menu', 'scene-tutorial', 'scene-nivel', 'scene-resultado']
 FONT = 'PressStart2P-Regular.ttf'
 
 # ------------------------------------------------------------------ recursos

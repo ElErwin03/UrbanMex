@@ -1,6 +1,6 @@
 const test = require('node:test'), assert = require('node:assert');
 const { loadModules, rawData, cheapestStaminaPath, wantsWait } = require('./helpers');
-const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news']);
+const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news', 'infinite']);
 const data = U.Data.normalize(rawData());
 
 /** Bot: sigue el camino más corto, compra Monster cuando le falta stamina para lo que resta. */
@@ -458,4 +458,81 @@ test('niveles: la semana 2 es más exigente que la 1 (más tramos y más eventos
   const hops = (lv) => { const r = U.Rules.createRun(data, lv.id - 1); return U.Rules.hopsLeft(r, lv.start); };
   assert.ok(avg(w2, hops) >= avg(w1, hops), 'más tramos en la semana 2'); assert.ok(avg(w2, (l) => l.events.length) > avg(w1, (l) => l.events.length), 'más eventos en la semana 2');
   assert.ok(w2.every((l) => l.events.length >= 2) && w2[4].events.length === 3, 'el último nivel junta los tres eventos');
+});
+
+// ---------------------------------------------------------------- modo infinito
+const Inf = () => U.Infinite;
+const withStore = (fn) => { const st = {}; globalThis.localStorage = { getItem: (k) => (k in st ? st[k] : null), setItem: (k, v) => { st[k] = String(v); } }; try { fn(st); } finally { delete globalThis.localStorage; } };
+
+test('infinito: la misma semilla y ronda dan siempre el mismo nivel; otra semilla u otra ronda, otro', () => {
+  const a = Inf().level(data, 42, 5), b = Inf().level(data, 42, 5);
+  assert.deepEqual(a, b); assert.notDeepEqual(a, Inf().level(data, 43, 5)); assert.notDeepEqual(a, Inf().level(data, 42, 6));
+  assert.equal(a.infinite, true); assert.equal(a.round, 5); assert.equal(a.day, 'RONDA 5'); assert.equal(a.id, 5);
+  assert.equal(Inf().title(a), 'RONDA 5'); assert.equal(Inf().title(data.levels[5]), 'NIVEL 6 - LUNES 2');
+  assert.equal(Inf().nice('Hidalgo L3'), 'Hidalgo'); assert.equal(Inf().nice('San Lázaro LB2'), 'San Lázaro'); assert.equal(Inf().nice('Pantitlán'), 'Pantitlán');
+});
+
+test('infinito: la dificultad sube con las rondas (tramos, bloqueos y eventos)', () => {
+  const d = (r) => Inf().difficulty(r);
+  assert.deepEqual(d(1), { hopsLow: 8, hopsHigh: 14, blocks: 0, events: 1 });
+  assert.equal(d(3).blocks, 1); assert.equal(d(6).blocks, 2); assert.equal(d(9).blocks, 3); assert.equal(d(99).blocks, 3);
+  assert.deepEqual([1, 3, 4, 6, 7, 20].map((r) => d(r).events), [1, 1, 2, 2, 3, 3]);
+  assert.ok(d(11).hopsLow > d(1).hopsLow && d(11).hopsHigh > d(1).hopsHigh); assert.deepEqual(d(11), d(50), 'el largo deja de crecer en la ronda 11');
+});
+
+test('infinito: toda ronda generada es válida, ganable y con el balance de los niveles (máx. 1 Monster, ahorro posible)', () => {
+  const cfg = data.config, byRound = {};
+  [1, 2, 3, 42, 777].forEach((seed) => { for (let round = 1; round <= 24; round++) {
+    const lv = Inf().level(data, seed, round), run = U.Rules.createRun(data, -1, () => 0.99, lv), diff = Inf().difficulty(round), tag = 'semilla ' + seed + ' ronda ' + round + ': ';
+    assert.notEqual(lv.start, lv.goal, tag + 'salida y meta distintas'); assert.ok(data.stations[lv.start] && data.stations[lv.goal]);
+    assert.ok(lv.blocked.length <= diff.blocks && lv.blocked.every((b) => b !== lv.start && b !== lv.goal), tag + 'bloqueos');
+    assert.ok(lv.events.length >= 1 && lv.events.length <= diff.events, tag + 'eventos'); assert.doesNotThrow(() => U.Events.validate(cfg, data.lines, lv), tag + 'eventos válidos');
+    assert.ok(!run.striking[lv.goal] && U.Graph.reachable(run.graph, lv.start, lv.goal, run.blocked), tag + 'hay ruta con las huelgas en marcha');
+    const open = Object.assign({}, run, { blocked: Object.assign({}, run.blocked), striking: {} }); Object.keys(run.striking).forEach((k) => { delete open.blocked[k]; });
+    const need = Math.min(Inf().cheapestPath(open).need, Inf().cheapestPath(run).need), monsters = Math.max(0, Math.ceil((need - lv.staminaMax) / cfg.monsterStamina)), par = U.Rules.parMoney(run);
+    assert.ok(monsters <= 1, tag + 'a lo sumo 1 Monster'); assert.ok(par - monsters * cfg.monsterPrice >= Math.ceil(par * U.Rules.SAVER_KEEP), tag + 'la estrella de ahorro cabe');
+    assert.ok(lv.staminaMax >= 60 && lv.staminaMax <= 120 && lv.moneyStart > 0 && lv.moneyStart % 5 === 0, tag + 'recursos');
+    const play = Inf().autoplay(data, lv); assert.equal(play.won, true, tag + 'el jugador automático gana');
+    (byRound[round] = byRound[round] || []).push(U.Rules.hopsLeft(run, lv.start));
+  } });
+  const avg = (a) => a.reduce((s, x) => s + x, 0) / a.length; assert.ok(avg(byRound[12]) > avg(byRound[1]), 'las rutas se alargan con las rondas');
+  const keys = new Set(); for (let r = 1; r <= 24; r++) { const l = Inf().level(data, 5, r); keys.add(l.start + '>' + l.goal); } assert.ok(keys.size >= 20, 'rutas variadas, no repetidas: ' + keys.size);
+});
+
+test('infinito: desbloqueo al completar los 10 niveles, racha (finish) y mejor racha guardada', () => {
+  withStore((st) => {
+    U.session.completed = []; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null;
+    assert.equal(Inf().unlocked(10), false); U.session.completed = [0, 1, 2, 3, 4, 5, 6, 7, 8]; assert.equal(Inf().unlocked(10), false, 'faltando uno, sigue bloqueado');
+    U.session.completed.push(9); assert.equal(Inf().unlocked(10), true); assert.equal(Inf().unlocked(0), false);
+    const s = Inf().start(7); assert.deepEqual(s, { seed: 7, round: 1, cleared: 0, stars: 0, newBest: false }); assert.equal(U.session.infinite, s);
+    const win = { won: true }, lose = { won: false };
+    let r = Inf().finish(win, 3); assert.deepEqual(r, { round: 1, cleared: 1, stars: 3, newBest: true, best: { best: 1, stars: 3 } });
+    s.round = 2; r = Inf().finish(win, 2); assert.deepEqual(r, { round: 2, cleared: 2, stars: 5, newBest: true, best: { best: 2, stars: 5 } });
+    s.round = 3; r = Inf().finish(lose, 0); assert.equal(r.cleared, 2, 'perder no suma'); assert.equal(r.stars, 5); assert.equal(r.newBest, true, 'la racha que acabas de hacer es tu mejor'); assert.deepEqual(r.best, { best: 2, stars: 5 });
+    assert.deepEqual(JSON.parse(st[U.Save.KEY]).inf, { best: 2, stars: 5 }, 'se guarda');
+    const s2 = Inf().start(8); r = Inf().finish(win, 1); assert.equal(r.newBest, false, '1 ronda no supera tu mejor de 2'); assert.deepEqual(r.best, { best: 2, stars: 5 });
+    s2.round = 2; r = Inf().finish(win, 3); assert.equal(r.newBest, false, 'igual de rondas y menos estrellas: no es récord'); s2.round = 3; r = Inf().finish(win, 1); assert.equal(r.newBest, true, '3 rondas sí');
+    assert.deepEqual(U.Save.recordStreak(3, 4), { isNew: false, prev: { best: 3, stars: 5 } }); assert.equal(U.Save.recordStreak(3, 9).isNew, true, 'mismas rondas y más estrellas sí');
+    U.session.infinite = null; assert.equal(Inf().finish(win, 3), null, 'sin racha activa no hace nada');
+  });
+});
+
+test('infinito: el guardado valida la mejor racha y "borrar progreso" la borra', () => {
+  withStore((st) => {
+    U.session.loaded = false; U.session.inf = { best: 0, stars: 0 };
+    st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [], best: {}, inf: { best: 12, stars: 30 } }); U.Save.load(); assert.deepEqual(U.session.inf, { best: 12, stars: 30 });
+    [{ best: -1, stars: 5 }, { best: 'x', stars: 5 }, { best: 2.5, stars: 1 }, { best: 3, stars: 'm' }, 'si', null].forEach((bad) => {
+      U.session.loaded = false; U.session.inf = { best: 0, stars: 0 }; st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [], best: {}, inf: bad }); U.Save.load();
+      assert.ok(U.session.inf.best >= 0 && U.session.inf.best % 1 === 0 && U.session.inf.stars >= 0 && U.session.inf.stars % 1 === 0, JSON.stringify(bad));
+    });
+    U.session.loaded = false; st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [] }); U.session.inf = { best: 9, stars: 9 }; U.Save.load(); assert.equal(U.session.inf.best, 9, 'un guardado viejo sin racha no la borra a medias');
+    U.session.infinite = { seed: 1, round: 2, cleared: 1, stars: 3 }; U.Save.reset(); assert.deepEqual(U.session.inf, { best: 0, stars: 0 }); assert.equal(U.session.infinite, null); assert.deepEqual(JSON.parse(st[U.Save.KEY]).inf, { best: 0, stars: 0 });
+  });
+});
+
+test('infinito: createRun acepta un nivel armado y el resumen lo marca como ronda', () => {
+  const lv = Inf().level(data, 3, 4), run = U.Rules.createRun(data, -1, () => 0.5, lv);
+  assert.equal(run.levelIndex, -1); assert.equal(run.level, lv); assert.equal(run.current, lv.start); assert.equal(run.money, lv.moneyStart); assert.equal(run.stamina, lv.staminaMax);
+  assert.deepEqual(U.Rules.summary(run).infinite, { round: 4 }); assert.equal(U.Rules.summary(U.Rules.createRun(data, 0)).infinite, null);
+  U.News.intro(run); assert.equal(run.newsLog.filter((n) => n.title === 'Ronda 4').length, 1, 'el aviso inicial dice "Ronda 4"');
 });

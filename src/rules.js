@@ -10,8 +10,9 @@
   var Rules = {
     SAVER_KEEP: 0.65,                             // 2.ª estrella: terminar con al menos el 65 % del dinero que dejaría la mejor ruta (alcanza aunque compres un Monster)
     URGENT_BELOW: 0.15,                           // apuro: queda menos del 15 % del tiempo, el dinero o la stamina (ver urgency)
-    createRun: function (data, levelIndex, rnd) {
-      var lv = data.levels[levelIndex], cfg = data.config, rng = rnd || Math.random;
+    /** `level` (opcional) es un nivel ya armado (modo infinito: levelIndex -1); si no, el nivel `levelIndex` de los datos. */
+    createRun: function (data, levelIndex, rnd, level) {
+      var lv = level || data.levels[levelIndex], cfg = data.config, rng = rnd || Math.random;
       var visited = {}; visited[lv.start] = true;
       var run = {
         data: data, graph: G.build(data), rnd: rng, levelIndex: levelIndex, level: lv,
@@ -239,7 +240,7 @@
       var cfg = run.data.config, sc = Rules.score(run), total = Rules.hopsLeft({ graph: run.graph, level: run.level, blocked: {} }, run.level.start, true);
       var left = run.won ? 0 : Rules.hopsLeft(run, run.current);
       if (left === null) left = Rules.hopsLeft(run, run.current, true);
-      return { won: run.won, reason: run.endReason, cause: run.endCause || '', levelIndex: run.levelIndex, day: run.level.day,
+      return { won: run.won, reason: run.endReason, cause: run.endCause || '', levelIndex: run.levelIndex, day: run.level.day, infinite: run.level.infinite ? { round: run.level.round } : null,
                arrival: util.clock(run.minute), travelTime: util.duration(run.minute - cfg.dayStartMinute),
                steps: run.steps, money: run.money, robbed: run.robbed, stolen: run.stolen,
                newsRead: run.newsCount, moneyStart: run.level.moneyStart, currency: cfg.currencyName || 'monedas',
