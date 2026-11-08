@@ -115,5 +115,132 @@
     "until": 600
    }
   ]
+ },
+ {
+  "id": 6,
+  "day": "LUNES 2",
+  "start": "Hangares",
+  "goal": "Cuatro Caminos",
+  "startDesc": "Tu casa junto al aeropuerto, en Hangares. Llega a Cuatro Caminos para entregar un pedido.",
+  "goalDesc": "Entregaste el pedido en Cuatro Caminos!",
+  "moneyStart": 170,
+  "staminaMax": 100,
+  "blocked": [
+   "Guerrero"
+  ],
+  "events": [
+   {
+    "id": "horaPico"
+   },
+   {
+    "id": "lluvia",
+    "from": 480,
+    "to": 630
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "day": "MARTES 2",
+  "start": "Ermita",
+  "goal": "Indios Verdes",
+  "startDesc": "Tu casa en Ermita. Hoy cruzas toda la ciudad hasta Indios Verdes.",
+  "goalDesc": "Llegaste a Indios Verdes!",
+  "moneyStart": 185,
+  "staminaMax": 80,
+  "blocked": [
+   "Morelos"
+  ],
+  "events": [
+   {
+    "id": "lluvia",
+    "from": 480,
+    "to": 600
+   },
+   {
+    "id": "huelga",
+    "line": "5",
+    "until": 540
+   }
+  ]
+ },
+ {
+  "id": 8,
+  "day": "MIERCOLES 2",
+  "start": "Buenavista",
+  "goal": "Universidad",
+  "startDesc": "Tu casa en Buenavista. Hoy tienes un examen en la UNAM.",
+  "goalDesc": "Llegaste al examen en la UNAM!",
+  "moneyStart": 200,
+  "staminaMax": 90,
+  "blocked": [
+   "Juárez"
+  ],
+  "events": [
+   {
+    "id": "horaPico"
+   },
+   {
+    "id": "lluvia",
+    "from": 480,
+    "to": 600
+   },
+   {
+    "id": "huelga",
+    "line": "B",
+    "until": 570
+   }
+  ]
+ },
+ {
+  "id": 9,
+  "day": "JUEVES 2",
+  "start": "Instituto del Petróleo",
+  "goal": "Tasqueña",
+  "startDesc": "Tu casa en el Instituto del Petroleo. Hoy hay una entrevista de trabajo en Tasqueña.",
+  "goalDesc": "Llegaste a la entrevista en Tasqueña!",
+  "moneyStart": 215,
+  "staminaMax": 90,
+  "blocked": [
+   "La Raza"
+  ],
+  "events": [
+   {
+    "id": "horaPico"
+   },
+   {
+    "id": "huelga",
+    "line": "B",
+    "until": 570
+   }
+  ]
+ },
+ {
+  "id": 10,
+  "day": "VIERNES 2",
+  "start": "Tasqueña",
+  "goal": "Politécnico",
+  "startDesc": "Tu casa en Tasqueña. Es el gran dia: examen final en el Politecnico.",
+  "goalDesc": "Llegaste al examen final! Semana completada!",
+  "moneyStart": 220,
+  "staminaMax": 90,
+  "blocked": [
+   "La Raza"
+  ],
+  "events": [
+   {
+    "id": "horaPico"
+   },
+   {
+    "id": "lluvia",
+    "from": 540,
+    "to": 720
+   },
+   {
+    "id": "huelga",
+    "line": "1",
+    "until": 540
+   }
+  ]
  }
 ]

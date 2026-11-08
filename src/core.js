@@ -61,6 +61,9 @@
     },
     bestOf: function (idx) { return (U.session.best || {})[idx] || null; },
     /** Estrellas conseguidas en los primeros `total` niveles (su mejor marca de cada uno). */
+    WEEK: 5,                                                    // niveles por semana (fila del selector y fin de semana en el resultado)
+    /** Estrellas ganadas en los niveles de una semana (0 = la primera). */
+    weekStars: function (week) { var n = 0; for (var i = week * this.WEEK; i < (week + 1) * this.WEEK; i++) { var b = this.bestOf(i); if (b) n += b.stars; } return n; },
     totalStars: function (total) {
       var n = 0; for (var i = 0; i < total; i++) { var b = this.bestOf(i); if (b) n += b.stars; } return n;
     },

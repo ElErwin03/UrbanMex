@@ -32,7 +32,7 @@
       var now = {};
       Ev.list(run).forEach(function (e) {
         if (e.id !== 'huelga' || run.minute >= e.to) return;
-        run.data.stationList.forEach(function (s) { if (s.line === e.line) now[s.id] = true; });
+        run.data.stationList.forEach(function (s) { if (s.line === e.line && s.id !== run.level.start) now[s.id] = true; });   // tu estación de salida nunca se cierra
       });
       Object.keys(run.striking).forEach(function (k) { if (!now[k]) { delete run.striking[k]; delete run.blocked[k]; } });   // reabre las que ya terminaron
       Object.keys(now).forEach(function (k) { if (!run.blocked[k]) { run.blocked[k] = true; run.striking[k] = true; } });          // cierra las nuevas (si no estaban ya bloqueadas por otra causa)

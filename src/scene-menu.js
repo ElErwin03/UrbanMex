@@ -83,36 +83,37 @@
     if (ui.button('byb', 'VOLVER AL MENU', 490, 400, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
   }
 
-  /** Selector: solo se pueden rejugar los niveles ya completados; el siguiente se juega con JUGAR. */
+  /** Selector: solo se pueden rejugar los niveles ya completados; el siguiente se juega con JUGAR. Cinco niveles por fila (una semana por fila). */
+  var CARD = { w: 220, h: 236, gap: 16, perRow: 5, y0: 142, rowGap: 38 };
   function drawLevels(scene, ui, m, data) {
-    ui.text('h', 'SELECCIONAR NIVEL', 640, 56, { size: 24, align: 'center', color: PAL.yellow });
-    ui.text('hs', 'Solo puedes rejugar los niveles que ya completaste.', 640, 102, { size: 8, align: 'center', color: PAL.dim });
-    var total = data ? data.levels.length : 0, next = U.Save.nextLevel(total), W = 220, G = 16, x0 = (1280 - (total * W + (total - 1) * G)) / 2;
+    ui.text('h', 'SELECCIONAR NIVEL', 640, 44, { size: 24, align: 'center', color: PAL.yellow });
+    ui.text('hs', 'Solo puedes rejugar los niveles que ya completaste.', 640, 88, { size: 8, align: 'center', color: PAL.dim });
+    var total = data ? data.levels.length : 0, next = U.Save.nextLevel(total), W = CARD.w, G = CARD.gap, x0 = (1280 - (CARD.perRow * W + (CARD.perRow - 1) * G)) / 2;
     data && data.levels.forEach(function (lv, i) {
-      var ok = U.Save.isCompleted(i), cur = !ok && i === next, x = x0 + i * (W + G), y = 150;
-      ui.rect(x, y, W, 380, { fill: ok ? '22;48;38' : cur ? '48;42;20' : '20;20;38', border: ok ? '46;204;113' : cur ? '255;200;60' : '60;60;90', bw: 3 });
-      ui.text('n' + i, String(lv.id), x + W / 2, y + 18, { size: 24, align: 'center', color: ok ? PAL.green : cur ? PAL.yellow : '90;90;120' });
-      ui.text('d' + i, lv.day, x + W / 2, y + 62, { size: 12, align: 'center', color: ok || cur ? '255;255;255' : '110;110;140' });
-      ui.text('sl' + i, 'SALIDA', x + 14, y + 100, { size: 8, color: PAL.dim });
-      ui.lines('s' + i, util.wrap(lv.start, 24), x + 14, y + 116, { size: 8, lineH: 12, color: ok || cur ? '230;234;250' : '90;90;120' });
-      ui.text('ml' + i, 'META', x + 14, y + 160, { size: 8, color: PAL.dim });
-      ui.lines('g' + i, util.wrap(lv.goal, 24), x + 14, y + 176, { size: 8, lineH: 12, color: ok || cur ? '230;234;250' : '90;90;120' });
+      var ok = U.Save.isCompleted(i), cur = !ok && i === next, col = i % CARD.perRow, row = Math.floor(i / CARD.perRow), x = x0 + col * (W + G), y = CARD.y0 + row * (CARD.h + CARD.rowGap);
+      if (col === 0) ui.text('wk' + row, 'SEMANA ' + (row + 1), x, y - 20, { size: 8, color: PAL.orange });
+      ui.rect(x, y, W, CARD.h, { fill: ok ? '22;48;38' : cur ? '48;42;20' : '20;20;38', border: ok ? '46;204;113' : cur ? '255;200;60' : '60;60;90', bw: 3 });
+      ui.text('n' + i, String(lv.id), x + W / 2, y + 10, { size: 16, align: 'center', color: ok ? PAL.green : cur ? PAL.yellow : '90;90;120' });
+      ui.text('d' + i, lv.day, x + W / 2, y + 36, { size: 12, align: 'center', color: ok || cur ? '255;255;255' : '110;110;140' });
+      ui.text('sl' + i, 'SALIDA', x + 14, y + 62, { size: 8, color: PAL.dim });
+      ui.lines('s' + i, util.wrap(lv.start, 24), x + 14, y + 76, { size: 8, lineH: 12, color: ok || cur ? '230;234;250' : '90;90;120' });
+      ui.text('ml' + i, 'META', x + 14, y + 108, { size: 8, color: PAL.dim });
+      ui.lines('g' + i, util.wrap(lv.goal, 24), x + 14, y + 122, { size: 8, lineH: 12, color: ok || cur ? '230;234;250' : '90;90;120' });
       if (ok) {
         var bs = U.Save.bestOf(i);                                                                   // mejor marca: tres estrellas (si el guardado es anterior a las estrellas, la meta de siempre)
-        if (bs) for (var k = 0; k < 3; k++) ui.icon('ck' + i + ':' + k, k < bs.stars ? 'estrella' : 'estrella_vacia', x + W / 2 - 60 + k * 40, y + 214, 2);
-        else ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 218, 2);
-        ui.text('st' + i, 'COMPLETADO', x + W / 2, y + 262, { size: 8, align: 'center', color: PAL.green });
-        if (ui.button('re' + i, 'REJUGAR', x + 14, y + 300, W - 28, 52, { size: 8, fill: '39;174;96' })) { U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
+        if (bs) for (var k = 0; k < 3; k++) ui.icon('ck' + i + ':' + k, k < bs.stars ? 'estrella' : 'estrella_vacia', x + W / 2 - 60 + k * 40, y + 152, 2);
+        else ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 154, 2);
+        if (ui.button('re' + i, 'REJUGAR', x + 14, y + 192, W - 28, 34, { size: 8, fill: '39;174;96' })) { U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
       } else if (cur) {
-        ui.text('st' + i, 'SIGUIENTE', x + W / 2, y + 236, { size: 12, align: 'center', color: PAL.yellow });
-        ui.lines('sg' + i, ['Entra con el boton', 'JUGAR del menu'], x + W / 2, y + 276, { size: 8, lineH: 14, align: 'center', color: '230;214;160' });
+        ui.text('st' + i, 'SIGUIENTE', x + W / 2, y + 160, { size: 12, align: 'center', color: PAL.yellow });
+        ui.lines('sg' + i, ['Entra con el boton', 'JUGAR del menu'], x + W / 2, y + 190, { size: 8, lineH: 14, align: 'center', color: '230;214;160' });
       } else {
-        ui.icon('lk' + i, 'bloqueo', x + W / 2 - 16, y + 218, 2, { opacity: 120 });
-        ui.text('st' + i, 'BLOQUEADO', x + W / 2, y + 262, { size: 8, align: 'center', color: '110;110;140' });
-        ui.lines('sg' + i, ['Completa el', 'nivel anterior'], x + W / 2, y + 296, { size: 8, lineH: 14, align: 'center', color: '90;90;120' });
+        ui.icon('lk' + i, 'bloqueo', x + W / 2 - 16, y + 152, 2, { opacity: 120 });
+        ui.text('st' + i, 'BLOQUEADO', x + W / 2, y + 192, { size: 8, align: 'center', color: '110;110;140' });
+        ui.lines('sg' + i, ['Completa el', 'nivel anterior'], x + W / 2, y + 204, { size: 8, lineH: 14, align: 'center', color: '90;90;120' });
       }
     });
-    if (ui.button('back', 'VOLVER', 490, 574, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+    if (ui.button('back', 'VOLVER', 490, 662, 300, 44, { size: 8, fill: '70;70;100' })) m.view = 'main';
     var ask = m.resetAsk > m.t;                                            // borrar el progreso pide confirmación (segundo toque en 3 s)
     if (ui.button('wipe', ask ? 'SEGURO? TOCA OTRA VEZ' : 'BORRAR PROGRESO', 960, 658, 290, 36, { size: 8, fill: ask ? '200;60;50' : '110;50;50' })) {
       if (ask) { U.Save.reset(); m.resetAsk = 0; } else m.resetAsk = m.t + 3;

@@ -46,7 +46,7 @@ En GDevelop cada módulo es una hoja de **eventos externos** `Mod_<nombre>` y ca
 
 ## Pruebas y balance
 ```
-npm test            # 10 pruebas de reglas + prueba de humo (un bot juega 5 días con clics sobre el proyecto generado)
+npm test            # pruebas de reglas + prueba de humo (un bot juega los 10 días con clics sobre el proyecto generado)
 npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 ```
 
@@ -54,7 +54,7 @@ npm run balance     # ¿todos los niveles son ganables? (tools/solver.py)
 
 - **Guardado:** al ganar un nivel se guarda el progreso (niveles completados, y los ajustes: doble clic y tutorial visto) en `localStorage` con la clave `UrbanMex_save_v1` (`U.Save` en `src/core.js`). Es el mismo almacenamiento que usan las acciones de *Almacenamiento* de GDevelop: persiste entre partidas en el navegador y en las exportaciones de escritorio/móvil. Sin almacenamiento disponible el progreso solo dura la sesión.
 - **JUGAR:** siempre te lleva al primer nivel que aún no has completado (si perdiste un nivel, vuelves a él; si ya completaste todos, al último) y el botón dice a cuál entras: `JUGAR / NIVEL 3 - MIÉRCOLES / Cuatro Caminos > Tasqueña`, con un cuadrito por nivel (verde = completado) y el contador de niveles completados.
-- **SELECCIONAR NIVEL:** muestra los 5 niveles; solo los completados tienen botón `REJUGAR`. El siguiente aparece como `SIGUIENTE` (se entra con JUGAR) y los demás como `BLOQUEADO`. `BORRAR PROGRESO` (pide un segundo toque para confirmar) reinicia el guardado.
+- **SELECCIONAR NIVEL:** muestra los 10 niveles en dos filas (`SEMANA 1` y `SEMANA 2`); solo los completados tienen botón `REJUGAR`. El siguiente aparece como `SIGUIENTE` (se entra con JUGAR) y los demás como `BLOQUEADO`. `BORRAR PROGRESO` (pide un segundo toque para confirmar) reinicia el guardado.
 - Todo el juego usa ahora la palabra **NIVEL** (antes DÍA) en el menú, el HUD, el aviso de inicio y el resultado.
 
 ## Combis y doble clic
@@ -193,7 +193,7 @@ Al terminar la jornada la pantalla Resultado muestra cómo te fue y qué hacer p
 - **Mejor marca por nivel** (más estrellas; a igual de estrellas, más dinero), guardada con el progreso (`best`; los valores dañados se ignoran uno por uno). Avisa `NUEVO RECORD!` con la marca anterior. En el menú, cada nivel completado muestra sus estrellas y la pantalla principal el total (`4/15 estrellas`). `BORRAR PROGRESO` también borra las marcas.
 - **Botón `MEJORAR ESTRELLAS`** para repetir el nivel si no conseguiste las tres.
 - **Al perder:** `CASI!` si te faltaron 3 estaciones o menos, barra de avance (estaciones recorridas del camino más corto) y un consejo según la causa (stamina, dinero, noche o rutas bloqueadas; `endCause` en la partida).
-- Al ganar la última jornada: `COMPLETASTE LA SEMANA!` con las estrellas de toda la semana.
+- Al ganar el último nivel de una semana (5.º y 10.º): `COMPLETASTE LA SEMANA 1!` con las estrellas de esa semana; al ganar el 10.º: `COMPLETASTE TODOS LOS NIVELES!` con las estrellas de los 10.
 - Vista previa: `node tools/dump_scene.js . Resultado r.json --result win --stars 2 --record old --frames 40` (o `--result lose --left 2 --cause money`).
 
 ## Tutorial
@@ -223,7 +223,23 @@ Cada día puede traer condiciones que cambian las reglas mientras dura su ventan
 
 - **En el juego:** la ventana de inicio dice qué eventos trae el día; debajo de la barra de arriba hay una ficha por evento (en marcha o por venir, con su hora; las terminadas desaparecen). El panel de la estación nombra lo que encarece ese tramo (`LLUVIA +2min +1sta`). Al cruzar la hora de un evento llega una **noticia** al celular, y con la lluvia el mapa se ve más frío y caen gotas (respeta *Efectos visuales* y *Reducir movimiento*).
 - **Huelga y esperar:** una estación cerrada por huelga explica el motivo y la hora en que reabre. La ficha de la huelga tiene un botón **ESPERAR** que adelanta el reloj hasta que reabra la línea; y si **solo** te frena la huelga (no te queda ninguna salida), el juego espera por ti en lugar de dar la partida por perdida (si reabre ya de noche, sí termina).
+- **Tu estación de salida nunca se cierra** por huelga (aunque su línea sí), para que el día no empiece encerrado.
 - **Una noticia manda sobre la huelga:** si una noticia bloquea una estación que ya estaba en huelga, ese bloqueo sigue cuando la línea reabre (`run.striking` guarda solo los cierres por huelga).
 - **Datos, no código:** los efectos y la ventana por defecto viven en `config.json → events`; cada nivel declara los suyos en `niveles.json → events` (`{"id":"lluvia","from":480,"to":660}`, `{"id":"huelga","line":"3","until":630}`). `Events.validate` revisa al cargar que el id exista, la línea exista y la ventana quepa en el día. `tools/make_data.py` es la fuente (`EVENTS` por nivel).
 - **Reglas:** `Events` (puro) calcula ventanas y extras; `Rules.canTravel/travel` los suman (`cost.event`), `Rules.syncEvents` abre y cierra las líneas en huelga, `Rules.wait` espera y `News.event/drain` los anuncian.
 - **Balance:** los niveles con huelga siguen teniendo ruta con la línea cerrada (hay una prueba). `node tools/solve_events.js [nivel]` busca la mejor partida exacta (rutas, Monster y esperas) y dice si la 2.ª estrella sigue siendo posible; por eso el **nivel 5** empieza con `190` de dinero en lugar de `170` (con 170 la estrella de ahorro ya era imposible: obligaba a un Monster y la meta de ahorro quedaba por encima del mejor final).
+
+## Semana 2 (niveles 6 a 10)
+Cinco niveles más después de la semana 1; se desbloquean en orden igual que los otros. Rutas nuevas, más largas y con más eventos del día.
+
+| # | Día | Ruta | Eventos | Qué lo hace distinto |
+|---|---|---|---|---|
+| 6 | Lunes 2 | Hangares → Cuatro Caminos | hora pico, lluvia | Sin Monster; Guerrero bloqueada alarga el camino |
+| 7 | Martes 2 | Ermita → Indios Verdes | lluvia, huelga L5 (hasta 9:00) | Stamina máxima 80: hace falta 1 Monster |
+| 8 | Miércoles 2 | Buenavista → Universidad | hora pico, lluvia, huelga LB (hasta 9:30) | Juárez bloqueada y la línea de tu salida en huelga: ¿rodeo o esperar? |
+| 9 | Jueves 2 | Instituto del Petróleo → Tasqueña | hora pico, huelga LB (hasta 9:30) | Ruta de 20 tramos; La Raza bloqueada |
+| 10 | Viernes 2 | Tasqueña → Politécnico | los tres, huelga L1 (hasta 9:00) | El examen final: 21 tramos y los tres eventos |
+
+- Todos son ganables **con sus eventos puestos** y con la estrella de ahorro posible (se comprobó con `node tools/solve_events.js`, que ahora poda por cota de dinero y resuelve los 10 niveles en menos de 30 s). Cada nivel exige como máximo **1 Monster**: con 2 la estrella de ahorro sería imposible (hay una prueba que lo vigila).
+- El selector de niveles pasa a **dos filas de 5**, y el resumen de fin de semana sale al ganar el 5.º y el 10.º nivel.
+- Los datos viven en `tools/make_data.py` (`WEEK2`, `LV`, `EVENTS`); la estación de salida nunca se cierra por huelga.
