@@ -19,6 +19,7 @@
     headline: function (r) {
       if (r.won) return r.stars >= 3 ? 'Tres estrellas: te mueves por la ciudad como nadie.'
         : r.stars === 2 ? 'Casi perfecto: te falta 1 estrella.' : 'Llegaste! Ahora ve por las 3 estrellas.';
+      if (r.streak) return r.streak.cleared ? 'Tu racha termina: aguantaste ' + r.streak.cleared + (r.streak.cleared === 1 ? ' ronda!' : ' rondas!') : 'Tu racha termina en la primera ronda.';
       if (r.left === 0) return 'Estabas en la meta, pero ya no pudiste seguir.';
       if (r.left !== null && r.left <= 3) return 'Te faltaron solo ' + r.left + (r.left === 1 ? ' estación!' : ' estaciones!');
       return 'Cada intento te enseña una ruta nueva.';
@@ -48,6 +49,12 @@
       return last ? 'COMPLETASTE TODOS LOS NIVELES!  ' + U.Save.totalStars(total) + '/' + total * 3 + ' estrellas'
                   : 'COMPLETASTE LA SEMANA ' + (wk + 1) + '!  ' + U.Save.weekStars(wk) + '/' + U.Save.WEEK * 3 + ' estrellas';
     },
+    /** Modo infinito: línea de la racha (rondas ganadas, estrellas y mejor marca). */
+    streak: function (r) {
+      var s = r.streak; if (!s) return null;
+      var plural = function (n) { return n + (n === 1 ? ' ronda' : ' rondas'); };
+      return { new: s.newBest, text: (s.newBest ? 'NUEVA MEJOR RACHA!  ' : 'RACHA: ') + plural(s.cleared) + '  -  ' + s.stars + ' estrellas' + (s.newBest ? '' : '   (mejor: ' + plural(s.best.best) + ')') };
+    },
     record: function (r, cur) {
       if (!r.won || !r.record) return null;
       if (r.record.isNew) return { new: true, text: r.record.prev ? 'NUEVO RECORD!  Antes: ' + r.record.prev.stars + (r.record.prev.stars === 1 ? ' estrella, ' : ' estrellas, ') + r.record.prev.money : 'PRIMERA MARCA GUARDADA!' };
@@ -67,9 +74,9 @@
       if (ui.button('m', 'MENU', 540, 400, 200, 44, {})) scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu');
       ui.end(); return;
     }
-    var last = !U.Rules.hasNextLevel(data, r.levelIndex), week = r.won && (last || (r.levelIndex + 1) % U.Save.WEEK === 0), calm = U.A11y.calm();
+    var inf = !!r.infinite, last = !inf && !U.Rules.hasNextLevel(data, r.levelIndex), week = !inf && r.won && (last || (r.levelIndex + 1) % U.Save.WEEK === 0), calm = U.A11y.calm();
     ui.text('t', Text.title(r), 640, 56, { size: 24, align: 'center', color: r.won ? (r.stars >= 3 ? PAL.yellow : PAL.green) : r.left !== null && r.left <= 3 ? PAL.orange : PAL.red });
-    ui.text('d', 'NIVEL ' + (r.levelIndex + 1) + ' - ' + r.day, 640, 100, { size: 8, align: 'center', color: PAL.dim });
+    ui.text('d', inf ? 'RONDA ' + r.infinite.round : 'NIVEL ' + (r.levelIndex + 1) + ' - ' + r.day, 640, 100, { size: 8, align: 'center', color: PAL.dim });
 
     if (r.won) {                                    // ---- tres estrellas
       scene._umStar = scene._umStar || {};
@@ -106,18 +113,21 @@
     ui.text('hl', Text.headline(r), 640, 450, { size: 12, align: 'center', color: '255;255;255' });
     ui.lines('tp', util.wrap(Text.tip(r), 78), 640, 478, { size: 8, lineH: 12, align: 'center', color: '230;234;250' });
 
-    var rec = Text.record(r, r.currency);
+    var rec = inf ? Text.streak(r) : Text.record(r, r.currency);
     if (rec) ui.text('rec', rec.text, 640, 520, { size: 8, align: 'center', color: rec.new ? PAL.yellow : PAL.dim });
     if (week) ui.text('w', Text.weekEnd(r.levelIndex, last, data.levels.length), 640, 542, { size: 8, align: 'center', color: PAL.yellow });
 
     var go = function (name) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, name); };
-    var btns = r.won ? (last ? [['a', 'JUGAR OTRA VEZ', 300, '39;174;96']] : [['n', 'SIGUIENTE NIVEL >', 300, '39;174;96']]) : [['r', 'REINTENTAR', 300, '39;174;96']];
-    if (r.won && r.stars < 3) btns.push(['rt', 'MEJORAR ESTRELLAS', 250, '70;100;160']);
+    var btns = inf ? (r.won ? [['i', 'SIGUIENTE RONDA >', 300, '39;174;96']] : [['x', 'NUEVA RACHA', 300, '120;60;160']])
+      : r.won ? (last ? [['a', 'JUGAR OTRA VEZ', 300, '39;174;96']] : [['n', 'SIGUIENTE NIVEL >', 300, '39;174;96']]) : [['r', 'REINTENTAR', 300, '39;174;96']];
+    if (!inf && r.won && r.stars < 3) btns.push(['rt', 'MEJORAR ESTRELLAS', 250, '70;100;160']);
     btns.push(['m', 'MENU', 150, '70;70;100']);
     var total = btns.reduce(function (s, b) { return s + b[2]; }, 0) + 20 * (btns.length - 1), x = (1280 - total) / 2;
     btns.forEach(function (b) {
       if (ui.button(b[0], b[1], x, 574, b[2], 52, { size: 8, fill: b[3] })) {
-        if (b[0] === 'n') { U.session.levelIndex = r.levelIndex + 1; go('Nivel'); }
+        if (b[0] === 'i') { U.session.infinite.round++; go('Nivel'); }
+        else if (b[0] === 'x') { U.Infinite.start(); go('Nivel'); }
+        else if (b[0] === 'n') { U.session.levelIndex = r.levelIndex + 1; go('Nivel'); }
         else if (b[0] === 'r' || b[0] === 'rt') { U.session.levelIndex = r.levelIndex; go('Nivel'); }
         else if (b[0] === 'a') { U.session.levelIndex = 0; go('Nivel'); }
         else go('Menu');

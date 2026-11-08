@@ -49,14 +49,17 @@
     ui.text('prog', done + '/' + total + ' niveles completados' + (stars ? '  -  ' + stars + '/' + total * 3 + ' estrellas' : ''), 640, 342, { size: 8, align: 'center', color: PAL.dim });
     var seen = U.session.seenTutorial;
     if (ui.button('play', '', 440, 364, 400, 84, { size: 8 }) && lv) {
-      U.session.levelIndex = next; U.session.afterTutorial = 'Nivel'; go(scene, seen ? 'Nivel' : 'Tutorial');
+      U.session.infinite = null; U.session.levelIndex = next; U.session.afterTutorial = 'Nivel'; go(scene, seen ? 'Nivel' : 'Tutorial');
     }
     ui.text('pl1', 'JUGAR', 640, 374, { size: 24, align: 'center' });
     ui.text('pl2', lv ? 'NIVEL ' + lv.id + ' - ' + lv.day : 'Cargando...', 640, 408, { size: 12, align: 'center', color: '255;235;180' });
     if (lv) ui.text('pl3', lv.start + ' > ' + lv.goal, 640, 430, { size: 8, align: 'center', color: '255;220;190' });
     if (ui.button('sel', 'SELECCIONAR NIVEL', 490, 462, 300, 44, { size: 8, fill: '70;70;100' })) m.view = 'levels';
-    if (ui.button('how', 'COMO JUGAR', 490, 516, 300, 40, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }
-    if (ui.button('quit', 'SALIR', 490, 574, 300, 40, { size: 8, fill: '110;50;50' })) m.confirmExit = true;      // pide confirmación antes de cerrar
+    var open = U.Infinite.unlocked(total), ib = U.session.inf || { best: 0, stars: 0 };           // MODO INFINITO: se desbloquea al completar todos los niveles
+    if (ui.button('inf', open ? 'MODO INFINITO' : 'MODO INFINITO - BLOQUEADO', 490, 514, 300, 44, { size: 8, fill: open ? '120;60;160' : '50;50;70', disabled: !open })) { U.Infinite.start(); U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
+    ui.text('infh', open ? (ib.best ? 'Mejor racha: ' + ib.best + (ib.best === 1 ? ' ronda' : ' rondas') + ' - ' + ib.stars + ' estrellas' : 'Rutas al azar. Cuantas rondas aguantes?') : 'Completa los ' + total + ' niveles para desbloquearlo', 640, 566, { size: 8, align: 'center', color: open ? '210;170;240' : '110;110;140' });
+    if (ui.button('how', 'COMO JUGAR', 490, 584, 300, 36, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }
+    if (ui.button('quit', 'SALIR', 490, 630, 300, 36, { size: 8, fill: '110;50;50' })) m.confirmExit = true;      // pide confirmación antes de cerrar
   }
 
   /** Ventana "¿Seguro que quieres salir?". SI cierra el juego (ventana de GDevelop / app); en un navegador no se puede cerrar la pestaña, así que
@@ -103,7 +106,7 @@
         var bs = U.Save.bestOf(i);                                                                   // mejor marca: tres estrellas (si el guardado es anterior a las estrellas, la meta de siempre)
         if (bs) for (var k = 0; k < 3; k++) ui.icon('ck' + i + ':' + k, k < bs.stars ? 'estrella' : 'estrella_vacia', x + W / 2 - 60 + k * 40, y + 152, 2);
         else ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 154, 2);
-        if (ui.button('re' + i, 'REJUGAR', x + 14, y + 192, W - 28, 34, { size: 8, fill: '39;174;96' })) { U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
+        if (ui.button('re' + i, 'REJUGAR', x + 14, y + 192, W - 28, 34, { size: 8, fill: '39;174;96' })) { U.session.infinite = null; U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
       } else if (cur) {
         ui.text('st' + i, 'SIGUIENTE', x + W / 2, y + 160, { size: 12, align: 'center', color: PAL.yellow });
         ui.lines('sg' + i, ['Entra con el boton', 'JUGAR del menu'], x + W / 2, y + 190, { size: 8, lineH: 14, align: 'center', color: '230;214;160' });
