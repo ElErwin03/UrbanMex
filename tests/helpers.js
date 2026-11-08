@@ -29,7 +29,15 @@ function cheapestStaminaPath(U, run) {
     });
   }
   const path = [run.level.goal]; while (prev[path[0]] !== undefined) path.unshift(prev[path[0]]);
-  return { path, need: Math.round(dist[run.level.goal]) };
+  let need = Math.round(dist[run.level.goal]);
+  if (U.Events) {                                            // los eventos del día (lluvia, hora pico) suman stamina y tiempo según la hora de cada salida
+    const sim = { data: run.data, level: run.level, minute: run.minute };
+    for (let k = 0; k + 1 < path.length; k++) {
+      const combi = G.isCombi(run.graph, path[k], path[k + 1]), ex = U.Events.hopExtra(sim, combi);
+      need += ex.stamina; sim.minute += U.Rules.edgeCost(run, path[k], path[k + 1]) + ex.time;
+    }
+  }
+  return { path, need };
 }
 
 module.exports = { loadModules, rawData, ROOT, DATA, cheapestStaminaPath };

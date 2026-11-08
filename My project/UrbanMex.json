@@ -327,6 +327,15 @@
       },
       {
         "alwaysLoaded": false,
+        "file": "assets/img/icono_lluvia.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_lluvia.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
         "file": "assets/img/icono_mapa.png",
         "kind": "image",
         "metadata": "",
@@ -349,6 +358,15 @@
         "kind": "image",
         "metadata": "",
         "name": "icono_moneda.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/img/icono_multitud.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_multitud.png",
         "smoothed": false,
         "userAdded": true
       },
@@ -1381,6 +1399,64 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "lluvia",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_lluvia.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "multitud",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_multitud.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -1985,6 +2061,15 @@
             "includeConfig": 0
           },
           "target": "Mod_graph",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_events",
           "disabled": false,
           "folded": false
         },
@@ -2831,6 +2916,64 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "lluvia",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_lluvia.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "multitud",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_multitud.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -3260,6 +3403,15 @@
             "includeConfig": 0
           },
           "target": "Mod_graph",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_events",
           "disabled": false,
           "folded": false
         },
@@ -4089,6 +4241,64 @@
                     {
                       "hasCustomCollisionMask": false,
                       "image": "icono_estrella_vacia.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "lluvia",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_lluvia.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "multitud",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_multitud.png",
                       "points": [],
                       "originPoint": {
                         "name": "origine",
@@ -5048,6 +5258,15 @@
           "include": {
             "includeConfig": 0
           },
+          "target": "Mod_events",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
           "target": "Mod_layout",
           "disabled": false,
           "folded": false
@@ -5886,6 +6105,64 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "lluvia",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_lluvia.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "multitud",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_multitud.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -6323,6 +6600,15 @@
           "include": {
             "includeConfig": 0
           },
+          "target": "Mod_events",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
           "target": "Mod_layout",
           "disabled": false,
           "folded": false
@@ -6747,6 +7033,7 @@
             "        if (!stations[n]) throw new Error('Nivel ' + l.id + ' usa una estación inexistente: ' + n);",
             "      });",
             "    });",
+            "    if (U.Events) raw.levels.forEach(function (l) { U.Events.validate(cfg, raw.stations.lines, l); });   // eventos del día: ids, líneas y ventanas válidos",
             "    return { config: cfg, lines: raw.stations.lines, stations: stations, stationList: list,",
             "             connections: conns, levels: raw.levels, news: raw.news };",
             "  }",
@@ -6849,6 +7136,170 @@
             "      return null;",
             "    }",
             "  };",
+            "})();"
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
+        }
+      ]
+    },
+    {
+      "associatedLayout": "",
+      "name": "Mod_events",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"events\" - fuente: src/events.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
+          "color": {
+            "b": 109,
+            "g": 230,
+            "r": 255,
+            "textB": 0,
+            "textG": 0,
+            "textR": 0
+          }
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "/* UrbanMex · events — EVENTOS DEL DÍA: condiciones del nivel que cambian las reglas mientras dura su ventana de tiempo (puro, sin motor).",
+            " *",
+            " *   · lluvia   — de `from` a `to`: cada tramo +extraTime min en Metro y +combiExtraTime en combi (la combi se atasca), y +extraStamina de stamina.",
+            " *   · horaPico — de `from` a `to`: el Metro va lleno (+extraTime min por tramo) y hay carteristas (+robberyBonus a la probabilidad de asalto en zonas reportadas).",
+            " *   · huelga   — la línea `line` está cerrada (como un bloqueo) hasta la hora `until`. Si te quedas sin salida por la huelga, esperas solo a que termine.",
+            " *",
+            " * Cada nivel declara los suyos en niveles.json (\"events\": [{id, from?, to?, line?, until?}]); el efecto y la ventana por defecto están en config.json (\"events\").",
+            " * El reloj del juego solo avanza al viajar, así que las ventanas se evalúan a la hora en que sales (lluvia, hora pico) o a la hora actual (huelga). */",
+            "(function () {",
+            "  var U = gdjs.UrbanMex, util = U.util;",
+            "  if (U.Events) return;",
+            "",
+            "  var IDS = ['horaPico', 'lluvia', 'huelga'];",
+            "  var ICON = { horaPico: 'multitud', lluvia: 'lluvia', huelga: 'bloqueo' };",
+            "",
+            "  /** Eventos del nivel con sus números ya resueltos: { id, label, icon, from, to (huelga: from = inicio del día, to = until), line, cfg }. */",
+            "  function list(run) {",
+            "    var cfgAll = run.data.config.events || {}, start = run.data.config.dayStartMinute;",
+            "    return (run.level.events || []).map(function (e) {",
+            "      var c = cfgAll[e.id] || {}, out = { id: e.id, label: c.label || e.id.toUpperCase(), icon: ICON[e.id] || 'noticia', cfg: c, line: e.line ? String(e.line) : null };",
+            "      out.from = e.id === 'huelga' ? start : (e.from !== undefined ? e.from : c.from);",
+            "      out.to = e.id === 'huelga' ? e.until : (e.to !== undefined ? e.to : c.to);",
+            "      return out;",
+            "    });",
+            "  }",
+            "  function on(ev, minute) { return minute >= ev.from && minute < ev.to; }",
+            "  function plain(t) { return String(t).normalize('NFD').replace(/[\\u0300-\\u036f]/g, ''); }   // MAYUSCULAS sin acentos (la letra del juego no dibuja bien las acentuadas en mayúscula)",
+            "  function lineName(run, l) { var d = run.data.lines && run.data.lines[l]; return d ? d.name + (d.colorName ? ' (' + d.colorName.toUpperCase() + ')' : '') : 'Línea ' + l; }",
+            "",
+            "  var Events = {",
+            "    IDS: IDS, ICON: ICON, list: list,",
+            "",
+            "    /** ¿Está en marcha el evento `id` a esa hora (por defecto, la actual)? */",
+            "    active: function (run, id, minute) {",
+            "      var m = minute === undefined ? run.minute : minute;",
+            "      return list(run).some(function (e) { return e.id === id && on(e, m); });",
+            "    },",
+            "",
+            "    /** Huelga que cierra la estación `id` ahora (o null): { id:'huelga', line, until }. */",
+            "    strikeAt: function (run, id) {",
+            "      var st = run.data.stations[id], m = run.minute, hit = null;",
+            "      list(run).forEach(function (e) { if (e.id === 'huelga' && st && st.line === e.line && m < e.to) hit = e; });",
+            "      return hit;",
+            "    },",
+            "",
+            "    /** Lo que suman los eventos a un tramo que sale ahora: { time, stamina }. */",
+            "    hopExtra: function (run, combi) {",
+            "      var m = run.minute, out = { time: 0, stamina: 0 };",
+            "      list(run).forEach(function (e) {",
+            "        if (e.id === 'huelga' || !on(e, m)) return;",
+            "        out.time += (combi ? e.cfg.combiExtraTime : e.cfg.extraTime) || 0; out.stamina += e.cfg.extraStamina || 0;",
+            "      });",
+            "      return out;",
+            "    },",
+            "",
+            "    /** Cuánto sube la probabilidad de asalto (a la hora actual). */",
+            "    robberyBonus: function (run) {",
+            "      var m = run.minute, b = 0;",
+            "      list(run).forEach(function (e) { if (e.id !== 'huelga' && on(e, m)) b += e.cfg.robberyBonus || 0; });",
+            "      return b;",
+            "    },",
+            "",
+            "    /** Estado de cada evento para el HUD: { id, label, icon, state: 'active' | 'soon' | 'over', from, to, line, text }. */",
+            "    status: function (run) {",
+            "      return list(run).map(function (e) {",
+            "        var m = run.minute, state = m >= e.to ? 'over' : m >= e.from ? 'active' : 'soon', c = util.clock;",
+            "        var text = e.id === 'huelga' ? (state === 'over' ? 'reabrió' : 'hasta ' + c(e.to)) : state === 'soon' ? 'desde ' + c(e.from) : state === 'active' ? 'hasta ' + c(e.to) : 'terminó';",
+            "        return { id: e.id, label: e.id === 'huelga' ? e.label + ' L' + e.line : e.label, icon: e.icon, state: state, from: e.from, to: e.to, line: e.line, text: text };",
+            "      });",
+            "    },",
+            "",
+            "    /** Textos cortos de los eventos que cambian el costo de un tramo (para el panel de la estación): ['LLUVIA +2 min', 'HORA PICO +4 min']. cost = { event: {time, stamina} } de canTravel. */",
+            "    effects: function (run, cost) {",
+            "      var m = run.minute, combi = !!(cost && cost.combi), out = [];",
+            "      list(run).forEach(function (e) {",
+            "        if (e.id === 'huelga' || !on(e, m)) return;",
+            "        var t = (combi ? e.cfg.combiExtraTime : e.cfg.extraTime) || 0, st = e.cfg.extraStamina || 0, rb = e.cfg.robberyBonus || 0;",
+            "        if (t || st || rb) out.push(e.label + (t ? ' +' + t + 'min' : '') + (st ? ' +' + st + 'sta' : '') + (!t && !st && rb ? ' +asalto' : ''));",
+            "      });",
+            "      return out;",
+            "    },",
+            "",
+            "    /** Cambios de estado al pasar del minuto `prev` al `now`: [{ id, kind: 'start' | 'end', line }] (las que ya estaban en marcha al empezar no cuentan). */",
+            "    transitions: function (run, prev, now) {",
+            "      var out = [];",
+            "      list(run).forEach(function (e) {",
+            "        if (e.id !== 'huelga' && e.from > prev && e.from <= now) out.push({ id: e.id, kind: 'start', line: e.line });",
+            "        if (e.to > prev && e.to <= now) out.push({ id: e.id, kind: 'end', line: e.line });",
+            "      });",
+            "      return out;",
+            "    },",
+            "",
+            "    /** Texto de una noticia del evento: { title, desc, impact, severity }. kind: 'start' | 'end' | 'now' (al empezar el nivel) | 'soon'. */",
+            "    text: function (run, ev, kind) {",
+            "      var c = ev.cfg, c10 = util.clock, ln = ev.line ? plain(lineName(run, ev.line)) : '';",
+            "      if (ev.id === 'lluvia') {",
+            "        if (kind === 'end') return { title: 'DEJO DE LLOVER', desc: 'La lluvia paró y el tráfico se va soltando.', impact: 'Tiempos y esfuerzo normales', severity: 'success' };",
+            "        return { title: kind === 'start' ? 'EMPIEZA A LLOVER' : kind === 'soon' ? 'LLUVIA DESDE LAS ' + c10(ev.from) : 'LLUVIA HOY', desc: 'Lluvia fuerte en la ciudad: las combis se atascan.',",
+            "                 impact: 'Metro +' + c.extraTime + ' min, combi +' + c.combiExtraTime + ' min, +' + c.extraStamina + ' stamina por tramo (hasta ' + c10(ev.to) + ')', severity: 'warning' };",
+            "      }",
+            "      if (ev.id === 'horaPico') {",
+            "        if (kind === 'end') return { title: 'TERMINO LA HORA PICO', desc: 'Los trenes ya van más vacíos.', impact: 'Tiempos normales y menos carteristas', severity: 'success' };",
+            "        return { title: kind === 'start' ? 'EMPIEZA LA HORA PICO' : kind === 'soon' ? 'HORA PICO DESDE LAS ' + c10(ev.from) : 'HORA PICO', desc: 'Los trenes van llenos y hay carteristas.',",
+            "                 impact: 'Metro +' + c.extraTime + ' min por tramo y más riesgo de asalto (hasta ' + c10(ev.to) + ')', severity: 'warning' };",
+            "      }",
+            "      if (kind === 'end') return { title: 'REABRE LA ' + ln.toUpperCase(), desc: 'Terminó el paro de trabajadores.', impact: 'Ya puedes usarla', severity: 'success' };",
+            "      return { title: 'HUELGA EN LA ' + ln.toUpperCase(), desc: 'Paro de trabajadores: la línea está cerrada.', impact: 'Reabre a las ' + c10(ev.to) + '. Busca otra ruta', severity: 'danger' };",
+            "    },",
+            "",
+            "    /** Cuándo reabre cada línea que sigue en huelga a esta hora: [minuto, ...]. */",
+            "    strikeEnds: function (run) {",
+            "      var out = []; list(run).forEach(function (e) { if (e.id === 'huelga' && run.minute < e.to) out.push(e.to); });",
+            "      return out;",
+            "    },",
+            "",
+            "    /** Validación de los datos de un nivel (se usa al cargar): ids conocidos, líneas que existen, ventanas coherentes. */",
+            "    validate: function (cfg, lines, lv) {",
+            "      (lv.events || []).forEach(function (e) {",
+            "        var where = 'Nivel ' + lv.id + ', evento ' + e.id + ': ';",
+            "        if (IDS.indexOf(e.id) < 0) throw new Error(where + 'evento desconocido');",
+            "        var c = (cfg.events || {})[e.id]; if (!c) throw new Error(where + 'falta config.events.' + e.id);",
+            "        if (e.id === 'huelga') {",
+            "          if (!lines[String(e.line)]) throw new Error(where + 'línea inexistente: ' + e.line);",
+            "          if (!(e.until > cfg.dayStartMinute && e.until <= cfg.dayEndMinute)) throw new Error(where + '\"until\" fuera del día');",
+            "        } else {",
+            "          var f = e.from !== undefined ? e.from : c.from, t = e.to !== undefined ? e.to : c.to;",
+            "          if (!(f >= cfg.dayStartMinute && t > f && t <= cfg.dayEndMinute)) throw new Error(where + 'ventana inválida');",
+            "        }",
+            "      });",
+            "    }",
+            "  };",
+            "  U.Events = Events;",
             "})();"
           ],
           "parameterObjects": "",
@@ -7031,6 +7482,7 @@
             "  if (U.Rules) return;",
             "",
             "  function setOf(list) { var o = {}; (list || []).forEach(function (k) { o[k] = true; }); return o; }",
+            "  function E() { return U.Events; }",
             "",
             "  var Rules = {",
             "    SAVER_KEEP: 0.65,                             // 2.ª estrella: terminar con al menos el 65 % del dinero que dejaría la mejor ruta (alcanza aunque compres un Monster)",
@@ -7038,15 +7490,33 @@
             "    createRun: function (data, levelIndex, rnd) {",
             "      var lv = data.levels[levelIndex], cfg = data.config, rng = rnd || Math.random;",
             "      var visited = {}; visited[lv.start] = true;",
-            "      return {",
+            "      var run = {",
             "        data: data, graph: G.build(data), rnd: rng, levelIndex: levelIndex, level: lv,",
             "        current: lv.start, stamina: lv.staminaMax, staminaMax: lv.staminaMax, money: lv.moneyStart,",
             "        minute: cfg.dayStartMinute, steps: 0, robbed: 0, stolen: 0, visited: visited,",
-            "        blocked: setOf(lv.blocked), danger: {}, timeMods: {}, monsterPromo: false, freeRides: 0,",
+            "        blocked: setOf(lv.blocked), striking: {}, eventQueue: [], danger: {}, timeMods: {}, monsterPromo: false, freeRides: 0,",
             "        newsLog: [], newsUsed: {}, unread: 0, newsMoves: cfg.news.firstAfterMoves, newsCount: 0,",
             "        over: false, won: false, endReason: ''",
             "      };",
+            "      Rules.syncEvents(run);",
+            "      return run;",
             "    },",
+            "",
+            "    /** EVENTOS DEL DÍA (events.js): las estaciones de una línea en huelga cuentan como bloqueadas (run.blocked) mientras dure; run.striking guarda cuáles",
+            "     *  se cerraron por huelga (para reabrirlas sin tocar los bloqueos permanentes de nivel o noticias). Se llama cada vez que corre el reloj. */",
+            "    syncEvents: function (run) {",
+            "      var Ev = E(); if (!Ev || !(run.level.events || []).length) return;",
+            "      var now = {};",
+            "      Ev.list(run).forEach(function (e) {",
+            "        if (e.id !== 'huelga' || run.minute >= e.to) return;",
+            "        run.data.stationList.forEach(function (s) { if (s.line === e.line) now[s.id] = true; });",
+            "      });",
+            "      Object.keys(run.striking).forEach(function (k) { if (!now[k]) { delete run.striking[k]; delete run.blocked[k]; } });   // reabre las que ya terminaron",
+            "      Object.keys(now).forEach(function (k) { if (!run.blocked[k]) { run.blocked[k] = true; run.striking[k] = true; } });          // cierra las nuevas (si no estaban ya bloqueadas por otra causa)",
+            "    },",
+            "",
+            "    /** ¿La estación está cerrada solo por una huelga (que reabrirá)? */",
+            "    onStrike: function (run, id) { return !!run.striking[id]; },",
             "",
             "    /** Tiempo (min) de la conexión a→b contando retrasos/aceleraciones por noticias. */",
             "    edgeCost: function (run, a, b) {",
@@ -7079,8 +7549,9 @@
             "      if (run.blocked[to]) return { ok: false, reason: 'blocked' };",
             "      var combi = G.isCombi(run.graph, run.current, to), fare = combi ? G.fare(run.graph, run.current, to) : {}, cc = cfg.combi;   // la combi cuesta más dinero que el Metro pero salta varias estaciones",
             "      var fm = fare.money !== undefined ? fare.money : cc.money, fs = fare.stamina !== undefined ? fare.stamina : cc.stamina;",
-            "      var cost = { time: Rules.edgeCost(run, run.current, to), stamina: combi ? fs : cfg.staminaPerStation,",
-            "                   money: run.freeRides > 0 ? 0 : (combi ? fm : cfg.moneyPerStation), combi: combi };",
+            "      var ex = E() ? E().hopExtra(run, combi) : { time: 0, stamina: 0 };                            // lluvia / hora pico: tramos más lentos y cansados",
+            "      var cost = { time: Rules.edgeCost(run, run.current, to) + ex.time, stamina: (combi ? fs : cfg.staminaPerStation) + ex.stamina,",
+            "                   money: run.freeRides > 0 ? 0 : (combi ? fm : cfg.moneyPerStation), combi: combi, event: ex };",
             "      if (run.stamina < cost.stamina) return { ok: false, reason: 'stamina', cost: cost };",
             "      if (run.money < cost.money) return { ok: false, reason: 'money', cost: cost };",
             "      if (run.minute + cost.time > cfg.dayEndMinute) return { ok: false, reason: 'night', cost: cost };",
@@ -7107,7 +7578,9 @@
             "        var left = Math.max(0, cfg.dayEndMinute - run.minute); out.missing = Math.ceil(c.time - left); out.short = 'Ya no llegas a tiempo';",
             "        out.detail = 'El viaje dura ' + c.time + ' min y solo quedan ' + left + ' min del dia.';",
             "      } else if (chk.reason === 'blocked') {",
-            "        out.short = 'Estacion bloqueada'; out.detail = 'Hay un bloqueo ahi. Busca otra ruta o revisa las noticias.';",
+            "        var sk = Rules.onStrike(run, to) ? E().strikeAt(run, to) : null;",
+            "        if (sk) { out.short = 'Huelga en la linea ' + sk.line; out.detail = 'Reabre a las ' + util.clock(sk.to) + '. Busca otra ruta o espera.'; out.until = sk.to; }",
+            "        else { out.short = 'Estacion bloqueada'; out.detail = 'Hay un bloqueo ahi. Busca otra ruta o revisa las noticias.'; }",
             "      } else if (chk.reason === 'no_connection') {",
             "        out.short = 'Sin ruta directa'; out.detail = 'Solo puedes viajar a estaciones conectadas a la actual.';",
             "      } else { out.short = 'Partida terminada'; out.detail = ''; }",
@@ -7120,7 +7593,9 @@
             "      if (!chk.ok) return chk;",
             "      var c = chk.cost;",
             "      if (run.freeRides > 0) run.freeRides--;",
+            "      var prev = run.minute, bonus = E() ? E().robberyBonus(run) : 0;                              // el riesgo de asalto es el de la hora en que sales",
             "      run.stamina -= c.stamina; run.money -= c.money; run.minute += c.time; run.steps++;",
+            "      if (E()) { E().transitions(run, prev, run.minute).forEach(function (t) { run.eventQueue.push(t); }); Rules.syncEvents(run); }",
             "      run.current = to; run.visited[to] = true;",
             "      var out = { ok: true, cost: c, type: 'arrive' };",
             "      if (to === run.level.goal) {",
@@ -7129,7 +7604,7 @@
             "        out.type = 'shop';",
             "      } else if (run.danger[to]) {",
             "        var r = run.data.config.robbery;",
-            "        var chance = r.baseChance - r.luck;",
+            "        var chance = Math.min(0.95, r.baseChance - r.luck + bonus);",
             "        if (run.rnd() < chance) {",
             "          var loss = Math.min(run.money, Math.floor(r.minLoss + run.rnd() * (r.maxLoss - r.minLoss + 1)));",
             "          run.money -= loss; run.stolen += loss; run.robbed++;",
@@ -7149,12 +7624,27 @@
             "      return { ok: true, gained: run.stamina - before, price: price };",
             "    },",
             "",
+            "    /** ESPERAR: el reloj avanza hasta que reabra la línea en huelga que primero lo haga (o hasta `untils`, una lista de horas). Cuesta solo tiempo.",
+            "     *  → { ok, from, to } o { ok:false, reason: 'over' | 'none' | 'night' } (no hay huelga, o reabre después de que acabe el día). */",
+            "    wait: function (run, untils) {",
+            "      if (run.over) return { ok: false, reason: 'over' };",
+            "      var ends = untils || (E() ? E().strikeEnds(run) : []);",
+            "      if (!ends.length) return { ok: false, reason: 'none' };",
+            "      var to = Math.min.apply(null, ends), from = run.minute;",
+            "      if (to > run.data.config.dayEndMinute) return { ok: false, reason: 'night' };",
+            "      run.minute = to; run.waited = (run.waited || 0) + (to - from);",
+            "      E().transitions(run, from, to).forEach(function (t) { run.eventQueue.push(t); });",
+            "      run.eventQueue.push({ id: 'huelga', kind: 'wait', from: from, to: to });",
+            "      Rules.syncEvents(run);",
+            "      return { ok: true, from: from, to: to };",
+            "    },",
+            "",
             "    /** Si no existe ningún movimiento posible, la partida termina (antes el juego se quedaba trabado). */",
             "    checkStuck: function (run) {",
             "      if (run.over) return null;",
-            "      var cfg = run.data.config, reasons = {}, any = false;",
+            "      var cfg = run.data.config, reasons = {}, any = false, strikes = [];",
             "      G.neighbors(run.graph, run.current).forEach(function (n) {",
-            "        if (run.blocked[n]) return;",
+            "        if (run.blocked[n]) { if (run.striking[n]) strikes.push(E().strikeAt(run, n).to); return; }",
             "        var chk = Rules.canTravel(run, n);",
             "        if (chk.ok) any = true; else reasons[chk.reason] = true;",
             "      });",
@@ -7163,6 +7653,8 @@
             "      var canRecover = run.data.stations[run.current].shop && run.stamina < run.staminaMax &&",
             "        run.money >= Rules.monsterPrice(run) + cfg.moneyPerStation;",
             "      if (canRecover) return null;",
+            "      // Solo te frena una huelga: esperas (el reloj avanza) a que reabra la línea; si ni así llegas, el día termina como siempre",
+            "      if (strikes.length && Rules.wait(run, strikes).ok) return Rules.checkStuck(run);",
             "      run.over = true; run.won = false;",
             "      run.endCause = reasons.night ? 'night' : reasons.stamina ? 'stamina' : reasons.money ? 'money' : 'blocked';",
             "      run.endReason = { night: 'Anocheció y no llegaste a tiempo.', stamina: 'Te quedaste sin stamina.', money: 'Te quedaste sin dinero.', blocked: 'Todas las rutas están bloqueadas.' }[run.endCause];",
@@ -7172,7 +7664,7 @@
             "    /** Aplica los efectos de una noticia al estado. */",
             "    applyNews: function (run, item) {",
             "      var e = item.effects || {}, cfg = run.data.config;",
-            "      (e.block || []).forEach(function (s) { run.blocked[s] = true; });",
+            "      (e.block || []).forEach(function (s) { run.blocked[s] = true; delete run.striking[s]; });   // un bloqueo de noticia es permanente aunque la huelga termine",
             "      (e.danger || []).forEach(function (s) { run.danger[s] = true; });",
             "      if (e.timeMod) {",
             "        run.data.connections.forEach(function (c) {",
@@ -7287,12 +7779,15 @@
             "             severity: item.severity, icon: item.icon, time: util.clock(run.minute), lines: linesOf(run, item) };",
             "  }",
             "",
+            "  /** Bloqueos permanentes (los de una huelga reabren solos: no cuentan para decidir si una noticia es segura). */",
+            "  function permBlocked(run) { var o = {}; Object.keys(run.blocked).forEach(function (k) { if (!run.striking || !run.striking[k]) o[k] = true; }); return o; }",
+            "",
             "  var News = {",
             "    /** ¿Es seguro aplicar esta noticia? (no bloquea la meta ni aísla al jugador de ella) */",
             "    isSafe: function (run, item) {",
             "      var blocks = (item.effects && item.effects.block) || [];",
             "      if (!blocks.length) return true;",
-            "      var nb = {}; Object.keys(run.blocked).forEach(function (k) { nb[k] = true; });",
+            "      var nb = permBlocked(run);",
             "      blocks.forEach(function (s) { nb[s] = true; });",
             "      if (nb[run.level.goal]) return false;",
             "      return G.reachable(run.graph, run.current, run.level.goal, nb);",
@@ -7317,9 +7812,32 @@
             "    eligible: function (run, onlyType) {",
             "      return run.data.news.filter(function (n) {",
             "        var blocks = (n.effects && n.effects.block) || [];",
-            "        var redundant = blocks.length > 0 && blocks.every(function (b) { return run.blocked[b]; });   // no repetir un bloqueo que ya existe",
+            "        var pb = permBlocked(run), redundant = blocks.length > 0 && blocks.every(function (b) { return pb[b]; });   // no repetir un bloqueo que ya existe",
             "        return !run.newsUsed[n.id] && !redundant && (!onlyType || n.type === onlyType) && News.isSafe(run, n);",
             "      });",
+            "    },",
+            "",
+            "    /** Noticia de un EVENTO DEL DÍA (events.js): kind 'start' | 'end' | 'now' | 'soon'. Con unread = true suma al globo del celular. */",
+            "    event: function (run, ev, kind, unread) {",
+            "      var t = U.Events.text(run, ev, kind);",
+            "      run.newsLog.unshift(stamp(run, { id: 'ev:' + ev.id + ':' + kind, type: 'evento', title: t.title, desc: t.desc, impact: t.impact, severity: t.severity,",
+            "                                       icon: ev.icon, effects: {} }));",
+            "      if (ev.line) run.newsLog[0].lines = [ev.line];",
+            "      if (unread) { run.unread++; run.newsCount++; }",
+            "      return t;",
+            "    },",
+            "",
+            "    /** Vacía la cola de cambios de eventos (los deja Rules al correr el reloj) en el celular. Devuelve lo anunciado: [{ id, kind, title, severity }]. */",
+            "    drain: function (run) {",
+            "      var q = run.eventQueue || [], out = [], byId = {};",
+            "      run.eventQueue = [];",
+            "      U.Events.list(run).forEach(function (e) { byId[e.id] = e; });",
+            "      q.forEach(function (t) {",
+            "        var ev = byId[t.id]; if (!ev) return;",
+            "        if (t.kind === 'wait') { News.info(run, 'ESPERASTE A QUE REABRA', 'Sin otra salida, esperaste de ' + util.clock(t.from) + ' a ' + util.clock(t.to) + '.', 'Perdiste ' + (t.to - t.from) + ' min'); out.push({ id: t.id, kind: 'wait', title: 'ESPERASTE ' + (t.to - t.from) + ' MIN', severity: 'warning', entry: run.newsLog[0] }); return; }",
+            "        var x = News.event(run, ev, t.kind, true); out.push({ id: t.id, kind: t.kind, title: x.title, severity: x.severity, entry: run.newsLog[0] });",
+            "      });",
+            "      return out;",
             "    },",
             "",
             "    /** Mensajes iniciales del nivel. */",
@@ -7327,6 +7845,7 @@
             "      var lv = run.level, cfg = run.data.config;",
             "      News.info(run, 'Nivel ' + lv.id + ': ' + lv.day, lv.startDesc,",
             "        'Meta: ' + lv.goal + ' | Tienes hasta las ' + util.clock(cfg.dayEndMinute));",
+            "      U.Events.list(run).forEach(function (ev) { News.event(run, ev, run.minute >= ev.from ? 'now' : 'soon', false); });   // eventos del día (sin globo de no leídas)",
             "      News.info(run, 'Tip del dia', 'Revisa las noticias ANTES de viajar. El mapa no te avisa de peligros ni bloqueos.',",
             "        'Abre la app de Noticias');",
             "    },",
@@ -8361,6 +8880,7 @@
             "    st.spr('sun', 'glow', 150, 30, 1180, 860, { z: 2, color: str(L.sun), opacity: L.sunA * (1 + 0.06 * Math.sin(t * 0.6)), blend: BLEND.add });",
             "    frame(st, L.vig, L.haze, L.hazeA, [10, 8, 24], 110);",
             "    this.atmos.draw(st, t, { dust: str(mix([255, 255, 255], L.sun, 0.55)), fog: str(mix([206, 216, 240], L.haze, 0.4)), k: 1 }, cam);",
+            "    this.drawRain(st, dt);",
             "",
             "    // --- mapa: luz bajo cada estación (color de su línea), más fuerte en las que importan",
             "    var near = {}, lit = this.q === 'high', hl = map.highlight,   // calidad baja: solo las estaciones que importan",
@@ -8400,6 +8920,21 @@
             "    st.end();",
             "  };",
             "",
+            "",
+            "  // ---- LLUVIA (evento del día): velo azulado y rayas diagonales que caen. Entra y sale con fundido. Calidad baja: menos rayas; REDUCIR MOVIMIENTO: rayas quietas. ----",
+            "  var RAIN = { fade: 1.2, drops: 46, low: 16, speed: 560, len: 36, tint: 64, streak: 96 };",
+            "  LevelFX.prototype.drawRain = function (st, dt) {",
+            "    var on = U.Events.active(this.um.run, 'lluvia');",
+            "    this.rain = util.lerp(this.rain || 0, on ? 1 : 0, Math.min(1, dt * RAIN.fade));",
+            "    if (this.rain < 0.01) { if (!on) this.rain = 0; return; }",
+            "    var k = this.rain, calm = U.A11y.calm(), n = this.q === 'low' ? RAIN.low : RAIN.drops, t = this.t;",
+            "    if (!this.drops) { var rnd = util.seeded(41); this.drops = []; for (var i = 0; i < RAIN.drops; i++) this.drops.push({ x: rnd() * W, y: rnd() * H, v: util.range(rnd, 0.8, 1.25), o: util.range(rnd, 0.6, 1) }); }",
+            "    st.spr('rain:tint', 'solid', W / 2, H / 2, W, H, { z: 5, color: '176;196;230', opacity: RAIN.tint * k, blend: BLEND.multiply });",
+            "    for (var j = 0; j < n; j++) {",
+            "      var d = this.drops[j], y = calm ? d.y : modpos(d.y + RAIN.speed * d.v * t, H + 80) - 40, x = calm ? d.x : modpos(d.x - 90 * d.v * t, W + 40);",
+            "      st.spr('rain' + j, 'beam', x, y, 2.5, RAIN.len * d.v, { z: 22, color: '170;200;255', opacity: RAIN.streak * d.o * k * (calm ? 0.5 : 1), blend: BLEND.add, angle: 10 });",
+            "    }",
+            "  };",
             "",
             "  // ---- APURO: borde rojo que late (como el latido del sonido de apuro). Entra y sale con fundido, y es más fuerte mientras menos queda. ----",
             "  var HURRY = { fade: 1.6, beatHz: 1.5, base: 56, gain: 100 };      // fade: unidades/s; latido a 1.5 Hz (menos de 3 destellos por segundo)",
@@ -9196,9 +9731,10 @@
             "    um.setPhone = function (open) { um.phone.open = open; if (!open) um.push = null; um.map.setPhoneOpen(open); };   // mostrar / ocultar el celular",
             "    um.map.placePlayer(run.current);",
             "    N.intro(run);",
+            "    var evs = U.Events.status(run).map(function (e) { return e.label + ' (' + e.text + ')'; });   // eventos del día, si el nivel los tiene",
             "    modal(um, { title: 'NIVEL ' + run.level.id + ' - ' + run.level.day,",
-            "      lines: [run.level.startDesc, '', 'Meta: ' + run.level.goal, 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.', '',",
-            "              'Lee las noticias del celular: son tu unica guia.'],",
+            "      lines: [run.level.startDesc, '', 'Meta: ' + run.level.goal, 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.']",
+            "        .concat(evs.length ? ['', 'Hoy: ' + evs.join(', ') + '.'] : []).concat(['', 'Lee las noticias del celular: son tu unica guia.']),",
             "      buttons: [{ label: 'EMPEZAR', kind: 'safe' }] });",
             "    return um;",
             "  }",
@@ -9215,6 +9751,7 @@
             "",
             "  function resolve(um) {",
             "    var out = um.pending, run = um.run; um.pending = null;",
+            "    announceEvents(um);                                         // lluvia, hora pico y huelgas que empezaron o terminaron durante el viaje",
             "    var item = N.onMove(run);                                   // las noticias solo ocurren cuando el jugador se mueve",
             "    if (item) { snd(um, 'noticia'); um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; }",
             "    if (out.type === 'shop') { snd(um, 'tienda'); shopModal(um); }",
@@ -9227,6 +9764,20 @@
             "      N.info(run, 'Pasaste de suerte', 'Ibas por ' + run.current + ' (zona reportada) y no paso nada. Esta vez!', 'Sin incidentes');",
             "      float(um, 'Pasaste de suerte', PAL.green); snd(um, 'suerte');",
             "    }",
+            "  }",
+            "",
+            "  function waitStrike(um) {",
+            "    var r = R.wait(um.run); if (!r.ok) { float(um, r.reason === 'night' ? 'Reabre ya de noche' : 'Nada que esperar', PAL.red); snd(um, 'error'); return; }",
+            "    snd(um, 'click'); um.selected = null; announceEvents(um);                      // el aviso \"ESPERASTE n MIN\" sale de las noticias de eventos",
+            "  }",
+            "",
+            "  /** Anuncia los cambios de eventos del día (los deja Rules en run.eventQueue): sonido, aviso flotante y notificación en el celular. */",
+            "  function announceEvents(um) {",
+            "    var run = um.run, got = N.drain(run); if (!got.length) return;",
+            "    got.forEach(function (g) { float(um, g.title, g.severity === 'success' ? PAL.green : g.severity === 'danger' ? PAL.red : PAL.yellow); });",
+            "    snd(um, 'noticia'); var last = got[got.length - 1];",
+            "    um.push = um.phone.open ? { item: last.entry, t: 0 } : null;",
+            "    if (um.selected && run.blocked[um.selected]) um.selected = null;",
             "  }",
             "",
             "  function shopModal(um) {",
@@ -9302,6 +9853,22 @@
             "    if (ui.button('abc', 'ABC', 268, y, 64, 32, { size: 8, fill: m.labelsAll ? '39;174;96' : '60;60;90' })) m.labelsAll = !m.labelsAll;   // todos los nombres",
             "  }",
             "",
+            "  /** Eventos del día (lluvia, hora pico, huelga) en curso o por venir, debajo de la barra de arriba. Los que ya terminaron desaparecen (queda su noticia). */",
+            "  var CHIP = { lluvia: '90;170;255', horaPico: '243;156;18', huelga: '192;57;43' };",
+            "  function drawEventChips(ui, um) {",
+            "    var x = 346, shown = 0, run = um.run;",
+            "    U.Events.status(run).forEach(function (e) {",
+            "      if (e.state === 'over') return;",
+            "      var w = e.id === 'huelga' ? 236 : 150, cx = x, on = e.state === 'active', col = CHIP[e.id] || PAL.orange, k = 'ev' + shown;",
+            "      ui.rect(cx, 62, w, 44, { fill: '12;10;24', border: on ? col : '90;90;120', bw: 2, block: true });",
+            "      ui.icon(k + ':i', e.icon, cx + 6, 70, 1.5);",
+            "      ui.text(k + ':l', e.label, cx + 36, 70, { size: 8, color: on ? col : PAL.dim });",
+            "      ui.text(k + ':t', e.text, cx + 36, 86, { size: 8, color: on ? '255;255;255' : PAL.dim });",
+            "      if (e.id === 'huelga' && on && ui.button(k + ':w', 'ESPERAR', cx + w - 84, 68, 78, 32, { size: 8, fill: '70;100;160', disabled: !!um.modal || !!um.pending || um.map.moving() })) waitStrike(um);   // pasa el tiempo hasta que reabra",
+            "      x += w + 6; shown++;",
+            "    });",
+            "  }",
+            "",
             "  function drawLegend(ui, um) {",
             "    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.'], ['combi', 'Combi']];",
             "    ui.rect(x, y, 340, 76, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });",
@@ -9329,6 +9896,8 @@
             "      ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8, color: why && why.code === 'money' ? PAL.red : '255;255;255' });",
             "      if (c.combi) ui.text('sp:tr', 'COMBI', x + 400, y + 70, { size: 8, color: '255;170;40' });",
             "      else if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });",
+            "      var evl = U.Events.effects(run, c);                                   // eventos que encarecen este tramo (lluvia, hora pico)",
+            "      evl.slice(0, 2).forEach(function (e, i) { ui.text('sp:ev' + i, e, x + 400, y + 94 + i * 14, { size: 8, color: PAL.yellow }); });",
             "      var label = chk.ok ? 'VIAJAR' : (REASON[chk.reason] || 'NO');",
             "      if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, fill: chk.ok ? undefined : '90;60;60' })) travel(um, id);   // sin poder viajar sigue siendo tocable: avisa con sonido y mensaje, no se queda mudo",
             "      if (ui.button('sp:no', 'CANCELAR', x + 232, y + 90, 150, 32, { size: 8, fill: '70;70;100' })) um.selected = null;",
@@ -9426,7 +9995,7 @@
             "    // en pausa lo de abajo se dibuja congelado y \"inerte\": el cursor se esconde para que nada responda (solo la ventana de pausa)",
             "    var cur = { x: ui.px, y: ui.py, rel: ui.released, prs: ui.pressed, whl: ui.wheel };",
             "    if (um.paused) { ui.px = ui.py = -9999; ui.released = ui.pressed = false; ui.wheel = 0; }",
-            "    drawHUD(ui, um); drawPhoneToggle(ui, um, run); if (!run.over) drawPauseButton(ui, um); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);",
+            "    drawHUD(ui, um); drawPhoneToggle(ui, um, run); if (!run.over) drawPauseButton(ui, um); drawControls(ui, um); drawEventChips(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);",
             "    if (!um.modal) drawStationPanel(ui, um);",
             "    U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt);",
             "    if (um.paused) { ui.px = cur.x; ui.py = cur.y; ui.released = cur.rel; ui.pressed = cur.prs; ui.wheel = cur.whl; drawPause(ui, um); }",
@@ -9454,6 +10023,7 @@
             "",
             "    if (!um.paused && um.pending && !um.map.moving()) resolve(um);",
             "    if (!um.paused && !um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);",
+            "    if (!um.paused && run.eventQueue && run.eventQueue.length) announceEvents(um);   // si te quedaste esperando a que reabra una línea",
             "",
             "    um.map.update(dt, run, ui, um.hover, um.selected);",
             "    um.fx.update(dt, um.hover, um.selected);",

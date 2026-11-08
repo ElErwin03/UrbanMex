@@ -126,6 +126,7 @@
     st.spr('sun', 'glow', 150, 30, 1180, 860, { z: 2, color: str(L.sun), opacity: L.sunA * (1 + 0.06 * Math.sin(t * 0.6)), blend: BLEND.add });
     frame(st, L.vig, L.haze, L.hazeA, [10, 8, 24], 110);
     this.atmos.draw(st, t, { dust: str(mix([255, 255, 255], L.sun, 0.55)), fog: str(mix([206, 216, 240], L.haze, 0.4)), k: 1 }, cam);
+    this.drawRain(st, dt);
 
     // --- mapa: luz bajo cada estación (color de su línea), más fuerte en las que importan
     var near = {}, lit = this.q === 'high', hl = map.highlight,   // calidad baja: solo las estaciones que importan
@@ -165,6 +166,21 @@
     st.end();
   };
 
+
+  // ---- LLUVIA (evento del día): velo azulado y rayas diagonales que caen. Entra y sale con fundido. Calidad baja: menos rayas; REDUCIR MOVIMIENTO: rayas quietas. ----
+  var RAIN = { fade: 1.2, drops: 46, low: 16, speed: 560, len: 36, tint: 64, streak: 96 };
+  LevelFX.prototype.drawRain = function (st, dt) {
+    var on = U.Events.active(this.um.run, 'lluvia');
+    this.rain = util.lerp(this.rain || 0, on ? 1 : 0, Math.min(1, dt * RAIN.fade));
+    if (this.rain < 0.01) { if (!on) this.rain = 0; return; }
+    var k = this.rain, calm = U.A11y.calm(), n = this.q === 'low' ? RAIN.low : RAIN.drops, t = this.t;
+    if (!this.drops) { var rnd = util.seeded(41); this.drops = []; for (var i = 0; i < RAIN.drops; i++) this.drops.push({ x: rnd() * W, y: rnd() * H, v: util.range(rnd, 0.8, 1.25), o: util.range(rnd, 0.6, 1) }); }
+    st.spr('rain:tint', 'solid', W / 2, H / 2, W, H, { z: 5, color: '176;196;230', opacity: RAIN.tint * k, blend: BLEND.multiply });
+    for (var j = 0; j < n; j++) {
+      var d = this.drops[j], y = calm ? d.y : modpos(d.y + RAIN.speed * d.v * t, H + 80) - 40, x = calm ? d.x : modpos(d.x - 90 * d.v * t, W + 40);
+      st.spr('rain' + j, 'beam', x, y, 2.5, RAIN.len * d.v, { z: 22, color: '170;200;255', opacity: RAIN.streak * d.o * k * (calm ? 0.5 : 1), blend: BLEND.add, angle: 10 });
+    }
+  };
 
   // ---- APURO: borde rojo que late (como el latido del sonido de apuro). Entra y sale con fundido, y es más fuerte mientras menos queda. ----
   var HURRY = { fade: 1.6, beatHz: 1.5, base: 56, gain: 100 };      // fade: unidades/s; latido a 1.5 Hz (menos de 3 destellos por segundo)

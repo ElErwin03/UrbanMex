@@ -29,9 +29,10 @@
     um.setPhone = function (open) { um.phone.open = open; if (!open) um.push = null; um.map.setPhoneOpen(open); };   // mostrar / ocultar el celular
     um.map.placePlayer(run.current);
     N.intro(run);
+    var evs = U.Events.status(run).map(function (e) { return e.label + ' (' + e.text + ')'; });   // eventos del día, si el nivel los tiene
     modal(um, { title: 'NIVEL ' + run.level.id + ' - ' + run.level.day,
-      lines: [run.level.startDesc, '', 'Meta: ' + run.level.goal, 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.', '',
-              'Lee las noticias del celular: son tu unica guia.'],
+      lines: [run.level.startDesc, '', 'Meta: ' + run.level.goal, 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.']
+        .concat(evs.length ? ['', 'Hoy: ' + evs.join(', ') + '.'] : []).concat(['', 'Lee las noticias del celular: son tu unica guia.']),
       buttons: [{ label: 'EMPEZAR', kind: 'safe' }] });
     return um;
   }
@@ -48,6 +49,7 @@
 
   function resolve(um) {
     var out = um.pending, run = um.run; um.pending = null;
+    announceEvents(um);                                         // lluvia, hora pico y huelgas que empezaron o terminaron durante el viaje
     var item = N.onMove(run);                                   // las noticias solo ocurren cuando el jugador se mueve
     if (item) { snd(um, 'noticia'); um.push = um.phone.open ? { item: item, t: 0 } : null; if (um.selected && run.blocked[um.selected]) um.selected = null; }
     if (out.type === 'shop') { snd(um, 'tienda'); shopModal(um); }
@@ -60,6 +62,20 @@
       N.info(run, 'Pasaste de suerte', 'Ibas por ' + run.current + ' (zona reportada) y no paso nada. Esta vez!', 'Sin incidentes');
       float(um, 'Pasaste de suerte', PAL.green); snd(um, 'suerte');
     }
+  }
+
+  function waitStrike(um) {
+    var r = R.wait(um.run); if (!r.ok) { float(um, r.reason === 'night' ? 'Reabre ya de noche' : 'Nada que esperar', PAL.red); snd(um, 'error'); return; }
+    snd(um, 'click'); um.selected = null; announceEvents(um);                      // el aviso "ESPERASTE n MIN" sale de las noticias de eventos
+  }
+
+  /** Anuncia los cambios de eventos del día (los deja Rules en run.eventQueue): sonido, aviso flotante y notificación en el celular. */
+  function announceEvents(um) {
+    var run = um.run, got = N.drain(run); if (!got.length) return;
+    got.forEach(function (g) { float(um, g.title, g.severity === 'success' ? PAL.green : g.severity === 'danger' ? PAL.red : PAL.yellow); });
+    snd(um, 'noticia'); var last = got[got.length - 1];
+    um.push = um.phone.open ? { item: last.entry, t: 0 } : null;
+    if (um.selected && run.blocked[um.selected]) um.selected = null;
   }
 
   function shopModal(um) {
@@ -135,6 +151,22 @@
     if (ui.button('abc', 'ABC', 268, y, 64, 32, { size: 8, fill: m.labelsAll ? '39;174;96' : '60;60;90' })) m.labelsAll = !m.labelsAll;   // todos los nombres
   }
 
+  /** Eventos del día (lluvia, hora pico, huelga) en curso o por venir, debajo de la barra de arriba. Los que ya terminaron desaparecen (queda su noticia). */
+  var CHIP = { lluvia: '90;170;255', horaPico: '243;156;18', huelga: '192;57;43' };
+  function drawEventChips(ui, um) {
+    var x = 346, shown = 0, run = um.run;
+    U.Events.status(run).forEach(function (e) {
+      if (e.state === 'over') return;
+      var w = e.id === 'huelga' ? 236 : 150, cx = x, on = e.state === 'active', col = CHIP[e.id] || PAL.orange, k = 'ev' + shown;
+      ui.rect(cx, 62, w, 44, { fill: '12;10;24', border: on ? col : '90;90;120', bw: 2, block: true });
+      ui.icon(k + ':i', e.icon, cx + 6, 70, 1.5);
+      ui.text(k + ':l', e.label, cx + 36, 70, { size: 8, color: on ? col : PAL.dim });
+      ui.text(k + ':t', e.text, cx + 36, 86, { size: 8, color: on ? '255;255;255' : PAL.dim });
+      if (e.id === 'huelga' && on && ui.button(k + ':w', 'ESPERAR', cx + w - 84, 68, 78, 32, { size: 8, fill: '70;100;160', disabled: !!um.modal || !!um.pending || um.map.moving() })) waitStrike(um);   // pasa el tiempo hasta que reabra
+      x += w + 6; shown++;
+    });
+  }
+
   function drawLegend(ui, um) {
     var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.'], ['combi', 'Combi']];
     ui.rect(x, y, 340, 76, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
@@ -162,6 +194,8 @@
       ui.icon('sp:i3', 'moneda', x + 300, y + 62, 1.5); ui.text('sp:c3', '-' + c.money, x + 328, y + 70, { size: 8, color: why && why.code === 'money' ? PAL.red : '255;255;255' });
       if (c.combi) ui.text('sp:tr', 'COMBI', x + 400, y + 70, { size: 8, color: '255;170;40' });
       else if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 400, y + 70, { size: 8, color: PAL.yellow });
+      var evl = U.Events.effects(run, c);                                   // eventos que encarecen este tramo (lluvia, hora pico)
+      evl.slice(0, 2).forEach(function (e, i) { ui.text('sp:ev' + i, e, x + 400, y + 94 + i * 14, { size: 8, color: PAL.yellow }); });
       var label = chk.ok ? 'VIAJAR' : (REASON[chk.reason] || 'NO');
       if (ui.button('sp:go', label, x + 16, y + 90, 200, 32, { size: 8, fill: chk.ok ? undefined : '90;60;60' })) travel(um, id);   // sin poder viajar sigue siendo tocable: avisa con sonido y mensaje, no se queda mudo
       if (ui.button('sp:no', 'CANCELAR', x + 232, y + 90, 150, 32, { size: 8, fill: '70;70;100' })) um.selected = null;
@@ -259,7 +293,7 @@
     // en pausa lo de abajo se dibuja congelado y "inerte": el cursor se esconde para que nada responda (solo la ventana de pausa)
     var cur = { x: ui.px, y: ui.py, rel: ui.released, prs: ui.pressed, whl: ui.wheel };
     if (um.paused) { ui.px = ui.py = -9999; ui.released = ui.pressed = false; ui.wheel = 0; }
-    drawHUD(ui, um); drawPhoneToggle(ui, um, run); if (!run.over) drawPauseButton(ui, um); drawControls(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);
+    drawHUD(ui, um); drawPhoneToggle(ui, um, run); if (!run.over) drawPauseButton(ui, um); drawControls(ui, um); drawEventChips(ui, um); U.Phone.draw(ui, um, run); drawLegend(ui, um);
     if (!um.modal) drawStationPanel(ui, um);
     U.Phone.drawPush(ui, um, run, dt); drawFloats(ui, um, dt);
     if (um.paused) { ui.px = cur.x; ui.py = cur.y; ui.released = cur.rel; ui.pressed = cur.prs; ui.wheel = cur.whl; drawPause(ui, um); }
@@ -287,6 +321,7 @@
 
     if (!um.paused && um.pending && !um.map.moving()) resolve(um);
     if (!um.paused && !um.modal && !um.pending && !um.map.moving() && !run.over) R.checkStuck(run);
+    if (!um.paused && run.eventQueue && run.eventQueue.length) announceEvents(um);   // si te quedaste esperando a que reabra una línea
 
     um.map.update(dt, run, ui, um.hover, um.selected);
     um.fx.update(dt, um.hover, um.selected);

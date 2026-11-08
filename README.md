@@ -26,6 +26,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `core` | espacio de nombres `gdjs.UrbanMex`, sesión, utilidades | no |
 | `data` | carga/valida los JSON (recursos del proyecto) | mínimo |
 | `graph` | red del Metro, rutas, alcanzabilidad | no |
+| `events` | eventos del día: lluvia, hora pico y huelga (ver *Eventos del día*) | no |
 | `rules` | economía, viaje, asaltos, Monster, fin de partida | no |
 | `news` | noticias del celular (nunca dejan la meta inalcanzable) | no |
 | `ui` | interfaz “modo inmediato” sobre objetos Texto/Icono/Painter | sí |
@@ -211,3 +212,18 @@ Al terminar la jornada la pantalla Resultado muestra cómo te fue y qué hacer p
 - **Accesibilidad:** con *Reducir movimiento* las demos quedan fijas.
 - **Vista previa:** `node tools/dump_scene.js . Tutorial t.json --page 2 --frames 30` (páginas 0 a 5).
 
+## Eventos del día
+Cada día puede traer condiciones que cambian las reglas mientras dura su ventana de tiempo. El reloj solo avanza al viajar, así que la ventana se mira **a la hora en que sales**.
+
+| Evento | Qué cambia | Dónde sale |
+|---|---|---|
+| **Lluvia** | Metro `+2 min` y `+1` de stamina por tramo; la **combi** se atasca (`+10 min`). | Martes 8:00–11:00, jueves 8:00–10:00, viernes 9:00–12:00 |
+| **Hora pico** | Metro `+4 min` por tramo y `+15 %` de probabilidad de asalto en zonas reportadas (la combi no se afecta). | Lunes 7:00–9:30, viernes 7:00–9:30 |
+| **Huelga** | Una línea completa queda **cerrada** (como un bloqueo) hasta la hora indicada, y luego reabre sola. | Miércoles: línea 3 hasta 10:30; jueves: línea 1 hasta 9:30; viernes: línea 3 hasta 10:00 |
+
+- **En el juego:** la ventana de inicio dice qué eventos trae el día; debajo de la barra de arriba hay una ficha por evento (en marcha o por venir, con su hora; las terminadas desaparecen). El panel de la estación nombra lo que encarece ese tramo (`LLUVIA +2min +1sta`). Al cruzar la hora de un evento llega una **noticia** al celular, y con la lluvia el mapa se ve más frío y caen gotas (respeta *Efectos visuales* y *Reducir movimiento*).
+- **Huelga y esperar:** una estación cerrada por huelga explica el motivo y la hora en que reabre. La ficha de la huelga tiene un botón **ESPERAR** que adelanta el reloj hasta que reabra la línea; y si **solo** te frena la huelga (no te queda ninguna salida), el juego espera por ti en lugar de dar la partida por perdida (si reabre ya de noche, sí termina).
+- **Una noticia manda sobre la huelga:** si una noticia bloquea una estación que ya estaba en huelga, ese bloqueo sigue cuando la línea reabre (`run.striking` guarda solo los cierres por huelga).
+- **Datos, no código:** los efectos y la ventana por defecto viven en `config.json → events`; cada nivel declara los suyos en `niveles.json → events` (`{"id":"lluvia","from":480,"to":660}`, `{"id":"huelga","line":"3","until":630}`). `Events.validate` revisa al cargar que el id exista, la línea exista y la ventana quepa en el día. `tools/make_data.py` es la fuente (`EVENTS` por nivel).
+- **Reglas:** `Events` (puro) calcula ventanas y extras; `Rules.canTravel/travel` los suman (`cost.event`), `Rules.syncEvents` abre y cierra las líneas en huelga, `Rules.wait` espera y `News.event/drain` los anuncian.
+- **Balance:** los niveles con huelga siguen teniendo ruta con la línea cerrada (hay una prueba). `node tools/solve_events.js [nivel]` busca la mejor partida exacta (rutas, Monster y esperas) y dice si la 2.ª estrella sigue siendo posible; por eso el **nivel 5** empieza con `190` de dinero en lugar de `170` (con 170 la estrella de ahorro ya era imposible: obligaba a un Monster y la meta de ahorro quedaba por encima del mejor final).
