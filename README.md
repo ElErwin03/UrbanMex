@@ -28,6 +28,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `graph` | red del Metro, rutas, alcanzabilidad | no |
 | `events` | eventos del día: lluvia, hora pico y huelga (ver *Eventos del día*) | no |
 | `rules` | economía, viaje, asaltos, Monster, fin de partida | no |
+| `infinite` | modo infinito: rondas con ruta al azar, siempre ganables (ver *Modo infinito*) | no |
 | `news` | noticias del celular (nunca dejan la meta inalcanzable) | no |
 | `ui` | interfaz “modo inmediato” sobre objetos Texto/Icono/Painter | sí |
 | `map` | mapa isométrico 2.5D (ciudad en relieve), cámara que encuadra toda la red, estaciones, jugador | sí |
@@ -243,3 +244,15 @@ Cinco niveles más después de la semana 1; se desbloquean en orden igual que lo
 - Todos son ganables **con sus eventos puestos** y con la estrella de ahorro posible (se comprobó con `node tools/solve_events.js`, que ahora poda por cota de dinero y resuelve los 10 niveles en menos de 30 s). Cada nivel exige como máximo **1 Monster**: con 2 la estrella de ahorro sería imposible (hay una prueba que lo vigila).
 - El selector de niveles pasa a **dos filas de 5**, y el resumen de fin de semana sale al ganar el 5.º y el 10.º nivel.
 - Los datos viven en `tools/make_data.py` (`WEEK2`, `LV`, `EVENTS`); la estación de salida nunca se cierra por huelga.
+
+## Modo infinito
+Se **desbloquea al completar los 10 niveles** (en el menú aparece `MODO INFINITO - BLOQUEADO` hasta entonces). Cada **ronda** es un día nuevo con ruta al azar; si la ganas pasas a la siguiente, y **la racha termina al perder una ronda**.
+
+- **Ruta al azar:** salida y meta salen de cualquier estación (con una distancia que crece con las rondas), más bloqueos y eventos del día al azar. Todo se genera con una **semilla**: la misma semilla y ronda dan siempre el mismo nivel (`Infinite.level(data, semilla, ronda)`), así que se puede reproducir y probar.
+- **Dificultad por ronda:** tramos de la ruta más corta de 8-14 en la ronda 1, subiendo hasta 18-34 en la 11 (después se mantiene); 0 bloqueos en las rondas 1-2 y uno más cada 3 rondas (máximo 3); 1 evento al inicio, 2 desde la ronda 4 y los 3 desde la 7.
+- **Siempre ganable:** cada ronda se comprueba antes de jugarse con un jugador automático que la termina con las reglas reales (esperando las huelgas y comprando Monster si hace falta); si no la gana, se descarta y se prueba otra (hasta 60 intentos, con un nivel de respaldo hecho a mano por si acaso). Los bloqueos y las huelgas nunca dejan la meta sin ruta, y la huelga nunca cierra la meta.
+- **Mismo balance que los niveles:** el dinero y la stamina salen de la ruta: como máximo **1 Monster** obligatorio y la estrella de ahorro siempre cabe. Con `node tools/solve_events.js infinite SEMILLA DESDE HASTA` el buscador exacto confirma las rondas (probado con semillas 42 y 7, rondas 1-14: todas ganables y con la estrella de ahorro posible).
+- **En el juego:** el HUD, la ventana de inicio y el celular dicen `RONDA n`; la ventana de inicio muestra la racha (rondas y estrellas). Las rondas **no** cuentan como niveles completados ni tocan las marcas de los niveles.
+- **Resultado:** `SIGUIENTE RONDA >` al ganar y `NUEVA RACHA` al perder (semilla nueva, ronda 1); muestra `RACHA: n rondas - m estrellas (mejor: k rondas)` o `NUEVA MEJOR RACHA!`.
+- **Mejor racha:** se guarda (`inf` en el guardado: más rondas; a igual de rondas, más estrellas; los valores dañados se ignoran) y se muestra en el menú. `BORRAR PROGRESO` la borra.
+- **Archivos:** `src/infinite.js` (generador, jugador automático, racha), `Rules.createRun(data, -1, rnd, nivel)` acepta un nivel ya armado, `Save.recordStreak`.

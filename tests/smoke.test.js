@@ -574,9 +574,9 @@ test('menú: botón SALIR abajo del todo; pide confirmación y, si se acepta, ci
   const store = store0();
   try {
     audioReset(); const m = session('Menu'); m.frame(5); const um = m.scene._um;
-    const quit = [490 + 150, 574 + 20], si = [360 + 560 - 260 + 110, 200 + 250 - 70 + 22], no = [360 + 40 + 110, 200 + 250 - 70 + 22];
+    const quit = [490 + 150, 630 + 18], si = [360 + 560 - 260 + 110, 200 + 250 - 70 + 22], no = [360 + 40 + 110, 200 + 250 - 70 + 22];
     // el botón está debajo de todos los demás botones del menú principal
-    assert.ok(574 > 516 + 40, 'SALIR queda debajo de COMO JUGAR');
+    assert.ok(630 > 584 + 36, 'SALIR queda debajo de COMO JUGAR');
     m.click(...quit); m.frame(2); assert.equal(um.confirmExit, true, 'abre la ventana de confirmación'); assert.equal(m.scene.changes.length, 0, 'todavía no cierra');
     // con la ventana abierta nada de abajo responde: un clic sobre JUGAR no hace nada
     m.click(640, 400); m.frame(2); assert.equal(m.scene.changes.length, 0); assert.equal(um.confirmExit, true);
@@ -1178,5 +1178,62 @@ test('selector: dos filas de 5 niveles (SEMANA 1 y SEMANA 2), el siguiente se ma
     m.click(1112, 625); assert.equal(m.scene.changes.length, 0, 'el nivel 10 está bloqueado');   // última carta de la fila 2
     m.click(150, 625); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 5, 'REJUGAR el nivel 6 (primera carta de la fila 2)');
     m.scene._um.view = 'main'; m.frame(2); assert.match(uiTexts(m.scene)['UI:pl2'], /NIVEL 7 - MARTES 2/); assert.equal(uiTexts(m.scene)['UI:pl3'], 'Ermita > Indios Verdes');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+// ---------------------------------------------------------------- modo infinito en el menú, el nivel y el resultado
+test('infinito (menú): bloqueado hasta completar los 10 niveles; después arranca una racha nueva en la ronda 1', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; let m = session('Menu'); m.frame(3); const U = m.U; U.session.completed = [0, 1, 2, 3, 4, 5, 6, 7, 8]; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; m.frame(3);
+    assert.equal(uiTexts(m.scene)['UI:btn:inf'], 'MODO INFINITO - BLOQUEADO'); assert.match(uiTexts(m.scene)['UI:infh'], /Completa los 10 niveles/);
+    m.click(640, 536); assert.equal(m.scene.changes.length, 0, 'bloqueado: no hace nada'); assert.equal(U.session.infinite, null);
+    U.session.completed.push(9); m.frame(3); assert.equal(uiTexts(m.scene)['UI:btn:inf'], 'MODO INFINITO'); assert.match(uiTexts(m.scene)['UI:infh'], /Rutas al azar/);
+    U.session.inf = { best: 4, stars: 9 }; m.frame(2); assert.equal(uiTexts(m.scene)['UI:infh'], 'Mejor racha: 4 rondas - 9 estrellas');
+    m.click(640, 536); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.infinite.round, 1); assert.equal(U.session.infinite.cleared, 0); assert.ok(U.session.infinite.seed > 0);
+    // JUGAR y REJUGAR vuelven a los niveles normales (apagan la racha)
+    U.session.seenTutorial = true; m = session('Menu'); m.frame(3); m.click(640, 400); assert.equal(U.session.infinite, null); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']);
+    Infinite_start(U); m = session('Menu'); m.frame(3); m.scene._um.view = 'levels'; m.frame(3); m.click(150, 351); assert.equal(U.session.infinite, null, 'REJUGAR un nivel apaga la racha');
+    // los botones de abajo no se pisan
+    m = session('Menu'); m.frame(3); assert.ok(uiTexts(m.scene)['UI:btn:how'] === 'COMO JUGAR' && uiTexts(m.scene)['UI:btn:quit'] === 'SALIR');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+function Infinite_start(U) { U.Infinite.start(5); }
+
+test('infinito (nivel): la ronda sale de la semilla, se muestra como RONDA y al ganar suma a la racha y guarda el récord', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; let s = session('Nivel'); s.frame(2); const U = s.U; U.session.inf = { best: 0, stars: 0 }; U.Infinite.start(42); U.session.infinite.round = 3; U.session.infinite.cleared = 2; U.session.infinite.stars = 5;
+    delete s.scene._um; s.frame(3); const um = s.scene._um, lv = U.Infinite.level(um.data, 42, 3);
+    assert.equal(um.run.level.start, lv.start); assert.equal(um.run.level.goal, lv.goal); assert.equal(um.run.levelIndex, -1);
+    assert.equal(um.modal.title, 'RONDA 3'); assert.ok(um.modal.lines.some((l) => l === 'Racha: 2 rondas - 5 estrellas'), um.modal.lines.join('|'));
+    um.modal = null; s.frame(2); assert.equal(uiTexts(s.scene)['UI:hud:day'], 'RONDA 3');
+    um.run.over = true; um.run.won = true; s.frame(3);
+    assert.equal(um.streak.cleared, 3); assert.ok(um.streak.stars >= 5 + 1); assert.deepEqual(U.session.completed, [], 'las rondas no cuentan como niveles completados'); assert.deepEqual(U.session.best, {});
+    assert.deepEqual(JSON.parse(store['UrbanMex_save_v1']).inf, { best: 3, stars: um.streak.stars }); s.frame(80);
+    assert.deepEqual(s.scene.changes.pop(), [3, 'Resultado']); assert.equal(U.session.lastResult.infinite.round, 3); assert.equal(U.session.lastResult.streak.newBest, true);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('infinito (resultado): racha, mejor marca y botones SIGUIENTE RONDA / NUEVA RACHA', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Resultado'); s.frame(1); const U = s.U, T = (k) => uiTexts(s.scene)['UI:' + k];
+    U.session.inf = { best: 6, stars: 14 }; U.Infinite.start(9); U.session.infinite.round = 4; U.session.infinite.cleared = 4;
+    U.session.lastResult = fakeResult({ levelIndex: -1, day: 'RONDA 4', infinite: { round: 4 }, stars: 2, got: { arrive: true, saver: true, safe: false }, record: null,
+      streak: { round: 4, cleared: 4, stars: 9, newBest: false, best: { best: 6, stars: 14 } } }); s.frame(40);
+    assert.equal(T('d'), 'RONDA 4'); assert.equal(T('rec'), 'RACHA: 4 rondas  -  9 estrellas   (mejor: 6 rondas)'); assert.equal(T('w'), undefined, 'sin cierre de semana');
+    assert.ok(hasText(s.scene, /SIGUIENTE RONDA/) && !hasText(s.scene, /MEJORAR ESTRELLAS|REINTENTAR|SIGUIENTE NIVEL/));
+    U.session.lastResult.streak.newBest = true; s.frame(2); assert.match(T('rec'), /^NUEVA MEJOR RACHA!  4 rondas  -  9 estrellas$/);
+    s.click(555, 600); s.frame(1);
+    assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.infinite.round, 5, 'sigue la ronda 5');
+    // perder: la racha termina y se ofrece una nueva
+    U.session.lastResult = fakeResult({ levelIndex: -1, day: 'RONDA 5', infinite: { round: 5 }, won: false, stars: 0, got: { arrive: false, saver: false, safe: false }, cause: 'stamina', reason: 'Te quedaste sin stamina.', left: 6, hops: 14, progress: 0.5,
+      record: null, streak: { round: 5, cleared: 4, stars: 9, newBest: false, best: { best: 6, stars: 14 } } }); s.frame(40);
+    assert.ok(hasText(s.scene, /NUEVA RACHA/) && !hasText(s.scene, /SIGUIENTE RONDA|REINTENTAR/)); assert.match(T('hl'), /Tu racha termina: aguantaste 4 rondas!/);
+    s.click(555, 600); s.frame(1);
+    assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.infinite.round, 1); assert.equal(U.session.infinite.cleared, 0);
+    U.session.lastResult = fakeResult({ levelIndex: -1, day: 'RONDA 1', infinite: { round: 1 }, won: false, stars: 0, got: { arrive: false, saver: false, safe: false }, left: 6, hops: 14, progress: 0.5, record: null, streak: { round: 1, cleared: 0, stars: 0, newBest: false, best: { best: 0, stars: 0 } } }); s.frame(40);
+    assert.match(T('hl'), /primera ronda/);
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
