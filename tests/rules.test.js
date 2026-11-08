@@ -1,5 +1,5 @@
 const test = require('node:test'), assert = require('node:assert');
-const { loadModules, rawData, cheapestStaminaPath } = require('./helpers');
+const { loadModules, rawData, cheapestStaminaPath, wantsWait } = require('./helpers');
 const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news']);
 const data = U.Data.normalize(rawData());
 
@@ -10,6 +10,7 @@ function playBot(levelIndex, seed, withNews) {
   let guard = 500;
   while (!run.over && guard--) {
     if (withNews) { U.News.onMove(run); }                       // las noticias llegan al moverse
+    if (wantsWait(U, run) && U.Rules.wait(run).ok) continue;       // la huelga cierra el camino corto: espera a que reabra
     const bp = cheapestStaminaPath(U, run), path = bp && bp.path;
     if (!path && U.Rules.wait(run).ok) continue;                 // sin ruta por una huelga: espera a que reabra
     assert.ok(path, 'la meta debe seguir siendo alcanzable (nivel ' + (levelIndex + 1) + ', semilla ' + seed + ')');
@@ -275,7 +276,7 @@ test('urgency: el apuro empieza al bajar de 15 % (tiempo, dinero o stamina), sub
 
 // ---- Resultado: estrellas, avance y causa
 test('estrellas: llegar, ahorrar (65 % de lo que deja la mejor ruta) y sin asaltos', () => {
-  const par = [85, 105, 105, 100, 95];                                                  // dinero inicial − ruta más barata (sin noticias)
+  const par = [85, 105, 105, 100, 95, 85, 100, 105, 105, 105];                                                  // dinero inicial − ruta más barata (sin noticias)
   data.levels.forEach((lv, i) => {
     const run = U.Rules.createRun(data, i, Math.random); assert.equal(U.Rules.parMoney(run), par[i], 'par del nivel ' + (i + 1));
     const goal = Math.ceil(par[i] * U.Rules.SAVER_KEEP); assert.equal(U.Rules.score(run).moneyGoal, goal);
@@ -285,7 +286,7 @@ test('estrellas: llegar, ahorrar (65 % de lo que deja la mejor ruta) y sin asalt
     run.robbed = 1; assert.equal(U.Rules.score(run).stars, 1, 'ni ahorro ni sin asaltos: solo llegar'); run.money = goal; assert.deepEqual(U.Rules.score(run).got, { arrive: true, saver: true, safe: false });
   });
   // los niveles que obligan a comprar un Monster (30) siguen pudiendo dar las 3 estrellas
-  [1, 3, 4].forEach((i) => { const run = U.Rules.createRun(data, i, Math.random), par = U.Rules.parMoney(run); assert.ok(par - 30 >= Math.ceil(par * U.Rules.SAVER_KEEP), 'con un Monster aún se ahorra en el nivel ' + (i + 1)); });
+  [1, 3, 4, 6, 7, 8, 9].forEach((i) => { const run = U.Rules.createRun(data, i, Math.random), par = U.Rules.parMoney(run); assert.ok(par - 30 >= Math.ceil(par * U.Rules.SAVER_KEEP), 'con un Monster aún se ahorra en el nivel ' + (i + 1)); });
 });
 
 test('resumen: causa del final, estaciones que faltaban y avance', () => {
@@ -318,7 +319,7 @@ test('eventos: los datos se validan (ids, líneas, ventanas) y cada nivel declar
   assert.throws(lv([{ id: 'huelga', line: '3', until: 5000 }]), /fuera del día/);
   assert.throws(lv([{ id: 'lluvia', from: 600, to: 500 }]), /ventana inválida/);
   assert.doesNotThrow(lv([{ id: 'lluvia', from: 480, to: 600 }]));
-  assert.deepEqual(data.levels.map((l) => (l.events || []).map((e) => e.id)), [['horaPico'], ['lluvia'], ['huelga'], ['lluvia', 'huelga'], ['horaPico', 'lluvia', 'huelga']]);
+  assert.deepEqual(data.levels.map((l) => (l.events || []).map((e) => e.id)), [['horaPico'], ['lluvia'], ['huelga'], ['lluvia', 'huelga'], ['horaPico', 'lluvia', 'huelga'], ['horaPico', 'lluvia'], ['lluvia', 'huelga'], ['horaPico', 'lluvia', 'huelga'], ['horaPico', 'huelga'], ['horaPico', 'lluvia', 'huelga']]);
 });
 
 test('lluvia: dentro de su ventana el Metro suma tiempo y stamina y la combi se atasca; fuera, todo normal', () => {
@@ -433,4 +434,28 @@ test('eventos: el panel de efectos nombra lluvia y hora pico con su costo', () =
   run.minute = 800; assert.deepEqual(Ev().effects(run, U.Rules.canTravel(run, n).cost), []);
   assert.deepEqual(Ev().status(run).map((s) => s.state), ['over', 'over', 'over']);
   run.minute = 420; assert.deepEqual(Ev().status(run).map((s) => s.state), ['active', 'soon', 'active'], 'hora pico en marcha, lluvia por venir, huelga activa');
+});
+
+// ---------------------------------------------------------------- 10 niveles (dos semanas)
+test('niveles: 10 consecutivos, días distintos, rutas distintas, meta fuera de la huelga y balance de la estrella de ahorro', () => {
+  assert.equal(data.levels.length, 10); assert.deepEqual(data.levels.map((l) => l.id), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  assert.equal(new Set(data.levels.map((l) => l.day)).size, 10, 'cada día con su nombre');
+  assert.equal(new Set(data.levels.map((l) => l.start + '>' + l.goal)).size, 10, 'cada nivel con su ruta');
+  data.levels.forEach((lv, i) => {
+    assert.notEqual(lv.start, lv.goal); assert.ok(lv.startDesc && lv.goalDesc);
+    const run = U.Rules.createRun(data, i), cfg = data.config;
+    assert.ok(!run.striking[lv.goal] && !run.striking[lv.start] , 'nivel ' + lv.id + ': ni la salida ni la meta quedan cerradas por huelga');
+    // mejor caso (la huelga ya terminó): cuántos Monster hacen falta como mínimo y si aun así cabe la estrella de ahorro
+    const open = Object.assign({}, run, { blocked: Object.assign({}, run.blocked), striking: {} }); Object.keys(run.striking).forEach((k) => { delete open.blocked[k]; });
+    const bp = cheapestStaminaPath(U, open), monsters = Math.max(0, Math.ceil((bp.need - lv.staminaMax) / cfg.monsterStamina)), par = U.Rules.parMoney(run);
+    assert.ok(par - monsters * cfg.monsterPrice >= Math.ceil(par * U.Rules.SAVER_KEEP), 'nivel ' + lv.id + ': con ' + monsters + ' Monster la estrella de ahorro sería imposible (par ' + par + ')');
+    assert.ok(monsters <= 1, 'nivel ' + lv.id + ': más de un Monster obligatorio rompe el ahorro');
+  });
+});
+
+test('niveles: la semana 2 es más exigente que la 1 (más tramos y más eventos en promedio)', () => {
+  const avg = (a, f) => a.reduce((s, x) => s + f(x), 0) / a.length, w1 = data.levels.slice(0, 5), w2 = data.levels.slice(5);
+  const hops = (lv) => { const r = U.Rules.createRun(data, lv.id - 1); return U.Rules.hopsLeft(r, lv.start); };
+  assert.ok(avg(w2, hops) >= avg(w1, hops), 'más tramos en la semana 2'); assert.ok(avg(w2, (l) => l.events.length) > avg(w1, (l) => l.events.length), 'más eventos en la semana 2');
+  assert.ok(w2.every((l) => l.events.length >= 2) && w2[4].events.length === 3, 'el último nivel junta los tres eventos');
 });
