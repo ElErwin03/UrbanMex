@@ -117,6 +117,16 @@
     if (rec) ui.text('rec', rec.text, 640, 520, { size: 8, align: 'center', color: rec.new ? PAL.yellow : PAL.dim });
     if (week) ui.text('w', Text.weekEnd(r.levelIndex, last, data.levels.length), 640, 542, { size: 8, align: 'center', color: PAL.yellow });
 
+    var got = (r.achievements || []).map(U.Achievements.byId).filter(Boolean);        // logros nuevos de esta partida (cartel arriba a la derecha)
+    if (got.length) {
+      var shown = got.slice(0, 3), bh = 34 + shown.length * 30 + (got.length > shown.length ? 14 : 0), bx = 920, pulse = calm ? 0 : Math.round(Math.sin(t * 5) * 20);
+      ui.rect(bx, 14, 344, bh, { fill: '40;34;10', border: (235 + pulse) + ';' + (190 + pulse) + ';40', bw: 3 });
+      ui.text('ac:h', got.length === 1 ? 'LOGRO DESBLOQUEADO!' : 'LOGROS DESBLOQUEADOS!', bx + 172, 24, { size: 8, align: 'center', color: PAL.yellow });
+      shown.forEach(function (a, i) {
+        ui.icon('ac:i' + i, 'trofeo', bx + 10, 40 + i * 30, 1.5); ui.text('ac:n' + i, a.name, bx + 44, 46 + i * 30, { size: 8, color: '255;255;255' });
+      });
+      if (got.length > shown.length) ui.text('ac:m', '+ ' + (got.length - shown.length) + ' mas en LOGROS', bx + 172, 38 + shown.length * 30 + 4, { size: 8, align: 'center', color: PAL.dim });
+    }
     var go = function (name) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, name); };
     var btns = inf ? (r.won ? [['i', 'SIGUIENTE RONDA >', 300, '39;174;96']] : [['x', 'NUEVA RACHA', 300, '120;60;160']])
       : r.won ? (last ? [['a', 'JUGAR OTRA VEZ', 300, '39;174;96']] : [['n', 'SIGUIENTE NIVEL >', 300, '39;174;96']]) : [['r', 'REINTENTAR', 300, '39;174;96']];
