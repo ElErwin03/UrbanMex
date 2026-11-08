@@ -22,7 +22,14 @@ config = {
   "monsterPrice": 30, "monsterPromoPrice": 20, "monsterStamina": 40,
   "robbery": {"baseChance": 0.55, "luck": 0.15, "minLoss": 20, "maxLoss": 59},
   "news": {"firstAfterMoves": 1, "everyMoves": [2, 3], "chance": 0.75},   # las noticias llegan SOLO cuando el jugador se mueve
-  "combi": {"money": 10, "stamina": 5}      # tarifa y esfuerzo de UN tramo en combi (el Metro cuesta 5 y 5 por estación)
+  "combi": {"money": 10, "stamina": 5},     # tarifa y esfuerzo de UN tramo en combi (el Metro cuesta 5 y 5 por estación)
+  # EVENTOS DEL DÍA (ver src/events.js). Cada nivel elige los suyos en niveles.json ("events"); aquí está su efecto y su ventana por defecto (minutos del día).
+  # extraTime / combiExtraTime: minutos extra por tramo en Metro / en combi; extraStamina: stamina extra por tramo; robberyBonus: sube la probabilidad de asalto en zonas reportadas.
+  "events": {
+    "horaPico": {"label": "HORA PICO", "from": 420, "to": 570, "extraTime": 4, "combiExtraTime": 0, "extraStamina": 0, "robberyBonus": 0.15},
+    "lluvia": {"label": "LLUVIA", "from": 480, "to": 660, "extraTime": 2, "combiExtraTime": 10, "extraStamina": 1, "robberyBonus": 0},
+    "huelga": {"label": "HUELGA"}                                   # una línea (la del nivel) cerrada hasta la hora "until"
+  }
 }
 
 # ---- estaciones --------------------------------------------------------
@@ -65,15 +72,24 @@ LV = [
   {"blocked": ["Allende"],           "moneyStart": 210, "staminaMax": 90},    # Miércoles
   {"blocked": ["Tlatelolco", "Pantitlán"], "moneyStart": 230, "staminaMax": 105},   # Jueves (Pantitlán de la línea 1 también bloqueada)
   {"blocked": ["Isabel la Católica", "Pino Suárez", "Pino Suárez L2", "Candelaria", "Candelaria LB", "Candelaria LB2", "Coyoacán"],
-   "moneyStart": 170, "staminaMax": 90},                                        # Viernes
+   "moneyStart": 190, "staminaMax": 90},                                        # Viernes
 ]
 levels = []
 for i, l in enumerate(d["LEVELS"]):
     levels.append({"id": i + 1, "day": l["day"], "start": l["start"], "goal": l["goal"],
       "startDesc": clean(l["startDesc"]), "goalDesc": clean(l["goalDesc"]),
       "moneyStart": l["moneyStart"], "staminaMax": l["staminaMax"], "blocked": l["blocked"]})
+# Eventos del día: lluvia (la combi se atasca), hora pico (el Metro va lleno y hay carteristas) y huelga (una línea cerrada hasta cierta hora).
+# Las huelgas son de líneas que tienen un rodeo (verificado en tests/rules.test.js); el lunes solo trae hora pico para ir conociéndolos.
+EVENTS = [
+  [{"id": "horaPico"}],                                                                              # Lunes
+  [{"id": "lluvia", "from": 480, "to": 660}],                                                          # Martes
+  [{"id": "huelga", "line": "3", "until": 630}],                                                       # Miércoles
+  [{"id": "lluvia", "from": 480, "to": 600}, {"id": "huelga", "line": "1", "until": 570}],             # Jueves
+  [{"id": "horaPico"}, {"id": "lluvia", "from": 540, "to": 720}, {"id": "huelga", "line": "3", "until": 600}],   # Viernes: los tres
+]
 if LV:
-    for lv, o in zip(levels, LV): lv.update(o)
+    for lv, o, ev in zip(levels, LV, EVENTS): lv.update(o); lv["events"] = ev
 json.dump(levels, open(f"{out}/niveles.json", "w"), ensure_ascii=False, indent=1)
 
 # ---- noticias -----------------------------------------------------------

@@ -5,6 +5,7 @@
   if (U.Rules) return;
 
   function setOf(list) { var o = {}; (list || []).forEach(function (k) { o[k] = true; }); return o; }
+  function E() { return U.Events; }
 
   var Rules = {
     SAVER_KEEP: 0.65,                             // 2.ª estrella: terminar con al menos el 65 % del dinero que dejaría la mejor ruta (alcanza aunque compres un Monster)
@@ -12,15 +13,33 @@
     createRun: function (data, levelIndex, rnd) {
       var lv = data.levels[levelIndex], cfg = data.config, rng = rnd || Math.random;
       var visited = {}; visited[lv.start] = true;
-      return {
+      var run = {
         data: data, graph: G.build(data), rnd: rng, levelIndex: levelIndex, level: lv,
         current: lv.start, stamina: lv.staminaMax, staminaMax: lv.staminaMax, money: lv.moneyStart,
         minute: cfg.dayStartMinute, steps: 0, robbed: 0, stolen: 0, visited: visited,
-        blocked: setOf(lv.blocked), danger: {}, timeMods: {}, monsterPromo: false, freeRides: 0,
+        blocked: setOf(lv.blocked), striking: {}, eventQueue: [], danger: {}, timeMods: {}, monsterPromo: false, freeRides: 0,
         newsLog: [], newsUsed: {}, unread: 0, newsMoves: cfg.news.firstAfterMoves, newsCount: 0,
         over: false, won: false, endReason: ''
       };
+      Rules.syncEvents(run);
+      return run;
     },
+
+    /** EVENTOS DEL DÍA (events.js): las estaciones de una línea en huelga cuentan como bloqueadas (run.blocked) mientras dure; run.striking guarda cuáles
+     *  se cerraron por huelga (para reabrirlas sin tocar los bloqueos permanentes de nivel o noticias). Se llama cada vez que corre el reloj. */
+    syncEvents: function (run) {
+      var Ev = E(); if (!Ev || !(run.level.events || []).length) return;
+      var now = {};
+      Ev.list(run).forEach(function (e) {
+        if (e.id !== 'huelga' || run.minute >= e.to) return;
+        run.data.stationList.forEach(function (s) { if (s.line === e.line) now[s.id] = true; });
+      });
+      Object.keys(run.striking).forEach(function (k) { if (!now[k]) { delete run.striking[k]; delete run.blocked[k]; } });   // reabre las que ya terminaron
+      Object.keys(now).forEach(function (k) { if (!run.blocked[k]) { run.blocked[k] = true; run.striking[k] = true; } });          // cierra las nuevas (si no estaban ya bloqueadas por otra causa)
+    },
+
+    /** ¿La estación está cerrada solo por una huelga (que reabrirá)? */
+    onStrike: function (run, id) { return !!run.striking[id]; },
 
     /** Tiempo (min) de la conexión a→b contando retrasos/aceleraciones por noticias. */
     edgeCost: function (run, a, b) {
@@ -53,8 +72,9 @@
       if (run.blocked[to]) return { ok: false, reason: 'blocked' };
       var combi = G.isCombi(run.graph, run.current, to), fare = combi ? G.fare(run.graph, run.current, to) : {}, cc = cfg.combi;   // la combi cuesta más dinero que el Metro pero salta varias estaciones
       var fm = fare.money !== undefined ? fare.money : cc.money, fs = fare.stamina !== undefined ? fare.stamina : cc.stamina;
-      var cost = { time: Rules.edgeCost(run, run.current, to), stamina: combi ? fs : cfg.staminaPerStation,
-                   money: run.freeRides > 0 ? 0 : (combi ? fm : cfg.moneyPerStation), combi: combi };
+      var ex = E() ? E().hopExtra(run, combi) : { time: 0, stamina: 0 };                            // lluvia / hora pico: tramos más lentos y cansados
+      var cost = { time: Rules.edgeCost(run, run.current, to) + ex.time, stamina: (combi ? fs : cfg.staminaPerStation) + ex.stamina,
+                   money: run.freeRides > 0 ? 0 : (combi ? fm : cfg.moneyPerStation), combi: combi, event: ex };
       if (run.stamina < cost.stamina) return { ok: false, reason: 'stamina', cost: cost };
       if (run.money < cost.money) return { ok: false, reason: 'money', cost: cost };
       if (run.minute + cost.time > cfg.dayEndMinute) return { ok: false, reason: 'night', cost: cost };
@@ -81,7 +101,9 @@
         var left = Math.max(0, cfg.dayEndMinute - run.minute); out.missing = Math.ceil(c.time - left); out.short = 'Ya no llegas a tiempo';
         out.detail = 'El viaje dura ' + c.time + ' min y solo quedan ' + left + ' min del dia.';
       } else if (chk.reason === 'blocked') {
-        out.short = 'Estacion bloqueada'; out.detail = 'Hay un bloqueo ahi. Busca otra ruta o revisa las noticias.';
+        var sk = Rules.onStrike(run, to) ? E().strikeAt(run, to) : null;
+        if (sk) { out.short = 'Huelga en la linea ' + sk.line; out.detail = 'Reabre a las ' + util.clock(sk.to) + '. Busca otra ruta o espera.'; out.until = sk.to; }
+        else { out.short = 'Estacion bloqueada'; out.detail = 'Hay un bloqueo ahi. Busca otra ruta o revisa las noticias.'; }
       } else if (chk.reason === 'no_connection') {
         out.short = 'Sin ruta directa'; out.detail = 'Solo puedes viajar a estaciones conectadas a la actual.';
       } else { out.short = 'Partida terminada'; out.detail = ''; }
@@ -94,7 +116,9 @@
       if (!chk.ok) return chk;
       var c = chk.cost;
       if (run.freeRides > 0) run.freeRides--;
+      var prev = run.minute, bonus = E() ? E().robberyBonus(run) : 0;                              // el riesgo de asalto es el de la hora en que sales
       run.stamina -= c.stamina; run.money -= c.money; run.minute += c.time; run.steps++;
+      if (E()) { E().transitions(run, prev, run.minute).forEach(function (t) { run.eventQueue.push(t); }); Rules.syncEvents(run); }
       run.current = to; run.visited[to] = true;
       var out = { ok: true, cost: c, type: 'arrive' };
       if (to === run.level.goal) {
@@ -103,7 +127,7 @@
         out.type = 'shop';
       } else if (run.danger[to]) {
         var r = run.data.config.robbery;
-        var chance = r.baseChance - r.luck;
+        var chance = Math.min(0.95, r.baseChance - r.luck + bonus);
         if (run.rnd() < chance) {
           var loss = Math.min(run.money, Math.floor(r.minLoss + run.rnd() * (r.maxLoss - r.minLoss + 1)));
           run.money -= loss; run.stolen += loss; run.robbed++;
@@ -123,12 +147,27 @@
       return { ok: true, gained: run.stamina - before, price: price };
     },
 
+    /** ESPERAR: el reloj avanza hasta que reabra la línea en huelga que primero lo haga (o hasta `untils`, una lista de horas). Cuesta solo tiempo.
+     *  → { ok, from, to } o { ok:false, reason: 'over' | 'none' | 'night' } (no hay huelga, o reabre después de que acabe el día). */
+    wait: function (run, untils) {
+      if (run.over) return { ok: false, reason: 'over' };
+      var ends = untils || (E() ? E().strikeEnds(run) : []);
+      if (!ends.length) return { ok: false, reason: 'none' };
+      var to = Math.min.apply(null, ends), from = run.minute;
+      if (to > run.data.config.dayEndMinute) return { ok: false, reason: 'night' };
+      run.minute = to; run.waited = (run.waited || 0) + (to - from);
+      E().transitions(run, from, to).forEach(function (t) { run.eventQueue.push(t); });
+      run.eventQueue.push({ id: 'huelga', kind: 'wait', from: from, to: to });
+      Rules.syncEvents(run);
+      return { ok: true, from: from, to: to };
+    },
+
     /** Si no existe ningún movimiento posible, la partida termina (antes el juego se quedaba trabado). */
     checkStuck: function (run) {
       if (run.over) return null;
-      var cfg = run.data.config, reasons = {}, any = false;
+      var cfg = run.data.config, reasons = {}, any = false, strikes = [];
       G.neighbors(run.graph, run.current).forEach(function (n) {
-        if (run.blocked[n]) return;
+        if (run.blocked[n]) { if (run.striking[n]) strikes.push(E().strikeAt(run, n).to); return; }
         var chk = Rules.canTravel(run, n);
         if (chk.ok) any = true; else reasons[chk.reason] = true;
       });
@@ -137,6 +176,8 @@
       var canRecover = run.data.stations[run.current].shop && run.stamina < run.staminaMax &&
         run.money >= Rules.monsterPrice(run) + cfg.moneyPerStation;
       if (canRecover) return null;
+      // Solo te frena una huelga: esperas (el reloj avanza) a que reabra la línea; si ni así llegas, el día termina como siempre
+      if (strikes.length && Rules.wait(run, strikes).ok) return Rules.checkStuck(run);
       run.over = true; run.won = false;
       run.endCause = reasons.night ? 'night' : reasons.stamina ? 'stamina' : reasons.money ? 'money' : 'blocked';
       run.endReason = { night: 'Anocheció y no llegaste a tiempo.', stamina: 'Te quedaste sin stamina.', money: 'Te quedaste sin dinero.', blocked: 'Todas las rutas están bloqueadas.' }[run.endCause];
@@ -146,7 +187,7 @@
     /** Aplica los efectos de una noticia al estado. */
     applyNews: function (run, item) {
       var e = item.effects || {}, cfg = run.data.config;
-      (e.block || []).forEach(function (s) { run.blocked[s] = true; });
+      (e.block || []).forEach(function (s) { run.blocked[s] = true; delete run.striking[s]; });   // un bloqueo de noticia es permanente aunque la huelga termine
       (e.danger || []).forEach(function (s) { run.danger[s] = true; });
       if (e.timeMod) {
         run.data.connections.forEach(function (c) {

@@ -163,7 +163,9 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
         s.click(x0 + pick * (bw + 20) + 85, 210 + 300 - 62 + 20); s.frame(2); continue; }
       if (u.pending || u.map.moving() || run.over) { s.frame(1); continue; }
       const bp = cheapestStaminaPath(U, run), path = bp && bp.path;
-      if (!path) { s.frame(1); continue; }
+      if (!path) {                                              // sin ruta por una huelga: pulsa ESPERAR en su ficha de eventos
+        let cx = 346, hit = false; U.Events.status(run).forEach((e) => { if (e.state === 'over') return; const w = e.id === 'huelga' ? 236 : 150; if (e.id === 'huelga' && e.state === 'active') { s.click(cx + w - 84 + 39, 68 + 16); hit = true; } cx += w + 6; });
+        s.frame(hit ? 2 : 1); continue; }
       const sh = run.data.stations[run.current].shop; if (sh && run.stamina < bp.need && run.money > 60) { s.click(166, 666 + 18); s.frame(2); }
       const w = u.map.stationPos(path[1]), cam = u.map.cam;
       const sx = (w.x - cam.x) * cam.zoom + 640, sy = (w.y - cam.y) * cam.zoom + 360;
@@ -1089,4 +1091,70 @@ test('audio (foco): el ajuste AL SALIR DE LA VENTANA se guarda, se valida y se c
     // celular: AJUSTES → SONIDO, botón en (1192, 401)
     s.U.session.bgAudio = false; u.paused = false; u.phone.open = true; u.phone.app = 'snd'; s.frame(2); assert.equal(txt(s)['UI:btn:ph:bg'], 'PAUSAR'); s.click(1192, 401); assert.equal(s.U.session.bgAudio, true, 'el celular cambia el ajuste');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; KEYS.clear(); SND.reset(); }
+});
+
+// ---------------------------------------------------------------- eventos del día en el nivel
+function eventLevel(idx, calm, q) {
+  audioReset(); const s = session('Nivel'); s.frame(1); s.U.session.calm = !!calm; s.U.session.fxQuality = q || 'high'; s.U.session.levelIndex = idx; delete s.scene._um; s.frame(3);
+  const u = s.scene._um; return { s, u, run: u.run, pool: u.fx.stage && u.fx.stage.pool, T: () => uiTexts(s.scene) };
+}
+const goTo = (t, id) => {                                    // como el jugador: encuadra la red, toca la estación y pulsa VIAJAR
+  t.u.modal = null; t.u.modalQueue = []; t.u.map.fit(); t.s.frame(10); const w = t.u.map.stationPos(id), cam = t.u.map.cam;
+  t.s.click((w.x - cam.x) * cam.zoom + 640, (w.y - cam.y) * cam.zoom + 360); t.s.frame(1); t.s.click(132, 592 + 90 + 16); t.s.frame(60);
+};
+
+test('eventos (nivel): la ventana de inicio los anuncia y la barra de arriba los muestra con su estado', () => {
+  let t = eventLevel(0); assert.equal(t.u.modal.lines.some((l) => /^Hoy: HORA PICO \(hasta 9:30 AM\)/.test(l)), true, t.u.modal.lines.join('|'));
+  t = eventLevel(4); assert.ok(t.u.modal.lines.some((l) => /HORA PICO.*LLUVIA.*HUELGA L3/.test(l)), 'el viernes tiene los tres');
+  t.u.modal = null; t.s.frame(2); const T = t.T();
+  assert.deepEqual(['ev0', 'ev1', 'ev2'].map((k) => T['UI:' + k + ':l']), ['HORA PICO', 'LLUVIA', 'HUELGA L3']);
+  assert.deepEqual(['ev0', 'ev1', 'ev2'].map((k) => T['UI:' + k + ':t']), ['hasta 9:30 AM', 'desde 9:00 AM', 'hasta 10:00 AM']);
+  assert.deepEqual(['ev0', 'ev1', 'ev2'].map((k) => uiIcons(t.s.scene)['UI:' + k + ':i']), ['multitud', 'lluvia', 'bloqueo']);
+  assert.equal(T['UI:btn:ev2:w'], 'ESPERAR', 'la huelga activa ofrece esperar'); assert.equal(T['UI:btn:ev0:w'], undefined);
+  assert.ok(t.run.newsLog.some((n) => /HUELGA EN LA/.test(n.title)), 'y quedan en el celular');
+  t.run.minute = 700; t.s.frame(2); assert.equal(t.T()['UI:btn:ev2:w'], undefined, 'la huelga terminó: sin botón'); assert.equal(t.T()['UI:ev2:l'], undefined);
+  assert.equal(t.T()['UI:ev0:l'], 'LLUVIA', 'la lluvia (9:00-12:00) sigue y ocupa el primer lugar; las terminadas desaparecen'); t.run.minute = 800; t.s.frame(2); assert.equal(t.T()['UI:ev0:l'], undefined);
+  const none = eventLevel(0); none.u.modal = null; none.run.minute = 700; none.s.frame(2); assert.equal(none.T()['UI:ev0:l'], undefined);
+});
+
+test('eventos (nivel): ESPERAR a que reabra la línea pasa el reloj y lo avisa en el celular', () => {
+  const t = eventLevel(4); t.u.modal = null; t.s.frame(2); const n0 = t.run.newsLog.length;
+  t.s.click(658 + 236 - 84 + 39, 68 + 16); t.s.frame(2);
+  assert.equal(t.run.minute, 600, 'esperó hasta las 10:00'); assert.equal(t.run.waited, 180);
+  assert.ok(t.run.newsLog.length >= n0 + 2 && t.run.newsLog.some((n) => /REABRE/.test(n.title)) && t.run.newsLog.some((n) => /ESPERASTE/.test(n.title)));
+  assert.ok(t.run.unread >= 1, 'el celular avisa que reabrió'); assert.equal(t.T()['UI:btn:ev2:w'], undefined);
+  assert.equal(Object.keys(t.run.striking).length, 0); assert.ok(t.u.floats.some((f) => /ESPERASTE 180 MIN/.test(f.text)), JSON.stringify(t.u.floats));
+  t.u.modal = { title: 'x', lines: [], buttons: [{ label: 'OK' }] }; const t2 = eventLevel(4); t2.u.modal = null; t2.u.modal = { title: 'x', lines: [], buttons: [{ label: 'OK' }] }; t2.s.frame(2);
+  assert.equal(t2.T()['UI:btn:ev2:w'] === 'ESPERAR' && t2.run.minute, 420, 'con una ventana abierta no se puede esperar (el botón está apagado)');
+});
+
+test('eventos (nivel): al cruzar la hora de la lluvia se anuncia en el celular y la estación explica su costo extra', () => {
+  const t = eventLevel(1); t.u.modal = null; t.run.minute = 479;                          // el martes llueve desde las 8:00
+  const here = t.run.current, next = U_neighbors(t, here); assert.ok(next, 'hay una estación vecina');
+  goTo(t, next); assert.equal(t.run.current, next, 'viajó');
+  assert.ok(t.run.newsLog.some((n) => n.title === 'EMPIEZA A LLOVER'), 'noticia de que empezó a llover'); assert.ok(t.run.unread >= 1);
+  assert.ok(t.run.eventQueue.length === 0, 'la cola se vació');
+  const n2 = U_neighbors(t, t.run.current, next); t.u.selected = n2; t.s.frame(2);
+  const T = t.T(); assert.ok(T['UI:sp:ev0'] && /LLUVIA \+2min/.test(T['UI:sp:ev0']), 'el panel dice cuánto suma la lluvia: ' + T['UI:sp:ev0']);
+});
+function U_neighbors(t, id, not) { return t.s.U.Graph.neighbors(t.run.graph, id).find((n) => n !== not && !t.run.blocked[n] && !t.s.U.Graph.isCombi(t.run.graph, id, n)); }
+
+test('eventos (nivel): una estación cerrada por huelga se explica en el panel y en el aviso', () => {
+  const t = eventLevel(2); t.u.modal = null; const D = t.run.data;
+  const s0 = D.stationList.find((s) => !t.run.blocked[s.id] && t.s.U.Graph.neighbors(t.run.graph, s.id).some((n) => t.run.striking[n]));
+  assert.ok(s0, 'hay una estación junto a la línea cerrada'); const n = t.s.U.Graph.neighbors(t.run.graph, s0.id).find((x) => t.run.striking[x]);
+  t.run.current = s0.id; t.u.map.placePlayer(s0.id); t.u.selected = n; t.s.frame(3);
+  const T = t.T(); assert.equal(T['UI:sp:w1'], 'Huelga en la linea 3.'); assert.match(T['UI:sp:w2'], /Reabre a las 10:30 AM/); assert.equal(T['UI:btn:sp:go'], 'BLOQUEADA');
+});
+
+test('eventos (nivel): la lluvia se ve (velo y gotas), entra con fundido, se va al parar y respeta REDUCIR MOVIMIENTO y la calidad', () => {
+  const vis = (pool, k) => !!pool[k] && !pool[k].hidden && pool[k].opacity > 0, drops = (pool) => Object.keys(pool).filter((k) => /^FX:rain\d+$/.test(k) && vis(pool, k)).length;
+  let t = eventLevel(1); t.u.modal = null; t.s.frame(30); assert.equal(drops(t.pool), 0, 'a las 7:00 no llueve'); assert.ok(!vis(t.pool, 'FX:rain:tint'));
+  t.run.minute = 500; t.s.frame(120); assert.ok(vis(t.pool, 'FX:rain:tint') && t.pool['FX:rain:tint'].blend === 2, 'velo azulado (multiplicar)'); assert.equal(drops(t.pool), 46);
+  const y0 = t.pool['FX:rain0'].y; t.s.frame(5); assert.notEqual(t.pool['FX:rain0'].y, y0, 'las gotas caen');
+  t.run.minute = 700; t.s.frame(240); assert.equal(drops(t.pool), 0, 'al parar la lluvia, se desvanece'); assert.ok(!vis(t.pool, 'FX:rain:tint'));
+  t = eventLevel(1, true); t.u.modal = null; t.run.minute = 500; t.s.frame(120); const c0 = t.pool['FX:rain0'].y; t.s.frame(10); assert.equal(t.pool['FX:rain0'].y, c0, 'REDUCIR MOVIMIENTO: las gotas quedan quietas'); assert.ok(drops(t.pool) > 0);
+  t = eventLevel(1, false, 'low'); t.u.modal = null; t.run.minute = 500; t.s.frame(120); assert.equal(drops(t.pool), 16, 'calidad baja: menos gotas');
+  t = eventLevel(1, false, 'off'); t.u.modal = null; t.run.minute = 500; t.s.frame(30); assert.ok(!t.pool, 'sin efectos: no hay escenario de efectos (y no falla)');
+  t = eventLevel(0); t.u.modal = null; t.run.minute = 500; t.s.frame(60); assert.equal(drops(t.pool), 0, 'el lunes no llueve nunca');
 });
