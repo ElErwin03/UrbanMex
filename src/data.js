@@ -31,6 +31,7 @@
         if (!stations[n]) throw new Error('Nivel ' + l.id + ' usa una estación inexistente: ' + n);
       });
     });
+    if (U.Events) raw.levels.forEach(function (l) { U.Events.validate(cfg, raw.stations.lines, l); });   // eventos del día: ids, líneas y ventanas válidos
     return { config: cfg, lines: raw.stations.lines, stations: stations, stationList: list,
              connections: conns, levels: raw.levels, news: raw.news };
   }
