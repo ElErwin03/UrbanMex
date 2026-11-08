@@ -435,6 +435,15 @@
       },
       {
         "alwaysLoaded": false,
+        "file": "assets/img/icono_trofeo.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "icono_trofeo.png",
+        "smoothed": false,
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
         "file": "assets/img/iso_edificio_0.png",
         "kind": "image",
         "metadata": "",
@@ -1457,6 +1466,35 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "trofeo",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_trofeo.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -2106,6 +2144,15 @@
             "includeConfig": 0
           },
           "target": "Mod_infinite",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_achievements",
           "disabled": false,
           "folded": false
         },
@@ -2983,6 +3030,35 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "trofeo",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_trofeo.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -3457,6 +3533,15 @@
             "includeConfig": 0
           },
           "target": "Mod_infinite",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_achievements",
           "disabled": false,
           "folded": false
         },
@@ -4317,6 +4402,35 @@
                     {
                       "hasCustomCollisionMask": false,
                       "image": "icono_multitud.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "trofeo",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_trofeo.png",
                       "points": [],
                       "originPoint": {
                         "name": "origine",
@@ -5321,6 +5435,15 @@
           "include": {
             "includeConfig": 0
           },
+          "target": "Mod_achievements",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
           "target": "Mod_ui",
           "disabled": false,
           "folded": false
@@ -6190,6 +6313,35 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "trofeo",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.25,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "icono_trofeo.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -6672,6 +6824,15 @@
           "include": {
             "includeConfig": 0
           },
+          "target": "Mod_achievements",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
           "target": "Mod_ui",
           "disabled": false,
           "folded": false
@@ -6894,7 +7055,7 @@
             "",
             "  U.VERSION = '2.0.0';",
             "  // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)",
-            "  U.session = { levelIndex: 0, lastResult: null, completed: [], best: {}, inf: { best: 0, stars: 0 }, infinite: null, dblTravel: true, loaded: false,",
+            "  U.session = { levelIndex: 0, lastResult: null, completed: [], best: {}, inf: { best: 0, stars: 0 }, infinite: null, ach: {}, stats: null, dblTravel: true, loaded: false,",
             "    vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; best: mejor marca por nivel {estrellas, dinero}; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan",
             "",
             "  /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,",
@@ -6919,6 +7080,14 @@
             "        var ib = d.inf.best, is = d.inf.stars;",
             "        U.session.inf = { best: typeof ib === 'number' && ib >= 0 && ib % 1 === 0 && ib < 1e6 ? ib : 0, stars: typeof is === 'number' && is >= 0 && is % 1 === 0 && is < 1e7 ? is : 0 };",
             "      }",
+            "      if (d.ach && typeof d.ach === 'object' && U.Achievements) {                                    // logros desbloqueados (solo ids conocidos) y estadísticas (enteros no negativos)",
+            "        var ach = {}; Object.keys(d.ach).forEach(function (k) { if (d.ach[k] === true && U.Achievements.byId(k)) ach[k] = true; });",
+            "        U.session.ach = ach;",
+            "      }",
+            "      if (d.stats && typeof d.stats === 'object' && U.Achievements) {",
+            "        var stt = U.Achievements.zero(); U.Achievements.STAT_KEYS.forEach(function (k) { var v = d.stats[k]; if (typeof v === 'number' && v >= 0 && v % 1 === 0 && v < 1e9) stt[k] = v; });",
+            "        U.session.stats = stt;",
+            "      }",
             "      if (d.seenTutorial) U.session.seenTutorial = true;",
             "      if (typeof d.dblTravel === 'boolean') U.session.dblTravel = d.dblTravel;",
             "      if (d.fx === 'high' || d.fx === 'low' || d.fx === 'off') U.session.fxQuality = d.fx;          // accesibilidad (se validan: un guardado viejo o dañado no rompe nada)",
@@ -6936,7 +7105,7 @@
             "      try {",
             "        var st = this._store(); if (!st) return;",
             "        st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),",
-            "                                               best: U.session.best || {}, inf: U.session.inf || { best: 0, stars: 0 }, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,",
+            "                                               best: U.session.best || {}, inf: U.session.inf || { best: 0, stars: 0 }, ach: U.session.ach || {}, stats: U.session.stats || {}, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,",
             "                                               fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true, bg: U.session.bgAudio === true }));",
             "      } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }",
             "    },",
@@ -6968,7 +7137,7 @@
             "      for (var i = 0; i < total; i++) if (!this.isCompleted(i)) return i;",
             "      return Math.max(0, total - 1);",
             "    },",
-            "    reset: function () { U.session.completed = []; U.session.best = {}; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; this.persist(); }",
+            "    reset: function () { U.session.completed = []; U.session.best = {}; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; U.session.ach = {}; U.session.stats = null; this.persist(); }",
             "  };",
             "",
             "  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }",
@@ -7543,7 +7712,7 @@
             "      var run = {",
             "        data: data, graph: G.build(data), rnd: rng, levelIndex: levelIndex, level: lv,",
             "        current: lv.start, stamina: lv.staminaMax, staminaMax: lv.staminaMax, money: lv.moneyStart,",
-            "        minute: cfg.dayStartMinute, steps: 0, robbed: 0, stolen: 0, visited: visited,",
+            "        minute: cfg.dayStartMinute, steps: 0, robbed: 0, stolen: 0, monsters: 0, combis: 0, waited: 0, visited: visited,",
             "        blocked: setOf(lv.blocked), striking: {}, eventQueue: [], danger: {}, timeMods: {}, monsterPromo: false, freeRides: 0,",
             "        newsLog: [], newsUsed: {}, unread: 0, newsMoves: cfg.news.firstAfterMoves, newsCount: 0,",
             "        over: false, won: false, endReason: ''",
@@ -7644,7 +7813,7 @@
             "      var c = chk.cost;",
             "      if (run.freeRides > 0) run.freeRides--;",
             "      var prev = run.minute, bonus = E() ? E().robberyBonus(run) : 0;                              // el riesgo de asalto es el de la hora en que sales",
-            "      run.stamina -= c.stamina; run.money -= c.money; run.minute += c.time; run.steps++;",
+            "      run.stamina -= c.stamina; run.money -= c.money; run.minute += c.time; run.steps++; if (c.combi) run.combis++;",
             "      if (E()) { E().transitions(run, prev, run.minute).forEach(function (t) { run.eventQueue.push(t); }); Rules.syncEvents(run); }",
             "      run.current = to; run.visited[to] = true;",
             "      var out = { ok: true, cost: c, type: 'arrive' };",
@@ -7670,7 +7839,7 @@
             "      if (run.stamina >= run.staminaMax) return { ok: false, reason: 'full' };",
             "      if (run.money < price) return { ok: false, reason: 'money' };",
             "      var before = run.stamina;",
-            "      run.money -= price; run.stamina = Math.min(run.staminaMax, run.stamina + cfg.monsterStamina);",
+            "      run.money -= price; run.monsters++; run.stamina = Math.min(run.staminaMax, run.stamina + cfg.monsterStamina);",
             "      return { ok: true, gained: run.stamina - before, price: price };",
             "    },",
             "",
@@ -7768,7 +7937,8 @@
             "      if (left === null) left = Rules.hopsLeft(run, run.current, true);",
             "      return { won: run.won, reason: run.endReason, cause: run.endCause || '', levelIndex: run.levelIndex, day: run.level.day, infinite: run.level.infinite ? { round: run.level.round } : null,",
             "               arrival: util.clock(run.minute), travelTime: util.duration(run.minute - cfg.dayStartMinute),",
-            "               steps: run.steps, money: run.money, robbed: run.robbed, stolen: run.stolen,",
+            "               steps: run.steps, money: run.money, robbed: run.robbed, stolen: run.stolen, stamina: Math.round(run.stamina), monsters: run.monsters, combis: run.combis, waited: run.waited || 0,",
+            "               events: (run.level.events || []).map(function (e) { return e.id; }),",
             "               newsRead: run.newsCount, moneyStart: run.level.moneyStart, currency: cfg.currencyName || 'monedas',",
             "               stars: sc.stars, got: sc.got, moneyGoal: sc.moneyGoal,",
             "               hops: total || 0, left: left === null ? null : left,                 // estaciones del camino más corto y las que te faltaban al terminar",
@@ -8112,6 +8282,130 @@
             "  }",
             "",
             "  U.Infinite = Infinite;",
+            "})();"
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
+        }
+      ]
+    },
+    {
+      "associatedLayout": "",
+      "name": "Mod_achievements",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"achievements\" - fuente: src/achievements.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
+          "color": {
+            "b": 109,
+            "g": 230,
+            "r": 255,
+            "textB": 0,
+            "textG": 0,
+            "textR": 0
+          }
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "/* UrbanMex · achievements — LOGROS (puro, sin motor). Al terminar cada partida (nivel o ronda del modo infinito) se suman las estadísticas y se revisan",
+            " * todos los logros; los nuevos se guardan y la pantalla de resultado los anuncia. El menú tiene una pantalla con todos (los pendientes dicen qué hacer).",
+            " * Cada logro es un dato: { id, group, name, desc, check(ctx), progress?(ctx) → [actual, meta] }. Agregar uno es agregar una línea.",
+            " * ctx = { r: resumen de la partida (Rules.summary + extras), stats, completed, best, stars, streak (rondas ganadas de la racha infinita, o 0) }. */",
+            "(function () {",
+            "  var U = gdjs.UrbanMex;",
+            "  if (U.Achievements) return;",
+            "",
+            "  var GROUPS = [['progreso', 'PROGRESO'], ['estilo', 'ESTILO DE JUEGO'], ['eventos', 'EVENTOS DEL DIA'], ['infinito', 'MODO INFINITO']];",
+            "  var STAT_KEYS = ['played', 'wins', 'steps', 'robbed', 'monsters', 'combis', 'news', 'safeWins'];     // estadísticas de toda la vida (se suman al terminar cada partida)",
+            "  var WEEK = 5;",
+            "",
+            "  function won(c) { return !!(c.r && c.r.won); }",
+            "  function hasEvent(c, id) { return won(c) && (c.r.events || []).indexOf(id) >= 0; }",
+            "  function weekDone(c, w) { for (var i = w * WEEK; i < (w + 1) * WEEK; i++) if (c.completed.indexOf(i) < 0) return false; return true; }",
+            "  function count(c, w) { var n = 0; for (var i = w * WEEK; i < (w + 1) * WEEK; i++) if (c.completed.indexOf(i) >= 0) n++; return n; }",
+            "  function stat(key, goal) { return function (c) { return [Math.min(c.stats[key], goal), goal]; }; }",
+            "",
+            "  /** El catálogo, en el orden en que se muestra. Los nombres van en mayúsculas sin acentos (la letra del juego no dibuja bien las acentuadas en mayúscula). */",
+            "  var LIST = [",
+            "    // ---- progreso",
+            "    { id: 'primer_viaje', group: 'progreso', name: 'PRIMER VIAJE', desc: 'Llega a la meta de un nivel.', check: function (c) { return c.stats.wins >= 1; } },",
+            "    { id: 'semana1', group: 'progreso', name: 'SEMANA 1', desc: 'Completa los niveles 1 a 5.', check: function (c) { return weekDone(c, 0); }, progress: function (c) { return [count(c, 0), WEEK]; } },",
+            "    { id: 'semana2', group: 'progreso', name: 'SEMANA 2', desc: 'Completa los niveles 6 a 10.', check: function (c) { return weekDone(c, 1); }, progress: function (c) { return [count(c, 1), WEEK]; } },",
+            "    { id: 'brillante', group: 'progreso', name: 'BRILLANTE', desc: 'Consigue las 3 estrellas en un nivel.', check: function (c) { return Object.keys(c.best).some(function (k) { return c.best[k].stars >= 3; }); } },",
+            "    { id: 'estrellado', group: 'progreso', name: 'ESTRELLADO', desc: 'Junta 15 estrellas en total.', check: function (c) { return c.stars >= 15; }, progress: function (c) { return [Math.min(c.stars, 15), 15]; } },",
+            "    { id: 'constelacion', group: 'progreso', name: 'CONSTELACION', desc: 'Consigue las 30 estrellas de los 10 niveles.', check: function (c) { return c.stars >= 30; }, progress: function (c) { return [Math.min(c.stars, 30), 30]; } },",
+            "    // ---- estilo de juego",
+            "    { id: 'ahorrador', group: 'estilo', name: 'AHORRADOR', desc: 'Llega con 100 monedas o más.', check: function (c) { return won(c) && c.r.money >= 100; } },",
+            "    { id: 'sin_monster', group: 'estilo', name: 'PURO ESFUERZO', desc: 'Llega sin comprar ningun Monster (en una ruta de 10 tramos o más).', check: function (c) { return won(c) && c.r.monsters === 0 && c.r.steps >= 10; } },",
+            "    { id: 'al_limite', group: 'estilo', name: 'AL LIMITE', desc: 'Llega a la meta con 10 de stamina o menos.', check: function (c) { return won(c) && c.r.stamina <= 10; } },",
+            "    { id: 'intocable', group: 'estilo', name: 'INTOCABLE', desc: 'Gana 3 niveles sin que te asalten.', check: function (c) { return c.stats.safeWins >= 3; }, progress: stat('safeWins', 3) },",
+            "    { id: 'bienvenido', group: 'estilo', name: 'BIENVENIDO A LA CIUDAD', desc: 'Que te asalten 3 veces en total. Le pasa a todos.', check: function (c) { return c.stats.robbed >= 3; }, progress: stat('robbed', 3) },",
+            "    { id: 'monster10', group: 'estilo', name: 'ADICTO AL MONSTER', desc: 'Compra 10 Monster en total.', check: function (c) { return c.stats.monsters >= 10; }, progress: stat('monsters', 10) },",
+            "    { id: 'combi5', group: 'estilo', name: 'REY DE LA COMBI', desc: 'Usa la combi 5 veces en total.', check: function (c) { return c.stats.combis >= 5; }, progress: stat('combis', 5) },",
+            "    { id: 'caminante', group: 'estilo', name: 'METRONAUTA', desc: 'Recorre 200 estaciones en total.', check: function (c) { return c.stats.steps >= 200; }, progress: stat('steps', 200) },",
+            "    { id: 'lector', group: 'estilo', name: 'BIEN INFORMADO', desc: 'Recibe 25 noticias en total.', check: function (c) { return c.stats.news >= 25; }, progress: stat('news', 25) },",
+            "    // ---- eventos del día",
+            "    { id: 'lluvia', group: 'eventos', name: 'BAJO LA LLUVIA', desc: 'Llega a la meta en un nivel con lluvia.', check: function (c) { return hasEvent(c, 'lluvia'); } },",
+            "    { id: 'hora_pico', group: 'eventos', name: 'HORA PICO', desc: 'Llega a la meta en un nivel con hora pico.', check: function (c) { return hasEvent(c, 'horaPico'); } },",
+            "    { id: 'huelga', group: 'eventos', name: 'ROMPEHUELGAS', desc: 'Llega a la meta en un nivel con huelga.', check: function (c) { return hasEvent(c, 'huelga'); } },",
+            "    { id: 'paciencia', group: 'eventos', name: 'PACIENCIA', desc: 'Espera a que reabra una línea en huelga y llega a la meta.', check: function (c) { return won(c) && c.r.waited > 0; } },",
+            "    { id: 'triple', group: 'eventos', name: 'DIA DE TODO', desc: 'Llega a la meta en un nivel con lluvia, hora pico y huelga a la vez.', check: function (c) { return hasEvent(c, 'lluvia') && hasEvent(c, 'horaPico') && hasEvent(c, 'huelga'); } },",
+            "    // ---- modo infinito",
+            "    { id: 'sin_fin', group: 'infinito', name: 'SIN FIN', desc: 'Gana tu primera ronda del modo infinito.', check: function (c) { return c.streak >= 1; } },",
+            "    { id: 'racha5', group: 'infinito', name: 'RACHA DE 5', desc: 'Gana 5 rondas seguidas.', check: function (c) { return c.streak >= 5 || c.infBest >= 5; }, progress: function (c) { return [Math.min(Math.max(c.streak, c.infBest), 5), 5]; } },",
+            "    { id: 'racha10', group: 'infinito', name: 'IMPARABLE', desc: 'Gana 10 rondas seguidas.', check: function (c) { return c.streak >= 10 || c.infBest >= 10; }, progress: function (c) { return [Math.min(Math.max(c.streak, c.infBest), 10), 10]; } }",
+            "  ];",
+            "  var BY_ID = {}; LIST.forEach(function (a) { BY_ID[a.id] = a; });",
+            "",
+            "  function zero() { var o = {}; STAT_KEYS.forEach(function (k) { o[k] = 0; }); return o; }",
+            "  function sessionStats() { return U.session.stats || (U.session.stats = zero()); }",
+            "  function sessionAch() { return U.session.ach || (U.session.ach = {}); }",
+            "",
+            "  /** Contexto para revisar los logros con el estado guardado (y, si hay, el resumen `r` de la partida que acaba de terminar). */",
+            "  function context(r, streak) {",
+            "    var best = U.session.best || {}, stars = 0; Object.keys(best).forEach(function (k) { stars += best[k].stars; });",
+            "    return { r: r || null, stats: sessionStats(), completed: U.session.completed || [], best: best, stars: stars, streak: streak || 0, infBest: (U.session.inf || {}).best || 0 };",
+            "  }",
+            "",
+            "  var Achievements = {",
+            "    LIST: LIST, GROUPS: GROUPS, STAT_KEYS: STAT_KEYS, byId: function (id) { return BY_ID[id] || null; },",
+            "    zero: zero,",
+            "",
+            "    /** ¿Ya lo tienes? */",
+            "    has: function (id) { return !!sessionAch()[id]; },",
+            "    /** Cuántos llevas y cuántos hay. */",
+            "    count: function () { var n = 0; LIST.forEach(function (a) { if (sessionAch()[a.id]) n++; }); return { got: n, total: LIST.length }; },",
+            "    /** [actual, meta] de un logro con contador (o null). */",
+            "    progress: function (a) { return a.progress ? a.progress(context(null, 0)) : null; },",
+            "",
+            "    /** Fin de una partida: suma las estadísticas, revisa todos los logros y guarda. `r` = resumen (Rules.summary con los extras de la partida); `streak` = rondas ganadas de la racha infinita.",
+            "     *  → lista de los logros desbloqueados ahora, en el orden del catálogo. */",
+            "    record: function (r, streak) {",
+            "      var st = sessionStats(), ach = sessionAch(), fresh = [];",
+            "      st.played++; st.steps += r.steps || 0; st.robbed += r.robbed || 0; st.monsters += r.monsters || 0; st.combis += r.combis || 0; st.news += r.newsRead || 0;",
+            "      if (r.won) { st.wins++; if (!r.robbed) st.safeWins++; }",
+            "      var ctx = context(r, streak);",
+            "      LIST.forEach(function (a) { if (!ach[a.id] && a.check(ctx)) { ach[a.id] = true; fresh.push(a); } });",
+            "      U.Save.persist();",
+            "      return fresh;",
+            "    },",
+            "",
+            "    /** Revisa sin sumar nada (por si algún logro nuevo ya se cumple con el guardado actual). */",
+            "    sweep: function () {",
+            "      var ach = sessionAch(), ctx = context(null, 0), fresh = [];",
+            "      LIST.forEach(function (a) { if (!ach[a.id] && a.check(ctx)) { ach[a.id] = true; fresh.push(a); } });",
+            "      if (fresh.length) U.Save.persist();",
+            "      return fresh;",
+            "    }",
+            "  };",
+            "  U.Achievements = Achievements;",
             "})();"
           ],
           "parameterObjects": "",
@@ -9571,7 +9865,9 @@
             "    var open = U.Infinite.unlocked(total), ib = U.session.inf || { best: 0, stars: 0 };           // MODO INFINITO: se desbloquea al completar todos los niveles",
             "    if (ui.button('inf', open ? 'MODO INFINITO' : 'MODO INFINITO - BLOQUEADO', 490, 514, 300, 44, { size: 8, fill: open ? '120;60;160' : '50;50;70', disabled: !open })) { U.Infinite.start(); U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }",
             "    ui.text('infh', open ? (ib.best ? 'Mejor racha: ' + ib.best + (ib.best === 1 ? ' ronda' : ' rondas') + ' - ' + ib.stars + ' estrellas' : 'Rutas al azar. Cuantas rondas aguantes?') : 'Completa los ' + total + ' niveles para desbloquearlo', 640, 566, { size: 8, align: 'center', color: open ? '210;170;240' : '110;110;140' });",
-            "    if (ui.button('how', 'COMO JUGAR', 490, 584, 300, 36, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }",
+            "    if (ui.button('how', 'COMO JUGAR', 490, 584, 146, 36, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }",
+            "    var ac = U.Achievements.count();                                                                // LOGROS: pantalla con todos y cuántos llevas",
+            "    if (ui.button('ach', 'LOGROS ' + ac.got + '/' + ac.total, 644, 584, 146, 36, { size: 8, fill: '150;110;20' })) m.view = 'ach';",
             "    if (ui.button('quit', 'SALIR', 490, 630, 300, 36, { size: 8, fill: '110;50;50' })) m.confirmExit = true;      // pide confirmación antes de cerrar",
             "  }",
             "",
@@ -9636,6 +9932,25 @@
             "    }",
             "  }",
             "",
+            "  /** LOGROS: todos en una cuadrícula; los conseguidos brillan y los pendientes dicen qué hacer (con su avance si cuentan algo). */",
+            "  var ACH = { w: 300, h: 78, gap: 12, cols: 4, y0: 104, step: 84 }, GROUP_COLOR = { progreso: '46;204;113', estilo: '90;170;255', eventos: '243;156;18', infinito: '190;110;230' };",
+            "  function drawAchievements(scene, ui, m) {",
+            "    var A = U.Achievements, c = A.count(), x0 = (1280 - (ACH.cols * ACH.w + (ACH.cols - 1) * ACH.gap)) / 2;",
+            "    ui.text('ah', 'LOGROS', 640, 28, { size: 24, align: 'center', color: PAL.yellow });",
+            "    ui.text('ac', c.got + ' de ' + c.total + ' desbloqueados', 640, 70, { size: 8, align: 'center', color: PAL.dim });",
+            "    ui.rect(440, 84, 400, 8, { fill: '24;24;46', border: '60;60;90', bw: 2 }); if (c.got) ui.rect(442, 86, Math.max(4, 396 * c.got / c.total), 4, { fill: '255;200;60', bw: 0 });",
+            "    A.LIST.forEach(function (a, i) {",
+            "      var x = x0 + (i % ACH.cols) * (ACH.w + ACH.gap), y = ACH.y0 + Math.floor(i / ACH.cols) * ACH.step, on = A.has(a.id), pr = A.progress(a);",
+            "      ui.rect(x, y, ACH.w, ACH.h, { fill: on ? '44;38;14' : '20;20;38', border: on ? '255;200;60' : '60;60;90', bw: on ? 3 : 2 });",
+            "      ui.rect(x + 3, y + 3, 5, ACH.h - 6, { fill: on ? GROUP_COLOR[a.group] : '50;50;70', bw: 0 });",
+            "      ui.icon('ai' + i, on ? 'trofeo' : 'bloqueo', x + 16, y + 12, 2, on ? {} : { opacity: 110 });",
+            "      ui.text('an' + i, a.name, x + 60, y + 10, { size: 8, color: on ? '255;230;120' : '150;150;180' });",
+            "      ui.lines('ad' + i, util.wrap(a.desc, 27), x + 60, y + 28, { size: 8, lineH: 12, color: on ? '230;234;250' : '110;110;140' });",
+            "      if (pr && !on) ui.text('ap' + i, pr[0] + '/' + pr[1], x + ACH.w - 10, y + ACH.h - 16, { size: 8, align: 'right', color: PAL.orange });",
+            "    });",
+            "    if (ui.button('aback', 'VOLVER', 490, 618, 300, 40, { size: 8, fill: '70;70;100' })) m.view = 'main';",
+            "  }",
+            "",
             "  /** Créditos: las entidades donde se realizó, el equipo y con qué se hizo. */",
             "  function drawCredits(scene, ui, m) {",
             "    var C = U.CREDITS;",
@@ -9680,19 +9995,19 @@
             "",
             "  U.Scenes.menu = function (scene) {",
             "    var ui = U.UI.of(scene), m = scene._um || init(scene), dt = Math.min(0.1, scene.getElapsedTime() / 1000), data = U.Data.ready(scene);",
-            "    U.Save.load();",
+            "    U.Save.load(); if (!U.session.swept) { U.session.swept = true; U.Achievements.sweep(); }   // logros de progreso que ya se cumplían antes de existir",
             "    m.t += dt; ui.begin();",
             "    var rx = ui.px, ry = ui.py; if (m.confirmExit) { ui.px = -9999; ui.py = -9999; }   // con la ventana de salida abierta, nada de abajo responde al ratón",
             "    m.stars.forEach(function (s) { ui.rect(s[0], s[1], 4, 4, { fill: Math.sin(m.t * 2 + s[2]) > 0 ? '255;255;255' : '120;120;160', bw: 0 }); });",
             "    m.train.setX(((m.t * 220) % 1900) - 300);",
             "    ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });",
-            "    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else if (m.view === 'a11y') drawA11y(scene, ui, m); else drawMain(scene, ui, m, data);",
+            "    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else if (m.view === 'ach') drawAchievements(scene, ui, m); else if (m.view === 'a11y') drawA11y(scene, ui, m); else drawMain(scene, ui, m, data);",
             "    ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, 684, { size: 8, align: 'center', color: '90;90;120' });",
             "    m.fx.update(dt, m);",
             "    U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s",
             "    if (m.view === 'main' && ui.button('cred', 'CREDITOS', 1074, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'credits';",
             "    if (m.view === 'main' && ui.button('a11y', 'ACCESIBILIDAD', 16, 52, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'a11y';",
-            "    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && m.view !== 'a11y' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio",
+            "    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && m.view !== 'ach' && m.view !== 'a11y' && ui.button('snd', 'SONIDO', 16, 14, 190, 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio",
             "    ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);",
             "    ui.end();",
             "  };",
@@ -10285,9 +10600,10 @@
             "    if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }",
             "    if (run.over && !um.saved && run.level.infinite) { um.saved = true; um.streak = U.Infinite.finish(run, R.score(run).stars); }      // modo infinito: suma a la racha y guarda el récord",
             "    else if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); um.record = U.Save.record(run.levelIndex, R.score(run).stars, run.money); }   // guarda el progreso y la mejor marca al ganar",
+            "    if (run.over && !um.achDone) { um.achDone = true; um.unlocked = U.Achievements.record(R.summary(run), um.streak ? um.streak.cleared : 0); }   // logros: suma las estadísticas y revisa todos",
             "    if (run.over && !um.modal && !um.pending && !um.map.moving()) {",
             "      um.endTimer += dt;",
-            "      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; U.session.lastResult.streak = um.streak || null; scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }",
+            "      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; U.session.lastResult.streak = um.streak || null; U.session.lastResult.achievements = (um.unlocked || []).map(function (a) { return a.id; }); scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }",
             "    }",
             "  };",
             "})();"
@@ -10441,6 +10757,16 @@
             "    if (rec) ui.text('rec', rec.text, 640, 520, { size: 8, align: 'center', color: rec.new ? PAL.yellow : PAL.dim });",
             "    if (week) ui.text('w', Text.weekEnd(r.levelIndex, last, data.levels.length), 640, 542, { size: 8, align: 'center', color: PAL.yellow });",
             "",
+            "    var got = (r.achievements || []).map(U.Achievements.byId).filter(Boolean);        // logros nuevos de esta partida (cartel arriba a la derecha)",
+            "    if (got.length) {",
+            "      var shown = got.slice(0, 3), bh = 34 + shown.length * 30 + (got.length > shown.length ? 14 : 0), bx = 920, pulse = calm ? 0 : Math.round(Math.sin(t * 5) * 20);",
+            "      ui.rect(bx, 14, 344, bh, { fill: '40;34;10', border: (235 + pulse) + ';' + (190 + pulse) + ';40', bw: 3 });",
+            "      ui.text('ac:h', got.length === 1 ? 'LOGRO DESBLOQUEADO!' : 'LOGROS DESBLOQUEADOS!', bx + 172, 24, { size: 8, align: 'center', color: PAL.yellow });",
+            "      shown.forEach(function (a, i) {",
+            "        ui.icon('ac:i' + i, 'trofeo', bx + 10, 40 + i * 30, 1.5); ui.text('ac:n' + i, a.name, bx + 44, 46 + i * 30, { size: 8, color: '255;255;255' });",
+            "      });",
+            "      if (got.length > shown.length) ui.text('ac:m', '+ ' + (got.length - shown.length) + ' mas en LOGROS', bx + 172, 38 + shown.length * 30 + 4, { size: 8, align: 'center', color: PAL.dim });",
+            "    }",
             "    var go = function (name) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, name); };",
             "    var btns = inf ? (r.won ? [['i', 'SIGUIENTE RONDA >', 300, '39;174;96']] : [['x', 'NUEVA RACHA', 300, '120;60;160']])",
             "      : r.won ? (last ? [['a', 'JUGAR OTRA VEZ', 300, '39;174;96']] : [['n', 'SIGUIENTE NIVEL >', 300, '39;174;96']]) : [['r', 'REINTENTAR', 300, '39;174;96']];",

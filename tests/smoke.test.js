@@ -1237,3 +1237,65 @@ test('infinito (resultado): racha, mejor marca y botones SIGUIENTE RONDA / NUEVA
     assert.match(T('hl'), /primera ronda/);
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
+
+// ---------------------------------------------------------------- logros en el menú, el nivel y el resultado
+test('logros (menú): el botón cuenta lo conseguido y la pantalla muestra los 23, con avance en los pendientes', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene), A = U.Achievements;
+    U.session.ach = {}; U.session.stats = null; U.session.completed = []; U.session.best = {}; m.frame(2);
+    assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23'); assert.equal(T()['UI:btn:how'], 'COMO JUGAR', 'los dos botones caben lado a lado');
+    m.click(717, 602); assert.equal(m.scene._um.view, 'ach'); m.frame(2);
+    assert.equal(T()['UI:ah'], 'LOGROS'); assert.equal(T()['UI:ac'], '0 de 23 desbloqueados'); A.LIST.forEach((a, i) => { assert.equal(T()['UI:an' + i], a.name); assert.ok(T()['UI:ad' + i + ':0'], a.id + ' tiene descripción'); });
+    assert.equal(T()['UI:ap1'], '0/5', 'semana 1: avance 0/5'); assert.equal(T()['UI:ap9'], '0/3', 'intocable'); assert.equal(T()['UI:ap0'], undefined, 'sin contador: no muestra avance');
+    assert.equal(uiIcons(m.scene)['UI:ai0'], 'bloqueo', 'pendiente: candado'); assert.equal(T()['UI:btn:snd'], undefined, 'en esta pantalla no sale SONIDO');
+    U.session.ach = { primer_viaje: true, brillante: true }; U.session.stats = Object.assign(A.zero(), { safeWins: 2 }); m.frame(2);
+    assert.equal(T()['UI:ac'], '2 de 23 desbloqueados'); assert.equal(uiIcons(m.scene)['UI:ai0'], 'trofeo'); assert.equal(T()['UI:ap0'], undefined); assert.equal(T()['UI:ap9'], '2/3', 'avance de lo que falta');
+    m.click(640, 638); assert.equal(m.scene._um.view, 'main'); m.frame(2); assert.equal(T()['UI:btn:ach'], 'LOGROS 2/23');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('logros (menú): al abrir el juego se reconocen los de progreso que ya se cumplían', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; store['UrbanMex_save_v1'] = JSON.stringify({ v: 1, completed: [0, 1, 2, 3, 4], best: { 0: { stars: 3, money: 80 } } });
+    const m = session('Menu'); m.frame(3); assert.deepEqual(Object.keys(m.U.session.ach).sort(), ['brillante', 'semana1']); assert.equal(uiTexts(m.scene)['UI:btn:ach'], 'LOGROS 2/23');
+    assert.deepEqual(Object.keys(JSON.parse(store['UrbanMex_save_v1']).ach).sort(), ['brillante', 'semana1'], 'y se guardan');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('logros (nivel): al terminar la partida se suman las estadísticas y los logros pasan al resultado', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Nivel'); s.frame(2); const U = s.U; U.session.ach = {}; U.session.stats = null; U.session.levelIndex = 0; U.session.infinite = null; delete s.scene._um; s.frame(3);
+    const um = s.scene._um; um.modal = null; um.run.over = true; um.run.won = true; um.run.steps = 12; s.frame(3);
+    const ids = um.unlocked.map((a) => a.id).sort(); ['hora_pico', 'primer_viaje', 'sin_monster'].forEach((id) => assert.ok(ids.indexOf(id) >= 0, id + ' (el nivel 1 tiene hora pico): ' + ids.join())); assert.equal(U.session.stats.wins, 1); assert.equal(U.session.stats.steps, 12);
+    assert.deepEqual(Object.keys(JSON.parse(store['UrbanMex_save_v1']).ach).sort(), ids, 'lo desbloqueado se guarda');
+    s.frame(80); assert.deepEqual(U.session.lastResult.achievements.slice().sort(), ids); assert.deepEqual(s.scene.changes.pop(), [3, 'Resultado']);
+    const p = U.session.stats.played; s.frame(30); assert.equal(U.session.stats.played, p, 'se cuenta una sola vez');
+    // perder también cuenta la partida
+    U.session.stats = null; U.session.ach = {}; U.session.best = {}; U.session.completed = []; delete s.scene._um; s.frame(3); const um2 = s.scene._um; um2.modal = null; um2.run.over = true; um2.run.won = false; um2.run.robbed = 2; s.frame(3);
+    assert.equal(U.session.stats.played, 1); assert.equal(U.session.stats.wins, 0); assert.equal(U.session.stats.robbed, 2); assert.deepEqual(um2.unlocked, []);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('logros (nivel): una ronda ganada del modo infinito desbloquea SIN FIN', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Nivel'); s.frame(2); const U = s.U; U.session.ach = {}; U.session.stats = null; U.Infinite.start(11); delete s.scene._um; s.frame(3);
+    const um = s.scene._um; um.modal = null; um.run.over = true; um.run.won = true; s.frame(3); assert.ok(um.unlocked.some((a) => a.id === 'sin_fin'), um.unlocked.map((a) => a.id).join());
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('logros (resultado): el cartel anuncia los nuevos (uno, varios y "+ n mas")', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Resultado'); s.frame(1); const U = s.U, T = () => uiTexts(s.scene);
+    U.session.lastResult = fakeResult({ achievements: [] }); s.frame(3); assert.equal(T()['UI:ac:h'], undefined, 'sin logros nuevos no hay cartel');
+    U.session.lastResult = fakeResult({ achievements: ['primer_viaje'] }); s.frame(3); assert.equal(T()['UI:ac:h'], 'LOGRO DESBLOQUEADO!'); assert.equal(T()['UI:ac:n0'], 'PRIMER VIAJE'); assert.equal(uiIcons(s.scene)['UI:ac:i0'], 'trofeo'); assert.equal(T()['UI:ac:m'], undefined);
+    U.session.lastResult = fakeResult({ achievements: ['primer_viaje', 'hora_pico', 'sin_monster'] }); s.frame(3); assert.equal(T()['UI:ac:h'], 'LOGROS DESBLOQUEADOS!'); assert.deepEqual([0, 1, 2].map((i) => T()['UI:ac:n' + i]), ['PRIMER VIAJE', 'HORA PICO', 'PURO ESFUERZO']);
+    U.session.lastResult = fakeResult({ achievements: ['primer_viaje', 'hora_pico', 'sin_monster', 'lluvia', 'triple'] }); s.frame(3); assert.equal(T()['UI:ac:m'], '+ 2 mas en LOGROS'); assert.equal(T()['UI:ac:n3'], undefined, 'solo se muestran 3');
+    U.session.lastResult = fakeResult({ achievements: ['inventado', 'primer_viaje'] }); s.frame(3); assert.equal(T()['UI:ac:h'], 'LOGRO DESBLOQUEADO!', 'un id desconocido se ignora sin romper');
+    U.session.calm = true; U.session.lastResult = fakeResult({ achievements: ['primer_viaje'] }); s.frame(3); assert.ok(T()['UI:ac:h'], 'con REDUCIR MOVIMIENTO también sale (sin brillo que pulsa)');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
