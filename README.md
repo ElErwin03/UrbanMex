@@ -29,6 +29,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `events` | eventos del día: lluvia, hora pico y huelga (ver *Eventos del día*) | no |
 | `rules` | economía, viaje, asaltos, Monster, fin de partida | no |
 | `infinite` | modo infinito: rondas con ruta al azar, siempre ganables (ver *Modo infinito*) | no |
+| `achievements` | logros: catálogo de datos, estadísticas de toda la vida y desbloqueo (ver *Logros*) | no |
 | `news` | noticias del celular (nunca dejan la meta inalcanzable) | no |
 | `ui` | interfaz “modo inmediato” sobre objetos Texto/Icono/Painter | sí |
 | `map` | mapa isométrico 2.5D (ciudad en relieve), cámara que encuadra toda la red, estaciones, jugador | sí |
@@ -256,3 +257,13 @@ Se **desbloquea al completar los 10 niveles** (en el menú aparece `MODO INFINIT
 - **Resultado:** `SIGUIENTE RONDA >` al ganar y `NUEVA RACHA` al perder (semilla nueva, ronda 1); muestra `RACHA: n rondas - m estrellas (mejor: k rondas)` o `NUEVA MEJOR RACHA!`.
 - **Mejor racha:** se guarda (`inf` en el guardado: más rondas; a igual de rondas, más estrellas; los valores dañados se ignoran) y se muestra en el menú. `BORRAR PROGRESO` la borra.
 - **Archivos:** `src/infinite.js` (generador, jugador automático, racha), `Rules.createRun(data, -1, rnd, nivel)` acepta un nivel ya armado, `Save.recordStreak`.
+
+## Logros
+Hay **23 logros** en cuatro grupos (`PROGRESO`, `ESTILO DE JUEGO`, `EVENTOS DEL DIA`, `MODO INFINITO`). El botón `LOGROS n/23` del menú abre una pantalla con todos: los conseguidos llevan una copa dorada; los pendientes, un candado, y los que tienen contador muestran el avance (`2/3`).
+
+- **Cuándo se otorgan:** al terminar **cada partida** (ganada o perdida, nivel o ronda del modo infinito) se suman las estadísticas de toda la vida (partidas, victorias, tramos, asaltos, Monster, combis, noticias, victorias sin asalto), se revisan todos los logros y los nuevos se guardan. Un logro se concede una sola vez.
+- **Aviso:** la pantalla de resultado muestra un cartel arriba a la derecha con `LOGRO DESBLOQUEADO!` (hasta 3 nombres y `+ n mas en LOGROS`). Con `REDUCIR MOVIMIENTO` el cartel no pulsa.
+- **Los de progreso** (semanas, estrellas, racha) también se reconocen al abrir el menú, así que quien ya jugaba recibe los que ya cumplía (en silencio).
+- **Agregar uno:** es una línea en el catálogo de `src/achievements.js`: `{ id, group, name, desc, check(ctx), progress?(ctx) }` (nombres en mayúsculas sin acentos). La prueba de coherencia revisa ids únicos, textos y que quepan en la tarjeta.
+- **Guardado:** `ach` (ids conseguidos) y `stats` en `UrbanMex_save_v1`; al cargar solo se aceptan ids conocidos y números enteros válidos. `BORRAR PROGRESO` los borra.
+- **Archivos:** `src/achievements.js`, contadores nuevos en `Rules.summary` (`monsters`, `combis`, `waited`, `stamina`, `events`), pantalla en `src/scene-menu.js`, cartel en `src/scene-resultado.js`, icono `trofeo` (`tools/make_art.py`).

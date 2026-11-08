@@ -1,6 +1,6 @@
 const test = require('node:test'), assert = require('node:assert');
 const { loadModules, rawData, cheapestStaminaPath, wantsWait } = require('./helpers');
-const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news', 'infinite']);
+const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news', 'infinite', 'achievements']);
 const data = U.Data.normalize(rawData());
 
 /** Bot: sigue el camino más corto, compra Monster cuando le falta stamina para lo que resta. */
@@ -136,8 +136,10 @@ test('combi: cuesta más dinero que el Metro, no la afectan las fallas de línea
   // una falla en la línea 2 (Zócalo es de la línea 2) retrasa el Metro pero no la combi
   U.Rules.applyNews(run, data.news.find((n) => n.id === 'n17'));
   assert.equal(U.Rules.edgeCost(run, 'Balderas', 'Zócalo'), combi.cost);
+  assert.equal(run.combis, 0, 'aún no se usa la combi');
   const t0 = run.minute, m0 = run.money; assert.ok(U.Rules.travel(run, 'Zócalo').ok);
   assert.equal(run.minute - t0, combi.cost); assert.equal(m0 - run.money, cfg.combi.money);
+  assert.equal(run.combis, 1, 'la combi se cuenta (para los logros)'); assert.equal(U.Rules.summary(run).combis, 1);
 });
 
 test('progreso guardado: JUGAR va al primer nivel sin completar y el guardado sobrevive a reiniciar', () => {
@@ -535,4 +537,111 @@ test('infinito: createRun acepta un nivel armado y el resumen lo marca como rond
   assert.equal(run.levelIndex, -1); assert.equal(run.level, lv); assert.equal(run.current, lv.start); assert.equal(run.money, lv.moneyStart); assert.equal(run.stamina, lv.staminaMax);
   assert.deepEqual(U.Rules.summary(run).infinite, { round: 4 }); assert.equal(U.Rules.summary(U.Rules.createRun(data, 0)).infinite, null);
   U.News.intro(run); assert.equal(run.newsLog.filter((n) => n.title === 'Ronda 4').length, 1, 'el aviso inicial dice "Ronda 4"');
+});
+
+// ---------------------------------------------------------------- logros
+const Ach = () => U.Achievements;
+const freshAch = () => { U.session.ach = {}; U.session.stats = null; U.session.completed = []; U.session.best = {}; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; };
+const res = (o) => Object.assign({ won: true, steps: 12, money: 80, robbed: 0, stamina: 40, monsters: 0, combis: 0, waited: 0, newsRead: 0, events: [] }, o || {});
+const ids = (list) => list.map((a) => a.id);
+
+test('logros: el catálogo es coherente (23 ids únicos, nombres sin acentos en mayúsculas, textos que caben)', () => {
+  assert.equal(Ach().LIST.length, 23); assert.equal(new Set(Ach().LIST.map((a) => a.id)).size, 23); assert.equal(new Set(Ach().LIST.map((a) => a.name)).size, 23);
+  const groups = Ach().GROUPS.map((g) => g[0]);
+  Ach().LIST.forEach((a) => {
+    assert.ok(groups.includes(a.group), a.id); assert.match(a.name, /^[A-Z0-9 ]+$/, a.id + ': nombre en mayúsculas sin acentos'); assert.ok(a.name.length <= 24, a.id);
+    assert.ok(a.desc.length >= 10 && U.util.wrap(a.desc, 27).length <= 3, a.id + ': la descripción cabe en 3 líneas de la tarjeta'); assert.equal(Ach().byId(a.id), a);
+    assert.equal(typeof a.check, 'function');
+  });
+  assert.equal(Ach().byId('nada'), null); assert.deepEqual(groups, ['progreso', 'estilo', 'eventos', 'infinito']);
+  assert.deepEqual(Ach().LIST.map((a) => a.group).filter((g, i, arr) => arr.indexOf(g) === i), groups, 'el catálogo viene agrupado en ese orden');
+});
+
+test('logros: record suma estadísticas, desbloquea una sola vez y guarda', () => {
+  withStore((st) => {
+    freshAch(); const first = Ach().record(res({ steps: 12, robbed: 1, monsters: 2, combis: 1, newsRead: 4 }), 0);
+    assert.deepEqual(ids(first), ['primer_viaje']); assert.deepEqual(U.session.stats, { played: 1, wins: 1, steps: 12, robbed: 1, monsters: 2, combis: 1, news: 4, safeWins: 0 });
+    assert.deepEqual(ids(Ach().record(res({ robbed: 0 }), 0)).includes('primer_viaje'), false, 'no se desbloquea dos veces'); assert.equal(U.session.stats.safeWins, 1);
+    assert.deepEqual(Ach().count(), { got: Ach().count().got, total: 23 }); assert.equal(Ach().has('primer_viaje'), true); assert.equal(Ach().has('racha10'), false);
+    assert.equal(JSON.parse(st[U.Save.KEY]).ach.primer_viaje, true); assert.equal(JSON.parse(st[U.Save.KEY]).stats.played, 2);
+  });
+});
+
+test('logros: perder suma jugadas, asaltos y compras pero no da logros de victoria', () => {
+  withStore(() => {
+    freshAch(); const f = Ach().record(res({ won: false, steps: 5, robbed: 2, monsters: 1, money: 500, stamina: 0, events: ['lluvia', 'horaPico', 'huelga'], waited: 90 }), 0);
+    assert.deepEqual(ids(f), [], 'ni primer viaje, ni ahorrador, ni eventos, ni paciencia'); assert.deepEqual(U.session.stats, { played: 1, wins: 0, steps: 5, robbed: 2, monsters: 1, combis: 0, news: 0, safeWins: 0 });
+  });
+});
+
+test('logros: cada condición de una partida (dinero, Monster, stamina, eventos, espera)', () => {
+  const t = (r, id, yes, why) => { freshAch(); U.session.stats = Ach().zero(); assert.equal(ids(Ach().record(res(r), 0)).includes(id), yes, why || id); };
+  withStore(() => {
+    t({ money: 100 }, 'ahorrador', true); t({ money: 99 }, 'ahorrador', false, 'ahorrador con 99');
+    t({ monsters: 0, steps: 10 }, 'sin_monster', true); t({ monsters: 0, steps: 9 }, 'sin_monster', false, 'ruta corta no cuenta'); t({ monsters: 1, steps: 14 }, 'sin_monster', false, 'con Monster no');
+    t({ stamina: 10 }, 'al_limite', true); t({ stamina: 11 }, 'al_limite', false);
+    t({ events: ['lluvia'] }, 'lluvia', true); t({ events: ['horaPico'] }, 'lluvia', false); t({ events: ['horaPico'] }, 'hora_pico', true); t({ events: ['huelga'] }, 'huelga', true); t({ events: [] }, 'huelga', false);
+    t({ waited: 30 }, 'paciencia', true); t({ waited: 0 }, 'paciencia', false);
+    t({ events: ['lluvia', 'horaPico', 'huelga'] }, 'triple', true); t({ events: ['lluvia', 'huelga'] }, 'triple', false);
+  });
+});
+
+test('logros: los de acumulado (asaltos, Monster, combi, estaciones, noticias, victorias sin asalto) cuentan entre partidas', () => {
+  withStore(() => {
+    freshAch(); const get = (id) => Ach().has(id), rec = (o) => Ach().record(res(o), 0);
+    rec({ robbed: 1 }); rec({ robbed: 2, won: false }); assert.equal(get('bienvenido'), true, '1 + 2 asaltos');
+    rec({ monsters: 4, combis: 2, newsRead: 10, steps: 80 }); rec({ monsters: 6, combis: 3, newsRead: 15, steps: 120 });
+    ['monster10', 'combi5', 'lector', 'caminante'].forEach((id) => assert.equal(get(id), true, id));
+    assert.equal(U.session.stats.safeWins, 2, 'dos victorias sin asalto (la del asalto no cuenta, la derrota tampoco)'); assert.equal(get('intocable'), false);
+    rec({ robbed: 1 }); assert.equal(get('intocable'), false, 'ganar con asalto no suma'); rec({ robbed: 0 }); assert.equal(get('intocable'), true);
+    const bar = Ach().progress(Ach().byId('monster10')); assert.deepEqual(bar, [10, 10]); assert.deepEqual(Ach().progress(Ach().byId('primer_viaje')), null);
+  });
+});
+
+test('logros: los de progreso salen del guardado (semanas, estrellas) y el avance se ve', () => {
+  withStore(() => {
+    freshAch(); U.session.completed = [0, 1, 2, 3]; U.session.best = { 0: { stars: 3, money: 1 }, 1: { stars: 2, money: 1 } };
+    assert.deepEqual(ids(Ach().sweep()), ['brillante'], 'tres estrellas en un nivel'); assert.deepEqual(Ach().progress(Ach().byId('semana1')), [4, 5]);
+    U.session.completed.push(4); assert.deepEqual(ids(Ach().record(res({ steps: 5 }), 0)), ['primer_viaje', 'semana1']);
+    U.session.completed = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; assert.ok(ids(Ach().sweep()).includes('semana2'));
+    U.session.best = {}; for (let i = 0; i < 4; i++) U.session.best[i] = { stars: 3, money: 1 }; U.session.best[4] = { stars: 2, money: 1 };
+    assert.equal(ids(Ach().sweep()).includes('estrellado'), false, '14 estrellas no alcanzan'); assert.deepEqual(Ach().progress(Ach().byId('estrellado')), [14, 15]);
+    U.session.best[4] = { stars: 3, money: 1 };
+    assert.ok(ids(Ach().sweep()).includes('estrellado'), '15 estrellas'); assert.equal(Ach().has('constelacion'), false); assert.deepEqual(Ach().progress(Ach().byId('constelacion')), [15, 30]);
+    for (let i = 5; i < 10; i++) U.session.best[i] = { stars: 3, money: 1 }; assert.ok(ids(Ach().sweep()).includes('constelacion'));
+    assert.deepEqual(Ach().sweep(), [], 'sin novedades no devuelve nada');
+  });
+});
+
+test('logros: modo infinito (primera ronda, racha de 5 y de 10, también con la mejor racha guardada)', () => {
+  withStore(() => {
+    freshAch(); assert.equal(ids(Ach().record(res(), 0)).includes('sin_fin'), false); assert.ok(ids(Ach().record(res(), 1)).includes('sin_fin'));
+    assert.ok(!Ach().has('racha5')); assert.ok(ids(Ach().record(res(), 5)).includes('racha5')); assert.ok(!Ach().has('racha10')); assert.ok(ids(Ach().record(res({ won: false }), 10)).includes('racha10'));
+    freshAch(); U.session.inf = { best: 12, stars: 20 }; assert.deepEqual(ids(Ach().sweep()), ['racha5', 'racha10'], 'una mejor racha anterior también cuenta'); assert.deepEqual(Ach().progress(Ach().byId('racha10')), [10, 10]);
+  });
+});
+
+test('logros: con partidas reales (el resumen de Rules trae monsters, combis, stamina, eventos y espera)', () => {
+  withStore(() => {
+    freshAch(); const run = U.Rules.createRun(data, 1, () => 0.99); assert.deepEqual([run.monsters, run.combis, run.waited], [0, 0, 0]);
+    const n = U.Graph.neighbors(run.graph, run.current).find((x) => !run.blocked[x]); U.Rules.travel(run, n); assert.equal(run.combis, U.Graph.isCombi(run.graph, run.level.start, n) ? 1 : 0);
+    run.stamina = 10; run.current = Object.keys(data.stations).find((k) => data.stations[k].shop); assert.ok(U.Rules.buyMonster(run).ok); assert.equal(run.monsters, 1);
+    const s = U.Rules.summary(run); assert.equal(s.monsters, 1); assert.equal(typeof s.stamina, 'number'); assert.deepEqual(s.events, ['lluvia']); assert.equal(s.waited, 0);
+    const w = U.Rules.createRun(data, 2); U.Rules.wait(w); assert.equal(U.Rules.summary(w).waited, 210); assert.deepEqual(U.Rules.summary(w).events, ['huelga']);
+    // una partida jugada de verdad por el bot del nivel 1 (hora pico, 12 tramos, sin Monster): llega y desbloquea
+    const g = U.Rules.createRun(data, 0, () => 0.99); for (let k = 0; k < 80 && !g.over; k++) { const bp = cheapestStaminaPath(U, g); U.Rules.travel(g, bp.path[1]); U.Rules.checkStuck(g); }
+    assert.equal(g.won, true); const f = ids(Ach().record(U.Rules.summary(g), 0)); assert.ok(f.includes('primer_viaje') && f.includes('hora_pico') && f.includes('sin_monster'), f.join());
+  });
+});
+
+test('logros: el guardado valida logros y estadísticas, y borrar progreso los borra', () => {
+  withStore((st) => {
+    U.session.loaded = false; freshAch(); st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [], best: {}, ach: { primer_viaje: true, inventado: true, semana1: false, racha5: 'si' }, stats: { played: 7, wins: -1, steps: 2.5, robbed: 'x', monsters: 3, combis: 1e12 } });
+    U.Save.load(); assert.deepEqual(U.session.ach, { primer_viaje: true }, 'solo ids conocidos y verdaderos');
+    assert.deepEqual(U.session.stats, { played: 7, wins: 0, steps: 0, robbed: 0, monsters: 3, combis: 0, news: 0, safeWins: 0 }, 'estadísticas inválidas se ignoran');
+    [null, 5, 'x', []].forEach((bad) => { U.session.loaded = false; freshAch(); st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [], ach: bad, stats: bad }); U.Save.load(); assert.ok(typeof U.session.ach === 'object'); });
+    U.session.loaded = false; freshAch(); st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [2] }); U.Save.load(); assert.deepEqual(U.session.ach, {}, 'un guardado viejo sin logros arranca vacío');
+    Ach().record(res(), 0); assert.ok(Object.keys(JSON.parse(st[U.Save.KEY]).ach).length >= 1);
+    U.Save.reset(); assert.deepEqual(U.session.ach, {}); assert.equal(U.session.stats, null); assert.deepEqual(JSON.parse(st[U.Save.KEY]).ach, {}); assert.equal(Ach().count().got, 0);
+  });
 });

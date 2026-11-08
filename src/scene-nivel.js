@@ -332,9 +332,10 @@
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }
     if (run.over && !um.saved && run.level.infinite) { um.saved = true; um.streak = U.Infinite.finish(run, R.score(run).stars); }      // modo infinito: suma a la racha y guarda el récord
     else if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); um.record = U.Save.record(run.levelIndex, R.score(run).stars, run.money); }   // guarda el progreso y la mejor marca al ganar
+    if (run.over && !um.achDone) { um.achDone = true; um.unlocked = U.Achievements.record(R.summary(run), um.streak ? um.streak.cleared : 0); }   // logros: suma las estadísticas y revisa todos
     if (run.over && !um.modal && !um.pending && !um.map.moving()) {
       um.endTimer += dt;
-      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; U.session.lastResult.streak = um.streak || null; scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }
+      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; U.session.lastResult.streak = um.streak || null; U.session.lastResult.achievements = (um.unlocked || []).map(function (a) { return a.id; }); scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }
     }
   };
 })();

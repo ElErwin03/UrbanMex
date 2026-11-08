@@ -17,7 +17,7 @@
       var run = {
         data: data, graph: G.build(data), rnd: rng, levelIndex: levelIndex, level: lv,
         current: lv.start, stamina: lv.staminaMax, staminaMax: lv.staminaMax, money: lv.moneyStart,
-        minute: cfg.dayStartMinute, steps: 0, robbed: 0, stolen: 0, visited: visited,
+        minute: cfg.dayStartMinute, steps: 0, robbed: 0, stolen: 0, monsters: 0, combis: 0, waited: 0, visited: visited,
         blocked: setOf(lv.blocked), striking: {}, eventQueue: [], danger: {}, timeMods: {}, monsterPromo: false, freeRides: 0,
         newsLog: [], newsUsed: {}, unread: 0, newsMoves: cfg.news.firstAfterMoves, newsCount: 0,
         over: false, won: false, endReason: ''
@@ -118,7 +118,7 @@
       var c = chk.cost;
       if (run.freeRides > 0) run.freeRides--;
       var prev = run.minute, bonus = E() ? E().robberyBonus(run) : 0;                              // el riesgo de asalto es el de la hora en que sales
-      run.stamina -= c.stamina; run.money -= c.money; run.minute += c.time; run.steps++;
+      run.stamina -= c.stamina; run.money -= c.money; run.minute += c.time; run.steps++; if (c.combi) run.combis++;
       if (E()) { E().transitions(run, prev, run.minute).forEach(function (t) { run.eventQueue.push(t); }); Rules.syncEvents(run); }
       run.current = to; run.visited[to] = true;
       var out = { ok: true, cost: c, type: 'arrive' };
@@ -144,7 +144,7 @@
       if (run.stamina >= run.staminaMax) return { ok: false, reason: 'full' };
       if (run.money < price) return { ok: false, reason: 'money' };
       var before = run.stamina;
-      run.money -= price; run.stamina = Math.min(run.staminaMax, run.stamina + cfg.monsterStamina);
+      run.money -= price; run.monsters++; run.stamina = Math.min(run.staminaMax, run.stamina + cfg.monsterStamina);
       return { ok: true, gained: run.stamina - before, price: price };
     },
 
@@ -242,7 +242,8 @@
       if (left === null) left = Rules.hopsLeft(run, run.current, true);
       return { won: run.won, reason: run.endReason, cause: run.endCause || '', levelIndex: run.levelIndex, day: run.level.day, infinite: run.level.infinite ? { round: run.level.round } : null,
                arrival: util.clock(run.minute), travelTime: util.duration(run.minute - cfg.dayStartMinute),
-               steps: run.steps, money: run.money, robbed: run.robbed, stolen: run.stolen,
+               steps: run.steps, money: run.money, robbed: run.robbed, stolen: run.stolen, stamina: Math.round(run.stamina), monsters: run.monsters, combis: run.combis, waited: run.waited || 0,
+               events: (run.level.events || []).map(function (e) { return e.id; }),
                newsRead: run.newsCount, moneyStart: run.level.moneyStart, currency: cfg.currencyName || 'monedas',
                stars: sc.stars, got: sc.got, moneyGoal: sc.moneyGoal,
                hops: total || 0, left: left === null ? null : left,                 // estaciones del camino más corto y las que te faltaban al terminar
