@@ -20,7 +20,7 @@
 
   function init(scene, data) {
     U.Save.load();
-    var um = scene._um = { data: data, run: R.createRun(data, U.session.levelIndex), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
+    var inf = U.session.infinite, um = scene._um = { data: data, run: R.createRun(data, inf ? -1 : U.session.levelIndex, undefined, inf ? U.Infinite.level(data, inf.seed, inf.round) : undefined), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
       selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false, paused: false, pauseView: 'main', hurt: 0,
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
@@ -30,8 +30,9 @@
     um.map.placePlayer(run.current);
     N.intro(run);
     var evs = U.Events.status(run).map(function (e) { return e.label + ' (' + e.text + ')'; });   // eventos del día, si el nivel los tiene
-    modal(um, { title: 'NIVEL ' + run.level.id + ' - ' + run.level.day,
-      lines: [run.level.startDesc, '', 'Meta: ' + run.level.goal, 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.']
+    modal(um, { title: U.Infinite.title(run.level),
+      lines: [run.level.startDesc, '', 'Meta: ' + (run.level.infinite ? U.Infinite.nice(run.level.goal) : run.level.goal), 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.']
+        .concat(run.level.infinite ? ['Racha: ' + inf.cleared + (inf.cleared === 1 ? ' ronda' : ' rondas') + ' - ' + inf.stars + ' estrellas'] : [])
         .concat(evs.length ? ['', 'Hoy: ' + evs.join(', ') + '.'] : []).concat(['', 'Lee las noticias del celular: son tu unica guia.']),
       buttons: [{ label: 'EMPEZAR', kind: 'safe' }] });
     return um;
@@ -110,7 +111,7 @@
   function drawHUD(ui, um) {
     var run = um.run, cfg = run.data.config;
     ui.rect(0, 0, 1280, 56, { fill: '12;10;24', border: PAL.orange, bw: 2, block: true });
-    ui.text('hud:day', 'NIVEL ' + run.level.id + ' - ' + run.level.day, 14, 10, { size: 8, color: PAL.yellow });
+    ui.text('hud:day', U.Infinite.title(run.level), 14, 10, { size: 8, color: PAL.yellow });
     ui.text('hud:st', run.current, 14, 32, { size: 8 });
     // APURO: el recurso que aprieta (Rules.urgency, la misma regla del sonido) parpadea en rojo; el asalto hace temblar el saldo un momento
     var u = R.urgency(run), flash = U.A11y.blink(um.t, 3), hot = function (v) { return v > 0 && flash; }, hurt = um.hurt > 0;
@@ -257,7 +258,7 @@
       if (B('pa:si', 'SI, SALIR', x + w - 250, y + h - 70, 220, '192;57;43')) um.exitToMenu = true;
     } else {
       T('pa:t', 'PAUSA', y + 22, { size: 24, color: PAL.orange });
-      T('pa:l1', 'NIVEL ' + run.level.id + ' - ' + run.level.day, y + 76, { size: 8, color: PAL.yellow });
+      T('pa:l1', U.Infinite.title(run.level), y + 76, { size: 8, color: PAL.yellow });
       T('pa:l2', run.current + '  >  ' + run.level.goal, y + 96, { size: 8, color: PAL.dim });
       if (B('pa:cont', 'CONTINUAR', x + 110, y + 126, 300, '39;174;96')) setPause(um, false);
       if (B('pa:snd', 'SONIDO', x + 110, y + 184, 300, '60;60;90')) um.pauseView = 'sound';
@@ -329,10 +330,11 @@
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }
-    if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); um.record = U.Save.record(run.levelIndex, R.score(run).stars, run.money); }   // guarda el progreso y la mejor marca al ganar
+    if (run.over && !um.saved && run.level.infinite) { um.saved = true; um.streak = U.Infinite.finish(run, R.score(run).stars); }      // modo infinito: suma a la racha y guarda el récord
+    else if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); um.record = U.Save.record(run.levelIndex, R.score(run).stars, run.money); }   // guarda el progreso y la mejor marca al ganar
     if (run.over && !um.modal && !um.pending && !um.map.moving()) {
       um.endTimer += dt;
-      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }
+      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; U.session.lastResult.streak = um.streak || null; scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }
     }
   };
 })();
