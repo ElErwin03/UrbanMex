@@ -2,7 +2,7 @@
 // El simulado solo permite métodos del runtime de GDevelop verificados contra su código fuente, valida nombres de
 // objetos/animaciones/capas/recursos y rechaza NaN o colores mal formados. Juega una semana completa con un bot.
 const test = require('node:test'), assert = require('node:assert'), fs = require('fs'), path = require('path');
-const { ROOT, DATA, cheapestStaminaPath } = require('./helpers');
+const { ROOT, DATA, cheapestStaminaPath, wantsWait } = require('./helpers');
 const project = JSON.parse(fs.readFileSync(path.join(ROOT, 'My project', 'UrbanMex.json'), 'utf8'));
 const resNames = {}; project.resources.resources.forEach((r) => { resNames[r.name] = r; });
 const fileOf = (n) => path.join(ROOT, 'My project', resNames[n].file);
@@ -152,7 +152,7 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
   let day = 0, outcomes = [];
   const g = globalThis.gdjs; delete g.UrbanMex;
   let s = session('Nivel'); s.frame(2); const U = s.U; U.session.levelIndex = 0;
-  for (; day < 5; day++) {
+  for (; day < 10; day++) {
     delete s.scene._um; U.session.levelIndex = day;           // reinicia la escena como lo haría el motor
     s = session('Nivel'); s.frame(2);
     const um = () => s.scene._um; let guard = 1500;
@@ -163,7 +163,7 @@ test('un bot juega los 5 días completos con clics reales (mapa, panel, tienda, 
         s.click(x0 + pick * (bw + 20) + 85, 210 + 300 - 62 + 20); s.frame(2); continue; }
       if (u.pending || u.map.moving() || run.over) { s.frame(1); continue; }
       const bp = cheapestStaminaPath(U, run), path = bp && bp.path;
-      if (!path) {                                              // sin ruta por una huelga: pulsa ESPERAR en su ficha de eventos
+      if (!path || wantsWait(U, run)) {                                              // sin ruta por una huelga: pulsa ESPERAR en su ficha de eventos
         let cx = 346, hit = false; U.Events.status(run).forEach((e) => { if (e.state === 'over') return; const w = e.id === 'huelga' ? 236 : 150; if (e.id === 'huelga' && e.state === 'active') { s.click(cx + w - 84 + 39, 68 + 16); hit = true; } cx += w + 6; });
         s.frame(hit ? 2 : 1); continue; }
       const sh = run.data.stations[run.current].shop; if (sh && run.stamina < bp.need && run.money > 60) { s.click(166, 666 + 18); s.frame(2); }
@@ -364,12 +364,12 @@ test('menú: JUGAR dice a qué nivel entras, el selector solo deja rejugar los c
     U.session.completed = [0, 1]; m = session('Menu'); m.frame(5);
     m.click(640, 484);                                                            // SELECCIONAR NIVEL
     assert.equal(m.scene._um.view, 'levels');
-    m.click(876, 300); m.click(1112, 300); m.click(640, 400);                     // niveles 4 y 5 (bloqueados) y el 3 (siguiente): no hacen nada
+    m.click(876, 300); m.click(1112, 300); m.click(640, 300); m.click(404, 560);   // niveles 4 y 5 (bloqueados), el 3 (siguiente) y el 7 (semana 2, bloqueado): no hacen nada
     assert.equal(m.scene.changes.length, 0);
-    m.click(404, 476);                                                            // REJUGAR nivel 2
+    m.click(404, 351);                                                            // REJUGAR nivel 2
     assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 1);
     // 4) volver y el botón JUGAR sigue yendo al nivel 3
-    m.scene._um.view = 'levels'; m.frame(2); m.click(640, 598); assert.equal(m.scene._um.view, 'main');
+    m.scene._um.view = 'levels'; m.frame(2); m.click(640, 684); assert.equal(m.scene._um.view, 'main');
     m.click(640, 400); assert.equal(U.session.levelIndex, 2); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']);
     // 5) borrar progreso pide confirmar (dos toques)
     m.scene._um.view = 'levels'; m.frame(2); m.click(1105, 676); assert.deepEqual(U.session.completed, [0, 1]); m.click(1105, 676);
@@ -943,7 +943,13 @@ test('resultado: récord, mejor marca y botones (MEJORAR ESTRELLAS solo si falta
   U.session.lastResult = fakeResult({ stars: 3 }); s.frame(2); assert.ok(!hasText(s.scene, /MEJORAR ESTRELLAS/));
   // última jornada: resumen de la semana con las estrellas de toda la semana
   U.session.best = { 0: { stars: 3, money: 1 }, 1: { stars: 2, money: 1 }, 2: { stars: 3, money: 1 }, 3: { stars: 1, money: 1 }, 4: { stars: 3, money: 1 } };
-  U.session.lastResult = fakeResult({ levelIndex: 4 }); s.frame(2); assert.match(T('w'), /COMPLETASTE LA SEMANA.*12\/15 estrellas/); assert.ok(hasText(s.scene, /JUGAR OTRA VEZ/));
+  U.session.lastResult = fakeResult({ levelIndex: 4 }); s.frame(2); assert.match(T('w'), /COMPLETASTE LA SEMANA 1!.*12\/15 estrellas/); assert.ok(hasText(s.scene, /SIGUIENTE NIVEL/), 'hay semana 2: sigue el nivel 6'); assert.ok(!hasText(s.scene, /JUGAR OTRA VEZ/));
+  U.session.lastResult = fakeResult({ levelIndex: 2 }); s.frame(2); assert.equal(T('w'), undefined, 'a mitad de semana no hay cierre');
+  // fin del juego: las estrellas de los 10 niveles
+  U.session.best = { 0: { stars: 3, money: 1 }, 1: { stars: 2, money: 1 }, 2: { stars: 3, money: 1 }, 3: { stars: 1, money: 1 }, 4: { stars: 3, money: 1 }, 5: { stars: 3, money: 1 }, 6: { stars: 1, money: 1 }, 7: { stars: 1, money: 1 }, 8: { stars: 2, money: 1 }, 9: { stars: 3, money: 1 } };
+  U.session.lastResult = fakeResult({ levelIndex: 9 }); s.frame(2); assert.match(T('w'), /COMPLETASTE TODOS LOS NIVELES!.*22\/30 estrellas/); assert.ok(hasText(s.scene, /JUGAR OTRA VEZ/));
+  U.session.lastResult = fakeResult({ levelIndex: 9 }); U.session.best = { 5: { stars: 3, money: 1 }, 6: { stars: 1, money: 1 }, 7: { stars: 1, money: 1 }, 8: { stars: 2, money: 1 }, 9: { stars: 3, money: 1 } };
+  U.session.lastResult = fakeResult({ levelIndex: 9, won: false, stars: 0, got: { arrive: false, saver: false, safe: false } }); s.frame(2); assert.equal(T('w'), undefined, 'perder no cierra nada');
   U.session.best = {};
 });
 
@@ -954,7 +960,7 @@ test('mejor marca: se guarda, solo mejora, sobrevive entre partidas, se valida y
     assert.deepEqual(S.record(0, 2, 70), { isNew: true, prev: null }); assert.deepEqual(saved().best, { 0: { stars: 2, money: 70 } }, 'se guarda');
     assert.deepEqual(S.record(0, 1, 120), { isNew: false, prev: { stars: 2, money: 70 } }, 'menos estrellas no es récord, aunque tengas más dinero');
     assert.equal(S.record(0, 2, 70).isNew, false, 'igual no es récord'); assert.equal(S.record(0, 2, 71).isNew, true, 'mismas estrellas y más dinero sí');
-    assert.equal(S.record(0, 3, 10).isNew, true); assert.deepEqual(S.bestOf(0), { stars: 3, money: 10 }); S.record(2, 1, 5); assert.equal(S.totalStars(5), 4); assert.equal(S.totalStars(2), 3, 'solo cuenta los niveles que existen');
+    assert.equal(S.record(0, 3, 10).isNew, true); assert.deepEqual(S.bestOf(0), { stars: 3, money: 10 }); S.record(2, 1, 5); assert.equal(S.totalStars(10), 4); assert.equal(S.totalStars(2), 3, 'solo cuenta los niveles que existen');
     // se recupera en otra sesión
     U.session.best = {}; U.session.loaded = false; S.load(); assert.deepEqual(U.session.best, { 0: { stars: 3, money: 10 }, 2: { stars: 1, money: 5 } });
     // datos dañados se ignoran uno por uno
@@ -962,7 +968,7 @@ test('mejor marca: se guarda, solo mejora, sobrevive entre partidas, se valida y
     U.session.loaded = false; S.load(); assert.deepEqual(U.session.best, { 4: { stars: 2, money: 33 } }); store[KEY] = JSON.stringify({ v: 1, completed: [], best: 'si' }); U.session.loaded = false; S.load(); assert.deepEqual(U.session.best, {});
     // menú: la tarjeta del nivel muestra las estrellas (y el total en la pantalla principal)
     U.session.completed = [0, 1]; U.session.best = { 0: { stars: 3, money: 9 }, 1: { stars: 1, money: 9 } }; const mm = session('Menu'); mm.frame(5);
-    assert.match(uiTexts(mm.scene)['UI:prog'], /2\/5 niveles completados.*4\/15 estrellas/); mm.scene._um.view = 'levels'; mm.frame(3);
+    assert.match(uiTexts(mm.scene)['UI:prog'], /2\/10 niveles completados.*4\/30 estrellas/); mm.scene._um.view = 'levels'; mm.frame(3);
     const ic = uiIcons(mm.scene); assert.deepEqual([0, 1, 2].map((k) => ic['UI:ck0:' + k]), ['estrella', 'estrella', 'estrella']); assert.deepEqual([0, 1, 2].map((k) => ic['UI:ck1:' + k]), ['estrella', 'estrella_vacia', 'estrella_vacia']);
     U.session.best = {}; mm.frame(3); assert.equal(uiIcons(mm.scene)['UI:ck0'], 'meta', 'un guardado anterior a las estrellas muestra la meta de siempre');
     // borrar el progreso también borra las marcas
@@ -1157,4 +1163,20 @@ test('eventos (nivel): la lluvia se ve (velo y gotas), entra con fundido, se va 
   t = eventLevel(1, false, 'low'); t.u.modal = null; t.run.minute = 500; t.s.frame(120); assert.equal(drops(t.pool), 16, 'calidad baja: menos gotas');
   t = eventLevel(1, false, 'off'); t.u.modal = null; t.run.minute = 500; t.s.frame(30); assert.ok(!t.pool, 'sin efectos: no hay escenario de efectos (y no falla)');
   t = eventLevel(0); t.u.modal = null; t.run.minute = 500; t.s.frame(60); assert.equal(drops(t.pool), 0, 'el lunes no llueve nunca');
+});
+
+// ---------------------------------------------------------------- selector con dos semanas
+test('selector: dos filas de 5 niveles (SEMANA 1 y SEMANA 2), el siguiente se marca y los de la semana 2 se desbloquean en orden', () => {
+  const store = store0();
+  try {
+    audioReset(); const m = session('Menu'); m.frame(3); const U = m.U; U.session.completed = [0, 1, 2, 3, 4, 5]; U.session.best = { 5: { stars: 2, money: 70 } }; m.scene._um.view = 'levels'; m.frame(3);
+    const T = uiTexts(m.scene); assert.equal(T['UI:wk0'], 'SEMANA 1'); assert.equal(T['UI:wk1'], 'SEMANA 2');
+    assert.equal(T['UI:n9'], '10'); assert.equal(T['UI:d9'], 'VIERNES 2'); assert.equal(T['UI:d5'], 'LUNES 2');
+    assert.equal(T['UI:st6'], 'SIGUIENTE', 'el 7 es el siguiente'); ['7', '8', '9'].forEach((k) => assert.equal(T['UI:st' + k], 'BLOQUEADO'));
+    assert.equal(T['UI:btn:re0'], 'REJUGAR'); assert.equal(T['UI:btn:re5'], 'REJUGAR'); assert.equal(T['UI:btn:re6'], undefined);
+    assert.deepEqual([0, 1, 2].map((k) => uiIcons(m.scene)['UI:ck5:' + k]), ['estrella', 'estrella', 'estrella_vacia']);
+    m.click(1112, 625); assert.equal(m.scene.changes.length, 0, 'el nivel 10 está bloqueado');   // última carta de la fila 2
+    m.click(150, 625); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.levelIndex, 5, 'REJUGAR el nivel 6 (primera carta de la fila 2)');
+    m.scene._um.view = 'main'; m.frame(2); assert.match(uiTexts(m.scene)['UI:pl2'], /NIVEL 7 - MARTES 2/); assert.equal(uiTexts(m.scene)['UI:pl3'], 'Ermita > Indios Verdes');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
