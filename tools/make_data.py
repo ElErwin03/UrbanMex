@@ -73,9 +73,23 @@ LV = [
   {"blocked": ["Tlatelolco", "Pantitlán"], "moneyStart": 230, "staminaMax": 105},   # Jueves (Pantitlán de la línea 1 también bloqueada)
   {"blocked": ["Isabel la Católica", "Pino Suárez", "Pino Suárez L2", "Candelaria", "Candelaria LB", "Candelaria LB2", "Coyoacán"],
    "moneyStart": 190, "staminaMax": 90},                                        # Viernes
+  {"blocked": ["Guerrero"],          "moneyStart": 170, "staminaMax": 100},   # Lunes 2
+  {"blocked": ["Morelos"],           "moneyStart": 185, "staminaMax": 80},    # Martes 2
+  {"blocked": ["Juárez"],            "moneyStart": 200, "staminaMax": 90},    # Miércoles 2
+  {"blocked": ["La Raza"],           "moneyStart": 215, "staminaMax": 90},    # Jueves 2
+  {"blocked": ["La Raza"],           "moneyStart": 220, "staminaMax": 90},    # Viernes 2
+]
+# ---- SEMANA 2 (niveles 6 a 10): rutas nuevas, más largas y con más eventos. Los días llevan número para distinguirlos de la semana 1. ----
+# Elegidos con tools/solve_events.js: ganables con los eventos puestos, y (los que exigen un Monster) con la 2.ª estrella todavía posible.
+WEEK2 = [
+  {"day": "LUNES 2", "start": "Hangares", "goal": "Cuatro Caminos", "startDesc": "Tu casa junto al aeropuerto, en Hangares. Llega a Cuatro Caminos para entregar un pedido.", "goalDesc": "Entregaste el pedido en Cuatro Caminos!"},
+  {"day": "MARTES 2", "start": "Ermita", "goal": "Indios Verdes", "startDesc": "Tu casa en Ermita. Hoy cruzas toda la ciudad hasta Indios Verdes.", "goalDesc": "Llegaste a Indios Verdes!"},
+  {"day": "MIERCOLES 2", "start": "Buenavista", "goal": "Universidad", "startDesc": "Tu casa en Buenavista. Hoy tienes un examen en la UNAM.", "goalDesc": "Llegaste al examen en la UNAM!"},
+  {"day": "JUEVES 2", "start": "Instituto del Petróleo", "goal": "Tasqueña", "startDesc": "Tu casa en el Instituto del Petroleo. Hoy hay una entrevista de trabajo en Tasqueña.", "goalDesc": "Llegaste a la entrevista en Tasqueña!"},
+  {"day": "VIERNES 2", "start": "Tasqueña", "goal": "Politécnico", "startDesc": "Tu casa en Tasqueña. Es el gran dia: examen final en el Politecnico.", "goalDesc": "Llegaste al examen final! Semana completada!"},
 ]
 levels = []
-for i, l in enumerate(d["LEVELS"]):
+for i, l in enumerate(d["LEVELS"] + [dict(w, moneyStart=0, staminaMax=0, blocked=[]) for w in WEEK2]):
     levels.append({"id": i + 1, "day": l["day"], "start": l["start"], "goal": l["goal"],
       "startDesc": clean(l["startDesc"]), "goalDesc": clean(l["goalDesc"]),
       "moneyStart": l["moneyStart"], "staminaMax": l["staminaMax"], "blocked": l["blocked"]})
@@ -87,6 +101,11 @@ EVENTS = [
   [{"id": "huelga", "line": "3", "until": 630}],                                                       # Miércoles
   [{"id": "lluvia", "from": 480, "to": 600}, {"id": "huelga", "line": "1", "until": 570}],             # Jueves
   [{"id": "horaPico"}, {"id": "lluvia", "from": 540, "to": 720}, {"id": "huelga", "line": "3", "until": 600}],   # Viernes: los tres
+  [{"id": "horaPico"}, {"id": "lluvia", "from": 480, "to": 630}],                                     # Lunes 2
+  [{"id": "lluvia", "from": 480, "to": 600}, {"id": "huelga", "line": "5", "until": 540}],             # Martes 2
+  [{"id": "horaPico"}, {"id": "lluvia", "from": 480, "to": 600}, {"id": "huelga", "line": "B", "until": 570}],   # Miercoles 2
+  [{"id": "horaPico"}, {"id": "huelga", "line": "B", "until": 570}],                                   # Jueves 2
+  [{"id": "horaPico"}, {"id": "lluvia", "from": 540, "to": 720}, {"id": "huelga", "line": "1", "until": 540}],   # Viernes 2: los tres
 ]
 if LV:
     for lv, o, ev in zip(levels, LV, EVENTS): lv.update(o); lv["events"] = ev

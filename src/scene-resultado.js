@@ -42,6 +42,12 @@
       if (i === 1) return ['AHORRAR', r.got.saver ? 'Terminaste con ' + r.money : 'Termina con ' + r.moneyGoal + ' o más'];
       return ['SIN ASALTOS', r.got.safe ? 'Nadie te robó' : (r.robbed ? r.robbed + (r.robbed === 1 ? ' asalto' : ' asaltos') + ' (-' + r.stolen + ')' : 'No te asaltes')];
     },
+    /** Cierre de semana (o del juego): cuántas estrellas llevas en esa semana o en todo el juego. */
+    weekEnd: function (levelIndex, last, total) {
+      var wk = Math.floor(levelIndex / U.Save.WEEK);
+      return last ? 'COMPLETASTE TODOS LOS NIVELES!  ' + U.Save.totalStars(total) + '/' + total * 3 + ' estrellas'
+                  : 'COMPLETASTE LA SEMANA ' + (wk + 1) + '!  ' + U.Save.weekStars(wk) + '/' + U.Save.WEEK * 3 + ' estrellas';
+    },
     record: function (r, cur) {
       if (!r.won || !r.record) return null;
       if (r.record.isNew) return { new: true, text: r.record.prev ? 'NUEVO RECORD!  Antes: ' + r.record.prev.stars + (r.record.prev.stars === 1 ? ' estrella, ' : ' estrellas, ') + r.record.prev.money : 'PRIMERA MARCA GUARDADA!' };
@@ -61,7 +67,7 @@
       if (ui.button('m', 'MENU', 540, 400, 200, 44, {})) scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu');
       ui.end(); return;
     }
-    var last = !U.Rules.hasNextLevel(data, r.levelIndex), week = r.won && last, calm = U.A11y.calm();
+    var last = !U.Rules.hasNextLevel(data, r.levelIndex), week = r.won && (last || (r.levelIndex + 1) % U.Save.WEEK === 0), calm = U.A11y.calm();
     ui.text('t', Text.title(r), 640, 56, { size: 24, align: 'center', color: r.won ? (r.stars >= 3 ? PAL.yellow : PAL.green) : r.left !== null && r.left <= 3 ? PAL.orange : PAL.red });
     ui.text('d', 'NIVEL ' + (r.levelIndex + 1) + ' - ' + r.day, 640, 100, { size: 8, align: 'center', color: PAL.dim });
 
@@ -102,7 +108,7 @@
 
     var rec = Text.record(r, r.currency);
     if (rec) ui.text('rec', rec.text, 640, 520, { size: 8, align: 'center', color: rec.new ? PAL.yellow : PAL.dim });
-    if (week) ui.text('w', 'COMPLETASTE LA SEMANA!  ' + U.Save.totalStars(data.levels.length) + '/' + data.levels.length * 3 + ' estrellas', 640, 542, { size: 8, align: 'center', color: PAL.yellow });
+    if (week) ui.text('w', Text.weekEnd(r.levelIndex, last, data.levels.length), 640, 542, { size: 8, align: 'center', color: PAL.yellow });
 
     var go = function (name) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, name); };
     var btns = r.won ? (last ? [['a', 'JUGAR OTRA VEZ', 300, '39;174;96']] : [['n', 'SIGUIENTE NIVEL >', 300, '39;174;96']]) : [['r', 'REINTENTAR', 300, '39;174;96']];

@@ -40,4 +40,14 @@ function cheapestStaminaPath(U, run) {
   return { path, need };
 }
 
-module.exports = { loadModules, rawData, ROOT, DATA, cheapestStaminaPath };
+/** ¿Le conviene esperar a que reabra una línea en huelga? Sí si sin ruta, o si con la línea abierta ahorraría 20+ de stamina (el rodeo no vale la pena). Lo usan los bots de prueba. */
+function wantsWait(U, run) {
+  if (!U.Events) return false;
+  const ends = U.Events.strikeEnds(run); if (!ends.length) return false;
+  const now = cheapestStaminaPath(U, run); if (!now) return true;
+  const later = Object.assign({}, run, { minute: Math.min(...ends), blocked: Object.assign({}, run.blocked), striking: Object.assign({}, run.striking), eventQueue: [] });
+  U.Rules.syncEvents(later); const lp = cheapestStaminaPath(U, later);
+  return !!lp && now.need - lp.need >= 20 && Math.min(...ends) <= run.data.config.dayEndMinute - 240;
+}
+
+module.exports = { loadModules, rawData, ROOT, DATA, cheapestStaminaPath, wantsWait };
