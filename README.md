@@ -30,6 +30,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `rules` | economía, viaje, asaltos, Monster, fin de partida | no |
 | `infinite` | modo infinito: rondas con ruta al azar, siempre ganables (ver *Modo infinito*) | no |
 | `achievements` | logros: catálogo de datos, estadísticas de toda la vida y desbloqueo (ver *Logros*) | no |
+| `i18n`, `lang-en*` | idiomas: traducción español → inglés al dibujar el texto (ver *Idiomas*) | no |
 | `mobile` | modo celular: interfaz grande según el tamaño de la pantalla (ver *Celular: interfaz grande*) | mínimo |
 | `news` | noticias del celular (nunca dejan la meta inalcanzable) | no |
 | `ui` | interfaz “modo inmediato” sobre objetos Texto/Icono/Painter | sí |
@@ -278,3 +279,13 @@ El juego se dibuja en 1280x720; en un celular horizontal el lienzo se ve a ~0.5x
 - **Táctil:** se leen todos los dedos. **Pellizcar** con dos dedos acerca/aleja el mapa y lo arrastra (el punto entre los dedos se queda ahí) sin seleccionar estaciones. Con el dedo no hay "pasar por encima": el resaltado de botones y estaciones solo cuenta mientras se toca; el área para acertar una estación es más grande y hace falta mover más (12 px) para que cuente como arrastre. El doble toque sigue viajando (si está activado) y el tutorial habla de toques, no de clics ni teclas.
 - **Herramientas:** `node tools/dump_scene.js . Nivel salida.json --mobile` hace el volcado en modo celular y `node tools/audit_layout.js salida.json` avisa de textos fuera de pantalla o del panel, textos encimados y botones chicos o encimados; `bash tools/audit_all.sh --mobile` revisa todas las pantallas y estados (0 avisos).
 - **Archivos:** `src/mobile.js` (detección y tamaños), `src/ui.js` (letras, botones, dedos), `src/map.js` (pellizco, área de toque) y los diseños para celular en `scene-*.js`, `phone.js` y `a11y.js`.
+
+## Idiomas (español e inglés)
+El juego está en **español** y tiene el **inglés** como segundo idioma. El botón `ENGLISH` / `ESPANOL` del menú principal (debajo de `CREDITOS`) cambia al instante y se guarda (`lang` en `UrbanMex_save_v1`; `BORRAR PROGRESO` no lo cambia). Los nombres de estaciones, los créditos y `peje-coins` no se traducen.
+
+- **Cómo funciona:** el texto sigue escrito en español en el código y los datos; la traducción se hace en **un solo punto**, al dibujarlo (`ui.text`, `ui.button`, `ui.lines`) y antes de partir un párrafo en líneas (`util.wrap`), con un diccionario `español → inglés` en `src/lang-en*.js`. Así no hay que tocar cada pantalla ni los datos.
+- **Entradas con huecos:** `'NIVEL {0} - {1}': 'LEVEL {0} - {1}'`. Los huecos se traducen solos (`LUNES` → `MONDAY`) y los nombres de estaciones se quedan. Las horas, los números y los símbolos no hacen falta en el diccionario.
+- **Lo que falta se nota:** un texto sin traducción se queda en español y se anota en `I18n.misses()`. Las pruebas recorren todas las pantallas (menú, tutorial, los 10 niveles y el modo infinito, celular, pausa, resultados; con ratón, con dedo y en modo celular) y fallan si queda alguno; otra prueba revisa todo lo que fabrican las reglas, las noticias, los eventos y los logros en partidas de bot.
+- **Para agregar o corregir un texto:** escribe la entrada en el archivo que corresponda: `lang-en.js` (menús, sonido, accesibilidad, logros, créditos), `lang-en-data.js` (noticias, niveles), `lang-en-play.js` (reglas, eventos, modo infinito), `lang-en-ui.js` (tutorial, resultado, nivel, celular). `node tools/i18n_scan.js` lista los textos en español del código que aún no tienen traducción (incluye pedazos de frases que se arman con números: esos se revisan con las pruebas).
+- **Otro idioma:** `U.I18n.add('fr', {...})` con su diccionario y un valor más en `LANGS` (el botón alterna entre los dos primeros; habría que cambiarlo por un selector).
+- **Diseño:** el inglés se revisa con `bash tools/audit_all.sh --lang en` (y `--mobile --lang en`): textos encimados o fuera de su panel, y lo que falta traducir en `misses.txt`.

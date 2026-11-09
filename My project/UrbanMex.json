@@ -2161,6 +2161,51 @@
           "include": {
             "includeConfig": 0
           },
+          "target": "Mod_i18n",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-data",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-play",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-ui",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
           "target": "Mod_mobile",
           "disabled": false,
           "folded": false
@@ -3551,6 +3596,51 @@
             "includeConfig": 0
           },
           "target": "Mod_achievements",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_i18n",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-data",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-play",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-ui",
           "disabled": false,
           "folded": false
         },
@@ -5462,6 +5552,51 @@
           "include": {
             "includeConfig": 0
           },
+          "target": "Mod_i18n",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-data",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-play",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-ui",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
           "target": "Mod_mobile",
           "disabled": false,
           "folded": false
@@ -6860,6 +6995,51 @@
           "include": {
             "includeConfig": 0
           },
+          "target": "Mod_i18n",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-data",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-play",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
+          "target": "Mod_lang-en-ui",
+          "disabled": false,
+          "folded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Link",
+          "include": {
+            "includeConfig": 0
+          },
           "target": "Mod_mobile",
           "disabled": false,
           "folded": false
@@ -7129,6 +7309,7 @@
             "      if (d.fx === 'high' || d.fx === 'low' || d.fx === 'off') U.session.fxQuality = d.fx;          // accesibilidad (se validan: un guardado viejo o dañado no rompe nada)",
             "      if (typeof d.calm === 'boolean') U.session.calm = d.calm;",
             "      if (d.ui === 'auto' || d.ui === 'on' || d.ui === 'off') U.session.uiMode = d.ui;               // tamaño de la interfaz (mobile.js)",
+            "      if (d.lang === 'es' || d.lang === 'en') U.session.lang = d.lang;                              // idioma (i18n.js)",
             "      if (typeof d.bg === 'boolean') U.session.bgAudio = d.bg;                                      // seguir sonando al salir de la ventana",
             "      var vol = d.vol && typeof d.vol === 'object' ? d.vol : null;                                  // volúmenes por módulo (se validan: un guardado viejo o dañado no rompe nada)",
             "      ['music', 'sfx', 'alert'].forEach(function (g) {",
@@ -7143,7 +7324,7 @@
             "        var st = this._store(); if (!st) return;",
             "        st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),",
             "                                               best: U.session.best || {}, inf: U.session.inf || { best: 0, stars: 0 }, ach: U.session.ach || {}, stats: U.session.stats || {}, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,",
-            "                                               fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true, ui: U.session.uiMode === 'on' || U.session.uiMode === 'off' ? U.session.uiMode : 'auto', bg: U.session.bgAudio === true }));",
+            "                                               fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true, ui: U.session.uiMode === 'on' || U.session.uiMode === 'off' ? U.session.uiMode : 'auto', bg: U.session.bgAudio === true, lang: U.session.lang === 'en' ? 'en' : 'es' }));",
             "      } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }",
             "    },",
             "    isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },",
@@ -7214,13 +7395,14 @@
             "    pick: function (rnd, arr) { return arr[Math.floor(rnd() * arr.length)]; },",
             "    /** Corta texto en líneas de máximo `cols` caracteres (la fuente pixel es monoespaciada). */",
             "    wrap: function (text, cols) {",
+            "      if (U.I18n) text = U.I18n.tr(text);                                       // se traduce el párrafo entero ANTES de partirlo",
             "      var words = String(text).split(' '), lines = [], cur = '';",
             "      words.forEach(function (w) {",
             "        if (cur && (cur + ' ' + w).length > cols) { lines.push(cur); cur = w; }",
             "        else cur = cur ? cur + ' ' + w : w;",
             "      });",
             "      if (cur) lines.push(cur);",
-            "      return lines;",
+            "      return U.I18n ? U.I18n.mark(lines) : lines;",
             "    }",
             "  };",
             "})();"
@@ -7276,6 +7458,7 @@
             "                 color: raw.stations.lines[String(s.line)].color, colorName: raw.stations.lines[String(s.line)].colorName || '' };",
             "      stations[st.id] = st; list.push(st);",
             "    });",
+            "    if (U.I18n) U.I18n.keep(Object.keys(stations));                              // los nombres de estaciones no se traducen",
             "    var conns = raw.connections.map(function (c) {",
             "      if (!stations[c[0]] || !stations[c[1]]) throw new Error('Conexión con estación inexistente: ' + c[0] + ' - ' + c[1]);",
             "      var combi = c[3] === 'combi', isTransfer = !combi && c[2] >= cfg.transferTime;   // las rutas de combi no son transbordos aunque tarden 12 min",
@@ -8455,6 +8638,480 @@
     },
     {
       "associatedLayout": "",
+      "name": "Mod_i18n",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"i18n\" - fuente: src/i18n.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
+          "color": {
+            "b": 109,
+            "g": 230,
+            "r": 255,
+            "textB": 0,
+            "textG": 0,
+            "textR": 0
+          }
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "/* UrbanMex · i18n — IDIOMAS: español (el original) e inglés (puro, sin motor).",
+            " *",
+            " * Todo el texto del juego está escrito en español en el código y los datos; la traducción se hace en UN solo punto, al dibujarlo (ui.text, ui.button, ui.lines)",
+            " * y antes de partir un párrafo en líneas (util.wrap), con un diccionario `español → inglés`:",
+            " *   · entradas exactas:       'JUGAR': 'PLAY'",
+            " *   · plantillas con huecos:   'NIVEL {0} - {1}': 'LEVEL {0} - {1}'  (los huecos {0}, {1}... se traducen solos: 'LUNES' → 'MONDAY'; los nombres de estaciones se quedan)",
+            " * Lo que no tiene traducción se queda en español y se anota en `misses` (las pruebas exigen que no haya ninguno en ninguna pantalla).",
+            " * El idioma vive en U.session.lang ('es' | 'en') y se guarda con U.Save. Agregar uno nuevo es agregar un diccionario con I18n.add(lang, {...}). */",
+            "(function () {",
+            "  var U = gdjs.UrbanMex;",
+            "  if (U.I18n) return;",
+            "",
+            "  var LANGS = [['es', 'ESPANOL'], ['en', 'ENGLISH']];",
+            "  var dict = {}, cache = {}, cacheN = 0, outs = {}, misses = {};",
+            "  var KEEP = [/^[^A-Za-zÀ-ÿ]*$/, /^[A-Z]{2,4}$/, /^\\d+(?::\\d\\d)?\\s?(AM|PM)?$/];     // sin letras (números, símbolos), siglas (LTE) y horas: no se traducen",
+            "  var proper = {};                                                                                 // nombres propios que se quedan igual (estaciones, ENGLISH / ESPANOL...)",
+            "  LANGS.forEach(function (l) { proper[l[1]] = true; });",
+            "",
+            "  function escapeRe(s) { return s.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'); }",
+            "  function compile(key) {",
+            "    var holes = 0, re = escapeRe(key).replace(/\\\\\\{(\\d)\\\\\\}/g, function (m, n) { holes++; return '(.+?)'; });",
+            "    return { re: new RegExp('^' + re + '$'), lit: key.replace(/\\{\\d\\}/g, '').length, holes: holes };",
+            "  }",
+            "",
+            "  /** Añade (o amplía) el diccionario de un idioma: { 'español': 'inglés' }. Las claves con {0}, {1}... son plantillas. */",
+            "  function add(lang, map) {",
+            "    var d = dict[lang] || (dict[lang] = { exact: {}, tpl: [] });",
+            "    Object.keys(map).forEach(function (k) {",
+            "      if (/\\{\\d\\}/.test(k)) { var c = compile(k); c.to = map[k]; c.key = k; d.tpl.push(c); }",
+            "      else d.exact[k] = map[k];",
+            "    });",
+            "    d.tpl.sort(function (a, b) { return b.lit - a.lit; });                         // la plantilla más específica primero",
+            "    cache = {}; cacheN = 0;",
+            "  }",
+            "",
+            "  function keepAsIs(s) { return KEEP.some(function (re) { return re.test(s); }) || proper[s] === true; }",
+            "",
+            "  /** Traduce `s` a `lang` o devuelve null si no hay traducción (sin anotar nada). */",
+            "  function lookup(lang, s) {",
+            "    var d = dict[lang]; if (!d) return null;",
+            "    if (Object.prototype.hasOwnProperty.call(d.exact, s)) return d.exact[s];",
+            "    for (var i = 0; i < d.tpl.length; i++) {",
+            "      var t = d.tpl[i], m = t.re.exec(s); if (!m) continue;",
+            "      return t.to.replace(/\\{(\\d)\\}/g, function (x, n) { var v = m[+n + 1]; var tr = v === undefined ? '' : lookup(lang, v); return tr === null ? (v === undefined ? '' : v) : tr; });",
+            "    }",
+            "    return null;",
+            "  }",
+            "",
+            "  var I18n = {",
+            "    LANGS: LANGS, add: add, lookup: lookup,",
+            "    /** Idioma activo: 'es' o 'en'. */",
+            "    lang: function () { return U.session.lang === 'en' ? 'en' : 'es'; },",
+            "    setLang: function (l) { U.session.lang = l === 'en' ? 'en' : 'es'; cache = {}; cacheN = 0; U.Save.persist(); },",
+            "    /** Nombres que no se traducen (estaciones, etc.): ['Tacuba', ...]. */",
+            "    keep: function (list) { list.forEach(function (n) { proper[n] = true; }); },",
+            "    /** ¿Tiene traducción (o no hace falta traducirlo)? */",
+            "    known: function (s, lang) { return keepAsIs(String(s)) || lookup(lang || 'en', String(s)) !== null; },",
+            "    /** El texto en el idioma activo. Lo que ya está en inglés (o no tiene traducción) se devuelve igual. */",
+            "    tr: function (s) {",
+            "      if (U.session.lang !== 'en' || s === undefined || s === null) return s;",
+            "      s = String(s); var hit = cache[s]; if (hit !== undefined) return hit;",
+            "      var out;",
+            "      if (outs[s] || keepAsIs(s)) out = s;",
+            "      else {",
+            "        var r = lookup('en', s);",
+            "        if (r === null) {                                                                // varias líneas: se traduce cada una",
+            "          if (s.indexOf('\\n') > 0) out = s.split('\\n').map(function (l) { return I18n.tr(l); }).join('\\n');",
+            "          else { misses[s] = true; out = s; }",
+            "        } else out = r;",
+            "      }",
+            "      outs[out] = true; if (++cacheN > 4000) { cache = {}; cacheN = 0; } cache[s] = out; return out;",
+            "    },",
+            "    /** Anota líneas ya partidas (para que ui.text no las dé por faltantes). */",
+            "    mark: function (lines) { if (U.session.lang === 'en') lines.forEach(function (l) { outs[l] = true; }); return lines; },",
+            "    /** Textos que se pidieron sin traducción (para las pruebas). */",
+            "    misses: function () { return Object.keys(misses); },",
+            "    clearMisses: function () { misses = {}; },",
+            "    /** Todas las entradas del diccionario de un idioma (para las pruebas). */",
+            "    entries: function (lang) { var d = dict[lang] || { exact: {}, tpl: [] }; return Object.keys(d.exact).map(function (k) { return [k, d.exact[k]]; }).concat(d.tpl.map(function (t) { return [t.key, t.to]; })); },",
+            "    reset: function () { cache = {}; cacheN = 0; outs = {}; misses = {}; }",
+            "  };",
+            "  U.I18n = I18n;",
+            "})();"
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
+        }
+      ]
+    },
+    {
+      "associatedLayout": "",
+      "name": "Mod_lang-en",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"lang-en\" - fuente: src/lang-en.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
+          "color": {
+            "b": 109,
+            "g": 230,
+            "r": 255,
+            "textB": 0,
+            "textG": 0,
+            "textR": 0
+          }
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "/* UrbanMex · lang-en — inglés: menús, accesibilidad, sonido, logros, créditos, celular y nivel (ver i18n.js). Noticias, niveles y eventos: lang-en-data.js; tutorial y resultado: lang-en-play.js. */",
+            "(function () {",
+            "  var U = gdjs.UrbanMex;",
+            "  if (!U.I18n) return;",
+            "  U.I18n.keep(['Fabian Enrique', 'Real Ramirez', 'Edwin Alberto', 'Barrera Franco', 'René Domínguez', 'Oscar', 'URBAN', 'MEX', 'v', 'X', 'B', 'P', 'PELIGRO!', 'LTE', 'GDevelop']);",
+            "  U.I18n.add('en', {",
+            "    // ---- menú principal",
+            "    '\"Llegar a la meta... si el Metro lo permite\"': '\"Reach the goal... if the Metro allows it\"',",
+            "    '{0}/{1} niveles completados': '{0}/{1} levels completed',",
+            "    'JUGAR': 'PLAY', 'SELECCIONAR NIVEL': 'SELECT LEVEL', 'MODO INFINITO': 'INFINITE MODE', 'MODO INFINITO - BLOQUEADO': 'INFINITE MODE - LOCKED', 'INFINITO - BLOQUEADO': 'INFINITE - LOCKED', 'INFINITO': 'INFINITE',",
+            "    'Completa los {0} niveles para desbloquearlo': 'Complete all {0} levels to unlock it', 'Completa los 10 niveles para desbloquearlo': 'Complete all 10 levels to unlock it',",
+            "    'Rutas al azar. Cuantas rondas aguantes?': 'Random routes. How many rounds can you last?', 'Mejor racha: {0} ronda': 'Best streak: {0} round', 'Mejor racha: {0} rondas': 'Best streak: {0} rounds',",
+            "    'COMO JUGAR': 'HOW TO PLAY', 'LOGROS {0}/{1}': 'ACHIEVEMENTS {0}/{1}', 'SALIR': 'QUIT', 'SONIDO': 'SOUND', 'ACCESIBILIDAD': 'ACCESSIBILITY', 'CREDITOS': 'CREDITS',",
+            "    'NIVEL {0} - {1}': 'LEVEL {0} - {1}', 'NIVEL {0}': 'LEVEL {0}', 'Nivel {0}: {1}': 'Level {0}: {1}', 'NIVEL': 'LEVEL', 'SEMANA {0}': 'WEEK {0}', 'SEMANA 1': 'WEEK 1', 'SEMANA 2': 'WEEK 2',",
+            "    '{0} > {1}': '{0} > {1}', '{0}  >  {1}': '{0}  >  {1}', 'RONDA {0}': 'ROUND {0}', 'Ronda {0}': 'Round {0}',",
+            "    'SALIR DEL JUEGO': 'QUIT THE GAME', 'Seguro que quieres cerrar el juego?': 'Are you sure you want to close the game?', 'Tu progreso ya esta guardado.': 'Your progress is already saved.', 'SI, SALIR': 'YES, QUIT',",
+            "    'GRACIAS POR JUGAR!': 'THANKS FOR PLAYING!', 'Ya puedes cerrar esta ventana.': 'You can close this window now.', 'VOLVER AL MENU': 'BACK TO MENU', 'VOLVER': 'BACK', 'CANCELAR': 'CANCEL',",
+            "    'Pulsa JUGAR': 'Press PLAY', 'en el menu': 'in the menu', 'Falta el anterior': 'Needs previous', 'Solo puedes rejugar los niveles que ya completaste.': 'You can only replay levels you have already completed.',",
+            "    'Entra con el boton': 'Enter with the', 'JUGAR del menu': 'menu PLAY button', 'Completa el': 'Complete the', 'nivel anterior': 'previous level',",
+            "    'SEGURO? TOCA OTRA VEZ': 'SURE? TAP AGAIN', 'BORRAR PROGRESO': 'ERASE PROGRESS',",
+            "    '{0}/{1} estrellas': '{0}/{1} stars', '{0} estrellas': '{0} stars', 'ORIGEN': 'START', 'META': 'GOAL', 'SALIDA': 'START', 'Salida': 'Start', 'Meta': 'Goal',",
+            "    'VERSION': 'VERSION', 'v{0}  -  hecho con GDevelop': 'v{0}  -  made with GDevelop', 'ESPANOL': 'ESPANOL', 'IDIOMA': 'LANGUAGE',",
+            "    // ---- sonido / accesibilidad",
+            "    'MUSICA GENERAL': 'MAIN MUSIC', 'Musica relajante de fondo': 'Relaxing background music', 'SONIDOS GENERALES': 'GENERAL SOUNDS', 'Clics, tren, noticias, tienda': 'Clicks, train, news, store',",
+            "    'PELIGRO Y APURO': 'DANGER AND RUSH', 'Apuro y golpe de asalto': 'Rush and robbery hit', 'AL SALIR DE LA VENTANA': 'WHEN LEAVING THE WINDOW', 'SONIDO Y MUSICA': 'SOUND AND MUSIC',",
+            "    'Sube, baja o silencia cada parte por separado.': 'Turn each part up, down or mute it separately.', 'Ajusta los efectos y los destellos a tu gusto.': 'Adjust the effects and flashes to your liking.',",
+            "    'EFECTOS VISUALES': 'VISUAL EFFECTS', 'ALTOS': 'HIGH', 'BAJOS': 'LOW', 'NINGUNO': 'NONE', 'REDUCIR MOVIMIENTO': 'REDUCE MOTION', 'TAMANO DE LA INTERFAZ': 'INTERFACE SIZE', 'AUTO': 'AUTO', 'GRANDE': 'LARGE', 'NORMAL': 'NORMAL',",
+            "    'Luces, particulas y sombras. NINGUNO es lo mas ligero. Se aplica al empezar el nivel o el menu.': 'Lights, particles and shadows. NONE is the lightest. Applies when a level or the menu starts.',",
+            "    'Luces y sombras. NINGUNO es lo mas ligero.': 'Lights and shadows. NONE is the lightest.',",
+            "    'Sin sacudidas, destellos ni parpadeos: los avisos quedan fijos. Se aplica al instante.': 'No shaking, flashes or blinking: alerts stay steady. Applies instantly.', 'Sin sacudidas ni destellos.': 'No shaking or flashes.',",
+            "    'AUTO agranda letras y botones en pantallas chicas.': 'AUTO enlarges text and buttons on small screens.', 'AUTO: grande solo en pantallas chicas.': 'AUTO: large only on small screens.',",
+            "    'Todo aviso se ve y se oye. El apuro marca con \"!\" el recurso que se agota, ademas del rojo.': 'Every alert is seen and heard. The rush marks the running-out resource with \"!\", besides red.',",
+            "    'ESC: volver': 'ESC: back', 'ESC o P: continuar': 'ESC or P: resume', 'PAUSA': 'PAUSE', 'PAUSAR': 'PAUSE', 'CONTINUAR': 'RESUME', 'SALIR AL MENU': 'EXIT TO MENU', 'SONIDO Y MUSICA >': 'SOUND AND MUSIC >', 'ACCESIBILIDAD >': 'ACCESSIBILITY >',",
+            "    'Seguro que quieres salir del nivel?': 'Are you sure you want to leave the level?', 'Perderas el avance de este dia.': 'You will lose this day\\'s progress.',",
+            "    'DOBLE CLIC VIAJAR: {0}': 'DOUBLE-CLICK TRAVEL: {0}', 'DOBLE TOQUE: {0}': 'DOUBLE TAP: {0}', 'SI': 'YES',",
+            "    'Doble clic en una estacion vecina (la siguiente a la tuya): viajas ahi sin confirmar.': 'Double-click a neighboring station (the next one to yours): you travel there without confirming.',",
+            "    'Musica relajante de fondo y un tren lejano que pasa cada minuto, a volumen bajo.': 'Relaxing background music and a distant train passing every minute, at low volume.',",
+            "    'El apuro suena cuando te queda menos del 15% del tiempo, dinero o energia.': 'The rush alarm sounds when you have less than 15% of time, money or energy left.',",
+            "    // ---- logros (pantalla y catálogo)",
+            "    'LOGROS': 'ACHIEVEMENTS', '{0} de {1} desbloqueados': '{0} of {1} unlocked', 'PROGRESO': 'PROGRESS', 'ESTILO DE JUEGO': 'PLAY STYLE', 'EVENTOS DEL DIA': 'DAILY EVENTS',",
+            "    'PRIMER VIAJE': 'FIRST TRIP', 'Llega a la meta de un nivel.': 'Reach the goal of a level.', 'Completa los niveles 1 a 5.': 'Complete levels 1 to 5.', 'Completa los niveles 6 a 10.': 'Complete levels 6 to 10.',",
+            "    'BRILLANTE': 'SHINING', 'Consigue las 3 estrellas en un nivel.': 'Earn all 3 stars in a level.', 'ESTRELLADO': 'STARRY', 'Junta 15 estrellas en total.': 'Collect 15 stars in total.',",
+            "    'CONSTELACION': 'CONSTELLATION', 'Consigue las 30 estrellas de los 10 niveles.': 'Earn all 30 stars of the 10 levels.', 'AHORRADOR': 'SAVER', 'Llega con 100 monedas o más.': 'Arrive with 100 coins or more.',",
+            "    'PURO ESFUERZO': 'PURE EFFORT', 'Llega sin comprar ningun Monster (en una ruta de 10 tramos o más).': 'Arrive without buying any Monster (on a route of 10 hops or more).',",
+            "    'AL LIMITE': 'AT THE LIMIT', 'Llega a la meta con 10 de stamina o menos.': 'Reach the goal with 10 stamina or less.', 'INTOCABLE': 'UNTOUCHABLE', 'Gana 3 niveles sin que te asalten.': 'Win 3 levels without being robbed.',",
+            "    'BIENVENIDO A LA CIUDAD': 'WELCOME TO THE CITY', 'Que te asalten 3 veces en total. Le pasa a todos.': 'Get robbed 3 times in total. It happens to everyone.',",
+            "    'ADICTO AL MONSTER': 'MONSTER ADDICT', 'Compra 10 Monster en total.': 'Buy 10 Monsters in total.', 'REY DE LA COMBI': 'COMBI KING', 'Usa la combi 5 veces en total.': 'Use the combi 5 times in total.',",
+            "    'METRONAUTA': 'METRONAUT', 'Recorre 200 estaciones en total.': 'Travel through 200 stations in total.', 'BIEN INFORMADO': 'WELL INFORMED', 'Recibe 25 noticias en total.': 'Receive 25 news items in total.',",
+            "    'BAJO LA LLUVIA': 'IN THE RAIN', 'Llega a la meta en un nivel con lluvia.': 'Reach the goal in a level with rain.', 'HORA PICO': 'RUSH HOUR', 'Llega a la meta en un nivel con hora pico.': 'Reach the goal in a level with rush hour.',",
+            "    'ROMPEHUELGAS': 'STRIKEBREAKER', 'Llega a la meta en un nivel con huelga.': 'Reach the goal in a level with a strike.', 'PACIENCIA': 'PATIENCE', 'Espera a que reabra una línea en huelga y llega a la meta.': 'Wait for a striking line to reopen and reach the goal.',",
+            "    'DIA DE TODO': 'EVERYTHING DAY', 'Llega a la meta en un nivel con lluvia, hora pico y huelga a la vez.': 'Reach the goal in a level with rain, rush hour and a strike at once.',",
+            "    'SIN FIN': 'ENDLESS', 'Gana tu primera ronda del modo infinito.': 'Win your first round of infinite mode.', 'RACHA DE 5': 'STREAK OF 5', 'Gana 5 rondas seguidas.': 'Win 5 rounds in a row.', 'IMPARABLE': 'UNSTOPPABLE', 'Gana 10 rondas seguidas.': 'Win 10 rounds in a row.',",
+            "    'LOGRO DESBLOQUEADO!': 'ACHIEVEMENT UNLOCKED!', 'LOGROS DESBLOQUEADOS!': 'ACHIEVEMENTS UNLOCKED!', '+ {0} mas en LOGROS': '+ {0} more in ACHIEVEMENTS',",
+            "    // ---- créditos",
+            "    'EQUIPO': 'TEAM', 'Colaborador': 'Contributor', 'Diseñador': 'Designer', 'Desarrollo del juego': 'Game development', 'REALIZADO EN': 'MADE AT', 'Universidad Autónoma de Nayarit': 'Universidad Autónoma de Nayarit', 'Unidad Académica de Economía': 'Academic Unit of Economics',",
+            "    'Proyecto escolar desarrollado en estas instituciones.': 'School project developed at these institutions.', 'Hecho con GDevelop 5. Arte y audio generados con codigo (carpeta tools).': 'Made with GDevelop 5. Art and audio generated with code (tools folder).',",
+            "    'Proyecto escolar sin fines de lucro, no afiliado al Metro de la CDMX.': 'Non-profit school project, not affiliated with the CDMX Metro.', 'Universidad': 'University'",
+            "  });",
+            "})();"
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
+        }
+      ]
+    },
+    {
+      "associatedLayout": "",
+      "name": "Mod_lang-en-data",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"lang-en-data\" - fuente: src/lang-en-data.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
+          "color": {
+            "b": 109,
+            "g": 230,
+            "r": 255,
+            "textB": 0,
+            "textG": 0,
+            "textR": 0
+          }
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "/* UrbanMex · lang-en-data — inglés: noticias del celular, textos de los niveles y de los eventos del día (ver i18n.js). */",
+            "(function () {",
+            "  var U = gdjs.UrbanMex;",
+            "  if (!U.I18n) return;",
+            "  U.I18n.add('en', {",
+            "    // ---- días de la semana y nombres de líneas",
+            "    'LUNES': 'MONDAY', 'MARTES': 'TUESDAY', 'MIÉRCOLES': 'WEDNESDAY', 'MIERCOLES': 'WEDNESDAY', 'JUEVES': 'THURSDAY', 'VIERNES': 'FRIDAY',",
+            "    'LUNES 2': 'MONDAY 2', 'MARTES 2': 'TUESDAY 2', 'MIERCOLES 2': 'WEDNESDAY 2', 'JUEVES 2': 'THURSDAY 2', 'VIERNES 2': 'FRIDAY 2',",
+            "    'LÍNEA {0}': 'LINE {0}', 'Línea {0}': 'Line {0}', 'LINEA {0}': 'LINE {0}',",
+            "    'ROSA': 'PINK', 'AZUL': 'BLUE', 'VERDE': 'GREEN', 'GRIS': 'GRAY', 'AMARILLA': 'YELLOW', 'rosa': 'pink', 'azul': 'blue', 'verde': 'green', 'gris': 'gray', 'amarilla': 'yellow',",
+            "    // ---- niveles (semana 1 y 2)",
+            "    'Tu casa en Tacuba. Llega a la escuela en Pantitlán.': 'Your home in Tacuba. Get to school in Pantitlán.',",
+            "    '¡Llegaste a la escuela!': 'You made it to school!',",
+            "    'Tu casa en Indios Verdes. Llega a la UNAM.': 'Your home in Indios Verdes. Get to the UNAM.',",
+            "    '¡Llegaste a la UNAM!': 'You made it to the UNAM!',",
+            "    'Tu casa en Cuatro Caminos. Llega al trabajo en Tasqueña.': 'Your home in Cuatro Caminos. Get to work in Tasqueña.',",
+            "    '¡Llegaste al trabajo!': 'You made it to work!',",
+            "    'Tu casa en el Politécnico. Llega a una junta en Zapata.': 'Your home at Politécnico. Get to a meeting in Zapata.',",
+            "    '¡Llegaste a la junta!': 'You made it to the meeting!',",
+            "    'Tu casa en Observatorio. Llega a una fiesta en Pantitlán.': 'Your home in Observatorio. Get to a party in Pantitlán.',",
+            "    '¡Llegaste a la fiesta!': 'You made it to the party!',",
+            "    'Tu casa junto al aeropuerto, en Hangares. Llega a Cuatro Caminos para entregar un pedido.': 'Your home next to the airport, in Hangares. Get to Cuatro Caminos to deliver an order.',",
+            "    'Entregaste el pedido en Cuatro Caminos!': 'You delivered the order in Cuatro Caminos!',",
+            "    'Tu casa en Ermita. Hoy cruzas toda la ciudad hasta Indios Verdes.': 'Your home in Ermita. Today you cross the whole city to Indios Verdes.',",
+            "    'Llegaste a Indios Verdes!': 'You made it to Indios Verdes!',",
+            "    'Tu casa en Buenavista. Hoy tienes un examen en la UNAM.': 'Your home in Buenavista. Today you have an exam at the UNAM.',",
+            "    'Llegaste al examen en la UNAM!': 'You made it to the exam at the UNAM!',",
+            "    'Tu casa en el Instituto del Petroleo. Hoy hay una entrevista de trabajo en Tasqueña.': 'Your home at Instituto del Petróleo. Today there is a job interview in Tasqueña.',",
+            "    'Llegaste a la entrevista en Tasqueña!': 'You made it to the interview in Tasqueña!',",
+            "    'Tu casa en Tasqueña. Es el gran dia: examen final en el Politecnico.': 'Your home in Tasqueña. It is the big day: final exam at Politécnico.',",
+            "    'Llegaste al examen final! Semana completada!': 'You made it to the final exam! Week complete!',",
+            "    // ---- noticias",
+            "    'ROBOS EN TEPITO': 'ROBBERIES IN TEPITO', 'Esta mañana en la estación Tepito se presenciaron demasiados robos.': 'This morning far too many robberies were seen at Tepito station.', 'EVITA TEPITO - Alto riesgo de asalto': 'AVOID TEPITO - High risk of robbery',",
+            "    'ASALTOS EN LÍNEA 1 (ROSA)': 'ROBBERIES ON LINE 1 (PINK)', 'Reportan asaltos frecuentes entre Candelaria y San Lázaro.': 'Frequent robberies reported between Candelaria and San Lázaro.', 'Candelaria y San Lázaro peligrosas': 'Candelaria and San Lázaro are dangerous',",
+            "    'ZONA CALIENTE EN MORELOS': 'HOT SPOT IN MORELOS', 'La estación Morelos reportó 3 asaltos en la última hora.': 'Morelos station reported 3 robberies in the last hour.', 'Morelos es peligrosa ahora': 'Morelos is dangerous now',",
+            "    'PELIGRO EN LÍNEA B (GRIS)': 'DANGER ON LINE B (GRAY)', 'Usuarios reportan que Lagunilla y Garibaldi son zonas de alto riesgo.': 'Riders report that Lagunilla and Garibaldi are high-risk areas.', 'Lagunilla y Garibaldi peligrosas': 'Lagunilla and Garibaldi are dangerous',",
+            "    'CUIDADO EN Isabel la Católica': 'WATCH OUT AT Isabel la Católica', 'Un pasajero fue asaltado al salir de la estación.': 'A passenger was robbed when leaving the station.', 'Isabel la Católica es riesgosa': 'Isabel la Católica is risky',",
+            "    'MOCTEZUMA: ZONA DE CUIDADO': 'MOCTEZUMA: CAUTION AREA', 'Vecinos reportan presencia de personas sospechosas.': 'Neighbors report suspicious people around.', 'Moctezuma con actividad delictiva': 'Criminal activity at Moctezuma',",
+            "    'ASALTOS EN LÍNEA 5 (AMARILLA)': 'ROBBERIES ON LINE 5 (YELLOW)', 'La Línea 5 (amarilla) reporta robos en Valle Gómez y Consulado.': 'Line 5 (yellow) reports thefts at Valle Gómez and Consulado.', 'Valle Gómez y Consulado peligrosas': 'Valle Gómez and Consulado are dangerous',",
+            "    'Tlatelolco: Robo a mano armada': 'Tlatelolco: Armed robbery', 'Esta madrugada asaltaron a un trabajador en Tlatelolco.': 'A worker was mugged in Tlatelolco in the early morning.', 'Tlatelolco es peligrosa': 'Tlatelolco is dangerous',",
+            "    'ALERTA EN LÍNEA 3 (VERDE) NORTE': 'ALERT ON LINE 3 (GREEN) NORTH', 'Indios Verdes y La Raza reportan aumento de robos.': 'Indios Verdes and La Raza report more robberies.', 'Indios Verdes y La Raza con riesgo': 'Indios Verdes and La Raza are risky',",
+            "    'Pino Suárez: Zona de cuidado': 'Pino Suárez: Caution area', 'Varios reportes de carteristas en Pino Suárez.': 'Several reports of pickpockets at Pino Suárez.', 'Pino Suárez con carteristas': 'Pickpockets at Pino Suárez',",
+            "    'PROTESTA EN INSURGENTES (LÍNEA 1 ROSA)': 'PROTEST AT INSURGENTES (LINE 1 PINK)', 'Manifestantes bloquean la estación Insurgentes.': 'Protesters are blocking Insurgentes station.',",
+            "    'BLOQUEO EN JUÁREZ (LÍNEA 3 VERDE)': 'BLOCKADE AT JUÁREZ (LINE 3 GREEN)', 'Estudiantes bloquean Juárez. No hay servicio.': 'Students are blocking Juárez. No service.',",
+            "    'MARCHA EN REFORMA (BELLAS ARTES, LÍNEA 2 AZUL)': 'MARCH ON REFORMA (BELLAS ARTES, LINE 2 BLUE)', 'Marcha masiva afecta Bellas Artes.': 'A massive march affects Bellas Artes.',",
+            "    'PARO EN GARIBALDI (LÍNEA B GRIS)': 'WALKOUT AT GARIBALDI (LINE B GRAY)', 'Trabajadores del Metro realizan paro en Garibaldi.': 'Metro workers are on strike at Garibaldi.',",
+            "    'MANIFESTACIÓN EN ZÓCALO (LÍNEA 2 AZUL)': 'DEMONSTRATION AT ZÓCALO (LINE 2 BLUE)', 'Protesta en el centro histórico. Zócalo inaccesible.': 'Protest in the historic center. Zócalo is unreachable.',",
+            "    'Solo {0} está cerrada; el resto de la línea sigue': 'Only {0} is closed; the rest of the line keeps running',",
+            "    'RUTA 87 RETRASADA': 'ROUTE 87 DELAYED', 'La Ruta 87 tiene 20 min de retraso.': 'Route 87 is 20 min late.', '+{0} min en rutas de Línea {1} ({2})': '+{0} min on Line {1} routes ({2})',",
+            "    'FALLA EN LÍNEA 2 (AZUL)': 'FAILURE ON LINE 2 (BLUE)', 'Falla eléctrica en la Línea 2 (azul). Servicio reducido.': 'Electrical failure on Line 2 (blue). Reduced service.',",
+            "    'LÍNEA 5 (AMARILLA) CON DEMORA': 'LINE 5 (YELLOW) DELAYED', 'Demora de 15 minutos en Línea 5 (amarilla) por mantenimiento.': '15-minute delay on Line 5 (yellow) due to maintenance.',",
+            "    'OBRAS EN LÍNEA B (GRIS)': 'ROADWORKS ON LINE B (GRAY)', 'Obras en Tepito. Ruta lenta.': 'Roadworks in Tepito. Slow route.',",
+            "    'LA COMBI DEL \"RAYO\" NO PASÓ': 'THE \"RAYO\" COMBI DID NOT SHOW UP', 'La combi del \"Rayo\" no pasó. Como siempre.': 'The \"Rayo\" combi did not show up. As usual.', '+3 min en tu próximo viaje': '+3 min on your next trip',",
+            "    'LLUVIA FUERTE': 'HEAVY RAIN', 'Lluvia intensa en la ciudad. Caminos resbalosos.': 'Intense rain in the city. Slippery roads.', '-10 stamina': '-10 stamina',",
+            "    'CALOR EXTREMO 35°C': 'EXTREME HEAT 35°C', 'Ola de calor. Hidrátate o perderás energía rápido.': 'Heat wave. Stay hydrated or you will lose energy fast.', '-15 stamina': '-15 stamina',",
+            "    'METRO EXPRESS': 'METRO EXPRESS', 'Trenes express en Línea 3 (verde). Viaje más rápido.': 'Express trains on Line 3 (green). Faster trip.', '-2 min en rutas de Línea 3 (verde)': '-2 min on Line 3 (green) routes',",
+            "    'PROMOCIÓN MONSTER': 'MONSTER PROMOTION', '2x1 en Monster Energy en todas las tiendas del Metro.': '2-for-1 Monster Energy at all Metro stores.', 'Monster cuesta $20 en lugar de $30': 'Monster costs $20 instead of $30',",
+            "    'METRO GRATIS HOY': 'FREE METRO TODAY', '¡El gobierno anunció metro gratis por el día!': 'The government announced a free Metro for the day!', '-$5 en tu próximo viaje (gratis)': '-$5 on your next trip (free)'",
+            "  });",
+            "})();"
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
+        }
+      ]
+    },
+    {
+      "associatedLayout": "",
+      "name": "Mod_lang-en-play",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"lang-en-play\" - fuente: src/lang-en-play.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
+          "color": {
+            "b": 109,
+            "g": 230,
+            "r": 255,
+            "textB": 0,
+            "textG": 0,
+            "textR": 0
+          }
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "/* UrbanMex · lang-en-play — inglés: reglas (por qué no puedes viajar), eventos del día, noticias del juego y modo infinito (ver i18n.js). */",
+            "(function () {",
+            "  var U = gdjs.UrbanMex;",
+            "  if (!U.I18n) return;",
+            "  U.I18n.keep(['peje-coins', 'monedas', 'Monster', 'Monster Energy', 'UNAM', 'MONSTER']);",
+            "  U.I18n.add('en', {",
+            "    // ---- por qué no puedes viajar (Rules.explain)",
+            "    'Te faltan {0} de stamina': 'You are {0} stamina short',",
+            "    'La combi gasta {0} de stamina y tienes {1}. Mejor el Metro.': 'The combi uses {0} stamina and you have {1}. Take the Metro instead.', 'La combi gasta {0} de stamina y tienes {1}.': 'The combi uses {0} stamina and you have {1}.',",
+            "    'Cuesta {0} y tienes {1}. Compra un Monster en una tienda.': 'It costs {0} and you have {1}. Buy a Monster at a store.',",
+            "    'Te faltan {0} {1}': 'You are {0} {1} short',",
+            "    'La combi cuesta {0} y tienes {1}. El Metro cuesta {2}.': 'The combi costs {0} and you have {1}. The Metro costs {2}.', 'La combi cuesta {0} y tienes {1}.': 'The combi costs {0} and you have {1}.',",
+            "    'Cada estacion cuesta {0} y tienes {1}.': 'Each station costs {0} and you have {1}.',",
+            "    'Ya no llegas a tiempo': 'You will not make it in time', 'El viaje dura {0} min y solo quedan {1} min del dia.': 'The trip takes {0} min and only {1} min of the day are left.',",
+            "    'Huelga en la linea {0}': 'Strike on line {0}', 'Reabre a las {0}. Busca otra ruta o espera.': 'Reopens at {0}. Find another route or wait.',",
+            "    'Estacion bloqueada': 'Station blocked', 'Hay un bloqueo ahi. Busca otra ruta o revisa las noticias.': 'There is a blockade there. Find another route or check the news.',",
+            "    'Sin ruta directa': 'No direct route', 'Solo puedes viajar a estaciones conectadas a la actual.': 'You can only travel to stations connected to the current one.', 'Partida terminada': 'Game over',",
+            "    'Anocheció y no llegaste a tiempo.': 'Night fell and you did not arrive in time.', 'Te quedaste sin stamina.': 'You ran out of stamina.', 'Te quedaste sin dinero.': 'You ran out of money.', 'Todas las rutas están bloqueadas.': 'All routes are blocked.',",
+            "    // ---- eventos del día (events.js)",
+            "    'LLUVIA': 'RAIN', 'HUELGA': 'STRIKE', 'HORA PICO': 'RUSH HOUR', 'HUELGA L{0}': 'STRIKE L{0}', 'LLUVIA {0}': 'RAIN {0}',",
+            "    'hasta {0}': 'until {0}', 'desde {0}': 'from {0}', 'terminó': 'ended', 'reabrió': 'reopened',",
+            "    'DEJO DE LLOVER': 'THE RAIN STOPPED', 'La lluvia paró y el tráfico se va soltando.': 'The rain stopped and traffic is clearing up.', 'Tiempos y esfuerzo normales': 'Normal times and effort',",
+            "    'EMPIEZA A LLOVER': 'IT STARTS TO RAIN', 'LLUVIA DESDE LAS {0}': 'RAIN FROM {0}', 'LLUVIA HOY': 'RAIN TODAY', 'Lluvia fuerte en la ciudad: las combis se atascan.': 'Heavy rain in the city: combis get stuck.',",
+            "    'Metro +{0} min, combi +{1} min, +{2} stamina por tramo (hasta {3})': 'Metro +{0} min, combi +{1} min, +{2} stamina per hop (until {3})',",
+            "    'TERMINO LA HORA PICO': 'RUSH HOUR IS OVER', 'Los trenes ya van más vacíos.': 'Trains are emptier now.', 'Tiempos normales y menos carteristas': 'Normal times and fewer pickpockets',",
+            "    'EMPIEZA LA HORA PICO': 'RUSH HOUR STARTS', 'HORA PICO DESDE LAS {0}': 'RUSH HOUR FROM {0}', 'Los trenes van llenos y hay carteristas.': 'Trains are packed and there are pickpockets.',",
+            "    'Metro +{0} min por tramo y más riesgo de asalto (hasta {1})': 'Metro +{0} min per hop and higher robbery risk (until {1})',",
+            "    'REABRE LA {0}': '{0} REOPENS', 'Terminó el paro de trabajadores.': 'The workers\\' strike is over.', 'Ya puedes usarla': 'You can use it now',",
+            "    'HUELGA EN LA {0}': 'STRIKE ON {0}', 'Paro de trabajadores: la línea está cerrada.': 'Workers\\' strike: the line is closed.', 'Reabre a las {0}. Busca otra ruta': 'Reopens at {0}. Find another route',",
+            "    'ESPERAR': 'WAIT', 'ESPERASTE A QUE REABRA': 'YOU WAITED FOR IT TO REOPEN', 'Sin otra salida, esperaste de {0} a {1}.': 'With no other way out, you waited from {0} to {1}.', 'Perdiste {0} min': 'You lost {0} min', 'ESPERASTE {0} MIN': 'YOU WAITED {0} MIN',",
+            "    '{0} +{1}min': '{0} +{1}min', '{0} +{1}min +{2}sta': '{0} +{1}min +{2}sta', '{0} +{1}sta': '{0} +{1}sta', '{0} +asalto': '{0} +robbery',",
+            "    // ---- mensajes del nivel",
+            "    'Ronda {0}': 'Round {0}', 'Nivel {0}: {1}': 'Level {0}: {1}', 'Meta: {0} | Tienes hasta las {1}': 'Goal: {0} | You have until {1}', 'Tip del dia': 'Tip of the day',",
+            "    'Revisa las noticias ANTES de viajar. El mapa no te avisa de peligros ni bloqueos.': 'Check the news BEFORE traveling. The map does not warn you about dangers or blockades.', 'Abre la app de Noticias': 'Open the News app',",
+            "    // ---- modo infinito",
+            "    'RONDA {0}': 'ROUND {0}', 'Sales de {0}. Hoy te toca una ruta nueva.': 'You leave from {0}. Today you get a new route.', 'Llegaste a {0}!': 'You made it to {0}!'",
+            "  });",
+            "})();"
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
+        }
+      ]
+    },
+    {
+      "associatedLayout": "",
+      "name": "Mod_lang-en-ui",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Comment",
+          "comment": "Modulo \"lang-en-ui\" - fuente: src/lang-en-ui.js (se regenera con tools/build_project.py).",
+          "comment2": "",
+          "disabled": false,
+          "folded": false,
+          "color": {
+            "b": 109,
+            "g": 230,
+            "r": 255,
+            "textB": 0,
+            "textG": 0,
+            "textR": 0
+          }
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "/* UrbanMex · lang-en-ui — inglés: tutorial, pantalla de resultado, nivel (HUD, panel de estación, ventanas) y celular (ver i18n.js). */",
+            "(function () {",
+            "  var U = gdjs.UrbanMex;",
+            "  if (!U.I18n) return;",
+            "  U.I18n.add('en', {",
+            "    // ---- tutorial",
+            "    'COMO JUGAR  {0}/{1}': 'HOW TO PLAY  {0}/{1}', '< ANTERIOR': '< PREVIOUS', 'SIGUIENTE >': 'NEXT >', 'SIGUIENTE': 'NEXT', 'A JUGAR!': 'LET\\'S PLAY!', 'SALTAR': 'SKIP', 'EMPEZAR': 'START',",
+            "    'EL OBJETIVO': 'THE GOAL', 'SALES DE CASA': 'YOU LEAVE HOME', 'Cada nivel es un día de la semana. Sales de tu casa a las {0}.': 'Each level is a day of the week. You leave home at {0}.',",
+            "    'LLEGA A LA META': 'REACH THE GOAL', 'Llega a tu destino antes de las {0}, con el Metro, los transbordos y las combis.': 'Reach your destination before {0}, using the Metro, transfers and combis.',",
+            "    'EL RELOJ ES TU LIMITE': 'THE CLOCK IS YOUR LIMIT', 'El tiempo solo avanza cuando viajas: {0} min por estación y {1} min por transbordo.': 'Time only moves when you travel: {0} min per station and {1} min per transfer.',",
+            "    'COMO MOVERTE': 'HOW TO MOVE', 'ELIGE UNA VECINA': 'PICK A NEIGHBOR', 'Toca una estación conectada a la tuya: las vecinas se iluminan en el mapa.': 'Tap a station connected to yours: neighbors light up on the map.',",
+            "    'PULSA VIAJAR': 'PRESS TRAVEL', 'El botón está en el panel de abajo a la izquierda. Con doble toque en una vecina viajas directo.': 'The button is in the bottom-left panel. With a double tap on a neighbor you travel directly.',",
+            "    'El botón está en el panel de abajo a la izquierda. Con doble clic en una vecina viajas directo.': 'The button is in the bottom-left panel. With a double click on a neighbor you travel directly.',",
+            "    'COMBIS Y TRANSBORDOS': 'COMBIS AND TRANSFERS', 'Las rutas punteadas naranja son combis: saltan varias estaciones y cuestan ${0} y {1} de stamina. Cambiar de línea es un transbordo.': 'Dotted orange routes are combis: they skip several stations and cost ${0} and {1} stamina. Changing lines is a transfer.',",
+            "    'TUS RECURSOS': 'YOUR RESOURCES', 'TIEMPO': 'TIME', 'Hasta las {0}. Las fallas de una línea suman minutos de retraso.': 'Until {0}. Line failures add minutes of delay.',",
+            "    'STAMINA': 'STAMINA', 'Cada estación gasta {0}. En las tiendas del Metro compras un Monster: ${1} = +{2} de stamina.': 'Each station uses {0}. At Metro stores you can buy a Monster: ${1} = +{2} stamina.',",
+            "    'DINERO': 'MONEY', 'Cada estación cuesta ${0} {1}. Si no puedes pagar ni un tramo, se acaba el día.': 'Each station costs ${0} {1}. If you cannot pay for even one hop, the day is over.',",
+            "    'EL CELULAR': 'THE PHONE', 'LAS NOTICIAS SON TU GUIA': 'THE NEWS IS YOUR GUIDE', 'Avisan de bloqueos, retrasos y robos antes de que te afecten. Léelas!': 'They warn you about blockades, delays and robberies before they affect you. Read them!',",
+            "    'EL MAPA NO LO DICE TODO': 'THE MAP DOES NOT TELL EVERYTHING', 'Las vías naranja-rojas tienen retraso y las moradas están bloqueadas, pero los robos solo se avisan en las noticias.': 'Orange-red tracks are delayed and purple ones are blocked, but robberies are only announced in the news.',",
+            "    'SE PUEDE OCULTAR': 'IT CAN BE HIDDEN', 'Con la X del celular ves todo el mapa; el icono de la esquina superior lo vuelve a abrir.': 'With the phone\\'s X you see the whole map; the icon in the top corner opens it again.',",
+            "    'ESTACIONES PELIGROSAS': 'DANGEROUS STATIONS', 'Si una noticia reporta robos en una estación, pasar por ahí puede costarte de {0} a {1} {2}.': 'If a news item reports robberies at a station, passing through can cost you {0} to {1} {2}.',",
+            "    'Una estación bloqueada no se puede usar: busca otra ruta.': 'A blocked station cannot be used: find another route.', 'APURO': 'RUSH',",
+            "    'Con menos del {0} % de tiempo, dinero o stamina, el borde se pone rojo y el HUD muestra \"!\". Si no puedes viajar, el panel te dice por qué.': 'With less than {0} % of time, money or stamina, the border turns red and the HUD shows \"!\". If you cannot travel, the panel tells you why.',",
+            "    'ESTRELLAS Y CONTROLES': 'STARS AND CONTROLS', 'GANA ESTRELLAS': 'EARN STARS', 'Hasta tres por nivel: LLEGAR, AHORRAR dinero y SIN ASALTOS. Puedes repetir un nivel para mejorar tu marca.': 'Up to three per level: ARRIVE, SAVE money and NO ROBBERIES. You can replay a level to improve your record.',",
+            "    'El botón PAUSA detiene el juego. Ahí ajustas el sonido y la accesibilidad.': 'The PAUSE button stops the game. There you adjust sound and accessibility.',",
+            "    'Esc o P pausan el juego (también el botón PAUSA). Ahí ajustas el sonido y la accesibilidad.': 'Esc or P pause the game (so does the PAUSE button). There you adjust sound and accessibility.',",
+            "    'BUENA SUERTE!': 'GOOD LUCK!', 'Planea tu ruta, lee las noticias y cuida tus {0}.': 'Plan your route, read the news and take care of your {0}.',",
+            "    'TU CASA': 'YOUR HOME', 'HORA LIMITE': 'TIME LIMIT', 'HORA LIMITE: {0}': 'TIME LIMIT: {0}', 'AHORA: {0}': 'NOW: {0}', 'TIEMPO LIBRE': 'FREE TIME', 'Con una buena ruta te sobra tiempo.': 'With a good route you have time to spare.', 'LEJOS: aún no': 'FAR: not yet',",
+            "    'Rojo y \"!\": ya casi se acaba. Piensa si te alcanza para llegar.': 'Red and \"!\": it is almost gone. Think whether you have enough to get there.', 'Cada estación que recorres gasta tiempo, stamina y dinero.': 'Every station you pass uses time, stamina and money.',",
+            "    'Meta: llegar antes de que se acabe alguno.': 'Goal: arrive before any of them runs out.',",
+            "    'Avisos de robos, bloqueos y retrasos.': 'Alerts about robberies, blockades and delays.', 'Tu origen, meta y tiempo libre.': 'Your start, goal and free time.', 'Cuánto dinero llevas y cuánto gastas.': 'How much money you carry and spend.',",
+            "    'Colores de las líneas y cómo leer las noticias.': 'Line colors and how to read the news.', 'Volumen de música y sonidos.': 'Music and sound volume.', 'Doble clic, accesibilidad y salir.': 'Double click, accessibility and quit.', 'Doble toque, accesibilidad y salir.': 'Double tap, accessibility and quit.',",
+            "    'Reportan robos en esta estación. Evítala o arriesgas tus monedas.': 'Robberies reported at this station. Avoid it or risk your coins.', 'ATAJO PELIGROSO': 'DANGEROUS SHORTCUT', 'RODEO SEGURO': 'SAFE DETOUR', 'Más largo, pero sin asaltos.': 'Longer, but no robberies.',",
+            "    'LLEGAR': 'ARRIVE', 'AHORRAR': 'SAVE', 'SIN ASALTOS': 'NO ROBBERIES', 'a la meta': 'to the goal', 'con dinero': 'with money', 'ni un robo': 'not one robbery',",
+            "    'Desde el menú y la pausa, ACCESIBILIDAD cambia los efectos y reduce el movimiento.': 'From the menu and the pause screen, ACCESSIBILITY changes the effects and reduces motion.',",
+            "    // ---- resultado",
+            "    'PERFECTO!': 'PERFECT!', 'MUY BIEN!': 'VERY GOOD!', 'LLEGASTE!': 'YOU MADE IT!', 'CASI!': 'ALMOST!', 'NO LLEGASTE': 'YOU DID NOT MAKE IT',",
+            "    'Tres estrellas: te mueves por la ciudad como nadie.': 'Three stars: you move around the city like nobody else.', 'Casi perfecto: te falta 1 estrella.': 'Almost perfect: you are 1 star away.', 'Llegaste! Ahora ve por las 3 estrellas.': 'You made it! Now go for all 3 stars.',",
+            "    'Tu racha termina: aguantaste {0} ronda!': 'Your streak ends: you lasted {0} round!', 'Tu racha termina: aguantaste {0} rondas!': 'Your streak ends: you lasted {0} rounds!', 'Tu racha termina en la primera ronda.': 'Your streak ends in the first round.',",
+            "    'Estabas en la meta, pero ya no pudiste seguir.': 'You were at the goal, but could not go on.', 'Te faltaron solo {0} estación!': 'You were only {0} station short!', 'Te faltaron solo {0} estaciones!': 'You were only {0} stations short!',",
+            "    'Cada intento te enseña una ruta nueva.': 'Every attempt teaches you a new route.', 'Prueba otro día de la semana o supera tu mejor marca de dinero.': 'Try another day of the week or beat your best money record.',",
+            "    'Ahorra: planea la ruta y revisa tu saldo antes de moverte (meta: {0} o más).': 'Save: plan the route and check your balance before moving (goal: {0} or more).', 'Evita las estaciones peligrosas: las noticias avisan dónde hay asaltos.': 'Avoid dangerous stations: the news tells you where robberies happen.',",
+            "    'Consejo: compra un Monster en una tienda antes de quedarte sin stamina.': 'Tip: buy a Monster at a store before you run out of stamina.', 'Consejo: los asaltos te quitaron {0}. Evita las estaciones peligrosas.': 'Tip: robberies took {0} from you. Avoid dangerous stations.',",
+            "    'Consejo: revisa tu saldo y elige tramos baratos.': 'Tip: check your balance and choose cheap hops.', 'Consejo: las fallas de línea retrasan el viaje; busca rutas alternas a tiempo.': 'Tip: line failures delay the trip; look for alternate routes in time.',",
+            "    'Consejo: lee las noticias, avisan de cierres antes de que te afecten.': 'Tip: read the news, it warns about closures before they affect you.',",
+            "    'Llegaste a la meta': 'You reached the goal', 'Llega a la meta': 'Reach the goal', 'Terminaste con {0}': 'You finished with {0}', 'Termina con {0} o más': 'Finish with {0} or more', 'Nadie te robó': 'Nobody robbed you',",
+            "    '{0} asalto (-{1})': '{0} robbery (-{1})', '{0} asaltos (-{1})': '{0} robberies (-{1})', 'No te asaltes': 'Do not get robbed',",
+            "    'COMPLETASTE TODOS LOS NIVELES!  {0}/{1} estrellas': 'YOU COMPLETED ALL LEVELS!  {0}/{1} stars', 'COMPLETASTE LA SEMANA {0}!  {1}/{2} estrellas': 'YOU COMPLETED WEEK {0}!  {1}/{2} stars',",
+            "    'NUEVA MEJOR RACHA!  {0}  -  {1} estrellas': 'NEW BEST STREAK!  {0}  -  {1} stars', 'RACHA: {0}  -  {1} estrellas   (mejor: {2})': 'STREAK: {0}  -  {1} stars   (best: {2})',",
+            "    '{0} ronda': '{0} round', '{0} rondas': '{0} rounds', 'NUEVO RECORD!  Antes: {0} estrella, {1}': 'NEW RECORD!  Before: {0} star, {1}', 'NUEVO RECORD!  Antes: {0} estrellas, {1}': 'NEW RECORD!  Before: {0} stars, {1}',",
+            "    'PRIMERA MARCA GUARDADA!': 'FIRST RECORD SAVED!', 'Tu mejor marca: {0} estrella, {1} {2}': 'Your best record: {0} star, {1} {2}', 'Tu mejor marca: {0} estrellas, {1} {2}': 'Your best record: {0} stars, {1} {2}',",
+            "    'Avanzaste {0} estaciones': 'You advanced {0} stations', 'Avanzaste {0} de {1} estaciones del camino más corto': 'You advanced {0} of {1} stations on the shortest path', 'Sin resultado': 'No result', 'PASOS': 'STEPS', 'Llegada': 'Arrival', 'Viaje': 'Trip', 'ESTACIONES': 'STATIONS', 'PASAJE': 'FARE', 'Llegaste!': 'You made it!', 'Meta: {0}': 'Goal: {0}',",
+            "    'Hora de llegada': 'Arrival time', 'Tiempo de viaje': 'Travel time', 'Noticias recibidas': 'News received', 'Noticias': 'News', 'Dinero': 'Money', 'Asaltos': 'Robberies', 'Pasos': 'Steps', 'Estaciones': 'Stations',",
+            "    'SIGUIENTE RONDA >': 'NEXT ROUND >', 'NUEVA RACHA': 'NEW STREAK', 'JUGAR OTRA VEZ': 'PLAY AGAIN', 'REINTENTAR': 'TRY AGAIN', 'SIGUIENTE NIVEL >': 'NEXT LEVEL >', 'MEJORAR ESTRELLAS': 'IMPROVE STARS', 'MEJORAR': 'IMPROVE',",
+            "    'NO SE PUEDE': 'NOT POSSIBLE', 'SIN STAMINA': 'NO STAMINA', 'SIN DINERO': 'NO MONEY', 'NO CONECTADA': 'NOT CONNECTED', 'BLOQUEADA': 'BLOCKED', 'BLOQUEADO': 'BLOCKED', 'Falta el anterior': 'Needs previous',",
+            "    // ---- celular (apps y panel)",
+            "    'MI CELULAR': 'MY PHONE', 'NOTICIAS': 'NEWS', 'RUTA': 'ROUTE', 'SALDO': 'BALANCE', 'LINEAS': 'LINES', 'AJUSTES': 'SETTINGS', 'INICIO': 'HOME', 'MI BILLETERA': 'MY WALLET', 'Sin noticias aun': 'No news yet',",
+            "    'ESTAS EN': 'YOU ARE AT', 'NOTICIA - ahora': 'NEWS - now', '{0}  EVENTO': '{0}  EVENT', '{0}  INFO': '{0}  INFO', '{0}  PELIGRO': '{0}  DANGER', '{0}  RETRASO': '{0}  DELAY', '{0}  BLOQUEO': '{0}  BLOCKED', '{0}  BUENAS NOTICIAS': '{0}  GOOD NEWS',",
+            "    '{0}/{1} (rueda del raton)': '{0}/{1} (mouse wheel)', '{0} est.': '{0} st.', '{0} x estacion': '{0} x station',",
+            "    'Las vias naranja-rojas del mapa tienen retraso. Las moradas estan bloqueadas.': 'Orange-red tracks on the map are delayed. Purple ones are blocked.', 'Toca una linea para verla en el mapa.': 'Tap a line to see it on the map.',",
+            "    'COMO LEER LAS NOTICIAS': 'HOW TO READ THE NEWS', 'BLOQUEO: solo se cierra esa estacion, no toda la linea. Busca otra ruta.': 'BLOCKADE: only that station closes, not the whole line. Find another route.',",
+            "    'PELIGRO: puede haber asaltos en esa estacion.': 'DANGER: there may be robberies at that station.', 'RETRASO: viajar por esa linea tarda mas minutos.': 'DELAY: traveling on that line takes more minutes.',",
+            "    'COMBI: ruta punteada naranja entre estaciones separadas. Cuesta ${0} y salta varias.': 'COMBI: dotted orange route between distant stations. Costs ${0} and skips several.', 'Via naranja-roja = retraso. Via morada = bloqueada.': 'Orange-red track = delay. Purple track = blocked.',",
+            "    'BLOQUEOS': 'BLOCKADES', 'ASALTOS': 'ROBBERIES', 'RETRASOS': 'DELAYS', 'COMBIS': 'COMBIS', 'Combi': 'Combi', 'Tu': 'You', 'Bloq.': 'Block.', 'Tienda': 'Store', 'LEYENDA': 'LEGEND',",
+            "    // ---- nivel: HUD, panel de estación, tienda, ventanas",
+            "    'ASALTO CONFIRMADO!': 'ROBBERY CONFIRMED!', 'Te robaron ${0}': 'They robbed you of ${0}', 'Debiste leer las noticias...': 'You should have read the news...', 'TE ASALTARON!': 'YOU WERE ROBBED!', 'te quitaron ${0}': 'they took ${0}',",
+            "    '\"Debiste haber leido las noticias...\"': '\"You should have read the news...\"', 'Pasaste de suerte': 'You got lucky', 'Ibas por {0} (zona reportada) y no paso nada. Esta vez!': 'You were passing {0} (reported area) and nothing happened. This time!', 'Sin incidentes': 'No incidents',",
+            "    'Reabre ya de noche': 'Reopens after dark', 'Nada que esperar': 'Nothing to wait for', 'Comprar Monster Energy?': 'Buy a Monster Energy?', '+{0} stamina': '+{0} stamina', 'Saldo: ${0}   Stamina: {1}': 'Balance: ${0}   Stamina: {1}',",
+            "    'Compraste un Monster Energy.': 'You bought a Monster Energy.', 'Stamina llena': 'Stamina full', 'Sin dinero': 'No money', 'Ya estas aqui': 'You are already here', 'Hay una tienda. Monster: ${0} (+{1} stamina)': 'There is a store. Monster: ${0} (+{1} stamina)',",
+            "    'Estacion de la Linea {0}. Viajar aqui?': 'Station on Line {0}. Travel here?', 'Ruta de COMBI desde {0} pero salta varias estaciones. Viajar aqui?': 'COMBI route from {0} but skips several stations. Travel here?', '(+{0} retraso)': '(+{0} delay)',",
+            "    'TIENDA AQUI': 'STORE HERE', 'MONSTER ${0}': 'MONSTER ${0}', 'VIAJAR': 'TRAVEL', 'CANCELAR VIAJE': 'CANCEL TRIP', 'YO': 'ME', 'TODO': 'ALL', 'ABC': 'ABC', 'ESTACION': 'STATION',",
+            "    'NIVEL': 'LEVEL', 'ORIGEN': 'START', 'VECINA': 'NEIGHBOR', 'CONTINUAR': 'RESUME', 'Llega antes de las {0}.': 'Arrive before {0}.', 'Racha: {0}': 'Streak: {0}', 'Hoy: {0}': 'Today: {0}', 'Hoy: {0} (hasta {1}).': 'Today: {0} (until {1}).',",
+            "    'Lee las noticias del celular: son tu unica guia.': 'Read the news on your phone: it is your only guide.', 'Llega antes de las 8:00 PM.': 'Arrive before 8:00 PM.', '{0} 1)': '{0} 1)',",
+            "    'REJUGAR': 'REPLAY', 'RONDA': 'ROUND', 'COMBI': 'COMBI', '-{0} min': '-{0} min', '-{0} min (+{1} retraso)': '-{0} min (+{1} delay)', 'Sin ruta directa.': 'No direct route.', 'Partida terminada.': 'Game over.',",
+            "    '{0} +{1}min +{2}sta': '{0} +{1}min +{2}sta', '{0} +{1}min +asalto': '{0} +{1}min +robbery', '{0} +asalto': '{0} +robbery', '{0} +{1}sta': '{0} +{1}sta',",
+            "    'Meta: {0}': 'Goal: {0}', 'PASOS': 'STEPS', 'ESTACIONES': 'STATIONS', 'MONSTER': 'MONSTER', 'PASAJE': 'FARE', 'Llegaste!': 'You made it!',",
+            "    '-{0} min': '-{0} min', '-{0} min (+{1})': '-{0} min (+{1})', '-{0} min (+{1} retraso)': '-{0} min (+{1} delay)', '1) toca  2) VIAJAR': '1) tap  2) TRAVEL', '1) toca una vecina': '1) tap a neighbor', '2 CLICS': '2 CLICKS', '2 TOQUES': '2 TAPS', '{0}h {1}m': '{0}h {1}m', 'ERROR': 'ERROR'",
+            "  });",
+            "})();"
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false,
+          "disabled": false,
+          "folded": true
+        }
+      ]
+    },
+    {
+      "associatedLayout": "",
       "name": "Mod_mobile",
       "events": [
         {
@@ -8621,6 +9278,7 @@
             "  P.text = function (key, str, x, y, o) {",
             "    o = o || {}; var size0 = o.size || 8, size = o.exact ? size0 : this.fs(size0), layer = o.layer === undefined ? 'UI' : o.layer;",
             "    var t = pooled(this, 't', key, o.obj || 'Texto', layer);",
+            "    if (U.I18n) str = U.I18n.tr(str);                                                    // idioma activo (i18n.js)",
             "    if (o.cols) str = util.wrap(str, size === size0 ? o.cols : Math.max(8, Math.floor(o.cols * size0 / size))).join('\\n');",
             "    if (t._umSize !== size) { t.setCharacterSize(size); t._umSize = size; }",
             "    t.setText(String(str)); t.setColor(o.color || PAL.text);",
@@ -8658,6 +9316,7 @@
             "    this.buttons.push({ id: id, x: x, y: y, w: w, h: h, modal: !!o.modal, disabled: !!o.disabled });          // para las pruebas y la auditoría de tamaños",
             "    var fill = o.disabled ? '50;50;70' : (over ? lighten(o.fill || PAL.orange) : (o.fill || PAL.orange));",
             "    this.rect(x, y, w, h, { fill: fill, border: o.disabled ? '80;80;100' : '255;255;255', bw: 2, modal: o.modal, block: true });",
+            "    if (U.I18n) label = U.I18n.tr(label);",
             "    var size = o.size || 8, real = this.fs(size);",
             "    while (real > 8 && String(label).length * real > w - 8) real -= 4;          // el rótulo siempre cabe en el botón (en modo celular las letras son más grandes)",
             "    var tx = x + w / 2, ty = y + (h - real) / 2 + (over && this.down ? 2 : 0);",
@@ -10236,6 +10895,7 @@
             "    m.fx.update(dt, m);",
             "    U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s",
             "    if (m.view === 'main' && ui.button('cred', 'CREDITOS', 1074, 14, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'credits';",
+            "    if (m.view === 'main' && ui.button('lang', U.I18n.lang() === 'en' ? 'ESPANOL' : 'ENGLISH', 1074, ui.mob ? 64 : 52, 190, ui.mob ? 44 : 30, { size: 8, fill: '30;90;130' })) U.I18n.setLang(U.I18n.lang() === 'en' ? 'es' : 'en');   // IDIOMA: el botón dice a cuál cambia",
             "    if (m.view === 'main' && ui.button('a11y', 'ACCESIBILIDAD', 16, ui.mob ? 64 : 52, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'a11y';",
             "    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && m.view !== 'ach' && m.view !== 'a11y' && ui.button('snd', 'SONIDO', 16, 14, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio",
             "    ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);",

@@ -46,6 +46,7 @@
       if (d.fx === 'high' || d.fx === 'low' || d.fx === 'off') U.session.fxQuality = d.fx;          // accesibilidad (se validan: un guardado viejo o dañado no rompe nada)
       if (typeof d.calm === 'boolean') U.session.calm = d.calm;
       if (d.ui === 'auto' || d.ui === 'on' || d.ui === 'off') U.session.uiMode = d.ui;               // tamaño de la interfaz (mobile.js)
+      if (d.lang === 'es' || d.lang === 'en') U.session.lang = d.lang;                              // idioma (i18n.js)
       if (typeof d.bg === 'boolean') U.session.bgAudio = d.bg;                                      // seguir sonando al salir de la ventana
       var vol = d.vol && typeof d.vol === 'object' ? d.vol : null;                                  // volúmenes por módulo (se validan: un guardado viejo o dañado no rompe nada)
       ['music', 'sfx', 'alert'].forEach(function (g) {
@@ -60,7 +61,7 @@
         var st = this._store(); if (!st) return;
         st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),
                                                best: U.session.best || {}, inf: U.session.inf || { best: 0, stars: 0 }, ach: U.session.ach || {}, stats: U.session.stats || {}, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,
-                                               fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true, ui: U.session.uiMode === 'on' || U.session.uiMode === 'off' ? U.session.uiMode : 'auto', bg: U.session.bgAudio === true }));
+                                               fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true, ui: U.session.uiMode === 'on' || U.session.uiMode === 'off' ? U.session.uiMode : 'auto', bg: U.session.bgAudio === true, lang: U.session.lang === 'en' ? 'en' : 'es' }));
       } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }
     },
     isCompleted: function (idx) { return U.session.completed.indexOf(idx) >= 0; },
@@ -131,13 +132,14 @@
     pick: function (rnd, arr) { return arr[Math.floor(rnd() * arr.length)]; },
     /** Corta texto en líneas de máximo `cols` caracteres (la fuente pixel es monoespaciada). */
     wrap: function (text, cols) {
+      if (U.I18n) text = U.I18n.tr(text);                                       // se traduce el párrafo entero ANTES de partirlo
       var words = String(text).split(' '), lines = [], cur = '';
       words.forEach(function (w) {
         if (cur && (cur + ' ' + w).length > cols) { lines.push(cur); cur = w; }
         else cur = cur ? cur + ' ' + w : w;
       });
       if (cur) lines.push(cur);
-      return lines;
+      return U.I18n ? U.I18n.mark(lines) : lines;
     }
   };
 })();
