@@ -251,7 +251,7 @@
 
   /** El celular ocupa la derecha de la pantalla: si se oculta, la red se centra en todo el ancho. */
   P.setPhoneOpen = function (open) {
-    this.view.x1 = open ? VIEW.x1 : VIEW_NOPHONE_X1;
+    this.view.x1 = open ? (this.phoneX1 || VIEW.x1) : VIEW_NOPHONE_X1;   // phoneX1: borde izquierdo del celular (más a la izquierda en modo celular)
     if (!this.touched) this.fit();
   };
 
@@ -263,9 +263,21 @@
     var px = c.x + (CX - 640) / z0, py = c.y + (CY - 360) / z0; c.zoom = z1; c.x = px - (CX - 640) / z1; c.y = py - (CY - 360) / z1;
   };
 
-  /** Estación bajo el puntero (coordenadas de pantalla) o null. */
-  P.pick = function (sx, sy) {
-    var w = this.layer.convertCoords(sx, sy, 0, [0, 0]), best = null, bd = Math.min(30, 26 / this.cam.zoom);
+  /** Pellizcar con dos dedos: el punto del mapa que está entre los dedos al empezar se queda entre ellos mientras se acercan o se alejan (y al arrastrar, el mapa los sigue). */
+  P.pinchStart = function (sx, sy) {
+    var c = this.cam; this._pin = { wx: c.x + (sx - 640) / c.zoom, wy: c.y + (sy - 360) / c.zoom, z0: c.zoom };
+    c.follow = false; this.touched = true;
+  };
+  P.pinchMove = function (scale, sx, sy) {
+    var p = this._pin; if (!p) return;
+    var c = this.cam, z = util.clamp(p.z0 * scale, 0.5, 2.4); c.zoom = z; c.x = p.wx - (sx - 640) / z; c.y = p.wy - (sy - 360) / z;
+  };
+  P.pinchEnd = function () { this._pin = null; };
+  P.pinching = function () { return !!this._pin; };
+
+  /** Estación bajo el puntero (coordenadas de pantalla) o null. `touch`: con el dedo el área para acertar es más grande. */
+  P.pick = function (sx, sy, touch) {
+    var w = this.layer.convertCoords(sx, sy, 0, [0, 0]), best = null, bd = touch ? Math.min(60, 46 / this.cam.zoom) : Math.min(30, 26 / this.cam.zoom);
     this.data.stationList.forEach(function (st) {
       var p = wpos(st), dd = Math.hypot(w[0] - p.x, (w[1] - p.y) * 1.3);
       if (dd < bd) { bd = dd; best = st.id; }

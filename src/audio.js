@@ -142,31 +142,32 @@
     /** Ajuste "al salir de la ventana": PAUSAR (por defecto) o SEGUIR sonando. Devuelve el alto que ocupa (46). */
     focusRow: function (ui, scene, id, x, y, w, modal) {
       var keep = !!U.session.bgAudio, mo = modal ? { modal: true } : {}, tz = modal ? { z: 330 } : {};
-      ui.text(id + 'bgt', 'AL SALIR DE LA VENTANA', x, y + 11, Object.assign({ size: 8, color: '255;255;255' }, tz));
-      if (ui.button(id + 'bg', keep ? 'SEGUIR' : 'PAUSAR', x + w - 100, y, 100, 30, Object.assign({ size: 8, fill: keep ? '110;60;60' : '39;174;96' }, mo))) { U.session.bgAudio = !keep; U.Save.persist(); }
-      return 46;
+      var M = ui.mob;
+      ui.text(id + 'bgt', 'AL SALIR DE LA VENTANA', x, y + (M ? 16 : 11), Object.assign({ size: 8, color: '255;255;255' }, tz));
+      if (ui.button(id + 'bg', keep ? 'SEGUIR' : 'PAUSAR', x + w - (M ? 104 : 100), y, M ? 104 : 100, M ? 44 : 30, Object.assign({ size: 8, fill: keep ? '110;60;60' : '39;174;96' }, mo))) { U.session.bgAudio = !keep; U.Save.persist(); }
+      return M ? 56 : 46;
     },
 
     /** Los tres módulos (música general, sonidos generales, peligro y apuro): nombre y %, barra de 10 pasos (se toca un paso), − / + y MUDO.
      *  Devuelve el alto que ocupa. `id` distingue los botones; `hints` muestra la línea de descripción. */
     panel: function (ui, scene, id, x, y, w, hints, modal) {   // modal: dibuja sobre una ventana (capa de arriba)
-      var self = this, rowH = hints === false ? 62 : 80, mo = modal ? { modal: true } : {}, tz = modal ? { z: 330 } : {};
+      var M = ui.mob, bh = M ? 44 : 30, self = this, rowH = M ? (hints === false ? 78 : 98) : (hints === false ? 62 : 80), mo = modal ? { modal: true } : {}, tz = modal ? { z: 330 } : {};
       GROUPS.forEach(function (G, i) {
         var s = slot(G.id), ry = y + i * rowH, muted = s.mute, k = id + G.id;
         ui.text(k + 't', G.label, x, ry, Object.assign({ size: 8, color: muted ? PAL.dim : '255;255;255' }, tz));
         ui.text(k + 'p', muted ? 'MUDO' : s.level * 10 + '%', x + w, ry, Object.assign({ size: 8, align: 'right', color: muted ? PAL.red : PAL.yellow }, tz));
-        var cy = ry + (hints === false ? 16 : 32);
-        if (hints !== false) ui.text(k + 'h', G.hint, x, ry + 15, Object.assign({ size: 8, color: PAL.dim }, tz));
-        var bw = 30, mw = 76, gap = 4, barW = w - 2 * bw - mw - 3 * gap - 4, seg = Math.floor(barW / STEPS), bx = x + bw + gap;
-        if (ui.button(k + '-', '-', x, cy, bw, 30, Object.assign({ size: 12, fill: '70;70;100' }, mo))) self.step(scene, G.id, -1);
-        ui.rect(bx - 2, cy, seg * STEPS + 4, 30, Object.assign({ fill: '10;10;20', border: '90;90;120', bw: 2 }, mo));
+        var cy = ry + (M ? (hints === false ? 22 : 42) : (hints === false ? 16 : 32));
+        if (hints !== false) ui.text(k + 'h', G.hint, x, ry + (M ? 20 : 15), Object.assign({ size: 8, color: PAL.dim }, tz));
+        var bw = M ? 44 : 30, mw = M ? 96 : 76, gap = 4, barW = w - 2 * bw - mw - 3 * gap - 4, seg = Math.floor(barW / STEPS), bx = x + bw + gap;
+        if (ui.button(k + '-', '-', x, cy, bw, bh, Object.assign({ size: 12, fill: '70;70;100' }, mo))) self.step(scene, G.id, -1);
+        ui.rect(bx - 2, cy, seg * STEPS + 4, bh, Object.assign({ fill: '10;10;20', border: '90;90;120', bw: 2 }, mo));
         for (var j = 0; j < STEPS; j++) {                                           // barra de 10 pasos: tocar uno fija ese volumen
           var sx = bx + j * seg, on = j < s.level && !muted;
-          ui.rect(sx + 1, cy + 5, seg - 2, 20, Object.assign({ fill: on ? G.color : '34;34;58', bw: 0 }, mo));
-          if (ui.inside(sx, cy, seg, 30) && ui.released) self.setLevel(scene, G.id, j + 1);
+          ui.rect(sx + 1, cy + 5, seg - 2, bh - 10, Object.assign({ fill: on ? G.color : '34;34;58', bw: 0 }, mo));
+          if (ui.inside(sx, cy, seg, bh) && ui.released) self.setLevel(scene, G.id, j + 1);
         }
-        if (ui.button(k + '+', '+', bx + seg * STEPS + gap + 2, cy, bw, 30, Object.assign({ size: 12, fill: '70;70;100' }, mo))) self.step(scene, G.id, 1);
-        if (ui.button(k + 'm', muted ? 'ACTIVAR' : 'MUDO', x + w - mw, cy, mw, 30, Object.assign({ size: 8, fill: muted ? '39;174;96' : '110;60;60' }, mo))) self.toggleMute(scene, G.id);
+        if (ui.button(k + '+', '+', bx + seg * STEPS + gap + 2, cy, bw, bh, Object.assign({ size: 12, fill: '70;70;100' }, mo))) self.step(scene, G.id, 1);
+        if (ui.button(k + 'm', muted ? 'ACTIVAR' : 'MUDO', x + w - mw, cy, mw, bh, Object.assign({ size: 8, fill: muted ? '39;174;96' : '110;60;60' }, mo))) self.toggleMute(scene, G.id);
       });
       return GROUPS.length * rowH;
     }

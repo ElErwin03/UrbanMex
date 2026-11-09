@@ -30,6 +30,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `rules` | economía, viaje, asaltos, Monster, fin de partida | no |
 | `infinite` | modo infinito: rondas con ruta al azar, siempre ganables (ver *Modo infinito*) | no |
 | `achievements` | logros: catálogo de datos, estadísticas de toda la vida y desbloqueo (ver *Logros*) | no |
+| `mobile` | modo celular: interfaz grande según el tamaño de la pantalla (ver *Celular: interfaz grande*) | mínimo |
 | `news` | noticias del celular (nunca dejan la meta inalcanzable) | no |
 | `ui` | interfaz “modo inmediato” sobre objetos Texto/Icono/Painter | sí |
 | `map` | mapa isométrico 2.5D (ciudad en relieve), cámara que encuadra toda la red, estaciones, jugador | sí |
@@ -133,7 +134,7 @@ La interfaz y el mundo están dibujados en coordenadas fijas de 1280x720, así q
 (`adaptGameResolutionAtRuntime: false`, `sizeOnStartupMode: ""`). GDevelop escala el lienzo para que quepa entero en la ventana,
 conservando la proporción 16:9 y centrándolo: en ventanas verticales o muy anchas aparecen franjas oscuras arriba/abajo o a los lados,
 pero nada se recorta y los clics siguen cayendo en el botón correcto. Antes la resolución se adaptaba al ancho de la ventana y, en
-ventanas estrechas, el menú y el mapa quedaban cortados. En móvil conviene jugar en horizontal (`orientation: landscape`).
+ventanas estrechas, el menú y el mapa quedaban cortados. En móvil se juega en horizontal (`orientation: landscape`) con la interfaz grande (ver *Celular: interfaz grande*).
 
 ## Mapa menos saturado (estaciones y rutas secundarias)
 La cuadrícula lógica de `estaciones.json` no cambia; `src/layout.js` (funciones puras) decide cómo se acomoda en pantalla:
@@ -267,3 +268,13 @@ Hay **23 logros** en cuatro grupos (`PROGRESO`, `ESTILO DE JUEGO`, `EVENTOS DEL 
 - **Agregar uno:** es una línea en el catálogo de `src/achievements.js`: `{ id, group, name, desc, check(ctx), progress?(ctx) }` (nombres en mayúsculas sin acentos). La prueba de coherencia revisa ids únicos, textos y que quepan en la tarjeta.
 - **Guardado:** `ach` (ids conseguidos) y `stats` en `UrbanMex_save_v1`; al cargar solo se aceptan ids conocidos y números enteros válidos. `BORRAR PROGRESO` los borra.
 - **Archivos:** `src/achievements.js`, contadores nuevos en `Rules.summary` (`monsters`, `combis`, `waited`, `stamina`, `events`), pantalla en `src/scene-menu.js`, cartel en `src/scene-resultado.js`, icono `trofeo` (`tools/make_art.py`).
+
+## Celular: interfaz grande
+El juego se dibuja en 1280x720; en un celular horizontal el lienzo se ve a ~0.5x, así que el texto de 8 px y los botones de ~36 px quedaban ilegibles y difíciles de tocar. El **modo celular** lo corrige sin cambiar las reglas:
+
+- **Cuándo se activa:** `TAMANO DE LA INTERFAZ` en ACCESIBILIDAD (menú, pausa y celular del juego): `AUTO` (por defecto: se activa si el lienzo se ve a menos de 0.68 de su tamaño, y se desactiva sobre 0.74, medido cada medio segundo), `GRANDE` o `NORMAL`. Se guarda (`ui` en el guardado) y se puede cambiar en pleno juego.
+- **Letras:** las de 5, 8 y 12 px pasan a 8, 12 y 16 (las de 16 o más ya se leen); los textos largos se reacomodan por ancho y los rótulos de los botones se reducen solo si no caben.
+- **Botones:** mínimo 44 px de alto y ancho y ninguno encima de otro (HUD, zoom, chips de eventos, panel de estación, tienda, celular, pausa, ventanas, resultado, logros, tutorial). El celular del juego es más ancho (420 px) y el mapa se encuadra en lo que queda libre.
+- **Táctil:** se leen todos los dedos. **Pellizcar** con dos dedos acerca/aleja el mapa y lo arrastra (el punto entre los dedos se queda ahí) sin seleccionar estaciones. Con el dedo no hay "pasar por encima": el resaltado de botones y estaciones solo cuenta mientras se toca; el área para acertar una estación es más grande y hace falta mover más (12 px) para que cuente como arrastre. El doble toque sigue viajando (si está activado) y el tutorial habla de toques, no de clics ni teclas.
+- **Herramientas:** `node tools/dump_scene.js . Nivel salida.json --mobile` hace el volcado en modo celular y `node tools/audit_layout.js salida.json` avisa de textos fuera de pantalla o del panel, textos encimados y botones chicos o encimados; `bash tools/audit_all.sh --mobile` revisa todas las pantallas y estados (0 avisos).
+- **Archivos:** `src/mobile.js` (detección y tamaños), `src/ui.js` (letras, botones, dedos), `src/map.js` (pellizco, área de toque) y los diseños para celular en `scene-*.js`, `phone.js` y `a11y.js`.

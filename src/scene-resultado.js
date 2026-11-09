@@ -74,7 +74,7 @@
       if (ui.button('m', 'MENU', 540, 400, 200, 44, {})) scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu');
       ui.end(); return;
     }
-    var inf = !!r.infinite, last = !inf && !U.Rules.hasNextLevel(data, r.levelIndex), week = !inf && r.won && (last || (r.levelIndex + 1) % U.Save.WEEK === 0), calm = U.A11y.calm();
+    var inf = !!r.infinite, last = !inf && !U.Rules.hasNextLevel(data, r.levelIndex), week = !inf && r.won && (last || (r.levelIndex + 1) % U.Save.WEEK === 0), calm = U.A11y.calm(), M = ui.mob;      // M: modo celular (letras de 12 px, botones de 44 px o más)
     ui.text('t', Text.title(r), 640, 56, { size: 24, align: 'center', color: r.won ? (r.stars >= 3 ? PAL.yellow : PAL.green) : r.left !== null && r.left <= 3 ? PAL.orange : PAL.red });
     ui.text('d', inf ? 'RONDA ' + r.infinite.round : 'NIVEL ' + (r.levelIndex + 1) + ' - ' + r.day, 640, 100, { size: 8, align: 'center', color: PAL.dim });
 
@@ -87,7 +87,7 @@
         if (earned && p > 0 && !scene._umStar[i]) { scene._umStar[i] = true; U.Audio.play(scene, 'moneda'); }   // un "ding" por estrella ganada
         var info = Text.starInfo(r, i);
         ui.text('sl' + i, info[0], cx, 224, { size: 8, align: 'center', color: earned && p > 0 ? PAL.yellow : PAL.dim });
-        ui.lines('sh' + i, util.wrap(info[1], 22), cx, 244, { size: 8, lineH: 12, align: 'center', color: earned && p > 0 ? '230;234;250' : '120;124;150' });
+        ui.lines('sh' + i, util.wrap(info[1], M ? 17 : 22), cx, 244, { size: 8, lineH: 12, align: 'center', color: earned && p > 0 ? '230;234;250' : '120;124;150' });
       }
     } else {                                        // ---- qué tan lejos llegaste
       if (r.reason) ui.text('why', r.reason, 640, 132, { size: 8, align: 'center', color: PAL.yellow });
@@ -100,22 +100,30 @@
       ui.text('pt', r.left === null ? 'Avanzaste ' + r.steps + ' estaciones' : 'Avanzaste ' + did + ' de ' + r.hops + ' estaciones del camino más corto', 640, 236, { size: 8, align: 'center' });
     }
 
-    var rows = [['reloj', 'Hora de llegada', r.arrival], ['reloj', 'Tiempo de viaje', r.travelTime], ['persona', 'Estaciones', String(r.steps)],
-                ['moneda', 'Dinero', String(r.money)], ['alerta', 'Asaltos', (r.robbed ? r.robbed + ' (-' + r.stolen + ')' : '0')], ['noticia', 'Noticias recibidas', String(r.newsRead)]];
+    var rows = [['reloj', M ? 'Llegada' : 'Hora de llegada', r.arrival], ['reloj', M ? 'Viaje' : 'Tiempo de viaje', r.travelTime], ['persona', 'Estaciones', String(r.steps)],
+                ['moneda', 'Dinero', String(r.money)], ['alerta', 'Asaltos', (r.robbed ? r.robbed + ' (-' + r.stolen + ')' : '0')], ['noticia', M ? 'Noticias' : 'Noticias recibidas', String(r.newsRead)]];
+    var rw = M ? 340 : 320, rg = M ? 20 : 40, rx0 = 640 - (2 * rw + rg) / 2, rh = M ? 40 : 38, ty = M ? 14 : 15;
     rows.forEach(function (row, i) {                // 2 columnas × 3 filas
-      var x = 300 + (i % 2) * 360, y = 292 + Math.floor(i / 2) * 46;
-      ui.rect(x, y, 320, 38, { fill: '24;24;46', border: '60;60;90', bw: 2 });
-      ui.icon('ri' + i, row[0], x + 10, y + 3, 2); ui.text('rl' + i, row[1], x + 52, y + 15, { size: 8, color: PAL.dim });
-      ui.text('rv' + i, row[2], x + 306, y + 15, { size: 8, align: 'right' });
+      var x = rx0 + (i % 2) * (rw + rg), y = (M ? 294 : 292) + Math.floor(i / 2) * 46;
+      ui.rect(x, y, rw, rh, { fill: '24;24;46', border: '60;60;90', bw: 2 });
+      ui.icon('ri' + i, row[0], x + 10, y + (M ? 4 : 3), 2); ui.text('rl' + i, row[1], x + 52, y + ty, { size: 8, color: PAL.dim });
+      ui.text('rv' + i, row[2], x + rw - 14, y + ty, { size: 8, align: 'right' });
     });
 
-    ui.rect(300, 436, 680, 70, { fill: r.won ? '22;48;38' : '48;30;24', border: r.won ? '46;204;113' : '230;140;40', bw: 3 });
-    ui.text('hl', Text.headline(r), 640, 450, { size: 12, align: 'center', color: '255;255;255' });
-    ui.lines('tp', util.wrap(Text.tip(r), 78), 640, 478, { size: 8, lineH: 12, align: 'center', color: '230;234;250' });
+    var cy = 436, ch = M ? 106 : 70;
+    ui.rect(300, cy, 680, ch, { fill: r.won ? '22;48;38' : '48;30;24', border: r.won ? '46;204;113' : '230;140;40', bw: 3 });
+    if (M) {
+      var hl = util.wrap(Text.headline(r), Math.floor(650 / ui.fs(12)));
+      var hh = ui.lines('hl', hl, 640, cy + 10, { size: 12, lineH: 16, align: 'center', color: '255;255;255' });
+      ui.lines('tp', util.wrap(Text.tip(r), 53), 640, cy + 14 + hh, { size: 8, lineH: 12, align: 'center', color: '230;234;250' });
+    } else {
+      ui.text('hl', Text.headline(r), 640, 450, { size: 12, align: 'center', color: '255;255;255' });
+      ui.lines('tp', util.wrap(Text.tip(r), 78), 640, 478, { size: 8, lineH: 12, align: 'center', color: '230;234;250' });
+    }
 
     var rec = inf ? Text.streak(r) : Text.record(r, r.currency);
-    if (rec) ui.text('rec', rec.text, 640, 520, { size: 8, align: 'center', color: rec.new ? PAL.yellow : PAL.dim });
-    if (week) ui.text('w', Text.weekEnd(r.levelIndex, last, data.levels.length), 640, 542, { size: 8, align: 'center', color: PAL.yellow });
+    if (rec) ui.text('rec', rec.text, 640, M ? 550 : 520, { size: 8, align: 'center', color: rec.new ? PAL.yellow : PAL.dim });
+    if (week) ui.text('w', Text.weekEnd(r.levelIndex, last, data.levels.length), 640, M ? 574 : 542, { size: 8, align: 'center', color: PAL.yellow });
 
     var got = (r.achievements || []).map(U.Achievements.byId).filter(Boolean);        // logros nuevos de esta partida (cartel arriba a la derecha)
     if (got.length) {
@@ -134,7 +142,7 @@
     btns.push(['m', 'MENU', 150, '70;70;100']);
     var total = btns.reduce(function (s, b) { return s + b[2]; }, 0) + 20 * (btns.length - 1), x = (1280 - total) / 2;
     btns.forEach(function (b) {
-      if (ui.button(b[0], b[1], x, 574, b[2], 52, { size: 8, fill: b[3] })) {
+      if (ui.button(b[0], b[1], x, M ? 618 : 574, b[2], 52, { size: 8, fill: b[3] })) {
         if (b[0] === 'i') { U.session.infinite.round++; go('Nivel'); }
         else if (b[0] === 'x') { U.Infinite.start(); go('Nivel'); }
         else if (b[0] === 'n') { U.session.levelIndex = r.levelIndex + 1; go('Nivel'); }
