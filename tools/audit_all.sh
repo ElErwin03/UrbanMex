@@ -2,7 +2,8 @@
 # Audita la interfaz en modo celular (--mobile) o normal (sin argumentos extra) en todas las pantallas y estados principales.
 #   bash tools/audit_all.sh [--mobile] [carpeta-salida]
 cd "$(dirname "$0")/.." || exit 1
-MOB=""; [ "$1" = "--mobile" ] && { MOB="--mobile"; shift; }
+# uso: bash tools/audit_all.sh [--mobile] [--lang en] [carpeta-salida]  (con --lang en también lista lo que falta traducir en $OUT/misses.txt)
+MOB=""; while [ "${1:0:2}" = "--" ]; do case "$1" in --mobile) MOB="$MOB --mobile";; --lang) MOB="$MOB --lang $2"; shift;; esac; shift; done
 OUT="${1:-/tmp/urbanmex_audit}"; mkdir -p "$OUT"; TOTAL=0
 run() { # nombre escena args...
   local n="$1" sc="$2"; shift 2
@@ -16,5 +17,9 @@ for a in news map saldo lines snd config a11y; do run phone-$a Nivel --level 0 -
 run nivel7 Nivel --level 7; run nivel9 Nivel --level 9
 run pausa Nivel --level 0 --pause main; run pausa-sonido Nivel --level 0 --pause sound; run pausa-confirm Nivel --level 0 --pause confirm
 run result-win Resultado --result win --stars 3 --record new; run result-win1 Resultado --result win --stars 1; run result-lose Resultado --result lose --cause money; run result-night Resultado --result lose --cause night
+for c in stamina blocked; do run result-lose-$c Resultado --result lose --cause $c --left 2 --rob 2; done
+run result-lose-left0 Resultado --result lose --cause money --left 0; run result-win2 Resultado --result win --stars 2 --record best --rob 1; run result-win3 Resultado --result win --stars 3 --record new
+for l in 1 2 3 4 5 6 8; do run nivel$l Nivel --level $l; done; run nivel0-rob Nivel --level 0 --rob 1; run nivel0-late Nivel --level 0 --minute 1100 --stamina 3 --money 5
 for p in 0 1 2 3 4 5; do run tut$p Tutorial --page $p; done
+node -e "const fs=require('fs'),o=process.argv[1],m={};fs.readdirSync(o).filter(f=>f.endsWith('.json')).forEach(f=>{try{(JSON.parse(fs.readFileSync(o+'/'+f)).misses||[]).forEach(x=>m[x]=1)}catch(e){}});const k=Object.keys(m);fs.writeFileSync(o+'/misses.txt',k.join('\n'));console.log('SIN TRADUCIR: '+k.length)" "$OUT"
 echo "TOTAL: $TOTAL aviso(s)"

@@ -71,6 +71,7 @@
   P.text = function (key, str, x, y, o) {
     o = o || {}; var size0 = o.size || 8, size = o.exact ? size0 : this.fs(size0), layer = o.layer === undefined ? 'UI' : o.layer;
     var t = pooled(this, 't', key, o.obj || 'Texto', layer);
+    if (U.I18n) str = U.I18n.tr(str);                                                    // idioma activo (i18n.js)
     if (o.cols) str = util.wrap(str, size === size0 ? o.cols : Math.max(8, Math.floor(o.cols * size0 / size))).join('\n');
     if (t._umSize !== size) { t.setCharacterSize(size); t._umSize = size; }
     t.setText(String(str)); t.setColor(o.color || PAL.text);
@@ -108,6 +109,7 @@
     this.buttons.push({ id: id, x: x, y: y, w: w, h: h, modal: !!o.modal, disabled: !!o.disabled });          // para las pruebas y la auditoría de tamaños
     var fill = o.disabled ? '50;50;70' : (over ? lighten(o.fill || PAL.orange) : (o.fill || PAL.orange));
     this.rect(x, y, w, h, { fill: fill, border: o.disabled ? '80;80;100' : '255;255;255', bw: 2, modal: o.modal, block: true });
+    if (U.I18n) label = U.I18n.tr(label);
     var size = o.size || 8, real = this.fs(size);
     while (real > 8 && String(label).length * real > w - 8) real -= 4;          // el rótulo siempre cabe en el botón (en modo celular las letras son más grandes)
     var tx = x + w / 2, ty = y + (h - real) / 2 + (over && this.down ? 2 : 0);

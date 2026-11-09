@@ -1,0 +1,60 @@
+/* UrbanMex · lang-en-data — inglés: noticias del celular, textos de los niveles y de los eventos del día (ver i18n.js). */
+(function () {
+  var U = gdjs.UrbanMex;
+  if (!U.I18n) return;
+  U.I18n.add('en', {
+    // ---- días de la semana y nombres de líneas
+    'LUNES': 'MONDAY', 'MARTES': 'TUESDAY', 'MIÉRCOLES': 'WEDNESDAY', 'MIERCOLES': 'WEDNESDAY', 'JUEVES': 'THURSDAY', 'VIERNES': 'FRIDAY',
+    'LUNES 2': 'MONDAY 2', 'MARTES 2': 'TUESDAY 2', 'MIERCOLES 2': 'WEDNESDAY 2', 'JUEVES 2': 'THURSDAY 2', 'VIERNES 2': 'FRIDAY 2',
+    'LÍNEA {0}': 'LINE {0}', 'Línea {0}': 'Line {0}', 'LINEA {0}': 'LINE {0}',
+    'ROSA': 'PINK', 'AZUL': 'BLUE', 'VERDE': 'GREEN', 'GRIS': 'GRAY', 'AMARILLA': 'YELLOW', 'rosa': 'pink', 'azul': 'blue', 'verde': 'green', 'gris': 'gray', 'amarilla': 'yellow',
+    // ---- niveles (semana 1 y 2)
+    'Tu casa en Tacuba. Llega a la escuela en Pantitlán.': 'Your home in Tacuba. Get to school in Pantitlán.',
+    '¡Llegaste a la escuela!': 'You made it to school!',
+    'Tu casa en Indios Verdes. Llega a la UNAM.': 'Your home in Indios Verdes. Get to the UNAM.',
+    '¡Llegaste a la UNAM!': 'You made it to the UNAM!',
+    'Tu casa en Cuatro Caminos. Llega al trabajo en Tasqueña.': 'Your home in Cuatro Caminos. Get to work in Tasqueña.',
+    '¡Llegaste al trabajo!': 'You made it to work!',
+    'Tu casa en el Politécnico. Llega a una junta en Zapata.': 'Your home at Politécnico. Get to a meeting in Zapata.',
+    '¡Llegaste a la junta!': 'You made it to the meeting!',
+    'Tu casa en Observatorio. Llega a una fiesta en Pantitlán.': 'Your home in Observatorio. Get to a party in Pantitlán.',
+    '¡Llegaste a la fiesta!': 'You made it to the party!',
+    'Tu casa junto al aeropuerto, en Hangares. Llega a Cuatro Caminos para entregar un pedido.': 'Your home next to the airport, in Hangares. Get to Cuatro Caminos to deliver an order.',
+    'Entregaste el pedido en Cuatro Caminos!': 'You delivered the order in Cuatro Caminos!',
+    'Tu casa en Ermita. Hoy cruzas toda la ciudad hasta Indios Verdes.': 'Your home in Ermita. Today you cross the whole city to Indios Verdes.',
+    'Llegaste a Indios Verdes!': 'You made it to Indios Verdes!',
+    'Tu casa en Buenavista. Hoy tienes un examen en la UNAM.': 'Your home in Buenavista. Today you have an exam at the UNAM.',
+    'Llegaste al examen en la UNAM!': 'You made it to the exam at the UNAM!',
+    'Tu casa en el Instituto del Petroleo. Hoy hay una entrevista de trabajo en Tasqueña.': 'Your home at Instituto del Petróleo. Today there is a job interview in Tasqueña.',
+    'Llegaste a la entrevista en Tasqueña!': 'You made it to the interview in Tasqueña!',
+    'Tu casa en Tasqueña. Es el gran dia: examen final en el Politecnico.': 'Your home in Tasqueña. It is the big day: final exam at Politécnico.',
+    'Llegaste al examen final! Semana completada!': 'You made it to the final exam! Week complete!',
+    // ---- noticias
+    'ROBOS EN TEPITO': 'ROBBERIES IN TEPITO', 'Esta mañana en la estación Tepito se presenciaron demasiados robos.': 'This morning far too many robberies were seen at Tepito station.', 'EVITA TEPITO - Alto riesgo de asalto': 'AVOID TEPITO - High risk of robbery',
+    'ASALTOS EN LÍNEA 1 (ROSA)': 'ROBBERIES ON LINE 1 (PINK)', 'Reportan asaltos frecuentes entre Candelaria y San Lázaro.': 'Frequent robberies reported between Candelaria and San Lázaro.', 'Candelaria y San Lázaro peligrosas': 'Candelaria and San Lázaro are dangerous',
+    'ZONA CALIENTE EN MORELOS': 'HOT SPOT IN MORELOS', 'La estación Morelos reportó 3 asaltos en la última hora.': 'Morelos station reported 3 robberies in the last hour.', 'Morelos es peligrosa ahora': 'Morelos is dangerous now',
+    'PELIGRO EN LÍNEA B (GRIS)': 'DANGER ON LINE B (GRAY)', 'Usuarios reportan que Lagunilla y Garibaldi son zonas de alto riesgo.': 'Riders report that Lagunilla and Garibaldi are high-risk areas.', 'Lagunilla y Garibaldi peligrosas': 'Lagunilla and Garibaldi are dangerous',
+    'CUIDADO EN Isabel la Católica': 'WATCH OUT AT Isabel la Católica', 'Un pasajero fue asaltado al salir de la estación.': 'A passenger was robbed when leaving the station.', 'Isabel la Católica es riesgosa': 'Isabel la Católica is risky',
+    'MOCTEZUMA: ZONA DE CUIDADO': 'MOCTEZUMA: CAUTION AREA', 'Vecinos reportan presencia de personas sospechosas.': 'Neighbors report suspicious people around.', 'Moctezuma con actividad delictiva': 'Criminal activity at Moctezuma',
+    'ASALTOS EN LÍNEA 5 (AMARILLA)': 'ROBBERIES ON LINE 5 (YELLOW)', 'La Línea 5 (amarilla) reporta robos en Valle Gómez y Consulado.': 'Line 5 (yellow) reports thefts at Valle Gómez and Consulado.', 'Valle Gómez y Consulado peligrosas': 'Valle Gómez and Consulado are dangerous',
+    'Tlatelolco: Robo a mano armada': 'Tlatelolco: Armed robbery', 'Esta madrugada asaltaron a un trabajador en Tlatelolco.': 'A worker was mugged in Tlatelolco in the early morning.', 'Tlatelolco es peligrosa': 'Tlatelolco is dangerous',
+    'ALERTA EN LÍNEA 3 (VERDE) NORTE': 'ALERT ON LINE 3 (GREEN) NORTH', 'Indios Verdes y La Raza reportan aumento de robos.': 'Indios Verdes and La Raza report more robberies.', 'Indios Verdes y La Raza con riesgo': 'Indios Verdes and La Raza are risky',
+    'Pino Suárez: Zona de cuidado': 'Pino Suárez: Caution area', 'Varios reportes de carteristas en Pino Suárez.': 'Several reports of pickpockets at Pino Suárez.', 'Pino Suárez con carteristas': 'Pickpockets at Pino Suárez',
+    'PROTESTA EN INSURGENTES (LÍNEA 1 ROSA)': 'PROTEST AT INSURGENTES (LINE 1 PINK)', 'Manifestantes bloquean la estación Insurgentes.': 'Protesters are blocking Insurgentes station.',
+    'BLOQUEO EN JUÁREZ (LÍNEA 3 VERDE)': 'BLOCKADE AT JUÁREZ (LINE 3 GREEN)', 'Estudiantes bloquean Juárez. No hay servicio.': 'Students are blocking Juárez. No service.',
+    'MARCHA EN REFORMA (BELLAS ARTES, LÍNEA 2 AZUL)': 'MARCH ON REFORMA (BELLAS ARTES, LINE 2 BLUE)', 'Marcha masiva afecta Bellas Artes.': 'A massive march affects Bellas Artes.',
+    'PARO EN GARIBALDI (LÍNEA B GRIS)': 'WALKOUT AT GARIBALDI (LINE B GRAY)', 'Trabajadores del Metro realizan paro en Garibaldi.': 'Metro workers are on strike at Garibaldi.',
+    'MANIFESTACIÓN EN ZÓCALO (LÍNEA 2 AZUL)': 'DEMONSTRATION AT ZÓCALO (LINE 2 BLUE)', 'Protesta en el centro histórico. Zócalo inaccesible.': 'Protest in the historic center. Zócalo is unreachable.',
+    'Solo {0} está cerrada; el resto de la línea sigue': 'Only {0} is closed; the rest of the line keeps running',
+    'RUTA 87 RETRASADA': 'ROUTE 87 DELAYED', 'La Ruta 87 tiene 20 min de retraso.': 'Route 87 is 20 min late.', '+{0} min en rutas de Línea {1} ({2})': '+{0} min on Line {1} routes ({2})',
+    'FALLA EN LÍNEA 2 (AZUL)': 'FAILURE ON LINE 2 (BLUE)', 'Falla eléctrica en la Línea 2 (azul). Servicio reducido.': 'Electrical failure on Line 2 (blue). Reduced service.',
+    'LÍNEA 5 (AMARILLA) CON DEMORA': 'LINE 5 (YELLOW) DELAYED', 'Demora de 15 minutos en Línea 5 (amarilla) por mantenimiento.': '15-minute delay on Line 5 (yellow) due to maintenance.',
+    'OBRAS EN LÍNEA B (GRIS)': 'ROADWORKS ON LINE B (GRAY)', 'Obras en Tepito. Ruta lenta.': 'Roadworks in Tepito. Slow route.',
+    'LA COMBI DEL "RAYO" NO PASÓ': 'THE "RAYO" COMBI DID NOT SHOW UP', 'La combi del "Rayo" no pasó. Como siempre.': 'The "Rayo" combi did not show up. As usual.', '+3 min en tu próximo viaje': '+3 min on your next trip',
+    'LLUVIA FUERTE': 'HEAVY RAIN', 'Lluvia intensa en la ciudad. Caminos resbalosos.': 'Intense rain in the city. Slippery roads.', '-10 stamina': '-10 stamina',
+    'CALOR EXTREMO 35°C': 'EXTREME HEAT 35°C', 'Ola de calor. Hidrátate o perderás energía rápido.': 'Heat wave. Stay hydrated or you will lose energy fast.', '-15 stamina': '-15 stamina',
+    'METRO EXPRESS': 'METRO EXPRESS', 'Trenes express en Línea 3 (verde). Viaje más rápido.': 'Express trains on Line 3 (green). Faster trip.', '-2 min en rutas de Línea 3 (verde)': '-2 min on Line 3 (green) routes',
+    'PROMOCIÓN MONSTER': 'MONSTER PROMOTION', '2x1 en Monster Energy en todas las tiendas del Metro.': '2-for-1 Monster Energy at all Metro stores.', 'Monster cuesta $20 en lugar de $30': 'Monster costs $20 instead of $30',
+    'METRO GRATIS HOY': 'FREE METRO TODAY', '¡El gobierno anunció metro gratis por el día!': 'The government announced a free Metro for the day!', '-$5 en tu próximo viaje (gratis)': '-$5 on your next trip (free)'
+  });
+})();

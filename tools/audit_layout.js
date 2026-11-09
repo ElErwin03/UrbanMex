@@ -18,7 +18,7 @@ const hit = (a, b, e) => a.x + a.w > b.x + e && b.x + b.w > a.x + e && a.y + a.h
 texts.forEach((s) => {
   if (s.x < -1 || s.y < -1 || s.x + s.w > 1281 || s.y + s.h > 721) say('FUERA DE PANTALLA: "' + sh(s) + '" (' + Math.round(s.x) + ',' + Math.round(s.y) + ' ' + Math.round(s.w) + 'x' + Math.round(s.h) + ')');
   // panel contenedor: el rectángulo más chico (por debajo del texto en z) que contiene su esquina de origen; se ignoran los de pantalla casi completa
-  const c = rects.filter((r) => r.z <= s.z && s.x >= r.x - 1 && s.y >= r.y - 1 && s.x < r.x + r.w && s.y < r.y + r.h && r.w < 1200).sort((a, b) => a.w * a.h - b.w * b.h)[0];
+  const c = rects.filter((r) => r.z <= s.z && s.x >= r.x + 3 && s.y >= r.y - 1 && s.x < r.x + r.w && s.y < r.y + r.h && r.w < 1200 && r.w >= 40 && r.h >= 20).sort((a, b) => a.w * a.h - b.w * b.h)[0];
   if (c && (s.x + s.w > c.x + c.w + 1 || s.y + s.h > c.y + c.h + 1)) say('SE SALE DEL PANEL: "' + sh(s) + '" (texto ' + Math.round(s.x + s.w) + ',' + Math.round(s.y + s.h) + ' > panel ' + Math.round(c.x + c.w) + ',' + Math.round(c.y + c.h) + ')');
 });
 for (let i = 0; i < texts.length; i++) for (let j = i + 1; j < texts.length; j++) if ((texts[i].z >= 300) === (texts[j].z >= 300) && hit(texts[i], texts[j], 2)) say('TEXTOS ENCIMADOS: "' + sh(texts[i]) + '" y "' + sh(texts[j]) + '"');

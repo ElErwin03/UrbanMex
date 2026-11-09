@@ -255,6 +255,7 @@
     m.fx.update(dt, m);
     U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
     if (m.view === 'main' && ui.button('cred', 'CREDITOS', 1074, 14, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'credits';
+    if (m.view === 'main' && ui.button('lang', U.I18n.lang() === 'en' ? 'ESPANOL' : 'ENGLISH', 1074, ui.mob ? 64 : 52, 190, ui.mob ? 44 : 30, { size: 8, fill: '30;90;130' })) U.I18n.setLang(U.I18n.lang() === 'en' ? 'es' : 'en');   // IDIOMA: el botón dice a cuál cambia
     if (m.view === 'main' && ui.button('a11y', 'ACCESIBILIDAD', 16, ui.mob ? 64 : 52, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'a11y';
     if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && m.view !== 'ach' && m.view !== 'a11y' && ui.button('snd', 'SONIDO', 16, 14, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
     ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);
