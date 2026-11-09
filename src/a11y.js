@@ -11,13 +11,17 @@
   var LEVELS = [['high', 'ALTOS'], ['low', 'BAJOS'], ['off', 'NINGUNO']];
   var HINT_FX = 'Luces, particulas y sombras. NINGUNO es lo mas ligero. Se aplica al empezar el nivel o el menu.';
   var HINT_CALM = 'Sin sacudidas, destellos ni parpadeos: los avisos quedan fijos. Se aplica al instante.';
+  var HINT_FX_M = 'Luces y sombras. NINGUNO es lo mas ligero.', HINT_CALM_M = 'Sin sacudidas ni destellos.';
+  var HINT_UI = 'AUTO agranda letras y botones en pantallas chicas.', HINT_UI_M = 'AUTO: grande solo en pantallas chicas.';
   var NOTE = 'Todo aviso se ve y se oye. El apuro marca con "!" el recurso que se agota, ademas del rojo.';
 
   /** Posiciones del panel para un ancho dado (las comparten el dibujo y el alto). */
-  function layout(w) {
-    var cols = Math.max(20, Math.floor(w / 8)), L = { fx: util.wrap(HINT_FX, cols), calm: util.wrap(HINT_CALM, cols), note: util.wrap(NOTE, cols) };
-    L.btnY = 20; L.fxY = 58; L.calmLabelY = L.fxY + L.fx.length * 12 + 18; L.calmBtnY = L.calmLabelY + 20; L.calmY = L.calmBtnY + 40;
-    L.noteY = L.calmY + L.calm.length * 12 + 18; L.h = L.noteY + L.note.length * 12;
+  function layout(w, mob) {
+    var cw = mob ? 12 : 8, lh = mob ? 18 : 12, bh = mob ? 44 : 30, cols = Math.max(20, Math.floor(w / cw));
+    var L = { fx: util.wrap(mob ? HINT_FX_M : HINT_FX, cols), calm: util.wrap(mob ? HINT_CALM_M : HINT_CALM, cols), ui: util.wrap(mob ? HINT_UI_M : HINT_UI, cols), note: mob ? [] : util.wrap(NOTE, cols), lh: lh, bh: bh };
+    L.btnY = mob ? 22 : 20; L.fxY = L.btnY + bh + 8; L.calmLabelY = L.fxY + L.fx.length * lh + 18; L.calmBtnY = L.calmLabelY + (mob ? 22 : 20); L.calmY = L.calmBtnY + bh + 10;
+    L.uiLabelY = L.calmY + L.calm.length * lh + 18; L.uiBtnY = L.uiLabelY + (mob ? 22 : 20); L.uiY = L.uiBtnY + bh + 8;
+    L.noteY = L.uiY + L.ui.length * lh + 18; L.h = mob ? L.uiY + L.ui.length * lh : L.noteY + L.note.length * lh;
     return L;
   }
 
@@ -31,21 +35,27 @@
     setQuality: function (q) { U.session.fxQuality = q === 'low' || q === 'off' ? q : 'high'; U.Save.persist(); },
     setCalm: function (on) { U.session.calm = !!on; U.Save.persist(); },
     /** Alto que ocupa el panel con ancho `w`. */
-    height: function (w) { return layout(w).h; },
+    height: function (w, mob) { return layout(w, mob).h; },
 
     /** Panel de accesibilidad en (x, y) con ancho w. `id` distingue los botones; modal: dibuja sobre una ventana. Devuelve el alto. */
     panel: function (ui, scene, id, x, y, w, modal) {
-      var L = layout(w), mo = modal ? { modal: true } : {}, tz = modal ? { z: 330 } : {}, gap = 6, bw = Math.floor((w - 2 * gap) / 3), cur = A11y.quality();
+      var L = layout(w, ui.mob), mo = modal ? { modal: true } : {}, tz = modal ? { z: 330 } : {}, gap = 6, bw = Math.floor((w - 2 * gap) / 3), cur = A11y.quality();
       ui.text(id + 'fl', 'EFECTOS VISUALES', x, y, Object.assign({ size: 8 }, tz));
       LEVELS.forEach(function (lv, i) {
         var on = cur === lv[0];
-        if (ui.button(id + 'fx' + lv[0], lv[1], x + i * (bw + gap), y + L.btnY, bw, 30, Object.assign({ size: 8, fill: on ? '39;174;96' : '60;60;90' }, mo))) A11y.setQuality(lv[0]);
+        if (ui.button(id + 'fx' + lv[0], lv[1], x + i * (bw + gap), y + L.btnY, bw, L.bh, Object.assign({ size: 8, fill: on ? '39;174;96' : '60;60;90' }, mo))) A11y.setQuality(lv[0]);
       });
       ui.lines(id + 'fh', L.fx, x, y + L.fxY, Object.assign({ size: 8, lineH: 12, color: PAL.dim }, tz));
       ui.text(id + 'cl', 'REDUCIR MOVIMIENTO', x, y + L.calmLabelY, Object.assign({ size: 8 }, tz));
       var calm = A11y.calm();
-      if (ui.button(id + 'calm', calm ? 'SI' : 'NO', x, y + L.calmBtnY, w, 30, Object.assign({ size: 8, fill: calm ? '39;174;96' : '60;60;90' }, mo))) A11y.setCalm(!calm);
+      if (ui.button(id + 'calm', calm ? 'SI' : 'NO', x, y + L.calmBtnY, w, L.bh, Object.assign({ size: 8, fill: calm ? '39;174;96' : '60;60;90' }, mo))) A11y.setCalm(!calm);
       ui.lines(id + 'ch', L.calm, x, y + L.calmY, Object.assign({ size: 8, lineH: 12, color: PAL.dim }, tz));
+      ui.text(id + 'ul', 'TAMANO DE LA INTERFAZ', x, y + L.uiLabelY, Object.assign({ size: 8 }, tz));                  // AUTO / GRANDE / NORMAL (ver mobile.js)
+      var um = U.Mobile.mode();
+      U.Mobile.MODES.forEach(function (md, i) {
+        if (ui.button(id + 'ui' + md[0], md[1], x + i * (bw + gap), y + L.uiBtnY, bw, L.bh, Object.assign({ size: 8, fill: um === md[0] ? '39;174;96' : '60;60;90' }, mo))) U.Mobile.setMode(md[0]);
+      });
+      ui.lines(id + 'uh', L.ui, x, y + L.uiY, Object.assign({ size: 8, lineH: 12, color: PAL.dim }, tz));
       ui.lines(id + 'nh', L.note, x, y + L.noteY, Object.assign({ size: 8, lineH: 12, color: '150;160;200' }, tz));
       return L.h;
     }
