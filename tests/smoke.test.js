@@ -1495,3 +1495,90 @@ test('móvil: el pellizco conserva el punto entre los dedos; con el dedo el arra
     s.input.x = st.x + 1; s.frame(3); assert.equal(s.U.session.touchMode, false); assert.equal(um.hover, st.id, 'ratón encima: resaltada');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
+
+// ---------------------------------------------------------------- inglés (segundo idioma)
+function enSession(name, setup) {
+  audioReset(); delete globalThis.gdjs.UrbanMex; const s = session(name); s.frame(2); s.U.session.lang = 'en'; s.U.session.touchMode = false; s.U.I18n.clearMisses(); if (setup) setup(s); return s;
+}
+
+test('inglés: ninguna pantalla se queda sin traducir (menú, tutorial, los 10 niveles, modo infinito, celular, pausa y resultados)', () => {
+  const store = store0(), missing = new Map();
+  const grab = (s, where) => s.U.I18n.misses().forEach((m) => { if (!missing.has(m)) missing.set(m, where); });
+  try {
+    // menú: todas las vistas, con y sin progreso
+    [false, true].forEach((full) => ['main', 'levels', 'sound', 'ach', 'a11y', 'credits', 'bye'].forEach((v) => {
+      const m = enSession('Menu', (x) => { if (full) { x.U.session.completed = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; x.U.session.best = { 0: { stars: 3, money: 90 }, 1: { stars: 2, money: 70 } }; x.U.session.inf = { best: 4, stars: 9 }; x.U.session.ach = { primer_viaje: true }; } });
+      m.frame(3); m.scene._um.view = v; m.frame(3); grab(m, 'menú ' + v + (full ? ' (con progreso)' : ''));
+    }));
+    { const m = enSession('Menu'); m.frame(3); m.scene._um.confirmExit = true; m.frame(3); grab(m, 'menú SALIR'); }
+    // tutorial, con ratón y con dedo
+    [false, true].forEach((touch) => { for (let p = 0; p < 6; p++) { const t = enSession('Tutorial', (x) => { x.U.session.touchMode = touch; }); t.frame(3); t.scene._umTut.page = p; t.frame(3); grab(t, 'tutorial ' + p); } });
+    // nivel: los 10 niveles y varias rondas del infinito, en todos sus estados
+    const states = [['inicio', () => {}, true], ['mapa', () => {}],
+      ['vecina', (s, um) => { const run = um.run; um.selected = s.U.Graph.neighbors(run.graph, run.current).find((id) => !run.blocked[id]); }],
+      ['lejana', (s, um) => { um.selected = 'Balderas'; }], ['bloqueada', (s, um) => { um.selected = Object.keys(um.run.blocked)[0] || 'Balderas'; }],
+      ['tienda', (s, um) => { const run = um.run; run.current = Object.keys(run.data.stations).find((id) => run.data.stations[id].shop); um.selected = null; }],
+      ['sin stamina', (s, um) => { um.run.stamina = 1; um.selected = s.U.Graph.neighbors(um.run.graph, um.run.current)[0]; }], ['sin dinero', (s, um) => { um.run.money = 1; um.selected = s.U.Graph.neighbors(um.run.graph, um.run.current)[0]; }],
+      ['tarde', (s, um) => { um.run.minute = 1195; s.U.Rules.syncEvents(um.run); um.selected = s.U.Graph.neighbors(um.run.graph, um.run.current)[0]; }],
+      ['celular', (s, um) => { um.phone.app = 'home'; }], ['noticias', (s, um) => { um.phone.app = 'news'; }], ['ruta', (s, um) => { um.phone.app = 'map'; }], ['saldo', (s, um) => { um.phone.app = 'saldo'; }],
+      ['lineas', (s, um) => { um.phone.app = 'lines'; }], ['sonido', (s, um) => { um.phone.app = 'snd'; }], ['ajustes', (s, um) => { um.phone.app = 'config'; }], ['accesibilidad', (s, um) => { um.phone.app = 'a11y'; }],
+      ['pausa', (s, um) => { um.paused = true; um.pauseView = 'main'; }], ['pausa sonido', (s, um) => { um.paused = true; um.pauseView = 'sound'; }], ['pausa accesibilidad', (s, um) => { um.paused = true; um.pauseView = 'a11y'; }], ['pausa salir', (s, um) => { um.paused = true; um.pauseView = 'confirm'; }],
+      ['jugando', (s, um) => { play(s, um, 7); um.phone.app = 'news'; }], ['jugando mapa', (s, um) => { play(s, um, 12); }]];
+    function play(s, um, hops) {                                            // viaja al azar por tramos válidos: genera noticias, eventos, asaltos y esperas de verdad
+      const R = s.U.Rules, G = s.U.Graph; for (let i = 0; i < hops && !um.run.over; i++) {
+        const opts = G.neighbors(um.run.graph, um.run.current).filter((id) => R.canTravel(um.run, id).ok); if (!opts.length) { if (R.wait) R.wait(um.run); break; }
+        R.travel(um.run, opts[(i * 7 + hops) % opts.length]); s.frame(2);
+      }
+    }
+    const targets = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => ({ lvl: i })).concat([1, 2, 3, 5, 8, 12].map((r) => ({ inf: r })));
+    targets.forEach((t) => states.forEach(([name, fn, keep]) => {
+      const s = enSession('Nivel', (x) => { if (t.inf) { x.U.Infinite.start(100 + t.inf); for (let k = 1; k < t.inf; k++) x.U.session.infinite.round = t.inf; } else { x.U.session.levelIndex = t.lvl; x.U.session.infinite = null; } delete x.scene._um; });
+      s.frame(3); const um = s.scene._um; if (!keep) um.modal = null; fn(s, um); s.frame(3); grab(s, (t.inf ? 'infinito ' + t.inf : 'nivel ' + (t.lvl + 1)) + ' ' + name);
+    }));
+    // ventanas del nivel: asalto, compra de Monster, final
+    [['asalto', (s, um) => { um.modal = { kind: 'robbery', loss: 30, zone: 'Tepito', robbed: true }; }]].forEach(() => {});
+    // resultados
+    [{ stars: 3 }, { stars: 2, got: { arrive: true, saver: false, safe: true } }, { stars: 1, record: { isNew: false, prev: { stars: 3, money: 80 } } }, { stars: 3, record: { isNew: true, prev: { stars: 1, money: 40 } } }, { stars: 2, record: { isNew: true, prev: null } },
+     { won: false, left: 4, cause: 'stamina', reason: 'Te quedaste sin stamina.' }, { won: false, left: 1, cause: 'night', reason: 'Anocheció y no llegaste a tiempo.' }, { won: false, left: 0, cause: 'money', stolen: 30, robbed: 1, reason: 'Te quedaste sin dinero.' }, { won: false, left: 8, cause: 'blocked', reason: 'Todas las rutas están bloqueadas.' },
+     { stars: 3, robbed: 2, stolen: 40, got: { arrive: true, saver: true, safe: false } }, { stars: 3, levelIndex: 4, weekDone: 0 }, { stars: 3, levelIndex: 9, allDone: true }, { achievements: ['primer_viaje', 'hora_pico', 'sin_monster', 'lluvia', 'triple'] },
+     { infinite: { round: 3 }, streak: { cleared: 3, stars: 7, newBest: true, best: { best: 3, stars: 7 } } }, { infinite: { round: 4 }, streak: { cleared: 1, stars: 2, newBest: false, best: { best: 5, stars: 9 } } }, { won: false, infinite: { round: 1 }, streak: { cleared: 0, stars: 0, newBest: false, best: { best: 0, stars: 0 } }, cause: 'stamina' }].forEach((o, i) => {
+      const s = enSession('Resultado'); s.U.session.lastResult = fakeResult(o); s.frame(40); grab(s, 'resultado ' + i);
+    });
+    const list = [...missing].map(([m, w]) => JSON.stringify(m) + '  <- ' + w);
+    assert.equal(list.length, 0, 'textos sin traducir (' + list.length + '):\n' + list.join('\n'));
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+// ---------------------------------------------------------------- inglés (segundo idioma)
+test('inglés (menú): el botón cambia el idioma, se guarda y los textos salen en inglés', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene);
+    U.session.ach = {}; U.session.lang = 'es'; m.frame(2); assert.equal(T()['UI:btn:lang'], 'ENGLISH', 'el botón dice a qué idioma cambia'); assert.equal(T()['UI:btn:cred'], 'CREDITOS'); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23');
+    m.click(1169, 67); m.frame(2); assert.equal(U.I18n.lang(), 'en'); assert.equal(JSON.parse(store['UrbanMex_save_v1']).lang, 'en');
+    assert.equal(T()['UI:btn:lang'], 'ESPANOL'); assert.equal(T()['UI:btn:cred'], 'CREDITS'); assert.equal(T()['UI:btn:ach'], 'ACHIEVEMENTS 0/23'); assert.equal(T()['UI:btn:a11y'], 'ACCESSIBILITY'); assert.equal(T()['UI:btn:snd'], 'SOUND');
+    assert.match(T()['UI:prog'], /levels completed/, 'los textos que no son botones también salen en inglés');
+    const ui0 = U.UI.of(m.scene); U.session.uiMode = 'on'; ui0.begin(); ui0.button('zz', 'CREDITOS', 10, 10, 100, 44, { size: 8 }); ui0.end(); assert.equal(ui0.pool.t['UI:btn:zz']._umSize, 12, 'el rótulo cabe en inglés (7 letras) aunque en español (8) tendría que achicarse'); U.session.uiMode = 'auto';
+    m.click(1169, 67); m.frame(2); assert.equal(U.I18n.lang(), 'es'); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23'); assert.equal(T()['UI:btn:lang'], 'ENGLISH');
+    // en modo celular el botón también es tocable (44 px)
+    U.session.uiMode = 'on'; m.frame(2); const b = m.scene._umUI.buttons.find((x) => x.id === 'lang'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón de idioma grande en modo celular');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('inglés + modo celular: las pantallas con letras grandes tampoco quedan sin traducir (y los textos largos caben)', () => {
+  const store = store0(), missing = new Map();
+  try {
+    const grab = (s, where) => s.U.I18n.misses().forEach((m) => { if (!missing.has(m)) missing.set(m, where); });
+    const mob = (name, setup) => enSession(name, (x) => { x.U.session.uiMode = 'on'; if (setup) setup(x); });
+    ['main', 'levels', 'sound', 'ach', 'a11y', 'credits'].forEach((v) => { const m = mob('Menu', (x) => { x.U.session.completed = [0, 1, 2]; x.U.session.inf = { best: 3, stars: 5 }; }); m.frame(3); m.scene._um.view = v; m.frame(3); grab(m, 'menú ' + v); });
+    for (let p = 0; p < 6; p++) { const t = mob('Tutorial', (x) => { x.U.session.touchMode = true; }); t.frame(3); t.scene._umTut.page = p; t.frame(3); grab(t, 'tutorial ' + p); }
+    [{ stars: 3, record: { isNew: true, prev: { stars: 1, money: 40 } } }, { won: false, left: 2, cause: 'stamina' }, { won: false, left: 0, cause: 'night', robbed: 1, stolen: 20 }, { infinite: { round: 3 }, streak: { cleared: 2, stars: 5, newBest: true, best: { best: 2, stars: 5 } } }, { achievements: ['primer_viaje', 'hora_pico', 'sin_monster', 'lluvia'] }]
+      .forEach((o, i) => { const s = mob('Resultado'); s.U.session.lastResult = fakeResult(o); s.frame(40); grab(s, 'resultado ' + i); });
+    [0, 5, 9].forEach((l) => ['inicio', 'vecina', 'noticias', 'pausa'].forEach((st) => {
+      const s = mob('Nivel', (x) => { x.U.session.levelIndex = l; x.U.session.infinite = null; delete x.scene._um; }); s.frame(3); const um = s.scene._um; if (st !== 'inicio') um.modal = null;
+      if (st === 'vecina') um.selected = s.U.Graph.neighbors(um.run.graph, um.run.current)[0]; if (st === 'noticias') um.phone.app = 'news'; if (st === 'pausa') { um.paused = true; um.pauseView = 'main'; }
+      s.frame(3); grab(s, 'nivel ' + (l + 1) + ' ' + st);
+    }));
+    const list = [...missing].map(([m, w]) => JSON.stringify(m) + '  <- ' + w); assert.equal(list.length, 0, 'sin traducir (' + list.length + '):\n' + list.join('\n'));
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});

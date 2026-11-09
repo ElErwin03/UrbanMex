@@ -57,6 +57,7 @@ const frame = () => { layout.events.forEach((ev) => {
 const frames = +flag('frames', 12), U = () => globalThis.gdjs.UrbanMex;
 frame();                                                       // 1.er fotograma: crea los módulos (y la sesión)
 if (flag('mobile')) U().session.uiMode = 'on';
+if (flag('lang')) U().session.lang = flag('lang');
 if (flag('level')) U().session.levelIndex = +flag('level');
 if (flag('result')) {                                         // escena Resultado: --result win | lose (datos de ejemplo); --stars 1..3 (win), --left N (lose), --cause stamina|money|night|blocked, --record new|old, --t SEG (avanza la animación)
   const won = flag('result') === 'win', stars = won ? +flag('stars', 3) : 0, left = +flag('left', 4), hops = 12;
@@ -86,7 +87,7 @@ for (let i = 0; i < frames; i++) {
 
 const images = {};
 objs.forEach((o) => { if (o.def.type === 'Sprite') o.def.animations.forEach((a) => { const im = a.directions[0].sprites[0].image; images[o.def.name + '/' + a.name] = { file: res[im].file, smoothed: !!res[im].smoothed }; }); });
-const out = { scene: sceneName, mobile: !!flag('mobile'), buttons: ((scene._umUI && scene._umUI.buttons) || []), cams: Object.fromEntries(Object.entries(cams).map(([k, v]) => [k, { x: v.x, y: v.y, zoom: v.zoom }])), layers, images,
+const out = { scene: sceneName, mobile: !!flag('mobile'), lang: flag('lang') || 'es', misses: (U().I18n ? U().I18n.misses() : []), buttons: ((scene._umUI && scene._umUI.buttons) || []), cams: Object.fromEntries(Object.entries(cams).map(([k, v]) => [k, { x: v.x, y: v.y, zoom: v.zoom }])), layers, images,
   objects: objs.filter((o) => !o.deleted && !o.hidden).map((o) => ({ name: o.def.name, type: o.def.type, outline: !!(o.def.content && o.def.content.isOutlineEnabled), idx: o.idx, layer: o.layer, z: o.z, x: o.x, y: o.y,
     opacity: o.opacity, anim: o.anim || (o.def.animations && o.def.animations[0].name), scale: o.scale, sx: o.sx, sy: o.sy, blend: o.blend, angle: o.angle, color: o.color, text: o.text, size: o.size, ops: o.ops })) };
 fs.writeFileSync(outFile, JSON.stringify(out));

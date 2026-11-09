@@ -19,6 +19,7 @@
                  color: raw.stations.lines[String(s.line)].color, colorName: raw.stations.lines[String(s.line)].colorName || '' };
       stations[st.id] = st; list.push(st);
     });
+    if (U.I18n) U.I18n.keep(Object.keys(stations));                              // los nombres de estaciones no se traducen
     var conns = raw.connections.map(function (c) {
       if (!stations[c[0]] || !stations[c[1]]) throw new Error('Conexión con estación inexistente: ' + c[0] + ' - ' + c[1]);
       var combi = c[3] === 'combi', isTransfer = !combi && c[2] >= cfg.transferTime;   // las rutas de combi no son transbordos aunque tarden 12 min
