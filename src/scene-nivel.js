@@ -143,6 +143,16 @@
 
   function drawControls(ui, um) {   // barra horizontal arriba a la izquierda: no tapa la red encuadrada
     var m = um.map, y = 66, c = { size: 8, fill: '60;60;90' };
+    if (ui.mob) {                                                                 // modo celular: botones de 44 px
+      ui.rect(16, 62, 376, 52, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
+      if (ui.button('z-', '-', 22, y, 44, 44, { size: 16, fill: '60;60;90' })) m.zoomBy(-0.2);
+      ui.text('zl', Math.round(m.cam.zoom * 100) + '%', 96, y + 16, { size: 8, align: 'center', color: PAL.dim });
+      if (ui.button('z+', '+', 126, y, 44, 44, { size: 16, fill: '60;60;90' })) m.zoomBy(0.2);
+      if (ui.button('fit', 'TODO', 178, y, 72, 44, c)) m.fit();
+      if (ui.button('rc', 'YO', 256, y, 56, 44, c)) { if (m.cam.zoom < 1.4) m.zoomBy(1.4 - m.cam.zoom); m.followPlayer(); }
+      if (ui.button('abc', 'ABC', 318, y, 68, 44, { size: 8, fill: m.labelsAll ? '39;174;96' : '60;60;90' })) m.labelsAll = !m.labelsAll;
+      return;
+    }
     ui.rect(16, 62, 322, 44, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
     if (ui.button('z-', '-', 22, y, 34, 32, { size: 16, fill: '60;60;90' })) m.zoomBy(-0.2);
     ui.text('zl', Math.round(m.cam.zoom * 100) + '%', 87, y + 12, { size: 8, align: 'center', color: PAL.dim });
@@ -155,15 +165,21 @@
   /** Eventos del día (lluvia, hora pico, huelga) en curso o por venir, debajo de la barra de arriba. Los que ya terminaron desaparecen (queda su noticia). */
   var CHIP = { lluvia: '90;170;255', horaPico: '243;156;18', huelga: '192;57;43' };
   function drawEventChips(ui, um) {
-    var x = 346, shown = 0, run = um.run;
+    var M = ui.mob, x0 = M ? 400 : 346, x = x0, cy = 62, shown = 0, run = um.run, limit = um.phone.open ? (M ? 826 : 906) : 1272;
     U.Events.status(run).forEach(function (e) {
       if (e.state === 'over') return;
-      var w = e.id === 'huelga' ? 236 : 150, cx = x, on = e.state === 'active', col = CHIP[e.id] || PAL.orange, k = 'ev' + shown;
-      ui.rect(cx, 62, w, 44, { fill: '12;10;24', border: on ? col : '90;90;120', bw: 2, block: true });
-      ui.icon(k + ':i', e.icon, cx + 6, 70, 1.5);
-      ui.text(k + ':l', e.label, cx + 36, 70, { size: 8, color: on ? col : PAL.dim });
-      ui.text(k + ':t', e.text, cx + 36, 86, { size: 8, color: on ? '255;255;255' : PAL.dim });
-      if (e.id === 'huelga' && on && ui.button(k + ':w', 'ESPERAR', cx + w - 84, 68, 78, 32, { size: 8, fill: '70;100;160', disabled: !!um.modal || !!um.pending || um.map.moving() })) waitStrike(um);   // pasa el tiempo hasta que reabra
+      var on = e.state === 'active', col = CHIP[e.id] || PAL.orange, k = 'ev' + shown, btn = e.id === 'huelga' && on, w, ch = M ? 52 : 44;
+      if (M) {                                                                    // el ancho sale del texto (las letras son más grandes)
+        w = 44 + Math.max(e.label.length, e.text.length) * 12 + 10 + (btn ? 104 : 0);
+        if (x > x0 && x + w > limit) { x = x0; cy += ch + 6; }                    // no cabe en la fila: pasa a la siguiente
+      } else w = e.id === 'huelga' ? 236 : 150;
+      ui.rect(x, cy, w, ch, { fill: '12;10;24', border: on ? col : '90;90;120', bw: 2, block: true });
+      ui.icon(k + ':i', e.icon, x + 6, cy + (M ? 14 : 8), 1.5);
+      ui.text(k + ':l', e.label, x + 36, cy + (M ? 8 : 8), { size: 8, color: on ? col : PAL.dim });
+      ui.text(k + ':t', e.text, x + 36, cy + (M ? 28 : 24), { size: 8, color: on ? '255;255;255' : PAL.dim });
+      var blocked = !!um.modal || !!um.pending || um.map.moving();
+      if (btn && M && ui.button(k + ':w', 'ESPERAR', x + w - 100, cy + 4, 96, 44, { size: 8, fill: '70;100;160', disabled: blocked })) waitStrike(um);
+      else if (btn && !M && ui.button(k + ':w', 'ESPERAR', x + w - 84, cy + 6, 78, 32, { size: 8, fill: '70;100;160', disabled: blocked })) waitStrike(um);   // pasa el tiempo hasta que reabra
       x += w + 6; shown++;
     });
   }
@@ -178,8 +194,22 @@
     });
   }
 
+  /** Panel de la estación en modo celular: letras de 12 px, costos en una fila y botones de 44 px (el texto de arriba ya se dibujó). */
+  function drawStationPanelMobile(ui, um, id, chk, c, why, x, y, w, h) {
+    var run = um.run, cfg = run.data.config, base = c.combi ? c.time : c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base, ry = y + 82;
+    ui.icon('sp:i1', 'reloj', x + 16, ry, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ')' : ''), x + 48, ry + 6, { size: 8, color: delay > 2 || (why && why.code === 'night') ? PAL.red : PAL.blue });
+    ui.icon('sp:i2', 'rayo', x + 250, ry, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 282, ry + 6, { size: 8, color: why && why.code === 'stamina' ? PAL.red : '255;255;255' });
+    ui.icon('sp:i3', 'moneda', x + 340, ry, 1.5); ui.text('sp:c3', '-' + c.money, x + 372, ry + 6, { size: 8, color: why && why.code === 'money' ? PAL.red : '255;255;255' });
+    if (c.combi) ui.text('sp:tr', 'COMBI', x + 450, ry + 6, { size: 8, color: '255;170;40' });
+    else if (c.time >= cfg.transferTime) ui.text('sp:tr', 'TRANSBORDO', x + 450, ry + 6, { size: 8, color: PAL.yellow });
+    U.Events.effects(run, c).slice(0, 2).forEach(function (e, i) { ui.text('sp:ev' + i, e, x + 440, y + h - 62 + i * 22, { size: 8, color: PAL.yellow }); });
+    var label = chk.ok ? 'VIAJAR' : (REASON[chk.reason] || 'NO');
+    if (ui.button('sp:go', label, x + 16, y + h - 58, 230, 44, { size: 8, fill: chk.ok ? undefined : '90;60;60' })) travel(um, id);
+    if (ui.button('sp:no', 'CANCELAR', x + 258, y + h - 58, 170, 44, { size: 8, fill: '70;70;100' })) um.selected = null;
+  }
+
   function drawStationPanel(ui, um) {
-    var run = um.run, cfg = run.data.config, x = 16, y = 592, w = 540, h = 124;
+    var M = ui.mob, run = um.run, cfg = run.data.config, x = 16, y = M ? 528 : 592, w = M ? 700 : 540, h = M ? 176 : 124;
     if (um.selected) {
       var id = um.selected, st = run.data.stations[id], chk = R.canTravel(run, id), c = chk.cost || { time: 0, stamina: cfg.staminaPerStation, money: cfg.moneyPerStation };
       var desc = id === run.level.goal ? run.level.goalDesc : st.shop ? 'Hay una tienda. Monster: $' + R.monsterPrice(run) + ' (+' + cfg.monsterStamina + ' stamina)' : 'Estacion de la Linea ' + st.line + (st.colorName ? ' (' + st.colorName + ')' : '') + '. Viajar aqui?';
@@ -187,8 +217,9 @@
       ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });
       ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });
       var why = chk.ok ? null : R.explain(run, id);                          // por qué NO se puede viajar (con los números reales)
-      if (why) { ui.text('sp:w1', why.short + '.', x + 16, y + 34, { size: 8, color: PAL.red }); ui.text('sp:w2', why.detail, x + 16, y + 48, { size: 8, color: '200;205;225' }); }
-      else ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: 62, color: '200;205;225' });
+      if (why) { ui.text('sp:w1', why.short + '.', x + 16, y + 34, { size: 8, color: PAL.red }); ui.text('sp:w2', why.detail, x + 16, y + (M ? 54 : 48), { size: 8, cols: M ? 54 : 80, color: '200;205;225' }); }
+      else ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: M ? 54 : 62, color: '200;205;225' });
+      if (M) return drawStationPanelMobile(ui, um, id, chk, c, why, x, y, w, h);
       var base = c.combi ? c.time : c.time >= cfg.transferTime ? cfg.transferTime : cfg.stationTime, delay = c.time - base;
       ui.icon('sp:i1', 'reloj', x + 16, y + 62, 1.5); ui.text('sp:c1', '-' + c.time + ' min' + (delay > 2 ? ' (+' + delay + ' retraso)' : '') , x + 44, y + 70, { size: 8, color: delay > 2 || (why && why.code === 'night') ? PAL.red : PAL.blue });
       ui.icon('sp:i2', 'rayo', x + 220, y + 62, 1.5); ui.text('sp:c2', '-' + c.stamina, x + 248, y + 70, { size: 8, color: why && why.code === 'stamina' ? PAL.red : '255;255;255' });
@@ -202,23 +233,25 @@
       if (ui.button('sp:no', 'CANCELAR', x + 232, y + 90, 150, 32, { size: 8, fill: '70;70;100' })) um.selected = null;
     } else if (run.data.stations[run.current].shop) {
       var price = R.monsterPrice(run), can = run.money >= price && run.stamina < run.staminaMax;
-      ui.rect(x, 616, 300, 96, { fill: '12;10;24', border: '90;170;255', bw: 3, block: true });
-      ui.icon('sh:i', 'tienda', x + 14, 624, 2); ui.text('sh:t', 'TIENDA AQUI', x + 56, 632, { size: 8, color: '90;170;255' });
-      if (ui.button('sh:buy', 'MONSTER $' + price, x + 14, 666, 272, 36, { size: 8, fill: '39;174;96', disabled: !can })) buy(um);
+      var sy = M ? 592 : 616, sh = M ? 124 : 96, bh = M ? 44 : 36, bw = M ? 330 : 300;
+      ui.rect(x, sy, bw, sh, { fill: '12;10;24', border: '90;170;255', bw: 3, block: true });
+      ui.icon('sh:i', 'tienda', x + 14, sy + 8, 2); ui.text('sh:t', 'TIENDA AQUI', x + 56, sy + (M ? 16 : 16), { size: 8, color: '90;170;255' });
+      if (ui.button('sh:buy', 'MONSTER $' + price, x + 14, sy + sh - bh - 12, bw - 28, bh, { size: 8, fill: '39;174;96', disabled: !can })) buy(um);
     }
   }
 
   function drawModal(ui, um) {
     var m = um.modal; if (!m) return;
     ui.rect(0, 0, 1280, 720, { fill: '0;0;0', alpha: 150, bw: 0, modal: true, block: true });
-    var w = 640, h = 300, x = 320, y = 210;
+    var M = ui.mob, w = M ? 900 : 640, lines = wrapLines(m.lines, M ? Math.floor((w - 56) / ui.fs(12)) : 48), lh = M ? 24 : 18;
+    var h = M ? Math.max(300, 64 + lines.length * lh + 100) : 300, x = (1280 - w) / 2, y = Math.round((720 - h) / 2);
     ui.rect(x, y, w, h, { fill: '16;14;32', border: PAL.orange, bw: 4, modal: true, block: true });
     ui.text('md:t', m.title, x + w / 2, y + 22, { size: 16, align: 'center', color: PAL.orange, z: 320 });
-    ui.lines('md:b', wrapLines(m.lines, 48), x + 28, y + 64, { size: 12, z: 320, lineH: 18, color: '220;224;240' });
-    var n = m.buttons.length, bw = 170, gap = 20, bx = x + (w - (n * bw + (n - 1) * gap)) / 2;
+    ui.lines('md:b', lines, x + 28, y + 64, { size: 12, z: 320, lineH: 18, color: '220;224;240' });
+    var n = m.buttons.length, bw = M ? 220 : 170, bh = M ? 52 : 40, gap = 20, bx = x + (w - (n * bw + (n - 1) * gap)) / 2;
     m.buttons.forEach(function (b, i) {
       var fill = b.kind === 'safe' ? '39;174;96' : b.kind === 'danger' ? '192;57;43' : '70;70;100';
-      if (ui.button('md:' + i, b.label, bx + i * (bw + gap), y + h - 62, bw, 40, { size: 8, fill: fill, modal: true })) closeModal(um, b);
+      if (ui.button('md:' + i, b.label, bx + i * (bw + gap), y + h - bh - 22, bw, bh, { size: 8, fill: fill, modal: true })) closeModal(um, b);
     });
   }
 
@@ -236,7 +269,7 @@
 
   /** Ventana de pausa: CONTINUAR / SONIDO (los tres volúmenes) / SALIR AL MENU (con confirmación). Todo lo de abajo queda congelado. */
   function drawPause(ui, um) {
-    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? 440 : v === 'a11y' ? 70 + U.A11y.height(440) + 10 + 44 + 40 : v === 'confirm' ? 250 : 388, y = Math.round((720 - h) / 2);
+    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? (ui.mob ? 500 : 440) : v === 'a11y' ? 70 + U.A11y.height(440, ui.mob) + 10 + 44 + 40 : v === 'confirm' ? 250 : 388, y = Math.round((720 - h) / 2);
     ui.rect(0, 0, 1280, 720, { fill: '0;0;0', alpha: 170, bw: 0, modal: true, block: true });
     ui.rect(x, y, w, h, { fill: '16;14;32', border: PAL.orange, bw: 4, modal: true, block: true });
     var T = function (k, str, ty, o) { ui.text(k, str, x + w / 2, ty, Object.assign({ align: 'center', z: 330 }, o)); };
@@ -265,7 +298,7 @@
       if (B('pa:a11y', 'ACCESIBILIDAD', x + 110, y + 242, 300, '60;60;90')) um.pauseView = 'a11y';
       if (B('pa:menu', 'SALIR AL MENU', x + 110, y + 300, 300, '110;50;50')) um.pauseView = 'confirm';
     }
-    if (v !== 'confirm') T('pa:hint', v === 'sound' || v === 'a11y' ? 'ESC: volver' : 'ESC o P: continuar', y + h - 22, { size: 8, color: PAL.dim });
+    if (v !== 'confirm' && !ui.mob) T('pa:hint', v === 'sound' || v === 'a11y' ? 'ESC: volver' : 'ESC o P: continuar', y + h - 22, { size: 8, color: PAL.dim });
   }
 
   function drawFloats(ui, um, dt) {
@@ -282,6 +315,7 @@
     if (!data) { ui.begin(); ui.text('load', 'CARGANDO...', 640, 340, { size: 16, align: 'center' }); ui.end(); return; }
     var um = scene._um || init(scene, data), run = um.run, rdt = Math.min(0.1, scene.getElapsedTime() / 1000), dt = um.paused ? 0 : rdt;
     ui.begin();
+    if (um.geoMob !== ui.mob) { um.geoMob = ui.mob; um.map.phoneX1 = ui.mob ? 826 : 906; um.map.setPhoneOpen(um.phone.open); }   // el celular es más ancho en modo celular
 
     // Esc o P: pausa / continúa (en la ventana de SONIDO o de confirmación, Esc vuelve al menú de pausa); no hay pausa al terminar el día
     if (!run.over && !um.exitToMenu) {
@@ -300,24 +334,30 @@
     if (um.paused) { ui.px = cur.x; ui.py = cur.y; ui.released = cur.rel; ui.pressed = cur.prs; ui.wheel = cur.whl; drawPause(ui, um); }
     else drawModal(ui, um);
 
-    var busy = !!um.modal || um.map.moving() || !!um.pending || run.over || um.paused, d = um.drag;
-    if (!busy) {
+    var busy = !!um.modal || um.map.moving() || !!um.pending || run.over || um.paused, d = um.drag, tp = ui.touch, nT = ui.touches.length;
+    if (!busy && nT >= 2) {                                          // PELLIZCAR: dos dedos acercan / alejan el mapa (y lo arrastran); no cuenta como toque ni como arrastre
+      var a = ui.touches[0], b = ui.touches[1], dist = Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      if (!um.map.pinching()) { um.map.pinchStart(mx, my); d.pinchDist = dist; }
+      um.map.pinchMove(dist / d.pinchDist, mx, my); d.active = false; um.lastClick = null; d.skipUp = true;
+    } else if (um.map.pinching()) um.map.pinchEnd();
+    if (!busy && nT < 2) {
       if (ui.pressed && !ui.consumed) { d.active = true; d.moved = false; d.sx = d.lx = ui.px; d.sy = d.ly = ui.py; }
       if (d.active && ui.down) {
-        if (Math.hypot(ui.px - d.sx, ui.py - d.sy) > 6) d.moved = true;
+        if (Math.hypot(ui.px - d.sx, ui.py - d.sy) > (tp ? 12 : 6)) d.moved = true;            // con el dedo hace falta mover más para que cuente como arrastre
         if (d.moved) um.map.pan(ui.px - d.lx, ui.py - d.ly);
         d.lx = ui.px; d.ly = ui.py;
       }
-      if (d.active && ui.released) {
+      if (ui.released && d.skipUp) d.skipUp = false;                                              // el dedo que queda tras pellizcar no es un toque
+      else if (d.active && ui.released) {
         if (!d.moved && !ui.consumed) {
-          var cid = um.map.pick(ui.px, ui.py), lc = um.lastClick;
+          var cid = um.map.pick(ui.px, ui.py, tp), lc = um.lastClick;
           if (cid && lc && lc.id === cid && um.t - lc.t < 0.45 && U.session.dblTravel) { um.lastClick = null; doubleClick(um, cid); }
           else { clickMap(um, cid); um.lastClick = cid ? { id: cid, t: um.t } : null; }
         }
         d.active = false;
       }
       if (ui.wheel && !ui.consumed) um.map.zoomBy(ui.wheel > 0 ? -0.1 : 0.1);
-      um.hover = !ui.consumed ? um.map.pick(ui.px, ui.py) : null;
+      um.hover = !ui.consumed && (!tp || ui.down) ? um.map.pick(ui.px, ui.py, tp) : null;     // con el dedo no hay "pasar por encima"
     } else { d.active = false; um.hover = null; }
 
     if (!um.paused && um.pending && !um.map.moving()) resolve(um);

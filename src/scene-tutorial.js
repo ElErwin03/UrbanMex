@@ -11,7 +11,7 @@
                       monsterPrice: 30, monsterStamina: 40, robbery: { minLoss: 20, maxLoss: 59 }, combi: { money: 10, stamina: 5 } };
 
   /** Las páginas (texto con los números de la configuración). Puro: lo usan la escena y las pruebas. */
-  function pages(cfg) {
+  function pages(cfg, touch) {                                              // touch: textos para pantalla táctil (toque en vez de clic, sin teclas)
     cfg = cfg || DEFAULT_CFG;
     var cur = cfg.currencyName, end = util.clock(cfg.dayEndMinute), start = util.clock(cfg.dayStartMinute), urgent = Math.round(U.Rules.URGENT_BELOW * 100);
     return [
@@ -21,7 +21,7 @@
         ['reloj', 'EL RELOJ ES TU LIMITE', 'El tiempo solo avanza cuando viajas: ' + cfg.stationTime + ' min por estación y ' + cfg.transferTime + ' min por transbordo.']] },
       { id: 'move', title: 'COMO MOVERTE', items: [
         ['persona', 'ELIGE UNA VECINA', 'Toca una estación conectada a la tuya: las vecinas se iluminan en el mapa.'],
-        ['mapa', 'PULSA VIAJAR', 'El botón está en el panel de abajo a la izquierda. Con doble clic en una vecina viajas directo.'],
+        ['mapa', 'PULSA VIAJAR', 'El botón está en el panel de abajo a la izquierda. Con ' + (touch ? 'doble toque' : 'doble clic') + ' en una vecina viajas directo.'],
         ['combi', 'COMBIS Y TRANSBORDOS', 'Las rutas punteadas naranja son combis: saltan varias estaciones y cuestan $' + cfg.combi.money + ' y ' + cfg.combi.stamina + ' de stamina. Cambiar de línea es un transbordo.']] },
       { id: 'res', title: 'TUS RECURSOS', items: [
         ['reloj', 'TIEMPO', 'Hasta las ' + end + '. Las fallas de una línea suman minutos de retraso.'],
@@ -37,7 +37,7 @@
         ['rayo', 'APURO', 'Con menos del ' + urgent + ' % de tiempo, dinero o stamina, el borde se pone rojo y el HUD muestra "!". Si no puedes viajar, el panel te dice por qué.']] },
       { id: 'stars', title: 'ESTRELLAS Y CONTROLES', items: [
         ['estrella', 'GANA ESTRELLAS', 'Hasta tres por nivel: LLEGAR, AHORRAR dinero y SIN ASALTOS. Puedes repetir un nivel para mejorar tu marca.'],
-        ['ajustes', 'PAUSA', 'Esc o P pausan el juego (también el botón PAUSA). Ahí ajustas el sonido y la accesibilidad.'],
+        ['ajustes', 'PAUSA', (touch ? 'El botón PAUSA detiene el juego.' : 'Esc o P pausan el juego (también el botón PAUSA).') + ' Ahí ajustas el sonido y la accesibilidad.'],
         ['moneda', 'BUENA SUERTE!', 'Planea tu ruta, lee las noticias y cuida tus ' + cur + '.']] }
     ];
   }
@@ -149,7 +149,7 @@
   function key(scene, name) { var K = gdjs.evtTools && gdjs.evtTools.input; return !!(K && K.wasKeyReleased(scene, name)); }
 
   U.Scenes.tutorial = function (scene) {
-    var ui = U.UI.of(scene), data = U.Data.ready(scene), cfg = data ? data.config : DEFAULT_CFG, list = pages(cfg), n = list.length;
+    var ui = U.UI.of(scene), data = U.Data.ready(scene), cfg = data ? data.config : DEFAULT_CFG, M = ui.mob, list = pages(cfg, M), n = list.length;
     ui.begin();
     var dt = Math.min(0.1, scene.getElapsedTime() / 1000), t = scene._umT = (scene._umT || 0) + dt, st = scene._umTut = scene._umTut || { page: 0 };
     (scene._umFx || (scene._umFx = U.FX.ambient(scene, 'neutral'))).update(dt);   // viñeta, bruma y polvo suaves
@@ -167,21 +167,21 @@
     ui.text('h', 'COMO JUGAR  ' + (st.page + 1) + '/' + n, 640, 24, { size: 8, align: 'center', color: PAL.dim });
     ui.text('t', pg.title, 640, 54, { size: 24, align: 'center', color: PAL.yellow });
     pg.items.forEach(function (it, i) {                                             // texto a la izquierda: icono, título y explicación
-      var y = DY + 8 + i * 140;
-      ui.rect(70, y, 560, 128, { fill: '24;24;46', border: '60;60;90', bw: 2 });
+      var y = (M ? 100 : DY + 8) + i * 140, cw = M ? 1140 : 560, cols = M ? Math.floor((cw - 100) / ui.fs(12)) : TXT_COLS;   // modo celular: sin demo, tarjetas a todo lo ancho con letra de 16 px
+      ui.rect(M ? 70 : 70, y, cw, 128, { fill: '24;24;46', border: '60;60;90', bw: 2 });
       ui.icon('ic' + i, it[0], 86, y + 14, 3);
       ui.text('lb' + i, it[1], 148, y + 16, { size: 12, color: PAL.orange });
-      ui.lines('tx' + i, util.wrap(it[2], TXT_COLS), 148, y + 42, { size: 12, lineH: 18, color: '210;214;232' });
+      ui.lines('tx' + i, util.wrap(it[2], cols), 148, y + 42, { size: 12, lineH: 18, color: '210;214;232' });
     });
-    frame(ui); DEMO[pg.id](ui, t, calm, cfg);
+    if (!M) { frame(ui); DEMO[pg.id](ui, t, calm, cfg); }
 
-    for (var d = 0; d < n; d++) {                                                   // puntos de página (se pueden pulsar)
+    for (var d = 0; d < n; d++) {                                                   // puntos de página (con ratón se pueden pulsar; en modo celular solo marcan la página)
       var dx = 640 - (n * 28 - 10) / 2 + d * 28;
       ui.rect(dx, 584, 18, 18, { fill: d === st.page ? '245;197;66' : '40;40;70', border: '255;255;255', bw: 2 });
-      if (ui.inside(dx, 584, 18, 18) && ui.released) st.page = d;
+      if (!M && ui.inside(dx, 584, 18, 18) && ui.released) st.page = d;
     }
     if (st.page > 0 && ui.button('prev', '< ANTERIOR', 70, 624, 200, 52, { size: 8, fill: '70;70;100' })) st.page = Nav.prev(st.page);
-    if (!last && ui.button('skip', 'SALTAR', 1060, 16, 150, 34, { size: 8, fill: '70;70;100' })) { finish(); ui.end(); return; }
+    if (!last && ui.button('skip', 'SALTAR', 1060, M ? 8 : 16, 150, M ? 44 : 34, { size: 8, fill: '70;70;100' })) { finish(); ui.end(); return; }
     if (ui.button('ok', last ? (U.session.afterTutorial === 'Menu' ? 'ENTENDIDO!' : 'A JUGAR!') : 'SIGUIENTE >', 440, 624, 400, 52, { size: 16, fill: '39;174;96' })) {
       if (last) { finish(); ui.end(); return; }
       st.page = Nav.next(st.page, n);
