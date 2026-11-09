@@ -83,7 +83,8 @@ function makeScene(layout, input, json) {
 
 function makeInput() {
   const i = { x: 0, y: 0, down: false, rel: false, wheel: 0,
-    getCursorX() { return i.x; }, getCursorY() { return i.y; }, isMouseButtonPressed: () => i.down, isMouseButtonReleased: () => i.rel, getMouseWheelDelta: () => i.wheel };
+    getCursorX() { return i.x; }, getCursorY() { return i.y; }, isMouseButtonPressed: () => i.down, isMouseButtonReleased: () => i.rel, getMouseWheelDelta: () => i.wheel,
+    touches: [], getAllTouchIdentifiers() { return i.touches.map((t, k) => k); }, getTouchX(k) { return i.touches[k].x; }, getTouchY(k) { return i.touches[k].y; } };
   return i;
 }
 const jsonMgr = { getLoadedJson(n) { assert.ok(resNames[n] && resNames[n].kind === 'json', 'recurso JSON no declarado: ' + n); return JSON.parse(fs.readFileSync(fileOf(n), 'utf8')); },
@@ -1297,5 +1298,200 @@ test('logros (resultado): el cartel anuncia los nuevos (uno, varios y "+ n mas")
     U.session.lastResult = fakeResult({ achievements: ['primer_viaje', 'hora_pico', 'sin_monster', 'lluvia', 'triple'] }); s.frame(3); assert.equal(T()['UI:ac:m'], '+ 2 mas en LOGROS'); assert.equal(T()['UI:ac:n3'], undefined, 'solo se muestran 3');
     U.session.lastResult = fakeResult({ achievements: ['inventado', 'primer_viaje'] }); s.frame(3); assert.equal(T()['UI:ac:h'], 'LOGRO DESBLOQUEADO!', 'un id desconocido se ignora sin romper');
     U.session.calm = true; U.session.lastResult = fakeResult({ achievements: ['primer_viaje'] }); s.frame(3); assert.ok(T()['UI:ac:h'], 'con REDUCIR MOVIMIENTO también sale (sin brillo que pulsa)');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+
+// ---------------------------------------------------------------- modo celular (interfaz grande y táctil)
+function mobileScan(s, label) {
+  const ui = s.U.UI.of(s.scene), bad = [];
+  ui.buttons.filter((b) => !b.disabled).forEach((b) => { if (b.w < 44 || b.h < 44) bad.push('botón chico ' + b.id + ' ' + b.w + 'x' + b.h); });
+  ui.buttons.forEach((a, i) => ui.buttons.slice(i + 1).forEach((b) => { if (a.modal === b.modal && a.x + a.w > b.x + 1 && b.x + b.w > a.x + 1 && a.y + a.h > b.y + 1 && b.y + b.h > a.y + 1) bad.push('botones encimados ' + a.id + ' y ' + b.id); }));
+  Object.keys(ui.pool.t).forEach((k) => { const o = ui.pool.t[k]; if (!o.hidden && k.startsWith('UI:') && o._umSize < 12) bad.push('letra de ' + o._umSize + ' px: ' + k + ' "' + String(o.text).slice(0, 24) + '"'); });
+  assert.deepEqual(bad, [], label + ': ' + bad.join(' | '));
+  return ui.buttons.length;
+}
+function mobileSession(name, setup) {
+  audioReset(); delete globalThis.gdjs.UrbanMex; const s = session(name); s.frame(2); s.U.session.uiMode = 'on'; s.U.session.touchMode = false; if (setup) setup(s); return s;
+}
+
+test('móvil: en modo GRANDE todos los botones miden 44 px o más, no se encima ninguno y las letras no bajan de 12 px (menú)', () => {
+  const store = store0();
+  try {
+    let n = 0;
+    ['main', 'levels', 'sound', 'ach', 'a11y', 'credits', 'bye'].forEach((v) => { const m = mobileSession('Menu'); m.frame(3); m.scene._um.view = v; m.frame(3); n += mobileScan(m, 'menú ' + v); });
+    const m = mobileSession('Menu'); m.frame(3); m.scene._um.confirmExit = true; m.frame(3); n += mobileScan(m, 'menú SALIR');
+    const o = mobileSession('Menu'); o.frame(3); o.U.Infinite.unlocked = () => true; o.scene._um.view = 'main'; o.frame(3); n += mobileScan(o, 'menú con modo infinito abierto');
+    const l = mobileSession('Menu'); l.frame(3); l.U.session.completed = [0, 1, 2, 3]; l.U.session.best = { 0: { stars: 3, money: 90 }, 1: { stars: 2, money: 70 } }; l.scene._um.view = 'levels'; l.frame(3); n += mobileScan(l, 'selector con niveles hechos');
+    assert.ok(n > 25, 'se revisaron botones: ' + n);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: en modo GRANDE el nivel (HUD, panel de estación, celular, pausa y ventanas) cumple lo mismo', () => {
+  const store = store0();
+  try {
+    const states = [
+      ['inicio', (s, um) => {}, true], ['mapa', (s, um) => { um.modal = null; }],
+      ['estación vecina', (s, um) => { um.modal = null; const run = um.run; um.selected = Object.keys(run.data.stations).find((id) => id !== run.current && require_connected(run, id)); }],
+      ['estación lejana', (s, um) => { um.modal = null; um.selected = 'Balderas'; }],
+      ['tienda', (s, um) => { um.modal = null; const run = um.run; const sh = Object.keys(run.data.stations).find((id) => run.data.stations[id].shop); run.current = sh; }],
+      ['celular inicio', (s, um) => { um.modal = null; um.phone.app = 'home'; }],
+      ['noticias', (s, um) => { um.modal = null; um.phone.app = 'news'; }], ['ruta', (s, um) => { um.modal = null; um.phone.app = 'map'; }], ['saldo', (s, um) => { um.modal = null; um.phone.app = 'saldo'; }],
+      ['lineas', (s, um) => { um.modal = null; um.phone.app = 'lines'; }], ['sonido', (s, um) => { um.modal = null; um.phone.app = 'snd'; }], ['ajustes', (s, um) => { um.modal = null; um.phone.app = 'config'; }],
+      ['accesibilidad', (s, um) => { um.modal = null; um.phone.app = 'a11y'; }],
+      ['pausa', (s, um) => { um.modal = null; um.paused = true; um.pauseView = 'main'; }], ['pausa sonido', (s, um) => { um.modal = null; um.paused = true; um.pauseView = 'sound'; }],
+      ['pausa accesibilidad', (s, um) => { um.modal = null; um.paused = true; um.pauseView = 'a11y'; }], ['pausa salir', (s, um) => { um.modal = null; um.paused = true; um.pauseView = 'confirm'; }]];
+    function require_connected(run, id) { return globalThis.gdjs.UrbanMex.Graph.connected(run.graph, run.current, id) && !run.blocked[id]; }
+    let n = 0;
+    [0, 4, 9].forEach((lvl) => states.forEach(([name, fn, keepModal]) => {
+      const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = lvl; x.U.session.infinite = null; delete x.scene._um; });
+      s.frame(3); const um = s.scene._um; if (!keepModal) um.modal = null; fn(s, um); s.frame(3); n += mobileScan(s, 'nivel ' + (lvl + 1) + ' ' + name);
+    }));
+    assert.ok(n > 150, 'se revisaron botones: ' + n);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: en modo GRANDE el resultado y el tutorial cumplen lo mismo', () => {
+  const store = store0();
+  try {
+    [['win3', { stars: 3 }], ['win1', { stars: 1, record: { isNew: false, prev: { stars: 3, money: 80 } } }], ['lose', { won: false, left: 4, cause: 'stamina' }], ['lose2', { won: false, left: 1, cause: 'night' }],
+     ['logros', { achievements: ['primer_viaje', 'hora_pico', 'sin_monster', 'lluvia', 'triple'] }], ['infinito', { infinite: { round: 3 }, streak: { cleared: 3, stars: 7, newBest: true, best: { best: 3, stars: 7 } } }]].forEach(([name, o]) => {
+      const s = mobileSession('Resultado'); s.U.session.lastResult = fakeResult(o); s.frame(40); mobileScan(s, 'resultado ' + name);
+    });
+    for (let p = 0; p < 6; p++) { const t = mobileSession('Tutorial'); t.frame(3); t.scene._umTut.page = p; t.frame(3); mobileScan(t, 'tutorial ' + p); }
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: el modo NORMAL no cambia nada (letras de 8 px y botones de siempre)', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Nivel'); s.frame(3); const U = s.U; U.session.uiMode = 'off'; U.session.levelIndex = 0; delete s.scene._um; s.frame(3); s.scene._um.modal = null; s.frame(3);
+    const ui = U.UI.of(s.scene), z = ui.buttons.find((b) => b.id === 'z-');
+    assert.deepEqual([z.w, z.h], [34, 32], 'el zoom mide lo mismo que antes'); assert.equal(ui.pool.t['UI:hud:day']._umSize, 8); assert.equal(ui.mob, false);
+    U.session.uiMode = 'auto'; s.frame(3); assert.equal(ui.mob, false, 'AUTO con el motor simulado (sin medida del lienzo): interfaz normal');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: tocar con el dedo no deja botones ni estaciones "resaltados" cuando se levanta', () => {
+  const store = store0();
+  try {
+    const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; delete x.scene._um; }); s.frame(3); s.scene._um.modal = null; s.frame(2); const ui = s.U.UI.of(s.scene);
+    s.input.touches = [{ x: 44, y: 88 }]; s.input.x = 44; s.input.y = 88; s.input.down = true; s.frame(2); assert.equal(ui.touch, true, 'ya se sabe que es táctil'); assert.equal(ui.hover, 'z-', 'con el dedo apoyado el botón se resalta');
+    s.input.down = false; s.input.rel = true; s.input.touches = []; s.frame(1); s.input.rel = false; s.frame(2);
+    assert.equal(ui.hover, null, 'levantado el dedo no queda nada resaltado'); assert.equal(s.scene._um.hover, null);
+    s.input.x = 300; s.input.y = 300; s.frame(2); assert.equal(s.U.session.touchMode, false, 'un ratón que se mueve vuelve al modo normal');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: pellizcar con dos dedos acerca y aleja el mapa sin seleccionar estaciones ni arrastrar', () => {
+  const store = store0();
+  try {
+    const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; delete x.scene._um; }); s.frame(3); const um = s.scene._um; um.modal = null; s.frame(3);
+    const map = um.map, z0 = map.cam.zoom, sel0 = um.selected;
+    s.input.touches = [{ x: 380, y: 300 }, { x: 480, y: 300 }]; s.input.x = 380; s.input.y = 300; s.input.down = true; s.frame(2);
+    assert.ok(map.pinching(), 'empieza el pellizco');
+    s.input.touches = [{ x: 330, y: 300 }, { x: 530, y: 300 }]; s.frame(2);                         // los dedos se separan al doble
+    assert.ok(Math.abs(map.cam.zoom - Math.min(2.4, z0 * 2)) < 0.01, 'zoom x2: ' + z0 + ' -> ' + map.cam.zoom);
+    s.input.touches = [{ x: 430, y: 300 }, { x: 480, y: 300 }]; s.frame(2); assert.ok(map.cam.zoom < z0 * 1.2, 'al juntarlos se aleja');
+    s.input.touches = [{ x: 300, y: 300 }]; s.input.down = false; s.input.rel = true; s.frame(1); s.input.rel = false; s.input.touches = []; s.frame(3);   // se levantan los dedos
+    assert.equal(map.pinching(), false); assert.equal(um.selected, sel0, 'no seleccionó ninguna estación'); assert.equal(um.drag.active, false);
+    const before = JSON.stringify(map.cam); s.click(500, 300); s.frame(2); assert.ok(map.pinching() === false, 'un toque normal sigue funcionando después');
+    // los límites del zoom se respetan
+    s.input.touches = [{ x: 600, y: 300 }, { x: 610, y: 300 }]; s.input.down = true; s.frame(2); s.input.touches = [{ x: 100, y: 300 }, { x: 1000, y: 300 }]; s.frame(2); assert.ok(map.cam.zoom <= 2.4 + 1e-9 && map.cam.zoom >= 0.5 - 1e-9);
+    s.input.touches = []; s.input.down = false; s.frame(2);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: con el dedo la estación se acierta desde más lejos que con el ratón', () => {
+  const store = store0();
+  try {
+    const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; delete x.scene._um; }); s.frame(3); const um = s.scene._um; um.modal = null; s.frame(2); const map = um.map;
+    const z = map.cam.zoom; let found = null, id = null;
+    // se busca un punto a 34-44 px (mundo) de una estación: con el ratón (radio 26-30) queda fuera y con el dedo (radio ~46) cae en ella
+    um.run.data.stationList.forEach((st) => { for (let d = 34; d <= 44 && !found; d += 2) for (let a = 0; a < 360 && !found; a += 10) {
+      const p = map.stationPos(st.id), sx = 640 + (p.x - map.cam.x) * z + d * z * Math.cos(a * Math.PI / 180), sy = 360 + (p.y - map.cam.y) * z + d * z * Math.sin(a * Math.PI / 180) / 1.3;
+      if (map.pick(sx, sy, false) === null && map.pick(sx, sy, true) === st.id) { found = [sx, sy]; id = st.id; } } });
+    assert.ok(found, 'hay un punto donde el ratón falla y el dedo acierta');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: el celular del juego es más ancho y el mapa se encuadra en lo que queda libre', () => {
+  const store = store0();
+  try {
+    const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; delete x.scene._um; }); s.frame(4); const um = s.scene._um; um.modal = null; s.frame(3);
+    assert.equal(um.map.phoneX1, 826); assert.equal(um.map.view.x1, 826, 'el mapa deja libre el celular ancho');
+    s.U.session.uiMode = 'off'; s.frame(3); assert.equal(um.map.phoneX1, 906); assert.equal(um.map.view.x1, 906, 'en modo normal vuelve al ancho de siempre');
+    s.U.session.uiMode = 'on'; s.frame(3); um.setPhone(false); s.frame(2); assert.equal(um.map.view.x1, 1272, 'con el celular oculto, todo el ancho');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: ACCESIBILIDAD tiene TAMANO DE LA INTERFAZ (AUTO / GRANDE / NORMAL) y se guarda', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene);
+    m.scene._um.view = 'a11y'; m.frame(3); assert.equal(T()['UI:ma:ul'], 'TAMANO DE LA INTERFAZ'); assert.deepEqual(['auto', 'on', 'off'].map((k) => T()['UI:btn:ma:ui' + k]), ['AUTO', 'GRANDE', 'NORMAL']);
+    const b = (id) => U.UI.of(m.scene).buttons.find((x) => x.id === id), c = (id) => m.click(b(id).x + b(id).w / 2, b(id).y + b(id).h / 2);
+    assert.equal(U.Mobile.mode(), 'auto'); c('ma:uion'); assert.equal(U.Mobile.mode(), 'on'); assert.equal(JSON.parse(store['UrbanMex_save_v1']).ui, 'on');
+    m.frame(3); assert.equal(U.UI.of(m.scene).mob, true, 'al elegir GRANDE la interfaz cambia al instante');
+    c('ma:uioff'); assert.equal(U.Mobile.mode(), 'off'); m.frame(3); assert.equal(U.UI.of(m.scene).mob, false); c('ma:uiauto'); assert.equal(U.Mobile.mode(), 'auto');
+    store['UrbanMex_save_v1'] = JSON.stringify({ v: 1, ui: 'on' }); U.session.loaded = false; U.Save.load(); assert.equal(U.session.uiMode, 'on', 'se carga');
+    store['UrbanMex_save_v1'] = JSON.stringify({ v: 1, ui: 'enorme' }); U.session.uiMode = 'auto'; U.session.loaded = false; U.Save.load(); assert.equal(U.Mobile.mode(), 'auto', 'un valor dañado se ignora');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: el tutorial en modo táctil habla de toques, no de clics ni teclas, y cabe en 3 líneas de la tarjeta ancha', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const t = session('Tutorial'); t.frame(3); const U = t.U, cfg = U.Data.ready(t.scene).config;
+    const all = U.TutorialPages(cfg, true).map((p) => p.items.map((i) => i[2]).join(' ')).join(' '), pc = U.TutorialPages(cfg, false).map((p) => p.items.map((i) => i[2]).join(' ')).join(' ');
+    assert.ok(!/clic|Esc/.test(all), 'sin clic ni teclas: ' + (all.match(/.{20}(clic|Esc).{10}/) || [''])[0]); assert.ok(/doble toque/.test(all) && /botón PAUSA/.test(all)); assert.ok(/doble clic/.test(pc) && /Esc o P/.test(pc), 'con ratón sigue igual');
+    U.TutorialPages(cfg, true).forEach((p) => p.items.forEach((it) => assert.ok(U.util.wrap(it[2], 65).length <= 3, 'cabe en 3 líneas: ' + it[1])));
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: AUTO se activa solo cuando el lienzo se ve chico (con histéresis) y respeta GRANDE / NORMAL', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Menu'); s.frame(3); const M = s.U.Mobile, U = s.U;
+    const fake = (h) => ({ getGame: () => ({ getRenderer: () => ({ getCanvas: () => ({ getBoundingClientRect: () => ({ height: h }) }) }) }) });
+    const at = (h, n) => { let r; for (let i = 0; i < (n || 1); i++) r = M.active(fake(h)); return r; };
+    U.session.uiMode = 'auto'; M.reset();
+    assert.equal(at(720), false, 'ventana de 720 px de alto: normal'); M.reset(); assert.equal(at(360), true, 'se ve a 0.5x: grande');
+    assert.equal(at(511, 40), true, 'a 0.71 sigue grande (histéresis: apaga sobre 0.74)'); assert.equal(at(540, 40), false, 'a 0.75 se apaga');
+    assert.equal(at(511, 40), false, 'y a 0.71 no se vuelve a encender (enciende bajo 0.68)'); assert.equal(at(480, 40), true, 'a 0.67 sí');
+    M.reset(); assert.equal(M.active(s.scene), false, 'sin poder medir el lienzo (motor simulado) queda normal');
+    U.session.uiMode = 'on'; assert.equal(M.active(fake(720)), true, 'GRANDE manda'); U.session.uiMode = 'off'; assert.equal(M.active(fake(300)), false, 'NORMAL manda');
+    // los rótulos largos se achican para caber en el botón (sin bajar de 8 px) y los que caben conservan su tamaño
+    U.session.uiMode = 'on'; const ui = U.UI.of(s.scene); ui.begin(); ui.button('zz', 'ABCDEFGHIJ', 10, 10, 120, 44, { size: 8 }); ui.button('yy', 'ABCDEFGHI', 10, 70, 120, 44, { size: 8 }); ui.end();
+    assert.equal(ui.pool.t['UI:btn:zz']._umSize, 8, 'no cabe a 12 px (10 letras = 120 > 112)'); assert.equal(ui.pool.t['UI:btn:yy']._umSize, 12, 'cabe a 12 px');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: el pellizco conserva el punto entre los dedos; con el dedo el arrastre pide más movimiento y no hay resaltado', () => {
+  const store = store0();
+  try {
+    const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; delete x.scene._um; }); s.frame(3); const um = s.scene._um; um.modal = null; s.frame(3); const map = um.map;
+    const find = () => { let r = null; for (let y = 130; y < 520 && !r; y += 6) for (let x = 20; x < 800 && !r; x += 6) { const id = map.pick(x, y); if (id && id !== um.run.current) r = { x, y, id }; } assert.ok(r, 'hay una estación a la vista'); return r; };
+    let st = find();
+    // el punto del mapa entre los dedos se queda entre los dedos
+    s.input.touches = [{ x: 380, y: 300 }, { x: 480, y: 300 }]; s.input.x = 380; s.input.y = 300; s.input.down = true; s.frame(2);
+    s.input.touches = [{ x: 480, y: 300 }, { x: 580, y: 300 }]; s.frame(2);
+    assert.ok(Math.abs(map.cam.x + (530 - 640) / map.cam.zoom - map._pin.wx) < 0.01, 'el mapa sigue a los dedos al arrastrar con dos');
+    // se levanta un dedo y el otro se suelta sobre una estación: no es un toque
+    st = find();
+    s.input.touches = [{ x: st.x, y: st.y }]; s.input.x = st.x; s.input.y = st.y; s.input.down = false; s.frame(1); s.input.down = true; s.frame(1); s.input.down = false; s.input.rel = true; s.frame(1); s.input.rel = false; s.input.touches = []; s.frame(3);
+    assert.equal(um.selected, null, 'el dedo que queda tras pellizcar no selecciona'); assert.equal(um.lastClick, null, 'ni cuenta como toque (para el doble toque)');
+    // arrastre: con el dedo hacen falta más de 12 px; con el ratón, más de 6
+    const drag = (touch, dx) => {
+      s.U.session.touchMode = touch; s.input.touches = touch ? [{ x: 600, y: 250 }] : []; s.input.x = 600; s.input.y = 250; s.input.down = true; s.frame(2);
+      s.input.x = 600 + dx; if (touch) s.input.touches = [{ x: 600 + dx, y: 250 }]; s.frame(2); const moved = um.drag.moved;
+      s.input.down = false; s.input.rel = true; s.input.touches = []; s.frame(1); s.input.rel = false; s.frame(2); return moved;
+    };
+    assert.equal(drag(true, 9), false, 'dedo: 9 px es un toque'); assert.equal(drag(true, 20), true, 'dedo: 20 px es un arrastre'); assert.equal(drag(false, 9), true, 'ratón: 9 px ya es arrastre');
+    // sin cursor que pase por encima: tras tocar, la estación bajo el dedo no queda resaltada; con el ratón sí
+    st = find(); um.selected = null; s.input.touches = [{ x: st.x, y: st.y }]; s.input.x = st.x; s.input.y = st.y; s.input.down = true; s.frame(2);
+    s.input.down = false; s.input.rel = true; s.input.touches = []; s.frame(1); s.input.rel = false; s.frame(3);
+    assert.equal(s.U.session.touchMode, true); assert.equal(um.hover, null, 'dedo levantado: sin resaltado');
+    s.input.x = st.x + 1; s.frame(3); assert.equal(s.U.session.touchMode, false); assert.equal(um.hover, st.id, 'ratón encima: resaltada');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
