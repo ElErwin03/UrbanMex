@@ -3,6 +3,8 @@
   var U = gdjs.UrbanMex;
   if (!U.I18n) return;
   U.I18n.add('en', {
+    // ---- menú: AJUSTES y MAS MODOS
+    'MAS MODOS': 'MORE MODES', 'JUGAR INFINITO': 'PLAY INFINITE',
     // ---- reto diario (menú, nivel y resultado)
     'Reto perfecto! Vuelve mañana: habrá una ruta nueva para todos.': 'Perfect challenge! Come back tomorrow: there will be a new route for everyone.',
     'RETO DIARIO': 'DAILY CHALLENGE', 'RETO DIARIO #{0}': 'DAILY CHALLENGE #{0}', 'RETO DIARIO #{0} - {1}': 'DAILY CHALLENGE #{0} - {1}', 'RETO #{0}': 'CHALLENGE #{0}', 'RETO #{0} - {1}': 'CHALLENGE #{0} - {1}', 'Reto diario #{0}': 'Daily challenge #{0}', 'RETO': 'CHALLENGE',

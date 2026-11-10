@@ -116,3 +116,10 @@ test('inglés (reto diario): las traducciones exactas (una plantilla general no 
   const missing = texts.filter((t) => !I.known(t)); assert.deepEqual(missing, [], 'sin traducir: ' + missing.join(' | '));
   U.session.lang = 'es';
 });
+
+test('inglés (menú limpio): AJUSTES, MAS MODOS y las tarjetas del modo infinito salen traducidas tal cual', () => {
+  U.session.lang = 'en'; I.reset();
+  const want = { 'AJUSTES': 'SETTINGS', 'MAS MODOS': 'MORE MODES', 'JUGAR INFINITO': 'PLAY INFINITE', 'INFINITO - BLOQUEADO': 'INFINITE - LOCKED', 'COMO JUGAR': 'HOW TO PLAY', 'CREDITOS': 'CREDITS', 'ACCESIBILIDAD': 'ACCESSIBILITY', 'SONIDO': 'SOUND', 'VOLVER': 'BACK', 'LOGROS 3/23': 'ACHIEVEMENTS 3/23', 'SALIR': 'QUIT' };
+  Object.keys(want).forEach((k) => assert.equal(I.tr(k), want[k], k)); assert.deepEqual(I.misses(), []);
+  U.session.lang = 'es';
+});

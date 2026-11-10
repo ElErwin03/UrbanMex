@@ -11,7 +11,7 @@ run() { # nombre escena args...
   local r; r=$(node tools/audit_layout.js "$OUT/$n.json"); local c=$?
   if [ $c -ne 0 ]; then echo "[$n]"; echo "$r" | grep -v "aviso(s)" | sed 's/^/   /'; TOTAL=$((TOTAL+c)); fi
 }
-run menu Menu; run menu-niveles Menu --view levels; run menu-sonido Menu --view sound; run menu-logros Menu --view ach; run menu-creditos Menu --view credits
+run menu Menu; run menu-niveles Menu --view levels; run menu-sonido Menu --view sound; run menu-logros Menu --view ach; run menu-creditos Menu --view credits; run menu-ajustes Menu --view settings; run menu-accesib Menu --view a11y; run menu-pendiente Menu --daily pending --streak 3; run menu-modos Menu --view modes
 run nivel0 Nivel --level 0; run nivel0-sel Nivel --level 0 --select Pantitlan; run nivel0-modal Nivel --level 0 --modal
 for a in news map saldo lines snd config a11y; do run phone-$a Nivel --level 0 --phone $a; done
 run nivel7 Nivel --level 7; run nivel9 Nivel --level 9
@@ -19,7 +19,7 @@ run pausa Nivel --level 0 --pause main; run pausa-sonido Nivel --level 0 --pause
 run result-win Resultado --result win --stars 3 --record new; run result-win1 Resultado --result win --stars 1; run result-lose Resultado --result lose --cause money; run result-night Resultado --result lose --cause night
 for c in stamina blocked; do run result-lose-$c Resultado --result lose --cause $c --left 2 --rob 2; done
 run result-lose-left0 Resultado --result lose --cause money --left 0; run result-win2 Resultado --result win --stars 2 --record best --rob 1; run result-win3 Resultado --result win --stars 3 --record new
-run menu-reto-bloq Menu --daily locked; run menu-reto-pend Menu --daily pending --streak 3; run menu-reto-reint Menu --daily retry; run menu-reto-ok Menu --daily done --streak 12; run menu-reto-3 Menu --daily perfect --streak 100
+run menu-reto-bloq Menu --view modes --daily locked; run menu-reto-pend Menu --view modes --daily pending --streak 3; run menu-reto-reint Menu --view modes --daily retry; run menu-reto-ok Menu --view modes --daily done --streak 12; run menu-reto-3 Menu --view modes --daily perfect --streak 100
 run nivel-reto Nivel --dlevel; run nivel-reto-sel Nivel --dlevel --select Pantitlan; run result-reto-win Resultado --dresult win --stars 2 --first 1 --streak 8; run result-reto-win3 Resultado --dresult win --stars 3 --better 1 --first 0; run result-reto-lose Resultado --dresult lose
 for l in 1 2 3 4 5 6 8; do run nivel$l Nivel --level $l; done; run nivel0-rob Nivel --level 0 --rob 1; run nivel0-late Nivel --level 0 --minute 1100 --stamina 3 --money 5
 for p in 0 1 2 3 4 5; do run tut$p Tutorial --page $p; done

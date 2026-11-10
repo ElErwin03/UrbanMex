@@ -120,7 +120,7 @@ Todo el audio se **sintetiza** con `python3 tools/make_audio.py` (numpy + scipy 
 
 - **Tren de fondo:** suena **cada 60 s** (el primero a los 20 s), alternando el lado por el que pasa, unos 8 dB por debajo de la música para que apenas se note (`TRAIN_EVERY`, `TRAIN_FIRST` y `TRAIN_VOL` en `src/audio.js`).
 - **Música:** las dos pistas son bucles sin costura (la cola de la reverb da la vuelta). Al pasar de una a otra, la anterior baja con un fundido de 1.8 s; entre Menú, Tutorial y Resultado la música no se reinicia (por eso las escenas tienen `stopSoundsOnStartup` en falso).
-- **Tres módulos de volumen** (Menú → `SONIDO`, y en el celular la app `SONIDO`, también desde AJUSTES): cada uno con sus botones `-` / `+`, una barra de 10 pasos (se toca el paso que quieras) y `MUDO` / `ACTIVAR`:
+- **Tres módulos de volumen** (Menú → `AJUSTES` → `SONIDO`, y en el celular la app `SONIDO`, también desde AJUSTES): cada uno con sus botones `-` / `+`, una barra de 10 pasos (se toca el paso que quieras) y `MUDO` / `ACTIVAR`:
   - **MUSICA GENERAL:** la música de fondo. Se oye el cambio en vivo y sin saltos.
   - **SONIDOS GENERALES:** clics, selección, viaje, noticias, moneda, tienda, suerte, error, ganar / perder y el tren lejano.
   - **PELIGRO Y APURO:** el latido de apuro y el golpe de asalto.
@@ -162,7 +162,7 @@ Cuando un viaje no se puede hacer, el panel de la estación ya no se queda mudo:
 El costo que falta se pinta en rojo en la fila de costos. El doble clic en una vecina que no puedes pagar tampoco viaja: abre el panel con el motivo. Para verlo sin jugar: `node tools/dump_scene.js . Nivel out.json --at Coyoacán --select Pantitlán --stamina 30` y luego `render_preview.py`.
 
 ## Créditos
-Botón **CREDITOS** arriba a la derecha del menú principal. Muestra:
+Botón **CREDITOS** dentro de `AJUSTES` (menú principal). Muestra:
 
 - **Realizado en:** Universidad Autónoma de Nayarit y Unidad Académica de Economía (las entidades donde y por las que se realizó el proyecto).
 - **Equipo:** Fabian Enrique Real Ramirez (desarrollo del juego), Edwin Alberto Barrera Franco (diseñador) y Oscar René Domínguez (colaborador). Cada nombre va en dos líneas (nombres / apellidos) para que quepa en su tarjeta.
@@ -186,7 +186,7 @@ Dos ajustes, que se guardan en el navegador junto con el progreso (`fx` y `calm`
 - **Efectos visuales:** `ALTOS` (por defecto), `BAJOS` o `NINGUNO`. Aplica al empezar el siguiente nivel.
 - **Reducir movimiento:** apagado por defecto. Al encenderlo el borde rojo del apuro queda fijo (sin latido), el asalto no destella ni sacude el mapa (el borde y la onda siguen avisando), y los parpadeos y temblores del HUD y del celular se quedan fijos.
 - **Aviso que no depende del color:** cuando algo se agota, el HUD muestra además un `!` junto a la barra de energía, el dinero o la hora, con o sin reducir movimiento.
-- **Dónde está:** Menú → `ACCESIBILIDAD`; dentro del nivel, en la pausa (`ACCESIBILIDAD`) y en el celular (`AJUSTES` → `ACCESIBILIDAD >`). Esc vuelve al menú de pausa.
+- **Dónde está:** Menú → `AJUSTES` → `ACCESIBILIDAD`; dentro del nivel, en la pausa (`ACCESIBILIDAD`) y en el celular (`AJUSTES` → `ACCESIBILIDAD >`). Esc vuelve al menú de pausa.
 - **Corrección incluida:** el botón `<` de las apps del celular intentaba dibujar una app inexistente en el mismo fotograma; ahora vuelve al inicio sin error.
 
 ## Resultado motivador
@@ -250,7 +250,7 @@ Cinco niveles más después de la semana 1; se desbloquean en orden igual que lo
 - Los datos viven en `tools/make_data.py` (`WEEK2`, `LV`, `EVENTS`); la estación de salida nunca se cierra por huelga.
 
 ## Modo infinito
-Se **desbloquea al completar los 10 niveles** (en el menú aparece `MODO INFINITO - BLOQUEADO` hasta entonces). Cada **ronda** es un día nuevo con ruta al azar; si la ganas pasas a la siguiente, y **la racha termina al perder una ronda**.
+Se **desbloquea al completar los 10 niveles** (en `MAS MODOS` aparece `INFINITO - BLOQUEADO` hasta entonces). Cada **ronda** es un día nuevo con ruta al azar; si la ganas pasas a la siguiente, y **la racha termina al perder una ronda**.
 
 - **Ruta al azar:** salida y meta salen de cualquier estación (con una distancia que crece con las rondas), más bloqueos y eventos del día al azar. Todo se genera con una **semilla**: la misma semilla y ronda dan siempre el mismo nivel (`Infinite.level(data, semilla, ronda)`), así que se puede reproducir y probar.
 - **Dificultad por ronda:** tramos de la ruta más corta de 8-14 en la ronda 1, subiendo hasta 18-34 en la 11 (después se mantiene); 0 bloqueos en las rondas 1-2 y uno más cada 3 rondas (máximo 3); 1 evento al inicio, 2 desde la ronda 4 y los 3 desde la 7.
@@ -261,10 +261,18 @@ Se **desbloquea al completar los 10 niveles** (en el menú aparece `MODO INFINIT
 - **Mejor racha:** se guarda (`inf` en el guardado: más rondas; a igual de rondas, más estrellas; los valores dañados se ignoran) y se muestra en el menú. `BORRAR PROGRESO` la borra.
 - **Archivos:** `src/infinite.js` (generador, jugador automático, racha), `Rules.createRun(data, -1, rnd, nivel)` acepta un nivel ya armado, `Save.recordStreak`.
 
+## Menú más limpio
+El menú principal quedó con lo esencial para que no se vea saturado: arriba a la derecha un solo botón **`AJUSTES`** y, al centro, **`JUGAR`** (al nivel que toca), **`SELECCIONAR NIVEL`**, **`MAS MODOS`**, **`LOGROS n/23`** y **`SALIR`**. Antes eran diez botones y una tarjeta grande de reto diario.
+
+- **`AJUSTES`:** `SONIDO`, `ACCESIBILIDAD`, `ENGLISH` / `ESPANOL`, `COMO JUGAR` y `CREDITOS`. Cada pantalla tiene su `VOLVER`, que regresa a `AJUSTES`.
+- **`MAS MODOS`:** el **reto diario** y el **modo infinito**, cada uno en su tarjeta (con sus textos de bloqueo). Si el reto de hoy espera, el botón `MAS MODOS` muestra una marca `!` (sin pulsar con "reducir movimiento").
+- **Modo celular:** botones de 44 px o más; `LOGROS` y `SALIR` van uno debajo del otro para que el rótulo no se encoja en inglés.
+- **Vista previa:** `node tools/dump_scene.js . Menu m.json --view settings|modes|levels|ach` (más `--daily ...`); `tools/audit_all.sh` revisa las vistas nuevas en normal, `--mobile` y `--lang en`.
+
 ## Reto diario
 Una ruta nueva **cada día, igual para todos los jugadores**, y **100% sin internet**: no hay servidor, cuenta ni red. Todo sale de la **fecha del dispositivo** (`AAAA-MM-DD`, hora local): la fecha es la semilla (`año*10000 + mes*100 + día`) y con ella se generan la ruta, los bloqueos, los eventos del día y hasta los "dados" de los asaltos y las noticias. Dos personas con la misma fecha juegan exactamente el mismo reto sin hablar con nadie. Se **desbloquea al completar el nivel 1** (el menú muestra `BLOQUEADO` hasta entonces).
 
-- **Tarjeta del menú** (a la derecha de `JUGAR`): `RETO #n - DÍA`, de qué estación a cuál va, dificultad, los últimos 7 días (verde = ganado, rojo = intentado, dorado = hoy pendiente), estrellas de hoy, `RACHA` de días seguidos (y la mejor) y `NUEVO RETO EN 3h 38m` hasta la medianoche del dispositivo. El botón dice `JUGAR RETO`, `MEJORAR ESTRELLAS` o `REPETIR RETO`; mientras está pendiente el borde pulsa (salvo con "reducir movimiento").
+- **Tarjeta en `MAS MODOS`** (ya no ocupa el menú principal; el botón `MAS MODOS` lleva una marca `!` mientras el reto de hoy está pendiente): `RETO #n - DÍA`, de qué estación a cuál va, dificultad, los últimos 7 días (verde = ganado, rojo = intentado, dorado = hoy pendiente), estrellas de hoy, `RACHA` de días seguidos (y la mejor) y `NUEVO RETO EN 3h 38m` hasta la medianoche del dispositivo. El botón dice `JUGAR RETO`, `MEJORAR ESTRELLAS` o `REPETIR RETO`; mientras está pendiente el borde pulsa (salvo con "reducir movimiento").
 - **Dificultad por día de la semana:** lunes y martes `FACIL`, miércoles y jueves `MEDIO`, viernes y sábado `DIFICIL` y domingo `EXPERTO`. Usa el generador del modo infinito (rondas 2, 3, 4, 5, 6, 7 y 9) y, como en el infinito, **cada reto se comprueba con el jugador automático**: siempre se puede ganar. Las pruebas lo verifican con 122 días de 2026.
 - **Racha de días:** sube al ganar el reto de un día después de haber ganado el de ayer; si pasa un día entero sin ganar, vuelve a empezar (la mejor racha se queda). Se puede jugar el reto de hoy aunque todavía no hayas ganado el de ayer: la racha sigue viva hasta que termina hoy.
 - **Mejor marca del día:** puedes reintentar las veces que quieras; se guarda el mejor resultado (más estrellas y, a igualdad, más dinero) y la cantidad de intentos. Perder después nunca borra lo ganado. La pantalla de resultado dice `RETO COMPLETADO!  RACHA: n dias`, `MEJOR MARCA DEL DIA!` o `Ya tenias este reto`, y el botón `MEJORAR ESTRELLAS` (o `REINTENTAR` al perder) vuelve a jugar el mismo reto. El reto **no** cuenta como nivel completado ni toca los récords de los niveles.
@@ -294,7 +302,7 @@ El juego se dibuja en 1280x720; en un celular horizontal el lienzo se ve a ~0.5x
 - **Archivos:** `src/mobile.js` (detección y tamaños), `src/ui.js` (letras, botones, dedos), `src/map.js` (pellizco, área de toque) y los diseños para celular en `scene-*.js`, `phone.js` y `a11y.js`.
 
 ## Idiomas (español e inglés)
-El juego está en **español** y tiene el **inglés** como segundo idioma. El botón `ENGLISH` / `ESPANOL` del menú principal (debajo de `CREDITOS`) cambia al instante y se guarda (`lang` en `UrbanMex_save_v1`; `BORRAR PROGRESO` no lo cambia). Los nombres de estaciones, los créditos y `peje-coins` no se traducen.
+El juego está en **español** y tiene el **inglés** como segundo idioma. El botón `ENGLISH` / `ESPANOL` de `AJUSTES` cambia al instante y se guarda (`lang` en `UrbanMex_save_v1`; `BORRAR PROGRESO` no lo cambia). Los nombres de estaciones, los créditos y `peje-coins` no se traducen.
 
 - **Cómo funciona:** el texto sigue escrito en español en el código y los datos; la traducción se hace en **un solo punto**, al dibujarlo (`ui.text`, `ui.button`, `ui.lines`) y antes de partir un párrafo en líneas (`util.wrap`), con un diccionario `español → inglés` en `src/lang-en*.js`. Así no hay que tocar cada pantalla ni los datos.
 - **Entradas con huecos:** `'NIVEL {0} - {1}': 'LEVEL {0} - {1}'`. Los huecos se traducen solos (`LUNES` → `MONDAY`) y los nombres de estaciones se quedan. Las horas, los números y los símbolos no hacen falta en el diccionario.
