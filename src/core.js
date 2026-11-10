@@ -8,7 +8,7 @@
 
   U.VERSION = '2.0.0';
   // Estado que sobrevive al cambio de escena (menú → nivel → resultado → nivel...)
-  U.session = { levelIndex: 0, lastResult: null, completed: [], best: {}, inf: { best: 0, stars: 0 }, infinite: null, ach: {}, stats: null, dblTravel: true, loaded: false,
+  U.session = { levelIndex: 0, lastResult: null, completed: [], best: {}, inf: { best: 0, stars: 0 }, infinite: null, dailyLog: null, dailyRun: null, ach: {}, stats: null, dblTravel: true, loaded: false,
     vol: { music: { level: 7, mute: false }, sfx: { level: 7, mute: false }, alert: { level: 7, mute: false } } };   // completed: índices de niveles ganados; best: mejor marca por nivel {estrellas, dinero}; dblTravel y vol (volumen 0-10 y silencio de música / sonidos / peligro): ajustes, se guardan
 
   /** Progreso guardado (niveles completados y ajustes). Usa localStorage —lo mismo que las acciones de almacenamiento de GDevelop—,
@@ -29,6 +29,15 @@
         if (i >= 0 && i % 1 === 0 && v && v.stars >= 1 && v.stars <= 3 && v.stars % 1 === 0 && typeof v.money === 'number' && v.money >= 0 && isFinite(v.money)) best[i] = { stars: v.stars, money: Math.round(v.money) };
       });
       U.session.best = best;
+      if (d.daily && typeof d.daily === 'object' && U.Daily) {                                       // reto diario: racha y resultados de los últimos días (se valida todo)
+        var dl = U.Daily.newLog(), dd = d.daily, int = function (v, max) { return typeof v === 'number' && v >= 0 && v % 1 === 0 && v <= max ? v : 0; };
+        dl.last = U.Daily.parse(dd.last) ? dd.last : null; dl.streak = dl.last ? int(dd.streak, 99999) : 0; dl.best = Math.max(dl.streak, int(dd.best, 99999)); dl.wins = int(dd.wins, 1e6); dl.played = Math.max(dl.wins, int(dd.played, 1e6));
+        if (dd.days && typeof dd.days === 'object') Object.keys(dd.days).sort().slice(-U.Daily.KEEP_DAYS).forEach(function (k) {
+          var e = dd.days[k]; if (!U.Daily.parse(k) || !e || typeof e !== 'object') return;
+          dl.days[k] = { tries: Math.max(1, int(e.tries, 9999)), won: e.won === true, stars: e.won === true ? Math.min(3, int(e.stars, 3)) : 0, money: int(e.money, 1e6), minute: int(e.minute, 1440) };
+        });
+        U.session.dailyLog = dl;
+      }
       if (d.inf && typeof d.inf === 'object') {                                                      // mejor racha del modo infinito (se valida)
         var ib = d.inf.best, is = d.inf.stars;
         U.session.inf = { best: typeof ib === 'number' && ib >= 0 && ib % 1 === 0 && ib < 1e6 ? ib : 0, stars: typeof is === 'number' && is >= 0 && is % 1 === 0 && is < 1e7 ? is : 0 };
@@ -60,7 +69,7 @@
       try {
         var st = this._store(); if (!st) return;
         st.setItem(this.KEY, JSON.stringify({ v: 1, completed: U.session.completed.slice().sort(function (a, b) { return a - b; }),
-                                               best: U.session.best || {}, inf: U.session.inf || { best: 0, stars: 0 }, ach: U.session.ach || {}, stats: U.session.stats || {}, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,
+                                               best: U.session.best || {}, inf: U.session.inf || { best: 0, stars: 0 }, daily: U.session.dailyLog || (U.Daily ? U.Daily.newLog() : null), ach: U.session.ach || {}, stats: U.session.stats || {}, seenTutorial: !!U.session.seenTutorial, dblTravel: U.session.dblTravel !== false, vol: U.session.vol,
                                                fx: U.session.fxQuality === 'low' || U.session.fxQuality === 'off' ? U.session.fxQuality : 'high', calm: U.session.calm === true, ui: U.session.uiMode === 'on' || U.session.uiMode === 'off' ? U.session.uiMode : 'auto', bg: U.session.bgAudio === true, lang: U.session.lang === 'en' ? 'en' : 'es' }));
       } catch (e) { /* sin almacenamiento: el progreso dura solo la sesión */ }
     },
@@ -92,7 +101,7 @@
       for (var i = 0; i < total; i++) if (!this.isCompleted(i)) return i;
       return Math.max(0, total - 1);
     },
-    reset: function () { U.session.completed = []; U.session.best = {}; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; U.session.ach = {}; U.session.stats = null; this.persist(); }
+    reset: function () { U.session.completed = []; U.session.best = {}; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; U.session.dailyLog = null; U.session.dailyRun = null; U.session.ach = {}; U.session.stats = null; this.persist(); }
   };
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }

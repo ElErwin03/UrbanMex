@@ -1,6 +1,6 @@
 const test = require('node:test'), assert = require('node:assert');
 const { loadModules, rawData, cheapestStaminaPath, wantsWait } = require('./helpers');
-const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news', 'infinite', 'achievements', 'i18n', 'lang-en', 'lang-en-data', 'lang-en-play', 'lang-en-ui']);
+const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news', 'infinite', 'daily', 'achievements', 'i18n', 'lang-en', 'lang-en-data', 'lang-en-play', 'lang-en-ui']);
 const data = U.Data.normalize(rawData());
 const I = U.I18n;
 U.session.lang = 'es';
@@ -97,4 +97,22 @@ test('el idioma se guarda y se valida al cargar', () => {
     store['UrbanMex_save_v1'] = JSON.stringify({ v: 1, lang: 'fr' }); U.session.lang = 'es'; U.session.loaded = false; U.Save.load(); assert.equal(I.lang(), 'es', 'un idioma desconocido se ignora'); assert.equal(U.session.lang, 'es', 'y no se queda guardado en la sesión');
     I.setLang('xx'); assert.equal(I.lang(), 'es'); U.Save.reset(); I.setLang('en'); U.Save.reset(); assert.equal(I.lang(), 'en', 'BORRAR PROGRESO no cambia el idioma');
   } finally { delete globalThis.localStorage; U.session.lang = 'es'; }
+});
+
+test('inglés (reto diario): las traducciones exactas (una plantilla general no se las traga) y los textos de las reglas', () => {
+  U.session.lang = 'en'; I.reset();
+  const want = { 'NUEVO RETO EN 3h 38m': 'NEW CHALLENGE IN 3h 38m', 'NUEVO RETO EN 12h 05m': 'NEW CHALLENGE IN 12h 05m', 'RETO DIARIO': 'DAILY CHALLENGE', 'RETO DIARIO #313 - LUNES': 'DAILY CHALLENGE #313 - MONDAY', 'RETO DIARIO #5 - MIERCOLES': 'DAILY CHALLENGE #5 - WEDNESDAY',
+    'RETO #313 - SABADO': 'CHALLENGE #313 - SATURDAY', 'RETO #313': 'CHALLENGE #313', 'Reto diario #313': 'Daily challenge #313', 'HOY: PENDIENTE (1 intento)': 'TODAY: PENDING (1 try)', 'HOY: PENDIENTE (3 intentos)': 'TODAY: PENDING (3 tries)', 'HOY: COMPLETADO': 'TODAY: COMPLETED',
+    'RACHA: 1 DIA': 'STREAK: 1 DAY', 'RACHA: 12 DIAS': 'STREAK: 12 DAYS', 'RACHA: 2 DIAS (MEJOR 5)': 'STREAK: 2 DAYS (BEST 5)', 'Dificultad: EXPERTO (DOMINGO)': 'Difficulty: EXPERT (SUNDAY)', 'Dificultad: FACIL (LUNES)': 'Difficulty: EASY (MONDAY)', 'MEDIO': 'MEDIUM', 'DIFICIL': 'HARD',
+    'RETO COMPLETADO!  RACHA: 1 dia': 'CHALLENGE COMPLETED!  STREAK: 1 day', 'RETO COMPLETADO!  RACHA: 3 dias': 'CHALLENGE COMPLETED!  STREAK: 3 days', 'RETO COMPLETADO!  RACHA: 3 dias  (record!)': 'CHALLENGE COMPLETED!  STREAK: 3 days  (record!)',
+    'MEJOR MARCA DEL DIA!  1 estrella, 80': 'BEST OF THE DAY!  1 star, 80', 'MEJOR MARCA DEL DIA!  3 estrellas, 80': 'BEST OF THE DAY!  3 stars, 80', 'Ya tenias este reto. Tu mejor marca: 2 estrellas, 50': 'You already had this challenge. Your best: 2 stars, 50',
+    'Intento 4 de hoy  -  racha: 1 dia': 'Try 4 today  -  streak: 1 day', 'Intento 4 de hoy  -  racha: 2 dias': 'Try 4 today  -  streak: 2 days', 'JUGAR RETO': 'PLAY CHALLENGE', 'REPETIR RETO': 'REPLAY CHALLENGE', 'MEJORAR ESTRELLAS': 'IMPROVE STARS', 'RETO BLOQUEADO': 'CHALLENGE LOCKED',
+    'Sales de Candelaria. Es el reto de hoy: la misma ruta para todos.': 'You leave from Candelaria. It\'s today\'s challenge: the same route for everyone.' };
+  Object.keys(want).forEach((k) => assert.equal(I.tr(k), want[k], k));
+  assert.deepEqual(I.misses(), [], 'nada quedó sin traducir');
+  // lo que fabrican las reglas para todos los días de la semana, en las dos lenguas
+  U.session.lang = 'es'; const texts = [];
+  for (let d = 8; d <= 14; d++) { const k = '2026-11-' + String(d).padStart(2, '0'), lv = U.Daily.level(data, k); texts.push(lv.startDesc, lv.goalDesc, U.Infinite.title(lv), 'Dificultad: ' + U.Daily.difficulty(k).label + ' (' + U.Daily.weekdayName(k) + ')', U.Daily.weekdayName(k), U.Daily.difficulty(k).label); }
+  const missing = texts.filter((t) => !I.known(t)); assert.deepEqual(missing, [], 'sin traducir: ' + missing.join(' | '));
+  U.session.lang = 'es';
 });

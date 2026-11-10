@@ -49,7 +49,7 @@
     ui.text('prog', done + '/' + total + ' niveles completados' + (stars ? '  -  ' + stars + '/' + total * 3 + ' estrellas' : ''), 640, 342, { size: 8, align: 'center', color: PAL.dim });
     var seen = U.session.seenTutorial;
     if (ui.button('play', '', 440, 364, 400, 84, { size: 8 }) && lv) {
-      U.session.infinite = null; U.session.levelIndex = next; U.session.afterTutorial = 'Nivel'; go(scene, seen ? 'Nivel' : 'Tutorial');
+      U.session.infinite = null; U.Daily.clear(); U.session.levelIndex = next; U.session.afterTutorial = 'Nivel'; go(scene, seen ? 'Nivel' : 'Tutorial');
     }
     ui.text('pl1', 'JUGAR', 640, 374, { size: 24, align: 'center' });
     ui.text('pl2', lv ? 'NIVEL ' + lv.id + ' - ' + lv.day : 'Cargando...', 640, 408, { size: 12, align: 'center', color: '255;235;180' });
@@ -62,8 +62,43 @@
     if (ui.button('how', 'COMO JUGAR', 490, M ? 578 : 584, 146, M ? 44 : 36, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }
     var ac = U.Achievements.count();                                                                // LOGROS: pantalla con todos y cuántos llevas
     if (ui.button('ach', 'LOGROS ' + ac.got + '/' + ac.total, 644, M ? 578 : 584, 146, M ? 44 : 36, { size: 8, fill: '150;110;20' })) m.view = 'ach';
+    drawDaily(scene, ui, m, data);
     if (ui.button('quit', 'SALIR', 490, M ? 630 : 630, 300, M ? 44 : 36, { size: 8, fill: '110;50;50' })) m.confirmExit = true;      // pide confirmación antes de cerrar
   }
+
+  /** Tarjeta del RETO DIARIO (a la derecha del botón JUGAR): ruta de hoy, dificultad, últimos 7 días, racha y cuánto falta para el próximo. Todo con la fecha del dispositivo: no usa internet. */
+  function drawDaily(scene, ui, m, data) {
+    var D = U.Daily, M = ui.mob, k = D.key(), st = D.status(k), open = D.unlocked(), x = 880, y = 364, w = 376, h = M ? 290 : 250, cx = x + w / 2, calm = U.A11y.calm();
+    var pulse = open && !st.done && !calm ? Math.round(Math.sin(Date.now() / 260) * 25) : 0;
+    ui.rect(x, y, w, h, { fill: open ? (st.done ? '22;48;38' : '48;38;14') : '34;34;52', border: open ? (st.done ? '46;204;113' : (230 + pulse) + ';' + (180 + pulse) + ';40') : '90;90;120', bw: 3 });
+    ui.icon('dly:i', 'reloj', x + 12, y + 10, 2);
+    ui.text('dly:t', 'RETO DIARIO', cx + 12, y + 14, { size: 16, align: 'center', color: open ? PAL.yellow : PAL.dim });
+    if (!open) {
+      ui.lines('dly:lk', util.wrap('Completa el nivel 1 para desbloquear el reto diario: una ruta nueva cada dia, igual para todos.', Math.floor((w - 24) / ui.fs(8))), cx, y + 64, { size: 8, lineH: 14, align: 'center', color: PAL.dim });
+      ui.button('dly', 'RETO BLOQUEADO', x + 18, y + h - (M ? 70 : 62), w - 36, 44, { size: 8, fill: '50;50;70', disabled: true });
+      return;
+    }
+    var lv = data ? D.level(data, k) : null, ty = y + 44;
+    ui.text('dly:n', 'RETO #' + st.number + ' - ' + st.weekday, cx, ty, { size: 8, align: 'center', color: PAL.dim });
+    if (lv) ty += ui.lines('dly:r', util.wrap(U.Infinite.nice(lv.start) + ' > ' + U.Infinite.nice(lv.goal), Math.floor((w - 24) / ui.fs(8))), cx, ty + 16, { size: 8, lineH: 14, align: 'center', color: '255;235;180' }) + 18;
+    var dif = st.difficulty, px = cx - 60;
+    for (var i = 0; i < 4; i++) ui.rect(px + i * 16, ty + 6, 12, 12, { fill: i < dif.pips ? (dif.pips >= 4 ? '230;60;60' : '255;190;60') : '50;50;70', border: '255;255;255', bw: 1 });
+    ui.text('dly:d', dif.label, px + 74, ty + 8, { size: 8, color: PAL.dim });
+    ty += 28;
+    var wk = D.week(k, 7), sx = cx - 7 * 22 / 2 + 2;                                                  // los últimos 7 días: verde = ganado, rojo = intentado, dorado = hoy pendiente
+    wk.forEach(function (d, j) { ui.rect(sx + j * 22, ty, 16, 16, { fill: d.state === 'won' ? '46;204;113' : d.state === 'lost' ? '170;60;60' : d.state === 'today' ? '255;200;60' : '40;40;70', border: j === 6 ? '255;255;255' : '120;120;150', bw: 2 }); });
+    ty += 26;
+    for (var s = 0; s < 3; s++) if (st.done) ui.icon('dly:s' + s, s < st.stars ? 'estrella' : 'estrella_vacia', cx - 54 + s * 38, ty, 1.5);
+    if (st.done) ty += 30;
+    ui.text('dly:st', st.done ? 'HOY: COMPLETADO' : st.tries ? 'HOY: PENDIENTE (' + st.tries + (st.tries === 1 ? ' intento)' : ' intentos)') : 'HOY: PENDIENTE', cx, ty, { size: 8, align: 'center', color: st.done ? PAL.green : PAL.yellow });
+    ui.text('dly:sk', 'RACHA: ' + st.streak + (st.streak === 1 ? ' DIA' : ' DIAS') + (st.best > st.streak ? ' (MEJOR ' + st.best + ')' : ''), cx, ty + (M ? 18 : 16), { size: 8, align: 'center', color: st.streak ? '255;190;60' : PAL.dim });
+    var left = D.minutesLeft();
+    if (ui.button('dly', st.done ? (st.stars < 3 ? 'MEJORAR ESTRELLAS' : 'REPETIR RETO') : 'JUGAR RETO', x + 18, y + h - (M ? 70 : 56), w - 36, M ? 44 : 38, { size: 8, fill: st.done ? '70;100;160' : '200;140;20' }) && lv) {
+      D.start(k); U.session.afterTutorial = 'Nivel'; go(scene, U.session.seenTutorial ? 'Nivel' : 'Tutorial');
+    }
+    ui.text('dly:nx', 'NUEVO RETO EN ' + Math.floor(left / 60) + 'h ' + pad2(left % 60) + 'm', cx, y + h - (M ? 22 : 12), { size: 8, align: 'center', color: PAL.dim });
+  }
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
 
   /** Ventana "¿Seguro que quieres salir?". SI cierra el juego (ventana de GDevelop / app); en un navegador no se puede cerrar la pestaña, así que
    *  se muestra una despedida con la opción de volver. El progreso ya se guarda solo, pero se guarda otra vez al salir. */
@@ -104,7 +139,7 @@
       var bs = U.Save.bestOf(i);
       if (bs) for (var k = 0; k < 3; k++) ui.icon('ck' + i + ':' + k, k < bs.stars ? 'estrella' : 'estrella_vacia', x + W / 2 - 60 + k * 40, y + 174, 2);
       else ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 176, 2);
-      if (ui.button('re' + i, 'REJUGAR', x + 14, y + H - 56, W - 28, 44, { size: 8, fill: '39;174;96' })) { U.session.infinite = null; U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
+      if (ui.button('re' + i, 'REJUGAR', x + 14, y + H - 56, W - 28, 44, { size: 8, fill: '39;174;96' })) { U.session.infinite = null; U.Daily.clear(); U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
     } else if (cur) {
       ui.text('st' + i, 'SIGUIENTE', x + W / 2, y + 180, { size: 12, align: 'center', color: PAL.yellow });
       ui.lines('sg' + i, ['Pulsa JUGAR', 'en el menu'], x + W / 2, y + 214, { size: 8, lineH: 14, align: 'center', color: '230;214;160' });
@@ -137,7 +172,7 @@
         var bs = U.Save.bestOf(i);                                                                   // mejor marca: tres estrellas (si el guardado es anterior a las estrellas, la meta de siempre)
         if (bs) for (var k = 0; k < 3; k++) ui.icon('ck' + i + ':' + k, k < bs.stars ? 'estrella' : 'estrella_vacia', x + W / 2 - 60 + k * 40, y + 152, 2);
         else ui.icon('ck' + i, 'meta', x + W / 2 - 16, y + 154, 2);
-        if (ui.button('re' + i, 'REJUGAR', x + 14, y + 192, W - 28, 34, { size: 8, fill: '39;174;96' })) { U.session.infinite = null; U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
+        if (ui.button('re' + i, 'REJUGAR', x + 14, y + 192, W - 28, 34, { size: 8, fill: '39;174;96' })) { U.session.infinite = null; U.Daily.clear(); U.session.levelIndex = i; U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
       } else if (cur) {
         ui.text('st' + i, 'SIGUIENTE', x + W / 2, y + 160, { size: 12, align: 'center', color: PAL.yellow });
         ui.lines('sg' + i, ['Entra con el boton', 'JUGAR del menu'], x + W / 2, y + 190, { size: 8, lineH: 14, align: 'center', color: '230;214;160' });

@@ -1,6 +1,6 @@
 const test = require('node:test'), assert = require('node:assert');
 const { loadModules, rawData, cheapestStaminaPath, wantsWait } = require('./helpers');
-const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news', 'infinite', 'achievements']);
+const U = loadModules(['core', 'data', 'graph', 'events', 'rules', 'news', 'infinite', 'daily', 'achievements']);
 const data = U.Data.normalize(rawData());
 
 /** Bot: sigue el camino más corto, compra Monster cuando le falta stamina para lo que resta. */
@@ -644,4 +644,124 @@ test('logros: el guardado valida logros y estadísticas, y borrar progreso los b
     Ach().record(res(), 0); assert.ok(Object.keys(JSON.parse(st[U.Save.KEY]).ach).length >= 1);
     U.Save.reset(); assert.deepEqual(U.session.ach, {}); assert.equal(U.session.stats, null); assert.deepEqual(JSON.parse(st[U.Save.KEY]).ach, {}); assert.equal(Ach().count().got, 0);
   });
+});
+
+// ---------------------------------------------------------------- reto diario (sin internet: todo sale de la fecha del dispositivo)
+const Dly = () => U.Daily;
+const freshDaily = () => { U.session.dailyLog = null; U.session.dailyRun = null; U.session.completed = []; U.session.best = {}; U.session.infinite = null; };
+const dayWin = (k, o) => { const lv = Dly().level(data, k), run = U.Rules.createRun(data, -1, Dly().rnd(k), lv); run.over = true; run.won = true; run.money = (o && o.money) || 50; run.minute = 600; return run; };
+const dayLose = (k) => { const run = dayWin(k); run.won = false; return run; };
+
+test('reto diario: la clave, el número y el día de la semana salen de la fecha (sin red)', () => {
+  assert.equal(Dly().key(new Date(2026, 10, 9, 23, 59)), '2026-11-09'); assert.equal(Dly().key(new Date(2026, 0, 1, 0, 0)), '2026-01-01', 'usa la fecha LOCAL, no la UTC');
+  assert.equal(Dly().number('2026-01-01'), 1); assert.equal(Dly().number('2026-01-02'), 2); assert.equal(Dly().number('2026-11-09'), 313);
+  assert.equal(Dly().weekdayName('2026-11-09'), 'LUNES'); assert.equal(Dly().weekdayName('2026-11-08'), 'DOMINGO'); assert.equal(Dly().weekdayName('2026-11-14'), 'SABADO');
+  assert.equal(Dly().prevKey('2026-03-01'), '2026-02-28'); assert.equal(Dly().prevKey('2024-03-01'), '2024-02-29', 'año bisiesto'); assert.equal(Dly().prevKey('2026-01-01'), '2025-12-31');
+  assert.equal(Dly().parse('2026-02-30'), null, 'fecha imposible'); assert.equal(Dly().parse('hoy'), null); assert.equal(Dly().parse(null), null); assert.equal(Dly().prevKey('x'), null);
+  assert.equal(Dly().minutesLeft(new Date(2026, 5, 1, 23, 30)), 30); assert.equal(Dly().minutesLeft(new Date(2026, 5, 1, 0, 0)), 1440); assert.equal(Dly().minutesLeft(new Date(2026, 5, 1, 18, 45)), 315);
+  const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'daily.js'), 'utf8');
+  assert.ok(!/fetch\s*\(|XMLHttpRequest|WebSocket|navigator\.|https?:\/\//.test(src), 'el reto diario no toca internet');
+});
+
+test('reto diario: misma fecha = mismo reto y mismos dados; otra fecha, otro; la dificultad sube en la semana', () => {
+  const a = Dly().level(data, '2026-11-09'), b = Dly().level(data, '2026-11-09');
+  assert.equal(a, b, 'se calcula una vez'); assert.deepEqual(Dly().level(data, '2026-11-09'), JSON.parse(JSON.stringify(a)), 'igual que al recalcular');
+  const fresh = Object.assign({}, U.Infinite.level(data, Dly().seed('2026-11-09'), Dly().round('2026-11-09'))); assert.equal(fresh.start, a.start); assert.equal(fresh.goal, a.goal);
+  assert.equal(a.daily, '2026-11-09'); assert.equal(a.id, 313); assert.equal(a.day, 'RETO #313'); assert.equal(a.infinite, true);
+  assert.match(a.startDesc, /Sales de .+\. Es el reto de hoy/); assert.match(a.goalDesc, /^Llegaste a /);
+  const realNow = Date.now; let r1, r2; try { Date.now = () => 1000; r1 = Dly().rnd('2026-11-09'); Date.now = () => 987654321000; r2 = Dly().rnd('2026-11-09'); } finally { Date.now = realNow; }
+  const seq1 = [], seq2 = []; for (let i = 0; i < 20; i++) { seq1.push(r1()); seq2.push(r2()); } assert.deepEqual(seq1, seq2, 'los dados del día son iguales para todos, a cualquier hora');
+  const other = Dly().rnd('2026-11-10'), seq3 = []; for (let i = 0; i < 20; i++) seq3.push(other()); assert.notDeepEqual(seq1, seq3, 'otro día, otros dados');
+  const keys = new Set(); for (let d = 1; d <= 28; d++) { const k = '2026-02-' + String(d).padStart(2, '0'), l = Dly().level(data, k); keys.add(l.start + '>' + l.goal); } assert.ok(keys.size >= 22, 'rutas distintas cada día: ' + keys.size);
+  const hops = (k) => U.Rules.hopsLeft(U.Rules.createRun(data, -1, Dly().rnd(k), Dly().level(data, k)), Dly().level(data, k).start);
+  const diffs = ['2026-11-08', '2026-11-09', '2026-11-10', '2026-11-11', '2026-11-12', '2026-11-13', '2026-11-14'].map((k) => Dly().difficulty(k));
+  assert.deepEqual(diffs.map((d) => d.label), ['EXPERTO', 'FACIL', 'FACIL', 'MEDIO', 'MEDIO', 'DIFICIL', 'DIFICIL']); assert.deepEqual(diffs.map((d) => d.pips), [4, 1, 1, 2, 2, 3, 3]);
+  const avg = (ks) => ks.reduce((s, k) => s + hops(k), 0) / ks.length, monday = [], sunday = [];
+  for (let w = 0; w < 12; w++) { const d = new Date(Date.UTC(2026, 0, 5 + w * 7)); monday.push(d.toISOString().slice(0, 10)); sunday.push(new Date(d.getTime() - 86400000).toISOString().slice(0, 10)); }
+  assert.ok(avg(sunday) > avg(monday), 'el domingo es más largo que el lunes');
+});
+
+test('reto diario: todos los días de un año se pueden ganar (jugador automático)', () => {
+  for (let i = 0; i < 366; i += 3) {                                // cada 3 días, 122 retos de 2026 (todos los días de la semana)
+    const k = new Date(Date.UTC(2026, 0, 1 + i)).toISOString().slice(0, 10), lv = Dly().level(data, k);
+    assert.equal(Inf().autoplay(data, lv).won, true, 'ganable el ' + k); assert.ok(lv.start !== lv.goal, 'inicio y meta distintos ' + k);
+  }
+});
+
+test('reto diario: desbloqueo, empezar y salir del reto', () => {
+  freshDaily(); assert.equal(Dly().unlocked(), false); U.session.completed = [0]; assert.equal(Dly().unlocked(), true);
+  U.session.infinite = { seed: 1, round: 1, cleared: 0, stars: 0, newBest: false }; const s = Dly().start('2026-11-09'); assert.deepEqual(s, { key: '2026-11-09' }); assert.equal(U.session.infinite, null, 'empezar el reto cancela una racha infinita');
+  assert.equal(U.session.dailyRun, s); Dly().clear(); assert.equal(U.session.dailyRun, null);
+  Dly().start('2026-11-09'); Inf().start(5); assert.equal(U.session.dailyRun, null, 'empezar el infinito cancela el reto'); assert.notEqual(U.session.infinite, null);
+  U.session.infinite = null; assert.equal(Dly().start().key, Dly().key(), 'por defecto, hoy');
+});
+
+test('reto diario: terminar (finish) guarda intentos, mejor marca y racha', () => {
+  withStore((st) => {
+    freshDaily(); const k = '2026-11-09';
+    assert.equal(Dly().finish({ level: { id: 3 }, won: true }, 3), null, 'un nivel que no es reto no registra nada');
+    let r = Dly().finish(dayLose(k), 0); assert.equal(r.first, false); assert.equal(r.entry.tries, 1); assert.equal(Dly().status(k).done, false); assert.equal(Dly().streak(k), 0); assert.equal(Dly().week(k, 1)[0].state, 'lost');
+    r = Dly().finish(dayWin(k, { money: 40 }), 1); assert.equal(r.first, true); assert.equal(r.better, false); assert.equal(r.streak, 1); assert.equal(r.best, 1); assert.equal(r.number, 313); assert.deepEqual(r.entry, { tries: 2, stars: 1, money: 40 });
+    r = Dly().finish(dayWin(k, { money: 30 }), 1); assert.equal(r.first, false); assert.equal(r.better, false, 'menos dinero con las mismas estrellas no mejora'); assert.deepEqual(r.entry, { tries: 3, stars: 1, money: 40 });
+    r = Dly().finish(dayWin(k, { money: 60 }), 1); assert.equal(r.better, true, 'igual de estrellas y más dinero sí'); assert.equal(r.entry.money, 60);
+    r = Dly().finish(dayWin(k, { money: 10 }), 3); assert.equal(r.better, true, 'más estrellas sí aunque lleves menos dinero'); assert.deepEqual(r.entry, { tries: 5, stars: 3, money: 10 });
+    r = Dly().finish(dayLose(k), 0); assert.equal(r.entry.stars, 3, 'perder después no borra tu marca'); assert.equal(Dly().status(k).done, true); assert.equal(Dly().streak(k), 1, 'ni la racha');
+    const s = Dly().status(k); assert.equal(s.stars, 3); assert.equal(s.tries, 6); assert.equal(s.wins, 1, 'un día cuenta una sola vez'); assert.equal(s.played, 6);
+    const saved = JSON.parse(st[U.Save.KEY]).daily; assert.equal(saved.days[k].tries, 6); assert.equal(saved.streak, 1); assert.equal(saved.last, k);
+  });
+});
+
+test('reto diario: la racha de días seguidos sube, se corta al faltar un día y no se infla con el reloj', () => {
+  withStore(() => {
+    freshDaily(); const win = (k) => Dly().finish(dayWin(k), 2);
+    assert.equal(win('2026-11-02').streak, 1); assert.equal(win('2026-11-03').streak, 2); assert.equal(win('2026-11-04').streak, 3);
+    assert.equal(Dly().streak('2026-11-04'), 3); assert.equal(Dly().streak('2026-11-05'), 3, 'mañana aún no la pierdes: puedes jugar hoy'); assert.equal(Dly().streak('2026-11-06'), 0, 'pasó un día entero sin jugar: se corta');
+    assert.equal(win('2026-11-06').streak, 1, 'vuelves a empezar'); assert.equal(Dly().status('2026-11-06').best, 3, 'pero la mejor racha se queda');
+    assert.equal(win('2026-11-07').streak, 2);
+    win('2026-11-01'); assert.equal(Dly().status('2026-11-07').streak, 2, 'ganar un día viejo (reloj atrasado) no altera la racha'); assert.equal(U.session.dailyLog.last, '2026-11-07');
+    assert.equal(Dly().status('2026-11-07').wins, 6, 'pero sí se guarda el día'); assert.equal(win('2026-12-25').streak, 1, 'saltar semanas adelante la reinicia');
+    assert.equal(win('2026-12-26').streak, 2); assert.equal(win('2026-12-27').streak, 3); assert.equal(win('2026-12-28').streak, 4); assert.equal(Dly().status('2026-12-28').best, 4, 'récord nuevo');
+    assert.equal(Dly().prevKey('2026-12-31'), '2026-12-30'); const y = Dly().finish(dayWin('2026-12-31'), 1), n = Dly().finish(dayWin('2027-01-01'), 1); assert.equal(n.streak, y.streak + 1, 'la racha cruza el cambio de año');
+  });
+});
+
+test('reto diario: la semana (week) marca ganado, perdido, hoy y sin jugar', () => {
+  withStore(() => {
+    freshDaily(); Dly().finish(dayWin('2026-11-05'), 2); Dly().finish(dayLose('2026-11-07'), 0); Dly().finish(dayWin('2026-11-08'), 1);
+    const w = Dly().week('2026-11-09', 7); assert.equal(w.length, 7); assert.equal(w[0].key, '2026-11-03'); assert.equal(w[6].key, '2026-11-09'); assert.deepEqual(w.map((d) => d.state), ['none', 'none', 'won', 'none', 'lost', 'won', 'today']);
+    assert.equal(Dly().week('basura', 7).length, 0);
+  });
+});
+
+test('reto diario: solo se guardan los últimos 60 días', () => {
+  withStore(() => {
+    freshDaily(); for (let i = 0; i < 75; i++) Dly().finish(dayWin(new Date(Date.UTC(2026, 0, 1 + i)).toISOString().slice(0, 10)), 1);
+    const days = Object.keys(U.session.dailyLog.days); assert.equal(days.length, 60); assert.ok(!days.includes('2026-01-01')); assert.ok(days.includes('2026-03-16')); assert.equal(U.session.dailyLog.wins, 75, 'los totales no se recortan'); assert.equal(U.session.dailyLog.best, 75);
+  });
+});
+
+test('reto diario: el guardado se valida y "borrar progreso" lo borra', () => {
+  withStore((st) => {
+    freshDaily(); const ok = { last: '2026-11-09', streak: 4, best: 9, wins: 12, played: 20, days: { '2026-11-09': { tries: 2, won: true, stars: 3, money: 55, minute: 700 }, '2026-11-08': { tries: 1, won: false, stars: 0, money: 0, minute: 0 } } };
+    U.session.loaded = false; st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [0], best: {}, daily: ok }); U.Save.load();
+    assert.equal(U.session.dailyLog.streak, 4); assert.equal(U.session.dailyLog.last, '2026-11-09'); assert.equal(U.session.dailyLog.days['2026-11-09'].stars, 3); assert.equal(Object.keys(U.session.dailyLog.days).length, 2, 'el día intentado y perdido también se guarda'); assert.equal(U.session.dailyLog.days['2026-11-08'].won, false);
+    [null, 'hoy', 5, [], { last: 'x', streak: -2, best: 'a', wins: 1.5, played: null, days: 7 }, { last: '2026-13-45', streak: 1, best: 1, wins: 1, played: 1, days: { 'ayer': { tries: 1, won: true, stars: 1, money: 1, minute: 1 }, '2026-11-01': { tries: 0, won: true, stars: 9, money: -5, minute: 99999 } } }].forEach((bad) => {
+      freshDaily(); U.session.loaded = false; st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [], best: {}, daily: bad }); U.Save.load(); const l = U.session.dailyLog || Dly().newLog();
+      [l.streak, l.best, l.wins, l.played].forEach((n) => assert.ok(Number.isInteger(n) && n >= 0, 'enteros no negativos: ' + JSON.stringify(bad)));
+      assert.ok(l.last === null || Dly().parse(l.last), 'fecha válida o nula'); Object.keys(l.days).forEach((k) => { assert.ok(Dly().parse(k), k); const d = l.days[k]; assert.ok(d.tries >= 1 && d.stars >= 0 && d.stars <= 3 && d.money >= 0 && d.minute >= 0 && d.minute <= 1440, JSON.stringify(d)); });
+    });
+    const many = {}; for (let i = 0; i < 90; i++) many[new Date(Date.UTC(2026, 0, 1 + i)).toISOString().slice(0, 10)] = { tries: 1, won: true, stars: 1, money: 1, minute: 1 };
+    freshDaily(); U.session.loaded = false; st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [], best: {}, daily: { last: '2026-03-31', streak: 90, best: 90, wins: 90, played: 90, days: many } }); U.Save.load(); assert.equal(Object.keys(U.session.dailyLog.days).length, 60);
+    freshDaily(); U.session.loaded = false; U.session.dailyLog = Dly().newLog(); U.session.dailyLog.streak = 7; st[U.Save.KEY] = JSON.stringify({ v: 1, completed: [2] }); U.Save.load(); assert.equal(U.session.dailyLog.streak, 7, 'un guardado viejo sin reto no lo borra a medias');
+    U.session.dailyLog = ok; U.session.dailyRun = { key: '2026-11-09' }; U.Save.reset(); assert.equal(U.session.dailyLog, null); assert.equal(U.session.dailyRun, null); assert.deepEqual(JSON.parse(st[U.Save.KEY]).daily, Dly().newLog());
+    U.session.loaded = false; U.Save.load(); Dly().finish(dayWin('2026-11-09'), 1); assert.equal(JSON.parse(st[U.Save.KEY]).daily.wins, 1, 'tras borrar se vuelve a guardar');
+  });
+});
+
+test('reto diario: createRun usa el nivel del día y el resumen lo marca', () => {
+  const k = '2026-11-10', lv = Dly().level(data, k), run = U.Rules.createRun(data, -1, Dly().rnd(k), lv), sm = U.Rules.summary(run);
+  assert.equal(run.level, lv); assert.equal(run.current, lv.start); assert.equal(sm.daily, k); assert.equal(sm.infinite, null, 'no es una ronda del infinito'); assert.equal(sm.dailyNumber, 314);
+  U.News.intro(run); assert.equal(run.newsLog.filter((n) => n.title === 'Reto diario #314').length, 1, 'el aviso inicial dice "Reto diario #314"'); assert.equal(Inf().title(lv), 'RETO DIARIO #314');
+  assert.equal(U.Rules.summary(U.Rules.createRun(data, 0)).daily, null); assert.equal(U.Rules.summary(U.Rules.createRun(data, -1, () => 0.5, Inf().level(data, 3, 4))).daily, null);
+  const a = U.Rules.createRun(data, -1, Dly().rnd(k), lv), b = U.Rules.createRun(data, -1, Dly().rnd(k), lv); [a, b].forEach((x) => { U.News.intro(x); U.News.onMove(x); }); assert.deepEqual(a.newsLog.map((n) => n.title), b.newsLog.map((n) => n.title), 'las noticias del día son las mismas para todos');
 });
