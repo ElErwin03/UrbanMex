@@ -94,10 +94,10 @@
     },
 
     /** Título corto para pantallas: "RONDA 3" en el modo infinito, "NIVEL 6 - LUNES 2" en los niveles. */
-    title: function (lv) { return lv.infinite ? 'RONDA ' + lv.round : 'NIVEL ' + lv.id + ' - ' + lv.day; },
+    title: function (lv) { return lv.daily ? 'RETO DIARIO #' + lv.id : lv.infinite ? 'RONDA ' + lv.round : 'NIVEL ' + lv.id + ' - ' + lv.day; },
 
     /** Nueva racha: semilla al azar, ronda 1. */
-    start: function (seed) { U.session.infinite = { seed: seed || Math.floor(Math.random() * 999999) + 1, round: 1, cleared: 0, stars: 0, newBest: false }; return U.session.infinite; },
+    start: function (seed) { U.session.dailyRun = null; U.session.infinite = { seed: seed || Math.floor(Math.random() * 999999) + 1, round: 1, cleared: 0, stars: 0, newBest: false }; return U.session.infinite; },
 
     /** Fin de una ronda (se llama una vez): si ganaste, suma la ronda y las estrellas a la racha y guarda el récord. → resumen de la racha para la pantalla de resultado. */
     finish: function (run, stars) {

@@ -3,6 +3,20 @@
   var U = gdjs.UrbanMex;
   if (!U.I18n) return;
   U.I18n.add('en', {
+    // ---- reto diario (menú, nivel y resultado)
+    'Reto perfecto! Vuelve mañana: habrá una ruta nueva para todos.': 'Perfect challenge! Come back tomorrow: there will be a new route for everyone.',
+    'RETO DIARIO': 'DAILY CHALLENGE', 'RETO DIARIO #{0}': 'DAILY CHALLENGE #{0}', 'RETO DIARIO #{0} - {1}': 'DAILY CHALLENGE #{0} - {1}', 'RETO #{0}': 'CHALLENGE #{0}', 'RETO #{0} - {1}': 'CHALLENGE #{0} - {1}', 'Reto diario #{0}': 'Daily challenge #{0}', 'RETO': 'CHALLENGE',
+    'JUGAR RETO': 'PLAY CHALLENGE', 'REPETIR RETO': 'REPLAY CHALLENGE', 'RETO BLOQUEADO': 'CHALLENGE LOCKED',
+    'Completa el nivel 1 para desbloquear el reto diario: una ruta nueva cada dia, igual para todos.': 'Complete level 1 to unlock the daily challenge: a new route every day, the same for everyone.',
+    'HOY: COMPLETADO': 'TODAY: COMPLETED', 'HOY: PENDIENTE': 'TODAY: PENDING', 'HOY: PENDIENTE ({0} intento)': 'TODAY: PENDING ({0} try)', 'HOY: PENDIENTE ({0} intentos)': 'TODAY: PENDING ({0} tries)',
+    'RACHA: {0} DIA': 'STREAK: {0} DAY', 'RACHA: {0} DIAS': 'STREAK: {0} DAYS', 'RACHA: {0} DIA (MEJOR {1})': 'STREAK: {0} DAY (BEST {1})', 'RACHA: {0} DIAS (MEJOR {1})': 'STREAK: {0} DAYS (BEST {1})',
+    'NUEVO RETO EN {0}h {1}m': 'NEW CHALLENGE IN {0}h {1}m', 'FACIL': 'EASY', 'MEDIO': 'MEDIUM', 'DIFICIL': 'HARD', 'EXPERTO': 'EXPERT', 'DOMINGO': 'SUNDAY', 'SABADO': 'SATURDAY', 'SÁBADO': 'SATURDAY',
+    'Dificultad: {0} ({1})': 'Difficulty: {0} ({1})', 'Sales de {0}. Es el reto de hoy: la misma ruta para todos.': 'You leave from {0}. It\'s today\'s challenge: the same route for everyone.',
+    'Intento {0} de hoy  -  racha: {1} dia': 'Try {0} today  -  streak: {1} day', 'Intento {0} de hoy  -  racha: {1} dias': 'Try {0} today  -  streak: {1} days',
+    'RETO COMPLETADO!  RACHA: {0} dia': 'CHALLENGE COMPLETED!  STREAK: {0} day', 'RETO COMPLETADO!  RACHA: {0} dias': 'CHALLENGE COMPLETED!  STREAK: {0} days',
+    'RETO COMPLETADO!  RACHA: {0} dias  (record!)': 'CHALLENGE COMPLETED!  STREAK: {0} days  (record!)',
+    'MEJOR MARCA DEL DIA!  {0} estrella, {1}': 'BEST OF THE DAY!  {0} star, {1}', 'MEJOR MARCA DEL DIA!  {0} estrellas, {1}': 'BEST OF THE DAY!  {0} stars, {1}',
+    'Ya tenias este reto. Tu mejor marca: {0} estrella, {1}': 'You already had this challenge. Your best: {0} star, {1}', 'Ya tenias este reto. Tu mejor marca: {0} estrellas, {1}': 'You already had this challenge. Your best: {0} stars, {1}',
     // ---- tutorial
     'COMO JUGAR  {0}/{1}': 'HOW TO PLAY  {0}/{1}', '< ANTERIOR': '< PREVIOUS', 'SIGUIENTE >': 'NEXT >', 'SIGUIENTE': 'NEXT', 'A JUGAR!': 'LET\'S PLAY!', 'SALTAR': 'SKIP', 'EMPEZAR': 'START',
     'EL OBJETIVO': 'THE GOAL', 'SALES DE CASA': 'YOU LEAVE HOME', 'Cada nivel es un día de la semana. Sales de tu casa a las {0}.': 'Each level is a day of the week. You leave home at {0}.',

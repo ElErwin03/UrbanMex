@@ -27,7 +27,7 @@
     /** Consejo concreto (según la estrella que falta o lo que te frenó). */
     tip: function (r) {
       if (r.won) {
-        if (r.stars >= 3) return 'Prueba otro día de la semana o supera tu mejor marca de dinero.';
+        if (r.stars >= 3) return r.daily ? 'Reto perfecto! Vuelve mañana: habrá una ruta nueva para todos.' : 'Prueba otro día de la semana o supera tu mejor marca de dinero.';
         if (!r.got.saver) return 'Ahorra: planea la ruta y revisa tu saldo antes de moverte (meta: ' + r.moneyGoal + ' o más).';
         return 'Evita las estaciones peligrosas: las noticias avisan dónde hay asaltos.';
       }
@@ -55,6 +55,15 @@
       var plural = function (n) { return n + (n === 1 ? ' ronda' : ' rondas'); };
       return { new: s.newBest, text: (s.newBest ? 'NUEVA MEJOR RACHA!  ' : 'RACHA: ') + plural(s.cleared) + '  -  ' + s.stars + ' estrellas' + (s.newBest ? '' : '   (mejor: ' + plural(s.best.best) + ')') };
     },
+    /** Reto diario: racha de días y marca del día. */
+    daily: function (r) {
+      var d = r.dailyInfo; if (!d) return null;
+      var days = function (n) { return n + (n === 1 ? ' dia' : ' dias'); }, stars = function (n) { return n + (n === 1 ? ' estrella' : ' estrellas'); };
+      if (!r.won) return { new: false, text: 'Intento ' + d.entry.tries + ' de hoy  -  racha: ' + days(d.streak) };
+      if (d.first) return { new: true, text: 'RETO COMPLETADO!  RACHA: ' + days(d.streak) + (d.streak > 1 && d.streak >= d.best ? '  (record!)' : '') };
+      if (d.better) return { new: true, text: 'MEJOR MARCA DEL DIA!  ' + stars(d.entry.stars) + ', ' + d.entry.money };
+      return { new: false, text: 'Ya tenias este reto. Tu mejor marca: ' + stars(d.entry.stars) + ', ' + d.entry.money };
+    },
     record: function (r, cur) {
       if (!r.won || !r.record) return null;
       if (r.record.isNew) return { new: true, text: r.record.prev ? 'NUEVO RECORD!  Antes: ' + r.record.prev.stars + (r.record.prev.stars === 1 ? ' estrella, ' : ' estrellas, ') + r.record.prev.money : 'PRIMERA MARCA GUARDADA!' };
@@ -74,9 +83,9 @@
       if (ui.button('m', 'MENU', 540, 400, 200, 44, {})) scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu');
       ui.end(); return;
     }
-    var inf = !!r.infinite, last = !inf && !U.Rules.hasNextLevel(data, r.levelIndex), week = !inf && r.won && (last || (r.levelIndex + 1) % U.Save.WEEK === 0), calm = U.A11y.calm(), M = ui.mob;      // M: modo celular (letras de 12 px, botones de 44 px o más)
+    var inf = !!r.infinite, dly = !!r.daily, last = !inf && !dly && !U.Rules.hasNextLevel(data, r.levelIndex), week = !inf && !dly && r.won && (last || (r.levelIndex + 1) % U.Save.WEEK === 0), calm = U.A11y.calm(), M = ui.mob;      // M: modo celular (letras de 12 px, botones de 44 px o más)
     ui.text('t', Text.title(r), 640, 56, { size: 24, align: 'center', color: r.won ? (r.stars >= 3 ? PAL.yellow : PAL.green) : r.left !== null && r.left <= 3 ? PAL.orange : PAL.red });
-    ui.text('d', inf ? 'RONDA ' + r.infinite.round : 'NIVEL ' + (r.levelIndex + 1) + ' - ' + r.day, 640, 100, { size: 8, align: 'center', color: PAL.dim });
+    ui.text('d', dly ? 'RETO DIARIO #' + r.dailyNumber + ' - ' + U.Daily.weekdayName(r.daily) : inf ? 'RONDA ' + r.infinite.round : 'NIVEL ' + (r.levelIndex + 1) + ' - ' + r.day, 640, 100, { size: 8, align: 'center', color: PAL.dim });
 
     if (r.won) {                                    // ---- tres estrellas
       scene._umStar = scene._umStar || {};
@@ -121,7 +130,7 @@
       ui.lines('tp', util.wrap(Text.tip(r), 78), 640, 478, { size: 8, lineH: 12, align: 'center', color: '230;234;250' });
     }
 
-    var rec = inf ? Text.streak(r) : Text.record(r, r.currency);
+    var rec = dly ? Text.daily(r) : inf ? Text.streak(r) : Text.record(r, r.currency);
     if (rec) ui.text('rec', rec.text, 640, M ? 550 : 520, { size: 8, align: 'center', color: rec.new ? PAL.yellow : PAL.dim });
     if (week) ui.text('w', Text.weekEnd(r.levelIndex, last, data.levels.length), 640, M ? 574 : 542, { size: 8, align: 'center', color: PAL.yellow });
 
@@ -136,14 +145,16 @@
       if (got.length > shown.length) ui.text('ac:m', '+ ' + (got.length - shown.length) + ' mas en LOGROS', bx + 172, 38 + shown.length * 30 + 4, { size: 8, align: 'center', color: PAL.dim });
     }
     var go = function (name) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, name); };
-    var btns = inf ? (r.won ? [['i', 'SIGUIENTE RONDA >', 300, '39;174;96']] : [['x', 'NUEVA RACHA', 300, '120;60;160']])
+    var btns = dly ? (r.won ? (r.stars < 3 ? [['d', 'MEJORAR ESTRELLAS', 250, '70;100;160']] : []) : [['d', 'REINTENTAR', 300, '39;174;96']])
+      : inf ? (r.won ? [['i', 'SIGUIENTE RONDA >', 300, '39;174;96']] : [['x', 'NUEVA RACHA', 300, '120;60;160']])
       : r.won ? (last ? [['a', 'JUGAR OTRA VEZ', 300, '39;174;96']] : [['n', 'SIGUIENTE NIVEL >', 300, '39;174;96']]) : [['r', 'REINTENTAR', 300, '39;174;96']];
-    if (!inf && r.won && r.stars < 3) btns.push(['rt', 'MEJORAR ESTRELLAS', 250, '70;100;160']);
+    if (!inf && !dly && r.won && r.stars < 3) btns.push(['rt', 'MEJORAR ESTRELLAS', 250, '70;100;160']);
     btns.push(['m', 'MENU', 150, '70;70;100']);
     var total = btns.reduce(function (s, b) { return s + b[2]; }, 0) + 20 * (btns.length - 1), x = (1280 - total) / 2;
     btns.forEach(function (b) {
       if (ui.button(b[0], b[1], x, M ? 618 : 574, b[2], 52, { size: 8, fill: b[3] })) {
-        if (b[0] === 'i') { U.session.infinite.round++; go('Nivel'); }
+        if (b[0] === 'd') go('Nivel');                                                                // reto diario: otro intento del mismo reto
+        else if (b[0] === 'i') { U.session.infinite.round++; go('Nivel'); }
         else if (b[0] === 'x') { U.Infinite.start(); go('Nivel'); }
         else if (b[0] === 'n') { U.session.levelIndex = r.levelIndex + 1; go('Nivel'); }
         else if (b[0] === 'r' || b[0] === 'rt') { U.session.levelIndex = r.levelIndex; go('Nivel'); }

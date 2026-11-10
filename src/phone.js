@@ -175,7 +175,7 @@
     _a11y: function (ui, um, run, x, y, w) { U.A11y.panel(ui, um.ui.scene, 'ph:ax', x, y + 4, w); },
 
     _config: function (ui, um, run, x, y, w) {
-      var M = ui.mob, rows = [['DIA', run.level.day], [run.level.infinite ? 'RONDA' : 'NIVEL', run.level.infinite ? String(run.level.round) : run.level.id + '/' + run.data.levels.length], ['PASOS', String(run.steps)],
+      var M = ui.mob, rows = [['DIA', run.level.day], [run.level.daily ? 'RETO' : run.level.infinite ? 'RONDA' : 'NIVEL', run.level.daily ? '#' + run.level.id : run.level.infinite ? String(run.level.round) : run.level.id + '/' + run.data.levels.length], ['PASOS', String(run.steps)],
                   ['NOTICIAS', String(run.newsCount)], ['VERSION', U.VERSION]], rs = M ? 28 : 24;
       rows.forEach(function (r, i) {
         ui.text('ph:cr' + i, r[0], x, y + i * rs, { size: 8, color: PAL.dim });

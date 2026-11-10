@@ -19,6 +19,8 @@ run pausa Nivel --level 0 --pause main; run pausa-sonido Nivel --level 0 --pause
 run result-win Resultado --result win --stars 3 --record new; run result-win1 Resultado --result win --stars 1; run result-lose Resultado --result lose --cause money; run result-night Resultado --result lose --cause night
 for c in stamina blocked; do run result-lose-$c Resultado --result lose --cause $c --left 2 --rob 2; done
 run result-lose-left0 Resultado --result lose --cause money --left 0; run result-win2 Resultado --result win --stars 2 --record best --rob 1; run result-win3 Resultado --result win --stars 3 --record new
+run menu-reto-bloq Menu --daily locked; run menu-reto-pend Menu --daily pending --streak 3; run menu-reto-reint Menu --daily retry; run menu-reto-ok Menu --daily done --streak 12; run menu-reto-3 Menu --daily perfect --streak 100
+run nivel-reto Nivel --dlevel; run nivel-reto-sel Nivel --dlevel --select Pantitlan; run result-reto-win Resultado --dresult win --stars 2 --first 1 --streak 8; run result-reto-win3 Resultado --dresult win --stars 3 --better 1 --first 0; run result-reto-lose Resultado --dresult lose
 for l in 1 2 3 4 5 6 8; do run nivel$l Nivel --level $l; done; run nivel0-rob Nivel --level 0 --rob 1; run nivel0-late Nivel --level 0 --minute 1100 --stamina 3 --money 5
 for p in 0 1 2 3 4 5; do run tut$p Tutorial --page $p; done
 node -e "const fs=require('fs'),o=process.argv[1],m={};fs.readdirSync(o).filter(f=>f.endsWith('.json')).forEach(f=>{try{(JSON.parse(fs.readFileSync(o+'/'+f)).misses||[]).forEach(x=>m[x]=1)}catch(e){}});const k=Object.keys(m);fs.writeFileSync(o+'/misses.txt',k.join('\n'));console.log('SIN TRADUCIR: '+k.length)" "$OUT"
