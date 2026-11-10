@@ -1239,6 +1239,92 @@ test('infinito (resultado): racha, mejor marca y botones SIGUIENTE RONDA / NUEVA
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 
+// ---------------------------------------------------------------- reto diario (offline: solo usa la fecha del dispositivo)
+const pinDay = (U, y, m, d, h) => { U.Daily.now = () => new Date(y, m - 1, d, h === undefined ? 10 : h, 0); };
+test('reto diario (menú): bloqueado hasta completar el nivel 1; luego muestra el reto de hoy y lo arranca', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; let m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene); pinDay(U, 2026, 11, 9, 20);
+    U.session.completed = []; U.session.dailyLog = null; m.frame(3);
+    assert.equal(T()['UI:dly:t'], 'RETO DIARIO'); assert.equal(T()['UI:btn:dly'], 'RETO BLOQUEADO'); assert.match(Object.values(T()).join('|'), /Completa el nivel 1/);
+    m.click(1060, 575); assert.equal(m.scene.changes.length, 0, 'bloqueado: no hace nada'); assert.equal(U.session.dailyRun, null);
+    U.session.completed = [0]; m.frame(3);
+    assert.equal(T()['UI:dly:n'], 'RETO #313 - LUNES'); assert.equal(T()['UI:btn:dly'], 'JUGAR RETO'); assert.equal(T()['UI:dly:st'], 'HOY: PENDIENTE'); assert.equal(T()['UI:dly:sk'], 'RACHA: 0 DIAS'); assert.equal(T()['UI:dly:d'], 'FACIL');
+    assert.equal(T()['UI:dly:nx'], 'NUEVO RETO EN 4h 00m', 'cuenta hasta la medianoche del dispositivo'); assert.ok(!('UI:dly:s0' in uiIcons(m.scene)), 'sin estrellas mientras está pendiente');
+    const lv = U.Daily.level(U.Data.ready(m.scene), '2026-11-09'); assert.ok(Object.values(T()).some((t) => t.indexOf(U.Infinite.nice(lv.start)) >= 0), 'muestra de dónde a dónde es la ruta de hoy');
+    U.session.dailyLog = U.Daily.newLog(); U.session.dailyLog.days['2026-11-09'] = { tries: 2, won: false, stars: 0, money: 0, minute: 0 }; m.frame(2); assert.equal(T()['UI:dly:st'], 'HOY: PENDIENTE (2 intentos)');
+    U.session.dailyLog.days['2026-11-09'] = { tries: 1, won: true, stars: 2, money: 40, minute: 600 }; U.session.dailyLog.days['2026-11-08'] = { tries: 1, won: true, stars: 3, money: 70, minute: 600 }; U.session.dailyLog.last = '2026-11-09'; U.session.dailyLog.streak = 2; U.session.dailyLog.best = 5; U.session.dailyLog.wins = 2; m.frame(2);
+    assert.equal(T()['UI:dly:st'], 'HOY: COMPLETADO'); assert.equal(T()['UI:dly:sk'], 'RACHA: 2 DIAS (MEJOR 5)'); assert.equal(T()['UI:btn:dly'], 'MEJORAR ESTRELLAS'); assert.deepEqual([0, 1, 2].map((i) => uiIcons(m.scene)['UI:dly:s' + i]), ['estrella', 'estrella', 'estrella_vacia']);
+    U.session.dailyLog.days['2026-11-09'].stars = 3; m.frame(2); assert.equal(T()['UI:btn:dly'], 'REPETIR RETO');
+    // jugar: guarda qué reto es, apaga la racha infinita y va al tutorial la primera vez, y directo al nivel después
+    U.session.infinite = { seed: 1, round: 2, cleared: 1, stars: 2, newBest: false }; U.session.seenTutorial = false; m.click(1060, 575); assert.deepEqual(U.session.dailyRun, { key: '2026-11-09' }); assert.equal(U.session.infinite, null);
+    assert.deepEqual(m.scene.changes.pop(), [3, 'Tutorial']); assert.equal(U.session.afterTutorial, 'Nivel');
+    U.session.seenTutorial = true; m = session('Menu'); m.frame(3); pinDay(m.U, 2026, 11, 9); m.U.session.completed = [0]; m.frame(3); m.click(1060, 575); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']);
+    // cambia el día del dispositivo: otro reto, y sin internet no hay nada más que revisar
+    pinDay(m.U, 2026, 11, 14); m.U.session.dailyRun = null; m.frame(3); assert.equal(uiTexts(m.scene)['UI:dly:n'], 'RETO #318 - SABADO'); assert.equal(uiTexts(m.scene)['UI:dly:d'], 'DIFICIL');
+    // JUGAR y REJUGAR vuelven a los niveles normales (apagan el reto)
+    m.U.session.dailyRun = { key: '2026-11-09' }; m = session('Menu'); m.frame(3); m.U.session.dailyRun = { key: '2026-11-09' }; m.U.session.seenTutorial = true; m.click(640, 400); assert.equal(m.U.session.dailyRun, null, 'JUGAR apaga el reto');
+    m = session('Menu'); m.frame(3); m.U.session.dailyRun = { key: '2026-11-09' }; m.scene._um.view = 'levels'; m.frame(3); m.click(150, 351); assert.equal(m.U.session.dailyRun, null, 'REJUGAR apaga el reto');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('reto diario (nivel): usa la ruta del día, se anuncia como RETO y al terminar guarda el día y la racha (sin tocar los niveles)', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; let s = session('Nivel'); s.frame(2); const U = s.U; pinDay(U, 2026, 11, 9); U.session.completed = [0]; U.session.best = {}; U.session.dailyLog = null; U.Daily.start('2026-11-09');
+    delete s.scene._um; s.frame(3); const um = s.scene._um, lv = U.Daily.level(um.data, '2026-11-09');
+    assert.equal(um.run.level, lv); assert.equal(um.run.levelIndex, -1); assert.equal(um.run.current, lv.start);
+    assert.equal(um.modal.title, 'RETO DIARIO #313'); assert.ok(um.modal.lines.includes('Dificultad: FACIL (LUNES)'), um.modal.lines.join('|')); assert.ok(!um.modal.lines.some((l) => /^Racha:/.test(l)), 'la racha de rondas es del infinito');
+    um.modal = null; s.frame(2); assert.equal(uiTexts(s.scene)['UI:hud:day'], 'RETO DIARIO #313');
+    // otra partida con la misma fecha: mismos dados (las noticias de salida) y misma ruta
+    const s2 = session('Nivel'); s2.frame(2); pinDay(s2.U, 2026, 11, 9); s2.U.session.completed = [0]; s2.U.Daily.start('2026-11-09'); delete s2.scene._um; s2.frame(3);
+    assert.equal(s2.scene._um.run.level.goal, lv.goal); assert.deepEqual(s2.scene._um.run.newsLog.map((n) => n.title), um.run.newsLog.map((n) => n.title));
+    // perder: cuenta el intento
+    um.run.over = true; um.run.won = false; um.run.endReason = 'Anocheció'; s.frame(3);
+    assert.equal(U.session.dailyLog.days['2026-11-09'].tries, 1); assert.equal(U.session.dailyLog.days['2026-11-09'].won, false); assert.equal(U.Daily.streak('2026-11-09'), 0); s.frame(80);
+    assert.deepEqual(s.scene.changes.pop(), [3, 'Resultado']); assert.equal(U.session.lastResult.daily, '2026-11-09'); assert.equal(U.session.lastResult.dailyInfo.entry.tries, 1);
+    // ganar: guarda la marca del día y la racha, sin completar niveles ni tocar los récords normales
+    s = session('Nivel'); s.frame(2); const U2 = s.U; pinDay(U2, 2026, 11, 9); U2.session.completed = [0]; U2.session.best = {}; U2.Daily.start('2026-11-09'); delete s.scene._um; s.frame(3); const um2 = s.scene._um; um2.modal = null;
+    um2.run.over = true; um2.run.won = true; s.frame(3); s.frame(3);
+    const d = U2.session.dailyLog.days['2026-11-09']; assert.equal(d.won, true); assert.ok(d.stars >= 1); assert.equal(U2.session.dailyLog.streak, 1); assert.deepEqual(U2.session.completed, [0], 'el reto no cuenta como nivel completado'); assert.deepEqual(U2.session.best, {});
+    assert.equal(JSON.parse(store['UrbanMex_save_v1']).daily.days['2026-11-09'].won, true, 'se guarda en el dispositivo'); s.frame(80);
+    assert.equal(U2.session.lastResult.dailyInfo.first, true); assert.equal(U2.session.lastResult.dailyNumber, 313); assert.equal(U2.session.lastResult.record, null);
+    assert.equal(d.tries, 2, 'el intento perdido y este: cada uno cuenta una sola vez aunque pasen los fotogramas'); assert.equal(U2.session.lastResult.dailyInfo.entry.tries, 2);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('reto diario (resultado): título, racha, mejor marca y botones', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Resultado'); s.frame(1); const U = s.U, T = (k) => uiTexts(s.scene)['UI:' + k];
+    const base = { levelIndex: -1, day: 'RETO #313', daily: '2026-11-09', dailyNumber: 313, record: null };
+    const info = (o) => Object.assign({ key: '2026-11-09', number: 313, first: true, streak: 3, best: 3, better: false, entry: { tries: 1, stars: 2, money: 60 } }, o);
+    U.session.lastResult = fakeResult(Object.assign({}, base, { stars: 2, got: { arrive: true, saver: true, safe: false }, dailyInfo: info() })); s.frame(40);
+    assert.equal(T('d'), 'RETO DIARIO #313 - LUNES'); assert.equal(T('rec'), 'RETO COMPLETADO!  RACHA: 3 dias  (record!)'); assert.equal(T('w'), undefined, 'sin cierre de semana');
+    assert.ok(hasText(s.scene, /MEJORAR ESTRELLAS/) && !hasText(s.scene, /SIGUIENTE NIVEL|SIGUIENTE RONDA|REINTENTAR/));
+    U.session.lastResult.dailyInfo = info({ streak: 1, best: 4 }); s.frame(2); assert.equal(T('rec'), 'RETO COMPLETADO!  RACHA: 1 dia');
+    U.session.lastResult.dailyInfo = info({ first: false, better: true, entry: { tries: 3, stars: 2, money: 80 } }); s.frame(2); assert.equal(T('rec'), 'MEJOR MARCA DEL DIA!  2 estrellas, 80');
+    U.session.lastResult.dailyInfo = info({ first: false, entry: { tries: 3, stars: 1, money: 50 } }); s.frame(2); assert.equal(T('rec'), 'Ya tenias este reto. Tu mejor marca: 1 estrella, 50');
+    s.click(555, 600); s.frame(1); assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel'], 'MEJORAR ESTRELLAS vuelve al mismo reto'); assert.equal(U.session.dailyRun, null, 'la partida de Nivel decide el reto: el resultado no lo cambia');
+    U.session.lastResult = fakeResult(Object.assign({}, base, { stars: 3, dailyInfo: info({ first: false, entry: { tries: 2, stars: 3, money: 60 } }) })); s.frame(40);
+    assert.ok(!hasText(s.scene, /MEJORAR ESTRELLAS/), 'con 3 estrellas ya no hay nada que mejorar'); assert.match(Object.values(uiTexts(s.scene)).join('|'), /Reto perfecto! Vuelve mañana/);
+    // perder: intento y racha, y REINTENTAR
+    U.session.lastResult = fakeResult(Object.assign({}, base, { won: false, stars: 0, got: { arrive: false, saver: false, safe: false }, cause: 'stamina', reason: 'Te quedaste sin stamina.', left: 6, hops: 14, progress: 0.5, dailyInfo: info({ first: false, streak: 2, entry: { tries: 4, stars: 0, money: 0 } }) })); s.frame(40);
+    assert.equal(T('rec'), 'Intento 4 de hoy  -  racha: 2 dias'); assert.ok(hasText(s.scene, /REINTENTAR/) && !hasText(s.scene, /SIGUIENTE|MEJORAR/));
+    s.click(555, 600); s.frame(1); assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel']);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('reto diario (modo celular): la tarjeta y el botón son grandes y caben', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(3); const U = m.U; pinDay(U, 2026, 11, 9); U.session.uiMode = 'on'; U.session.completed = [0]; U.session.dailyLog = U.Daily.newLog();
+    U.session.dailyLog.days['2026-11-09'] = { tries: 1, won: true, stars: 3, money: 50, minute: 600 }; U.session.dailyLog.last = '2026-11-09'; U.session.dailyLog.streak = 120; U.session.dailyLog.best = 130; m.frame(3);
+    const b = m.scene._umUI.buttons.find((x) => x.id === 'dly'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón tocable'); assert.ok(b.y + b.h <= 364 + 290 - 6, 'cabe dentro de la tarjeta'); m.click(b.x + b.w / 2, b.y + b.h / 2); assert.ok(U.session.dailyRun, 'se puede tocar en modo celular');
+    assert.equal(uiTexts(m.scene)['UI:dly:sk'], 'RACHA: 120 DIAS (MEJOR 130)');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
 // ---------------------------------------------------------------- logros en el menú, el nivel y el resultado
 test('logros (menú): el botón cuenta lo conseguido y la pantalla muestra los 23, con avance en los pendientes', () => {
   const store = store0();
@@ -1511,6 +1597,15 @@ test('inglés: ninguna pantalla se queda sin traducir (menú, tutorial, los 10 n
       m.frame(3); m.scene._um.view = v; m.frame(3); grab(m, 'menú ' + v + (full ? ' (con progreso)' : ''));
     }));
     { const m = enSession('Menu'); m.frame(3); m.scene._um.confirmExit = true; m.frame(3); grab(m, 'menú SALIR'); }
+    // reto diario: tarjeta del menú en todos sus estados (todos los días de la semana), el nivel del reto y sus resultados
+    ['bloqueado', 'pendiente', 'reintento', 'hecho', 'perfecto'].forEach((st) => [8, 9, 10, 11, 12, 13, 14].forEach((day) => {
+      const m = enSession('Menu', (x) => { const D = x.U.Daily; D.now = () => new Date(2026, 10, day, 9, 0); x.U.session.completed = st === 'bloqueado' ? [] : [0]; x.U.session.dailyLog = D.newLog(); const l = x.U.session.dailyLog, k = D.key();
+        if (st === 'reintento') l.days[k] = { tries: 1, won: false, stars: 0, money: 0, minute: 0 }; if (st === 'hecho' || st === 'perfecto') { l.days[k] = { tries: 2, won: true, stars: st === 'perfecto' ? 3 : 1, money: 50, minute: 600 }; l.last = k; l.streak = 5; l.best = 9; l.wins = 5; } });
+      m.frame(3); grab(m, 'menú reto ' + st + ' (día ' + day + ')');
+    }));
+    [8, 9, 10, 11, 12, 13, 14].forEach((day) => ['inicio', 'mapa', 'noticias'].forEach((st) => {
+      const s = enSession('Nivel', (x) => { x.U.Daily.now = () => new Date(2026, 10, day, 9, 0); x.U.session.completed = [0]; x.U.Daily.start(); delete x.scene._um; }); s.frame(3); const um = s.scene._um; if (st !== 'inicio') um.modal = null; if (st === 'noticias') um.phone.app = 'news'; s.frame(3); grab(s, 'nivel reto ' + st + ' (día ' + day + ')');
+    }));
     // tutorial, con ratón y con dedo
     [false, true].forEach((touch) => { for (let p = 0; p < 6; p++) { const t = enSession('Tutorial', (x) => { x.U.session.touchMode = touch; }); t.frame(3); t.scene._umTut.page = p; t.frame(3); grab(t, 'tutorial ' + p); } });
     // nivel: los 10 niveles y varias rondas del infinito, en todos sus estados
@@ -1541,6 +1636,8 @@ test('inglés: ninguna pantalla se queda sin traducir (menú, tutorial, los 10 n
     [{ stars: 3 }, { stars: 2, got: { arrive: true, saver: false, safe: true } }, { stars: 1, record: { isNew: false, prev: { stars: 3, money: 80 } } }, { stars: 3, record: { isNew: true, prev: { stars: 1, money: 40 } } }, { stars: 2, record: { isNew: true, prev: null } },
      { won: false, left: 4, cause: 'stamina', reason: 'Te quedaste sin stamina.' }, { won: false, left: 1, cause: 'night', reason: 'Anocheció y no llegaste a tiempo.' }, { won: false, left: 0, cause: 'money', stolen: 30, robbed: 1, reason: 'Te quedaste sin dinero.' }, { won: false, left: 8, cause: 'blocked', reason: 'Todas las rutas están bloqueadas.' },
      { stars: 3, robbed: 2, stolen: 40, got: { arrive: true, saver: true, safe: false } }, { stars: 3, levelIndex: 4, weekDone: 0 }, { stars: 3, levelIndex: 9, allDone: true }, { achievements: ['primer_viaje', 'hora_pico', 'sin_monster', 'lluvia', 'triple'] },
+     ...[{ first: true, streak: 1, best: 1 }, { first: true, streak: 4, best: 4 }, { first: false, better: true, streak: 2, best: 5 }, { first: false, streak: 2, best: 5 }].flatMap((i) => [1, 2, 3].map((st) => ({ levelIndex: -1, daily: '2026-11-09', dailyNumber: 313, day: 'RETO #313', stars: st, record: null, got: { arrive: true, saver: st >= 2, safe: st === 3 }, dailyInfo: Object.assign({ key: '2026-11-09', number: 313, better: false, entry: { tries: 2, stars: st, money: 50 } }, i) }))),
+     { levelIndex: -1, daily: '2026-11-09', dailyNumber: 313, day: 'RETO #313', won: false, stars: 0, got: { arrive: false, saver: false, safe: false }, cause: 'night', reason: 'Anocheció y no llegaste a tiempo.', left: 2, hops: 12, progress: 0.8, record: null, dailyInfo: { key: '2026-11-09', number: 313, first: false, better: false, streak: 1, best: 3, entry: { tries: 1, stars: 0, money: 0 } } },
      { infinite: { round: 3 }, streak: { cleared: 3, stars: 7, newBest: true, best: { best: 3, stars: 7 } } }, { infinite: { round: 4 }, streak: { cleared: 1, stars: 2, newBest: false, best: { best: 5, stars: 9 } } }, { won: false, infinite: { round: 1 }, streak: { cleared: 0, stars: 0, newBest: false, best: { best: 0, stars: 0 } }, cause: 'stamina' }].forEach((o, i) => {
       const s = enSession('Resultado'); s.U.session.lastResult = fakeResult(o); s.frame(40); grab(s, 'resultado ' + i);
     });

@@ -59,6 +59,22 @@ frame();                                                       // 1.er fotograma
 if (flag('mobile')) U().session.uiMode = 'on';
 if (flag('lang')) U().session.lang = flag('lang');
 if (flag('level')) U().session.levelIndex = +flag('level');
+if (flag('daily')) {                                          // Menú: tarjeta del RETO DIARIO. --daily locked|pending|retry|done|perfect (--streak N)
+  const D = U().Daily, st = flag('daily'), k = D.key(), S = U().session; S.completed = st === 'locked' ? [] : [0]; S.loaded = true; S.dailyLog = D.newLog();
+  const l = S.dailyLog, n = +flag('streak', 0);
+  for (let i = n; i >= 1; i--) { const pk = (function f(x, c) { return c ? f(D.prevKey(x), c - 1) : x; })(k, st === 'done' || st === 'perfect' ? i - 1 : i); l.days[pk] = { tries: 1, won: true, stars: 2, money: 40, minute: 600 }; }
+  if (n) { l.streak = n; l.best = n + 2; l.last = st === 'done' || st === 'perfect' ? k : D.prevKey(k); }
+  if (st === 'retry') l.days[k] = { tries: 2, won: false, stars: 0, money: 0, minute: 0 };
+  if (st === 'done' || st === 'perfect') { l.days[k] = { tries: 1, won: true, stars: st === 'perfect' ? 3 : 2, money: 50, minute: 700 }; l.last = k; l.streak = Math.max(n, 1); l.best = Math.max(l.best, l.streak); }
+}
+if (flag('dlevel')) { const D = U().Daily; U().session.completed = [0]; U().session.dailyRun = { key: D.key() }; }       // Nivel: empieza el reto diario de hoy
+if (flag('dresult')) {                                        // Resultado de un reto diario: --dresult win|lose (--stars N, --first 1, --better 1, --streak N)
+  const D = U().Daily, k = D.key(), won = flag('dresult') === 'win', stars = won ? +flag('stars', 2) : 0, n = +flag('streak', 3);
+  U().session.lastResult = { won, levelIndex: -1, day: 'LUNES', arrival: '9:00 AM', travelTime: '2h 00m', steps: 14, money: 60, robbed: stars === 3 ? 0 : 1, stolen: stars === 3 ? 0 : 40, newsRead: 5,
+    reason: won ? '' : 'Te quedaste sin stamina.', cause: won ? '' : 'stamina', moneyStart: 150, currency: 'peje-coins', stars, moneyGoal: 56, daily: k, dailyNumber: D.number(k),
+    got: { arrive: won, saver: stars >= 2, safe: stars === 3 }, hops: 12, left: won ? 0 : 3, progress: won ? 1 : 0.7, record: null,
+    dailyInfo: { key: k, number: D.number(k), first: !!flag('first', won ? 1 : 0), streak: n, best: n + 1, better: !!flag('better'), entry: { tries: +flag('tries', 2), stars, money: 60 } } };
+}
 if (flag('result')) {                                         // escena Resultado: --result win | lose (datos de ejemplo); --stars 1..3 (win), --left N (lose), --cause stamina|money|night|blocked, --record new|old, --t SEG (avanza la animación)
   const won = flag('result') === 'win', stars = won ? +flag('stars', 3) : 0, left = +flag('left', 4), hops = 12;
   U().session.lastResult = { won, levelIndex: +flag('level', 0), day: 'LUNES', arrival: '9:00 AM', travelTime: '2h 00m', steps: 14, money: 60, robbed: stars === 3 ? 0 : 1, stolen: stars === 3 ? 0 : 40, newsRead: 5,

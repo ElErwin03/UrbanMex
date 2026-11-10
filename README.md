@@ -29,6 +29,7 @@ tests/                 pruebas (lógica + proyecto completo sobre un motor simul
 | `events` | eventos del día: lluvia, hora pico y huelga (ver *Eventos del día*) | no |
 | `rules` | economía, viaje, asaltos, Monster, fin de partida | no |
 | `infinite` | modo infinito: rondas con ruta al azar, siempre ganables (ver *Modo infinito*) | no |
+| `daily` | reto diario: una ruta por día, igual para todos y sin internet (ver *Reto diario*) | no |
 | `achievements` | logros: catálogo de datos, estadísticas de toda la vida y desbloqueo (ver *Logros*) | no |
 | `i18n`, `lang-en*` | idiomas: traducción español → inglés al dibujar el texto (ver *Idiomas*) | no |
 | `mobile` | modo celular: interfaz grande según el tamaño de la pantalla (ver *Celular: interfaz grande*) | mínimo |
@@ -259,6 +260,18 @@ Se **desbloquea al completar los 10 niveles** (en el menú aparece `MODO INFINIT
 - **Resultado:** `SIGUIENTE RONDA >` al ganar y `NUEVA RACHA` al perder (semilla nueva, ronda 1); muestra `RACHA: n rondas - m estrellas (mejor: k rondas)` o `NUEVA MEJOR RACHA!`.
 - **Mejor racha:** se guarda (`inf` en el guardado: más rondas; a igual de rondas, más estrellas; los valores dañados se ignoran) y se muestra en el menú. `BORRAR PROGRESO` la borra.
 - **Archivos:** `src/infinite.js` (generador, jugador automático, racha), `Rules.createRun(data, -1, rnd, nivel)` acepta un nivel ya armado, `Save.recordStreak`.
+
+## Reto diario
+Una ruta nueva **cada día, igual para todos los jugadores**, y **100% sin internet**: no hay servidor, cuenta ni red. Todo sale de la **fecha del dispositivo** (`AAAA-MM-DD`, hora local): la fecha es la semilla (`año*10000 + mes*100 + día`) y con ella se generan la ruta, los bloqueos, los eventos del día y hasta los "dados" de los asaltos y las noticias. Dos personas con la misma fecha juegan exactamente el mismo reto sin hablar con nadie. Se **desbloquea al completar el nivel 1** (el menú muestra `BLOQUEADO` hasta entonces).
+
+- **Tarjeta del menú** (a la derecha de `JUGAR`): `RETO #n - DÍA`, de qué estación a cuál va, dificultad, los últimos 7 días (verde = ganado, rojo = intentado, dorado = hoy pendiente), estrellas de hoy, `RACHA` de días seguidos (y la mejor) y `NUEVO RETO EN 3h 38m` hasta la medianoche del dispositivo. El botón dice `JUGAR RETO`, `MEJORAR ESTRELLAS` o `REPETIR RETO`; mientras está pendiente el borde pulsa (salvo con "reducir movimiento").
+- **Dificultad por día de la semana:** lunes y martes `FACIL`, miércoles y jueves `MEDIO`, viernes y sábado `DIFICIL` y domingo `EXPERTO`. Usa el generador del modo infinito (rondas 2, 3, 4, 5, 6, 7 y 9) y, como en el infinito, **cada reto se comprueba con el jugador automático**: siempre se puede ganar. Las pruebas lo verifican con 122 días de 2026.
+- **Racha de días:** sube al ganar el reto de un día después de haber ganado el de ayer; si pasa un día entero sin ganar, vuelve a empezar (la mejor racha se queda). Se puede jugar el reto de hoy aunque todavía no hayas ganado el de ayer: la racha sigue viva hasta que termina hoy.
+- **Mejor marca del día:** puedes reintentar las veces que quieras; se guarda el mejor resultado (más estrellas y, a igualdad, más dinero) y la cantidad de intentos. Perder después nunca borra lo ganado. La pantalla de resultado dice `RETO COMPLETADO!  RACHA: n dias`, `MEJOR MARCA DEL DIA!` o `Ya tenias este reto`, y el botón `MEJORAR ESTRELLAS` (o `REINTENTAR` al perder) vuelve a jugar el mismo reto. El reto **no** cuenta como nivel completado ni toca los récords de los niveles.
+- **Sin internet significa también:** si cambias la hora del dispositivo, el reto cambia con ella (no se puede impedir sin un servidor). Lo único que se protege es la racha: ganar un día **anterior** al último ganado nunca la sube.
+- **Guardado:** `daily` en `UrbanMex_save_v1` (racha, mejor racha, victorias, partidas y los últimos **60 días**; todo se valida al cargar y `BORRAR PROGRESO` lo borra).
+- **Archivos:** `src/daily.js` (puro: fecha → reto, racha, marcas), `Rules.createRun(data, -1, rnd, nivel)` con `nivel.daily`, y la tarjeta en `scene-menu.js`. `U.Daily.now` se puede reemplazar en las pruebas para fijar la fecha.
+- **Vista previa:** `node tools/dump_scene.js . Menu m.json --daily pending|retry|done|perfect|locked --streak 5`, `... Nivel n.json --dlevel` y `... Resultado r.json --dresult win|lose --stars 2 --first 1 --streak 3`; `tools/audit_all.sh` ya los revisa.
 
 ## Logros
 Hay **23 logros** en cuatro grupos (`PROGRESO`, `ESTILO DE JUEGO`, `EVENTOS DEL DIA`, `MODO INFINITO`). El botón `LOGROS n/23` del menú abre una pantalla con todos: los conseguidos llevan una copa dorada; los pendientes, un candado, y los que tienen contador muestran el avance (`2/3`).

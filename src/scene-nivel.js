@@ -20,7 +20,8 @@
 
   function init(scene, data) {
     U.Save.load();
-    var inf = U.session.infinite, um = scene._um = { data: data, run: R.createRun(data, inf ? -1 : U.session.levelIndex, undefined, inf ? U.Infinite.level(data, inf.seed, inf.round) : undefined), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
+    var inf = U.session.infinite, dr = !inf && U.session.dailyRun, plan = inf ? U.Infinite.level(data, inf.seed, inf.round) : dr ? U.Daily.level(data, dr.key) : undefined;      // modo infinito, reto diario o nivel normal
+    var um = scene._um = { data: data, run: R.createRun(data, plan ? -1 : U.session.levelIndex, dr ? U.Daily.rnd(dr.key) : undefined, plan), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
       selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false, paused: false, pauseView: 'main', hurt: 0,
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
@@ -32,7 +33,8 @@
     var evs = U.Events.status(run).map(function (e) { return e.label + ' (' + e.text + ')'; });   // eventos del día, si el nivel los tiene
     modal(um, { title: U.Infinite.title(run.level),
       lines: [run.level.startDesc, '', 'Meta: ' + (run.level.infinite ? U.Infinite.nice(run.level.goal) : run.level.goal), 'Llega antes de las ' + util.clock(data.config.dayEndMinute) + '.']
-        .concat(run.level.infinite ? ['Racha: ' + inf.cleared + (inf.cleared === 1 ? ' ronda' : ' rondas') + ' - ' + inf.stars + ' estrellas'] : [])
+        .concat(run.level.daily ? ['Dificultad: ' + U.Daily.difficulty(run.level.daily).label + ' (' + U.Daily.weekdayName(run.level.daily) + ')'] : [])
+        .concat(inf ? ['Racha: ' + inf.cleared + (inf.cleared === 1 ? ' ronda' : ' rondas') + ' - ' + inf.stars + ' estrellas'] : [])
         .concat(evs.length ? ['', 'Hoy: ' + evs.join(', ') + '.'] : []).concat(['', 'Lee las noticias del celular: son tu unica guia.']),
       buttons: [{ label: 'EMPEZAR', kind: 'safe' }] });
     return um;
@@ -370,12 +372,13 @@
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }
-    if (run.over && !um.saved && run.level.infinite) { um.saved = true; um.streak = U.Infinite.finish(run, R.score(run).stars); }      // modo infinito: suma a la racha y guarda el récord
+    if (run.over && !um.saved && run.level.daily) { um.saved = true; um.daily = U.Daily.finish(run, R.score(run).stars); }      // reto diario: guarda el resultado del día y la racha de días
+    else if (run.over && !um.saved && run.level.infinite) { um.saved = true; um.streak = U.Infinite.finish(run, R.score(run).stars); }      // modo infinito: suma a la racha y guarda el récord
     else if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); um.record = U.Save.record(run.levelIndex, R.score(run).stars, run.money); }   // guarda el progreso y la mejor marca al ganar
     if (run.over && !um.achDone) { um.achDone = true; um.unlocked = U.Achievements.record(R.summary(run), um.streak ? um.streak.cleared : 0); }   // logros: suma las estadísticas y revisa todos
     if (run.over && !um.modal && !um.pending && !um.map.moving()) {
       um.endTimer += dt;
-      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; U.session.lastResult.streak = um.streak || null; U.session.lastResult.achievements = (um.unlocked || []).map(function (a) { return a.id; }); scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }
+      if (um.endTimer > 0.9) { U.session.lastResult = R.summary(run); U.session.lastResult.record = um.record || null; U.session.lastResult.streak = um.streak || null; U.session.lastResult.dailyInfo = um.daily || null; U.session.lastResult.achievements = (um.unlocked || []).map(function (a) { return a.id; }); scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Resultado'); }
     }
   };
 })();

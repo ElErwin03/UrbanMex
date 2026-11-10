@@ -81,7 +81,7 @@
     /** Mensajes iniciales del nivel. */
     intro: function (run) {
       var lv = run.level, cfg = run.data.config;
-      News.info(run, lv.infinite ? 'Ronda ' + lv.round : 'Nivel ' + lv.id + ': ' + lv.day, lv.startDesc,
+      News.info(run, lv.daily ? 'Reto diario #' + lv.id : lv.infinite ? 'Ronda ' + lv.round : 'Nivel ' + lv.id + ': ' + lv.day, lv.startDesc,
         'Meta: ' + lv.goal + ' | Tienes hasta las ' + util.clock(cfg.dayEndMinute));
       U.Events.list(run).forEach(function (ev) { News.event(run, ev, run.minute >= ev.from ? 'now' : 'soon', false); });   // eventos del día (sin globo de no leídas)
       News.info(run, 'Tip del dia', 'Revisa las noticias ANTES de viajar. El mapa no te avisa de peligros ni bloqueos.',

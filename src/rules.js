@@ -240,7 +240,7 @@
       var cfg = run.data.config, sc = Rules.score(run), total = Rules.hopsLeft({ graph: run.graph, level: run.level, blocked: {} }, run.level.start, true);
       var left = run.won ? 0 : Rules.hopsLeft(run, run.current);
       if (left === null) left = Rules.hopsLeft(run, run.current, true);
-      return { won: run.won, reason: run.endReason, cause: run.endCause || '', levelIndex: run.levelIndex, day: run.level.day, infinite: run.level.infinite ? { round: run.level.round } : null,
+      return { won: run.won, reason: run.endReason, cause: run.endCause || '', levelIndex: run.levelIndex, day: run.level.day, infinite: run.level.infinite && !run.level.daily ? { round: run.level.round } : null, daily: run.level.daily || null, dailyNumber: run.level.daily ? run.level.id : 0,
                arrival: util.clock(run.minute), travelTime: util.duration(run.minute - cfg.dayStartMinute),
                steps: run.steps, money: run.money, robbed: run.robbed, stolen: run.stolen, stamina: Math.round(run.stamina), monsters: run.monsters, combis: run.combis, waited: run.waited || 0,
                events: (run.level.events || []).map(function (e) { return e.id; }),
