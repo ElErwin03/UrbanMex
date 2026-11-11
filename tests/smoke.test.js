@@ -550,7 +550,7 @@ test('volumen: el menú tiene tres módulos (música general, sonidos generales,
     audioReset(); const m = session('Menu'); m.frame(5); const U = m.U, A = U.Audio, vol = () => JSON.parse(store['UrbanMex_save_v1']).vol;
     assert.deepEqual(A.GROUPS.map((g) => g.id), ['music', 'sfx', 'alert']);
     assert.deepEqual(['music', 'sfx', 'alert'].map((g) => A.level(g)), [7, 7, 7], 'de fábrica: nivel 7 (= los volúmenes base)');
-    m.click(100, 29); m.frame(3);                                                    // SONIDO → panel de los tres módulos
+    m.click(1169, 29); m.click(640, 182); m.frame(3);                                // AJUSTES → SONIDO → panel de los tres módulos
     assert.equal(m.scene._um.view, 'sound');
     const seg = Math.floor((620 - 60 - 76 - 12 - 4) / 10);
     m.click(MN.minus, MN.y(0)); assert.equal(A.level('music'), 6); assert.equal(A.level('sfx'), 7); assert.equal(A.level('alert'), 7, 'cada módulo es independiente');
@@ -567,7 +567,7 @@ test('volumen: el menú tiene tres módulos (música general, sonidos generales,
     // "reiniciar el juego": todo vuelve como se dejó
     m.click(MN.mute, MN.y(2)); audioReset(); const m2 = session('Menu'); m2.frame(5);
     assert.deepEqual(['music', 'sfx', 'alert'].map((g) => m2.U.Audio.level(g)), [1, 8, 2]); assert.deepEqual(['music', 'sfx', 'alert'].map((g) => m2.U.Audio.muted(g)), [false, false, true]);
-    m2.click(100, 29); m2.frame(3); m2.click(640, 544); m2.frame(2); assert.equal(m2.scene._um.view, 'main', 'VOLVER regresa al menú');
+    m2.click(1169, 29); m2.click(640, 182); m2.frame(3); m2.click(640, 544); m2.frame(2); assert.equal(m2.scene._um.view, 'settings', 'VOLVER regresa a AJUSTES'); m2.click(640, 486); assert.equal(m2.scene._um.view, 'main', 'y de ahí al menú');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 
@@ -575,9 +575,9 @@ test('menú: botón SALIR abajo del todo; pide confirmación y, si se acepta, ci
   const store = store0();
   try {
     audioReset(); const m = session('Menu'); m.frame(5); const um = m.scene._um;
-    const quit = [490 + 150, 630 + 18], si = [360 + 560 - 260 + 110, 200 + 250 - 70 + 22], no = [360 + 40 + 110, 200 + 250 - 70 + 22];
+    const quit = [644 + 73, 562 + 20], si = [360 + 560 - 260 + 110, 200 + 250 - 70 + 22], no = [360 + 40 + 110, 200 + 250 - 70 + 22];
     // el botón está debajo de todos los demás botones del menú principal
-    assert.ok(630 > 584 + 36, 'SALIR queda debajo de COMO JUGAR');
+    assert.ok(562 > 462 + 40, 'SALIR queda debajo de JUGAR, SELECCIONAR NIVEL y MAS MODOS');
     m.click(...quit); m.frame(2); assert.equal(um.confirmExit, true, 'abre la ventana de confirmación'); assert.equal(m.scene.changes.length, 0, 'todavía no cierra');
     // con la ventana abierta nada de abajo responde: un clic sobre JUGAR no hace nada
     m.click(640, 400); m.frame(2); assert.equal(m.scene.changes.length, 0); assert.equal(um.confirmExit, true);
@@ -731,12 +731,12 @@ test('viaje imposible: el panel explica el motivo con los números reales, el bo
 // ---- créditos
 test('créditos: botón en el menú; muestra la Universidad Autónoma de Nayarit, la Unidad Académica de Economía y al equipo; VOLVER regresa', () => {
   const m = session('Menu'); m.frame(5); const u = () => m.scene._um, C = m.U.CREDITS, txt = (k) => { const o = m.U.UI.of(m.scene).pool.t['UI:' + k]; return o && !o.hidden ? o.text : null; };
-  assert.equal(u().view, 'main'); m.click(1169, 29); assert.equal(u().view, 'credits', 'el botón CREDITOS abre la pantalla'); m.frame(2);
+  assert.equal(u().view, 'main'); m.click(1169, 29); assert.equal(u().view, 'settings', 'AJUSTES abre los ajustes'); m.click(640, 414); assert.equal(u().view, 'credits', 'el botón CREDITOS abre la pantalla'); m.frame(2);
   assert.equal(txt('cr:h'), 'CREDITOS'); assert.equal(txt('cr:e0'), 'Universidad Autónoma de Nayarit'); assert.equal(txt('cr:e1'), 'Unidad Académica de Economía');
   assert.deepEqual(C.team.map((p) => p.first + ' ' + p.last), ['Fabian Enrique Real Ramirez', 'Edwin Alberto Barrera Franco', 'Oscar René Domínguez'], 'nombres completos');
   C.team.forEach((p, i) => { assert.equal(txt('cr:n' + i), p.first); assert.equal(txt('cr:l' + i), p.last); assert.ok(txt('cr:r' + i)); });
   assert.deepEqual(C.team.map((p, i) => txt('cr:r' + i)), ['Desarrollo del juego', 'Diseñador', 'Colaborador'], 'puestos'); assert.equal(txt('cr:n2'), 'Oscar'); assert.equal(txt('cr:l2'), 'René Domínguez', 'René es apellido de Oscar');
-    m.click(640, 598); assert.equal(u().view, 'main', 'VOLVER regresa al menú'); m.frame(2); assert.equal(txt('cr:h'), null, 'y la pantalla de créditos desaparece');
+    m.click(640, 598); assert.equal(u().view, 'settings', 'VOLVER regresa a AJUSTES'); m.frame(2); assert.equal(txt('cr:h'), null, 'y la pantalla de créditos desaparece');
 });
 
 test('créditos: cada línea cabe en su recuadro y los datos están completos', () => {
@@ -829,13 +829,13 @@ test('accesibilidad: el menú tiene el panel (efectos visuales y reducir movimie
   try {
     audioReset(); const m = session('Menu'); m.frame(5); const U = m.U, A = U.A11y, saved = () => JSON.parse(store[KEY]), ph = A.height(620);
     assert.deepEqual([A.quality(), A.calm()], ['high', false], 'de fábrica: efectos altos, movimiento normal');
-    m.click(111, 67); m.frame(3); assert.equal(m.scene._um.view, 'a11y', 'el botón ACCESIBILIDAD abre el panel');
+    m.click(1169, 29); m.click(640, 240); m.frame(3); assert.equal(m.scene._um.view, 'a11y', 'el botón ACCESIBILIDAD abre el panel');
     const bw = Math.floor((620 - 12) / 3), by = 172 + 20 + 15, cx = (i) => 330 + i * (bw + 6) + bw / 2;
     m.click(cx(1), by); assert.equal(A.quality(), 'low'); assert.equal(saved().fx, 'low', 'se guarda al cambiar');
     m.click(cx(2), by); assert.equal(A.quality(), 'off'); m.click(cx(0), by); assert.equal(A.quality(), 'high');
     m.click(640, 172 + 120 + 15); assert.equal(A.calm(), true, 'REDUCIR MOVIMIENTO se enciende'); assert.equal(saved().calm, true);
     m.click(cx(2), by);
-    m.click(640, 150 + ph + 44 + 24 + 24); assert.equal(m.scene._um.view, 'main', 'VOLVER regresa al menú');
+    m.click(640, 150 + ph + 44 + 24 + 24); assert.equal(m.scene._um.view, 'settings', 'VOLVER regresa a AJUSTES');
     // otra sesión: se recupera lo guardado
     U.session.fxQuality = 'high'; U.session.calm = false; U.session.loaded = false; U.Save.load(); assert.deepEqual([A.quality(), A.calm()], ['off', true], 'se recupera al abrir el juego');
     // un guardado dañado no rompe nada ni cambia los ajustes
@@ -1187,16 +1187,17 @@ test('infinito (menú): bloqueado hasta completar los 10 niveles; después arran
   const store = store0();
   try {
     audioReset(); delete globalThis.gdjs.UrbanMex; let m = session('Menu'); m.frame(3); const U = m.U; U.session.completed = [0, 1, 2, 3, 4, 5, 6, 7, 8]; U.session.inf = { best: 0, stars: 0 }; U.session.infinite = null; m.frame(3);
-    assert.equal(uiTexts(m.scene)['UI:btn:inf'], 'MODO INFINITO - BLOQUEADO'); assert.match(uiTexts(m.scene)['UI:infh'], /Completa los 10 niveles/);
-    m.click(640, 536); assert.equal(m.scene.changes.length, 0, 'bloqueado: no hace nada'); assert.equal(U.session.infinite, null);
-    U.session.completed.push(9); m.frame(3); assert.equal(uiTexts(m.scene)['UI:btn:inf'], 'MODO INFINITO'); assert.match(uiTexts(m.scene)['UI:infh'], /Rutas al azar/);
-    U.session.inf = { best: 4, stars: 9 }; m.frame(2); assert.equal(uiTexts(m.scene)['UI:infh'], 'Mejor racha: 4 rondas - 9 estrellas');
-    m.click(640, 536); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.infinite.round, 1); assert.equal(U.session.infinite.cleared, 0); assert.ok(U.session.infinite.seed > 0);
+    assert.equal(uiTexts(m.scene)['UI:btn:inf'], undefined, 'el infinito ya no está en el menú principal'); m.click(640, 532); assert.equal(m.scene._um.view, 'modes', 'MAS MODOS'); m.frame(3);
+    assert.equal(uiTexts(m.scene)['UI:btn:inf'], 'INFINITO - BLOQUEADO'); assert.match(uiTexts(m.scene)['UI:infh:0'], /Completa los 10 niveles/);
+    m.click(842, 367); assert.equal(m.scene.changes.length, 0, 'bloqueado: no hace nada'); assert.equal(U.session.infinite, null);
+    U.session.completed.push(9); m.frame(3); assert.equal(uiTexts(m.scene)['UI:btn:inf'], 'JUGAR INFINITO'); assert.match(uiTexts(m.scene)['UI:infh:0'], /Rutas al azar/);
+    U.session.inf = { best: 4, stars: 9 }; m.frame(2); assert.equal(uiTexts(m.scene)['UI:infb:0'], 'Mejor racha: 4 rondas - 9 estrellas');
+    m.click(842, 367); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']); assert.equal(U.session.infinite.round, 1); assert.equal(U.session.infinite.cleared, 0); assert.ok(U.session.infinite.seed > 0);
     // JUGAR y REJUGAR vuelven a los niveles normales (apagan la racha)
     U.session.seenTutorial = true; m = session('Menu'); m.frame(3); m.click(640, 400); assert.equal(U.session.infinite, null); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']);
     Infinite_start(U); m = session('Menu'); m.frame(3); m.scene._um.view = 'levels'; m.frame(3); m.click(150, 351); assert.equal(U.session.infinite, null, 'REJUGAR un nivel apaga la racha');
-    // los botones de abajo no se pisan
-    m = session('Menu'); m.frame(3); assert.ok(uiTexts(m.scene)['UI:btn:how'] === 'COMO JUGAR' && uiTexts(m.scene)['UI:btn:quit'] === 'SALIR');
+    // el menú principal solo tiene lo esencial: AJUSTES arriba y JUGAR, SELECCIONAR NIVEL, MAS MODOS, LOGROS y SALIR
+    m = session('Menu'); m.frame(3); assert.deepEqual(m.scene._umUI.buttons.map((b) => b.id).sort(), ['ach', 'cfg', 'modes', 'play', 'quit', 'sel']);
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 function Infinite_start(U) { U.Infinite.start(5); }
@@ -1239,15 +1240,43 @@ test('infinito (resultado): racha, mejor marca y botones SIGUIENTE RONDA / NUEVA
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 
+// ---------------------------------------------------------------- menú limpio: AJUSTES y MAS MODOS
+test('menú limpio: el principal solo tiene AJUSTES, JUGAR, SELECCIONAR NIVEL, MAS MODOS, LOGROS y SALIR', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; let m = session('Menu'); m.frame(3); const U = m.U, ids = () => m.scene._umUI.buttons.map((b) => b.id).sort(), T = () => uiTexts(m.scene), view = () => m.scene._um.view;
+    pinDay(U, 2026, 11, 9); U.session.completed = [0]; U.session.dailyLog = null; m.frame(3);
+    assert.deepEqual(ids(), ['ach', 'cfg', 'modes', 'play', 'quit', 'sel'], 'seis botones en total (antes eran diez más una tarjeta enorme)');
+    ['snd', 'a11y', 'lang', 'cred', 'how', 'inf', 'dly'].forEach((id) => assert.ok(!ids().includes(id), id + ' ya no está en el menú principal')); assert.equal(T()['UI:dly:t'], undefined); assert.equal(T()['UI:infh:0'], undefined);
+    const cfg = m.scene._umUI.buttons.find((b) => b.id === 'cfg'); assert.ok(cfg.x >= 1000 && cfg.y < 40, 'AJUSTES: un solo botón arriba a la derecha'); assert.equal(T()['UI:btn:cfg'], 'AJUSTES');
+    // la marca "!" avisa que el reto de hoy espera, sin ocupar el menú
+    assert.equal(T()['UI:modb'], '!', 'reto de hoy pendiente: marca en MAS MODOS');
+    U.session.dailyLog = U.Daily.newLog(); U.session.dailyLog.days['2026-11-09'] = { tries: 1, won: true, stars: 2, money: 50, minute: 600 }; m.frame(2); assert.equal(T()['UI:modb'], undefined, 'reto de hoy hecho: sin marca');
+    U.session.dailyLog = null; U.session.completed = []; m.frame(2); assert.equal(T()['UI:modb'], undefined, 'reto bloqueado: sin marca'); U.session.completed = [0]; U.session.dailyLog = null; m.frame(2); assert.equal(T()['UI:modb'], '!');
+    // AJUSTES agrupa sonido, accesibilidad, idioma, cómo jugar y créditos
+    m.click(1169, 29); assert.equal(view(), 'settings'); m.frame(2); assert.deepEqual(ids(), ['a11y', 'cred', 'how', 'lang', 'setback', 'snd']); assert.equal(T()['UI:sh'], 'AJUSTES');
+    [['snd', 182, 'sound', 'sback', 544], ['a11y', 240, 'a11y', 'aback', 150 + U.A11y.height(620) + 44 + 24 + 24], ['cred', 414, 'credits', 'cback', 598]].forEach(([id, y, v, back, by]) => {
+      m.click(640, y); assert.equal(view(), v, id + ' abre ' + v); m.frame(2); m.click(640, by); assert.equal(view(), 'settings', 'VOLVER de ' + v + ' regresa a AJUSTES'); m.frame(2);
+    });
+    m.click(640, 356); assert.deepEqual(m.scene.changes.pop(), [3, 'Tutorial'], 'COMO JUGAR está en AJUSTES'); assert.equal(U.session.afterTutorial, 'Menu');
+    m = session('Menu'); m.frame(3); m.click(1169, 29); m.frame(2); m.click(640, 486); assert.equal(m.scene._um.view, 'main', 'VOLVER de AJUSTES regresa al menú');
+    // MAS MODOS: el reto diario y el infinito, cada uno en su tarjeta
+    m.click(640, 532); assert.equal(m.scene._um.view, 'modes'); m.frame(3); assert.ok(['dly', 'inf', 'mback'].every((id) => m.scene._umUI.buttons.some((b) => b.id === id)), 'las dos tarjetas y VOLVER');
+    assert.equal(uiTexts(m.scene)['UI:mh'], 'MAS MODOS'); m.click(640, 474); assert.equal(m.scene._um.view, 'main', 'VOLVER regresa al menú');
+    // JUGAR y SELECCIONAR NIVEL siguen a un clic
+    m.click(640, 482); assert.equal(m.scene._um.view, 'levels'); m = session('Menu'); m.frame(3); m.U.session.seenTutorial = true; m.click(640, 400); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
 // ---------------------------------------------------------------- reto diario (offline: solo usa la fecha del dispositivo)
 const pinDay = (U, y, m, d, h) => { U.Daily.now = () => new Date(y, m - 1, d, h === undefined ? 10 : h, 0); };
 test('reto diario (menú): bloqueado hasta completar el nivel 1; luego muestra el reto de hoy y lo arranca', () => {
   const store = store0();
   try {
-    audioReset(); delete globalThis.gdjs.UrbanMex; let m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene); pinDay(U, 2026, 11, 9, 20);
+    audioReset(); delete globalThis.gdjs.UrbanMex; let m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene); pinDay(U, 2026, 11, 9, 20); U.session.completed = [0]; m.frame(3); assert.equal(T()['UI:dly:t'], undefined, 'el reto diario ya no ocupa el menú principal: se entra por MAS MODOS'); assert.equal(T()['UI:btn:modes'], 'MAS MODOS'); m.click(640, 532); assert.equal(m.scene._um.view, 'modes'); m.frame(2);
     U.session.completed = []; U.session.dailyLog = null; m.frame(3);
     assert.equal(T()['UI:dly:t'], 'RETO DIARIO'); assert.equal(T()['UI:btn:dly'], 'RETO BLOQUEADO'); assert.match(Object.values(T()).join('|'), /Completa el nivel 1/);
-    m.click(1060, 575); assert.equal(m.scene.changes.length, 0, 'bloqueado: no hace nada'); assert.equal(U.session.dailyRun, null);
+    m.click(438, 367); assert.equal(m.scene.changes.length, 0, 'bloqueado: no hace nada'); assert.equal(U.session.dailyRun, null);
     U.session.completed = [0]; m.frame(3);
     assert.equal(T()['UI:dly:n'], 'RETO #313 - LUNES'); assert.equal(T()['UI:btn:dly'], 'JUGAR RETO'); assert.equal(T()['UI:dly:st'], 'HOY: PENDIENTE'); assert.equal(T()['UI:dly:sk'], 'RACHA: 0 DIAS'); assert.equal(T()['UI:dly:d'], 'FACIL');
     assert.equal(T()['UI:dly:nx'], 'NUEVO RETO EN 4h 00m', 'cuenta hasta la medianoche del dispositivo'); assert.ok(!('UI:dly:s0' in uiIcons(m.scene)), 'sin estrellas mientras está pendiente');
@@ -1257,9 +1286,9 @@ test('reto diario (menú): bloqueado hasta completar el nivel 1; luego muestra e
     assert.equal(T()['UI:dly:st'], 'HOY: COMPLETADO'); assert.equal(T()['UI:dly:sk'], 'RACHA: 2 DIAS (MEJOR 5)'); assert.equal(T()['UI:btn:dly'], 'MEJORAR ESTRELLAS'); assert.deepEqual([0, 1, 2].map((i) => uiIcons(m.scene)['UI:dly:s' + i]), ['estrella', 'estrella', 'estrella_vacia']);
     U.session.dailyLog.days['2026-11-09'].stars = 3; m.frame(2); assert.equal(T()['UI:btn:dly'], 'REPETIR RETO');
     // jugar: guarda qué reto es, apaga la racha infinita y va al tutorial la primera vez, y directo al nivel después
-    U.session.infinite = { seed: 1, round: 2, cleared: 1, stars: 2, newBest: false }; U.session.seenTutorial = false; m.click(1060, 575); assert.deepEqual(U.session.dailyRun, { key: '2026-11-09' }); assert.equal(U.session.infinite, null);
+    U.session.infinite = { seed: 1, round: 2, cleared: 1, stars: 2, newBest: false }; U.session.seenTutorial = false; m.click(438, 367); assert.deepEqual(U.session.dailyRun, { key: '2026-11-09' }); assert.equal(U.session.infinite, null);
     assert.deepEqual(m.scene.changes.pop(), [3, 'Tutorial']); assert.equal(U.session.afterTutorial, 'Nivel');
-    U.session.seenTutorial = true; m = session('Menu'); m.frame(3); pinDay(m.U, 2026, 11, 9); m.U.session.completed = [0]; m.frame(3); m.click(1060, 575); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']);
+    U.session.seenTutorial = true; m = session('Menu'); m.frame(3); pinDay(m.U, 2026, 11, 9); m.U.session.completed = [0]; m.frame(3); m.click(640, 532); m.frame(2); m.click(438, 367); assert.deepEqual(m.scene.changes.pop(), [3, 'Nivel']);
     // cambia el día del dispositivo: otro reto, y sin internet no hay nada más que revisar
     pinDay(m.U, 2026, 11, 14); m.U.session.dailyRun = null; m.frame(3); assert.equal(uiTexts(m.scene)['UI:dly:n'], 'RETO #318 - SABADO'); assert.equal(uiTexts(m.scene)['UI:dly:d'], 'DIFICIL');
     // JUGAR y REJUGAR vuelven a los niveles normales (apagan el reto)
@@ -1320,7 +1349,9 @@ test('reto diario (modo celular): la tarjeta y el botón son grandes y caben', (
   try {
     audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(3); const U = m.U; pinDay(U, 2026, 11, 9); U.session.uiMode = 'on'; U.session.completed = [0]; U.session.dailyLog = U.Daily.newLog();
     U.session.dailyLog.days['2026-11-09'] = { tries: 1, won: true, stars: 3, money: 50, minute: 600 }; U.session.dailyLog.last = '2026-11-09'; U.session.dailyLog.streak = 120; U.session.dailyLog.best = 130; m.frame(3);
-    const b = m.scene._umUI.buttons.find((x) => x.id === 'dly'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón tocable'); assert.ok(b.y + b.h <= 364 + 290 - 6, 'cabe dentro de la tarjeta'); m.click(b.x + b.w / 2, b.y + b.h / 2); assert.ok(U.session.dailyRun, 'se puede tocar en modo celular');
+    m.scene._umUI.buttons.forEach((x) => assert.ok(x.h >= 44 && x.w >= 44, 'botón del menú principal tocable: ' + x.id)); assert.ok(m.scene._umUI.buttons.every((x) => x.y + x.h <= 700), 'todo cabe en la pantalla');
+    m.click(640, 532 + 4); m.frame(3); assert.equal(m.scene._um.view, 'modes', 'MAS MODOS también en modo celular');
+    const b = m.scene._umUI.buttons.find((x) => x.id === 'dly'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón tocable'); assert.ok(b.y + b.h <= 100 + 300 - 6, 'cabe dentro de la tarjeta'); m.click(b.x + b.w / 2, b.y + b.h / 2); assert.ok(U.session.dailyRun, 'se puede tocar en modo celular');
     assert.equal(uiTexts(m.scene)['UI:dly:sk'], 'RACHA: 120 DIAS (MEJOR 130)');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
@@ -1331,8 +1362,8 @@ test('logros (menú): el botón cuenta lo conseguido y la pantalla muestra los 2
   try {
     audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene), A = U.Achievements;
     U.session.ach = {}; U.session.stats = null; U.session.completed = []; U.session.best = {}; m.frame(2);
-    assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23'); assert.equal(T()['UI:btn:how'], 'COMO JUGAR', 'los dos botones caben lado a lado');
-    m.click(717, 602); assert.equal(m.scene._um.view, 'ach'); m.frame(2);
+    assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23'); assert.equal(T()['UI:btn:quit'], 'SALIR', 'LOGROS y SALIR caben lado a lado');
+    m.click(563, 582); assert.equal(m.scene._um.view, 'ach'); m.frame(2);
     assert.equal(T()['UI:ah'], 'LOGROS'); assert.equal(T()['UI:ac'], '0 de 23 desbloqueados'); A.LIST.forEach((a, i) => { assert.equal(T()['UI:an' + i], a.name); assert.ok(T()['UI:ad' + i + ':0'], a.id + ' tiene descripción'); });
     assert.equal(T()['UI:ap1'], '0/5', 'semana 1: avance 0/5'); assert.equal(T()['UI:ap9'], '0/3', 'intocable'); assert.equal(T()['UI:ap0'], undefined, 'sin contador: no muestra avance');
     assert.equal(uiIcons(m.scene)['UI:ai0'], 'bloqueo', 'pendiente: candado'); assert.equal(T()['UI:btn:snd'], undefined, 'en esta pantalla no sale SONIDO');
@@ -1597,11 +1628,12 @@ test('inglés: ninguna pantalla se queda sin traducir (menú, tutorial, los 10 n
       m.frame(3); m.scene._um.view = v; m.frame(3); grab(m, 'menú ' + v + (full ? ' (con progreso)' : ''));
     }));
     { const m = enSession('Menu'); m.frame(3); m.scene._um.confirmExit = true; m.frame(3); grab(m, 'menú SALIR'); }
+    ['main', 'settings', 'modes', 'sound', 'a11y', 'credits', 'ach', 'levels'].forEach((v) => { const m = enSession('Menu', (x) => { x.U.session.completed = [0, 1]; }); m.frame(3); m.scene._um.view = v; m.frame(3); grab(m, 'menú ' + v); });
     // reto diario: tarjeta del menú en todos sus estados (todos los días de la semana), el nivel del reto y sus resultados
     ['bloqueado', 'pendiente', 'reintento', 'hecho', 'perfecto'].forEach((st) => [8, 9, 10, 11, 12, 13, 14].forEach((day) => {
       const m = enSession('Menu', (x) => { const D = x.U.Daily; D.now = () => new Date(2026, 10, day, 9, 0); x.U.session.completed = st === 'bloqueado' ? [] : [0]; x.U.session.dailyLog = D.newLog(); const l = x.U.session.dailyLog, k = D.key();
         if (st === 'reintento') l.days[k] = { tries: 1, won: false, stars: 0, money: 0, minute: 0 }; if (st === 'hecho' || st === 'perfecto') { l.days[k] = { tries: 2, won: true, stars: st === 'perfecto' ? 3 : 1, money: 50, minute: 600 }; l.last = k; l.streak = 5; l.best = 9; l.wins = 5; } });
-      m.frame(3); grab(m, 'menú reto ' + st + ' (día ' + day + ')');
+      m.frame(3); m.scene._um.view = 'modes'; m.frame(3); grab(m, 'MAS MODOS reto ' + st + ' (día ' + day + ')');
     }));
     [8, 9, 10, 11, 12, 13, 14].forEach((day) => ['inicio', 'mapa', 'noticias'].forEach((st) => {
       const s = enSession('Nivel', (x) => { x.U.Daily.now = () => new Date(2026, 10, day, 9, 0); x.U.session.completed = [0]; x.U.Daily.start(); delete x.scene._um; }); s.frame(3); const um = s.scene._um; if (st !== 'inicio') um.modal = null; if (st === 'noticias') um.phone.app = 'news'; s.frame(3); grab(s, 'nivel reto ' + st + ' (día ' + day + ')');
@@ -1651,14 +1683,16 @@ test('inglés (menú): el botón cambia el idioma, se guarda y los textos salen 
   const store = store0();
   try {
     audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene);
-    U.session.ach = {}; U.session.lang = 'es'; m.frame(2); assert.equal(T()['UI:btn:lang'], 'ENGLISH', 'el botón dice a qué idioma cambia'); assert.equal(T()['UI:btn:cred'], 'CREDITOS'); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23');
-    m.click(1169, 67); m.frame(2); assert.equal(U.I18n.lang(), 'en'); assert.equal(JSON.parse(store['UrbanMex_save_v1']).lang, 'en');
-    assert.equal(T()['UI:btn:lang'], 'ESPANOL'); assert.equal(T()['UI:btn:cred'], 'CREDITS'); assert.equal(T()['UI:btn:ach'], 'ACHIEVEMENTS 0/23'); assert.equal(T()['UI:btn:a11y'], 'ACCESSIBILITY'); assert.equal(T()['UI:btn:snd'], 'SOUND');
+    U.session.ach = {}; U.session.lang = 'es'; m.frame(2); assert.equal(T()['UI:btn:cfg'], 'AJUSTES'); assert.equal(T()['UI:btn:lang'], undefined, 'el idioma ya no está en el menú principal'); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23');
+    m.click(1169, 29); m.frame(2); assert.equal(T()['UI:btn:lang'], 'ENGLISH', 'el botón dice a qué idioma cambia'); assert.equal(T()['UI:btn:cred'], 'CREDITOS');
+    m.click(640, 298); m.frame(2); assert.equal(U.I18n.lang(), 'en'); assert.equal(JSON.parse(store['UrbanMex_save_v1']).lang, 'en');
+    assert.equal(T()['UI:btn:lang'], 'ESPANOL'); assert.equal(T()['UI:btn:cred'], 'CREDITS'); assert.equal(T()['UI:btn:a11y'], 'ACCESSIBILITY'); assert.equal(T()['UI:btn:snd'], 'SOUND'); assert.equal(T()['UI:btn:how'], 'HOW TO PLAY');
+    m.click(640, 486); m.frame(2); assert.equal(m.scene._um.view, 'main'); assert.equal(T()['UI:btn:ach'], 'ACHIEVEMENTS 0/23'); assert.equal(T()['UI:btn:cfg'], 'SETTINGS'); assert.equal(T()['UI:btn:modes'], 'MORE MODES');
     assert.match(T()['UI:prog'], /levels completed/, 'los textos que no son botones también salen en inglés');
     const ui0 = U.UI.of(m.scene); U.session.uiMode = 'on'; ui0.begin(); ui0.button('zz', 'CREDITOS', 10, 10, 100, 44, { size: 8 }); ui0.end(); assert.equal(ui0.pool.t['UI:btn:zz']._umSize, 12, 'el rótulo cabe en inglés (7 letras) aunque en español (8) tendría que achicarse'); U.session.uiMode = 'auto';
-    m.click(1169, 67); m.frame(2); assert.equal(U.I18n.lang(), 'es'); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23'); assert.equal(T()['UI:btn:lang'], 'ENGLISH');
+    m.click(1169, 29); m.frame(2); m.click(640, 298); m.frame(2); assert.equal(U.I18n.lang(), 'es'); assert.equal(T()['UI:btn:lang'], 'ENGLISH'); m.click(640, 486); m.frame(2); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23');
     // en modo celular el botón también es tocable (44 px)
-    U.session.uiMode = 'on'; m.frame(2); const b = m.scene._umUI.buttons.find((x) => x.id === 'lang'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón de idioma grande en modo celular');
+    U.session.uiMode = 'on'; m.click(1169, 29); m.frame(2); const b = m.scene._umUI.buttons.find((x) => x.id === 'lang'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón de idioma grande en modo celular');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 

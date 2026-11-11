@@ -33,7 +33,7 @@
 
   var go = function (scene, name) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, name); };
 
-  /** Pantalla principal: JUGAR siempre lleva al primer nivel sin completar y dice cuál es (como en Plants vs. Zombies). */
+  /** Pantalla principal, con lo mínimo: JUGAR (al nivel que toca, y dice cuál es), SELECCIONAR NIVEL, MAS MODOS (reto diario y modo infinito), LOGROS y SALIR; los ajustes están en un solo botón arriba. */
   function drawMain(scene, ui, m, data) {
     var total = data ? data.levels.length : 5, next = U.Save.nextLevel(total), lv = data && data.levels[next];
     var done = U.session.completed.filter(function (i) { return i < total; }).length;
@@ -41,41 +41,72 @@
     ui.text('t1', 'URBAN', 640, 190, { size: 24, align: 'center', color: PAL.orange });
     ui.text('t2', 'MEX', 640, 230, { size: 24, align: 'center', color: PAL.orange });
     ui.text('t3', '"Llegar a la meta... si el Metro lo permite"', 640, 280, { size: 8, align: 'center', color: PAL.dim });
-    for (var i = 0; i < total; i++) {           // un cuadrito por nivel: verde si ya lo completaste
-      var ok = U.Save.isCompleted(i);
-      ui.rect(640 - (total * 30 - 10) / 2 + i * 30, 312, 20, 20, { fill: ok ? '46;204;113' : i === next ? '255;200;60' : '40;40;70', border: '255;255;255', bw: 2 });
-    }
     var stars = U.Save.totalStars(total);
-    ui.text('prog', done + '/' + total + ' niveles completados' + (stars ? '  -  ' + stars + '/' + total * 3 + ' estrellas' : ''), 640, 342, { size: 8, align: 'center', color: PAL.dim });
+    ui.text('prog', done + '/' + total + ' niveles completados' + (stars ? '  -  ' + stars + '/' + total * 3 + ' estrellas' : ''), 640, 318, { size: 8, align: 'center', color: PAL.dim });
     var seen = U.session.seenTutorial;
-    if (ui.button('play', '', 440, 364, 400, 84, { size: 8 }) && lv) {
+    if (ui.button('play', '', 440, 360, 400, 84, { size: 8 }) && lv) {
       U.session.infinite = null; U.Daily.clear(); U.session.levelIndex = next; U.session.afterTutorial = 'Nivel'; go(scene, seen ? 'Nivel' : 'Tutorial');
     }
-    ui.text('pl1', 'JUGAR', 640, 374, { size: 24, align: 'center' });
-    ui.text('pl2', lv ? 'NIVEL ' + lv.id + ' - ' + lv.day : 'Cargando...', 640, 408, { size: 12, align: 'center', color: '255;235;180' });
-    if (lv) ui.text('pl3', lv.start + ' > ' + lv.goal, 640, 430, { size: 8, align: 'center', color: '255;220;190' });
-    var M = ui.mob;                                                                                  // modo celular: botones de 44 px
-    if (ui.button('sel', 'SELECCIONAR NIVEL', 490, M ? 456 : 462, 300, 44, { size: 8, fill: '70;70;100' })) m.view = 'levels';
-    var open = U.Infinite.unlocked(total), ib = U.session.inf || { best: 0, stars: 0 };           // MODO INFINITO: se desbloquea al completar todos los niveles
-    if (ui.button('inf', open ? 'MODO INFINITO' : (M ? 'INFINITO - BLOQUEADO' : 'MODO INFINITO - BLOQUEADO'), 490, M ? 506 : 514, 300, 44, { size: 8, fill: open ? '120;60;160' : '50;50;70', disabled: !open })) { U.Infinite.start(); U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
-    ui.text('infh', open ? (ib.best ? 'Mejor racha: ' + ib.best + (ib.best === 1 ? ' ronda' : ' rondas') + ' - ' + ib.stars + ' estrellas' : 'Rutas al azar. Cuantas rondas aguantes?') : 'Completa los ' + total + ' niveles para desbloquearlo', 640, M ? 556 : 566, { size: 8, align: 'center', color: open ? '210;170;240' : '110;110;140' });
-    if (ui.button('how', 'COMO JUGAR', 490, M ? 578 : 584, 146, M ? 44 : 36, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }
-    var ac = U.Achievements.count();                                                                // LOGROS: pantalla con todos y cuántos llevas
-    if (ui.button('ach', 'LOGROS ' + ac.got + '/' + ac.total, 644, M ? 578 : 584, 146, M ? 44 : 36, { size: 8, fill: '150;110;20' })) m.view = 'ach';
-    drawDaily(scene, ui, m, data);
-    if (ui.button('quit', 'SALIR', 490, M ? 630 : 630, 300, M ? 44 : 36, { size: 8, fill: '110;50;50' })) m.confirmExit = true;      // pide confirmación antes de cerrar
+    ui.text('pl1', 'JUGAR', 640, 370, { size: 24, align: 'center' });
+    ui.text('pl2', lv ? 'NIVEL ' + lv.id + ' - ' + lv.day : 'Cargando...', 640, 404, { size: 12, align: 'center', color: '255;235;180' });
+    if (lv) ui.text('pl3', lv.start + ' > ' + lv.goal, 640, 426, { size: 8, align: 'center', color: '255;220;190' });
+    var M = ui.mob, bh = M ? 44 : 40;                                                              // modo celular: botones de 44 px
+    if (ui.button('sel', 'SELECCIONAR NIVEL', 490, 462, 300, bh, { size: 8, fill: '70;70;100' })) m.view = 'levels';
+    var D = U.Daily, pending = D.unlocked() && !D.status(D.key()).done;                            // el reto de hoy espera: una marca "!" en el botón (sin movimiento con "reducir movimiento")
+    if (ui.button('modes', 'MAS MODOS', 490, 462 + bh + 10, 300, bh, { size: 8, fill: '120;60;160' })) m.view = 'modes';
+    if (pending) {
+      var glow = U.A11y.calm() ? 0 : Math.round(Math.sin(Date.now() / 260) * 25);
+      ui.rect(490 + 300 - 34, 462 + bh + 10 + (bh - 22) / 2, 22, 22, { fill: (230 + glow) + ';' + (180 + glow) + ';40', border: '255;255;255', bw: 2 });
+      ui.text('modb', '!', 490 + 300 - 23, 462 + bh + 10 + (bh - 12) / 2 + 1, { size: 12, align: 'center', color: '40;30;10' });
+    }
+    var ac = U.Achievements.count(), ry = 462 + 2 * (bh + 10);                                      // LOGROS: pantalla con todos y cuántos llevas
+    if (ui.button('ach', 'LOGROS ' + ac.got + '/' + ac.total, 490, ry, M ? 300 : 146, bh, { size: 8, fill: '150;110;20' })) m.view = 'ach';       // modo celular: uno debajo del otro, para que el rótulo no se encoja
+    if (ui.button('quit', 'SALIR', M ? 490 : 644, M ? ry + bh + 10 : ry, M ? 300 : 146, bh, { size: 8, fill: '110;50;50' })) m.confirmExit = true;   // pide confirmación antes de cerrar
   }
 
-  /** Tarjeta del RETO DIARIO (a la derecha del botón JUGAR): ruta de hoy, dificultad, últimos 7 días, racha y cuánto falta para el próximo. Todo con la fecha del dispositivo: no usa internet. */
-  function drawDaily(scene, ui, m, data) {
-    var D = U.Daily, M = ui.mob, k = D.key(), st = D.status(k), open = D.unlocked(), x = 880, y = 364, w = 376, h = M ? 290 : 250, cx = x + w / 2, calm = U.A11y.calm();
+  /** MAS MODOS: el reto diario y el modo infinito, cada uno en su tarjeta (ya no aparecen solos al entrar al menú). */
+  function drawModes(scene, ui, m, data) {
+    var M = ui.mob, total = data ? data.levels.length : 5, h = M ? 300 : 270, y = M ? 100 : 140;
+    ui.text('mh', 'MAS MODOS', 640, M ? 40 : 70, { size: 24, align: 'center', color: PAL.yellow });
+    drawDaily(scene, ui, m, data, 250, y, 376, h);
+    drawInfinite(scene, ui, m, total, 654, y, 376, h);
+    if (ui.button('mback', 'VOLVER', 490, y + h + (M ? 36 : 40), 300, M ? 44 : 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+  }
+
+  /** Tarjeta del MODO INFINITO: se desbloquea al completar todos los niveles. */
+  function drawInfinite(scene, ui, m, total, x, y, w, h) {
+    var M = ui.mob, open = U.Infinite.unlocked(total), ib = U.session.inf || { best: 0, stars: 0 }, cx = x + w / 2, per = Math.floor((w - 24) / ui.fs(8));
+    ui.rect(x, y, w, h, { fill: open ? '40;24;60' : '34;34;52', border: open ? '180;120;230' : '90;90;120', bw: 3 });
+    ui.text('inf:t', 'MODO INFINITO', cx, y + 14, { size: 16, align: 'center', color: open ? '210;170;240' : PAL.dim });
+    if (open) {
+      var ty = y + 64 + ui.lines('infh', util.wrap('Rutas al azar. Cuantas rondas aguantes?', per), cx, y + 64, { size: 8, lineH: 14, align: 'center', color: '210;170;240' });
+      if (ib.best) ui.lines('infb', util.wrap('Mejor racha: ' + ib.best + (ib.best === 1 ? ' ronda' : ' rondas') + ' - ' + ib.stars + ' estrellas', per), cx, ty + 22, { size: 8, lineH: 14, align: 'center', color: '255;235;180' });
+    } else ui.lines('infh', util.wrap('Completa los ' + total + ' niveles para desbloquearlo', per), cx, y + 64, { size: 8, lineH: 14, align: 'center', color: PAL.dim });
+    if (ui.button('inf', open ? 'JUGAR INFINITO' : 'INFINITO - BLOQUEADO', x + 18, y + h - (M ? 76 : 62), w - 36, M ? 44 : 38, { size: 8, fill: open ? '120;60;160' : '50;50;70', disabled: !open })) { U.Infinite.start(); U.session.afterTutorial = 'Nivel'; go(scene, 'Nivel'); }
+  }
+
+  /** AJUSTES: sonido, accesibilidad, idioma, cómo jugar y créditos en un solo lugar. */
+  function drawSettings(scene, ui, m) {
+    var M = ui.mob, y = M ? 100 : 160, st = M ? 56 : 58, bh = 44;
+    ui.text('sh', 'AJUSTES', 640, M ? 40 : 70, { size: 24, align: 'center', color: PAL.yellow });
+    if (ui.button('snd', 'SONIDO', 490, y, 300, bh, { size: 8, fill: '70;70;100' })) m.view = 'sound';                    // volumen y silencio de los tres módulos de audio
+    if (ui.button('a11y', 'ACCESIBILIDAD', 490, y + st, 300, bh, { size: 8, fill: '70;70;100' })) m.view = 'a11y';
+    if (ui.button('lang', U.I18n.lang() === 'en' ? 'ESPANOL' : 'ENGLISH', 490, y + 2 * st, 300, bh, { size: 8, fill: '30;90;130' })) U.I18n.setLang(U.I18n.lang() === 'en' ? 'es' : 'en');   // IDIOMA: el botón dice a cuál cambia
+    if (ui.button('how', 'COMO JUGAR', 490, y + 3 * st, 300, bh, { size: 8, fill: '70;70;100' })) { U.session.afterTutorial = 'Menu'; go(scene, 'Tutorial'); }
+    if (ui.button('cred', 'CREDITOS', 490, y + 4 * st, 300, bh, { size: 8, fill: '70;70;100' })) m.view = 'credits';
+    if (ui.button('setback', 'VOLVER', 490, y + 5 * st + 14, 300, bh, { size: 8, fill: '70;70;100' })) m.view = 'main';
+  }
+
+  /** Tarjeta del RETO DIARIO (en MAS MODOS): ruta de hoy, dificultad, últimos 7 días, racha y cuánto falta para el próximo. Todo con la fecha del dispositivo: no usa internet. */
+  function drawDaily(scene, ui, m, data, x, y, w, h) {
+    var D = U.Daily, M = ui.mob, k = D.key(), st = D.status(k), open = D.unlocked(), cx = x + w / 2, calm = U.A11y.calm();
     var pulse = open && !st.done && !calm ? Math.round(Math.sin(Date.now() / 260) * 25) : 0;
     ui.rect(x, y, w, h, { fill: open ? (st.done ? '22;48;38' : '48;38;14') : '34;34;52', border: open ? (st.done ? '46;204;113' : (230 + pulse) + ';' + (180 + pulse) + ';40') : '90;90;120', bw: 3 });
     ui.icon('dly:i', 'reloj', x + 12, y + 10, 2);
     ui.text('dly:t', 'RETO DIARIO', cx + 12, y + 14, { size: 16, align: 'center', color: open ? PAL.yellow : PAL.dim });
     if (!open) {
       ui.lines('dly:lk', util.wrap('Completa el nivel 1 para desbloquear el reto diario: una ruta nueva cada dia, igual para todos.', Math.floor((w - 24) / ui.fs(8))), cx, y + 64, { size: 8, lineH: 14, align: 'center', color: PAL.dim });
-      ui.button('dly', 'RETO BLOQUEADO', x + 18, y + h - (M ? 70 : 62), w - 36, 44, { size: 8, fill: '50;50;70', disabled: true });
+      ui.button('dly', 'RETO BLOQUEADO', x + 18, y + h - (M ? 76 : 62), w - 36, 44, { size: 8, fill: '50;50;70', disabled: true });
       return;
     }
     var lv = data ? D.level(data, k) : null, ty = y + 44;
@@ -93,10 +124,10 @@
     ui.text('dly:st', st.done ? 'HOY: COMPLETADO' : st.tries ? 'HOY: PENDIENTE (' + st.tries + (st.tries === 1 ? ' intento)' : ' intentos)') : 'HOY: PENDIENTE', cx, ty, { size: 8, align: 'center', color: st.done ? PAL.green : PAL.yellow });
     ui.text('dly:sk', 'RACHA: ' + st.streak + (st.streak === 1 ? ' DIA' : ' DIAS') + (st.best > st.streak ? ' (MEJOR ' + st.best + ')' : ''), cx, ty + (M ? 18 : 16), { size: 8, align: 'center', color: st.streak ? '255;190;60' : PAL.dim });
     var left = D.minutesLeft();
-    if (ui.button('dly', st.done ? (st.stars < 3 ? 'MEJORAR ESTRELLAS' : 'REPETIR RETO') : 'JUGAR RETO', x + 18, y + h - (M ? 70 : 56), w - 36, M ? 44 : 38, { size: 8, fill: st.done ? '70;100;160' : '200;140;20' }) && lv) {
+    if (ui.button('dly', st.done ? (st.stars < 3 ? 'MEJORAR ESTRELLAS' : 'REPETIR RETO') : 'JUGAR RETO', x + 18, y + h - (M ? 76 : 62), w - 36, M ? 44 : 38, { size: 8, fill: st.done ? '70;100;160' : '200;140;20' }) && lv) {
       D.start(k); U.session.afterTutorial = 'Nivel'; go(scene, U.session.seenTutorial ? 'Nivel' : 'Tutorial');
     }
-    ui.text('dly:nx', 'NUEVO RETO EN ' + Math.floor(left / 60) + 'h ' + pad2(left % 60) + 'm', cx, y + h - (M ? 22 : 12), { size: 8, align: 'center', color: PAL.dim });
+    ui.text('dly:nx', 'NUEVO RETO EN ' + Math.floor(left / 60) + 'h ' + pad2(left % 60) + 'm', cx, y + h - (M ? 26 : 18), { size: 8, align: 'center', color: PAL.dim });
   }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
 
@@ -251,7 +282,7 @@
       ui.text('cr:r' + i, p.role, x + cw / 2, 428, { size: 8, align: 'center', color: PAL.dim });
     });
     C.madeWith.forEach(function (l, i) { ui.text('cr:m' + i, l, 640, 492 + i * 24, { size: 8, align: 'center', color: i ? '120;120;150' : '230;234;250' }); });
-    if (ui.button('cback', 'VOLVER', 490, 574, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+    if (ui.button('cback', 'VOLVER', 490, 574, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'settings';
   }
 
   /** Volumen y silencio de la música general, los sonidos generales y el sonido de peligro y apuro (se guardan). */
@@ -264,7 +295,7 @@
     U.Audio.focusRow(ui, scene, 'mn:', 330, 172 + oy + sh + 4, 620);
     if (M) ui.lines('hn', util.wrap('El apuro suena cuando te queda menos del 15% del tiempo, dinero o energia.', 50), 330, 172 + oy + sh + 66, { size: 8, lineH: 12, color: PAL.dim });
     else ui.text('hn', 'El apuro suena cuando te queda menos del 15% del tiempo, dinero o energia.', 640, 500, { size: 8, align: 'center', color: PAL.dim });
-    if (ui.button('sback', 'VOLVER', 490, M ? 590 : 536, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+    if (ui.button('sback', 'VOLVER', 490, M ? 590 : 536, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'settings';
   }
 
   /** Accesibilidad: efectos visuales y reducir movimiento (se guardan). */
@@ -274,7 +305,7 @@
     var ph = U.A11y.height(620, ui.mob);
     ui.rect(300, 150, 680, ph + 44, { fill: '24;24;46', border: '60;60;90', bw: 2 });
     U.A11y.panel(ui, scene, 'ma:', 330, 172, 620);
-    if (ui.button('aback', 'VOLVER', 490, 150 + ph + 44 + 24, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'main';
+    if (ui.button('aback', 'VOLVER', 490, 150 + ph + 44 + 24, 300, 48, { size: 8, fill: '70;70;100' })) m.view = 'settings';
   }
 
   U.Scenes.menu = function (scene) {
@@ -285,14 +316,11 @@
     m.stars.forEach(function (s) { ui.rect(s[0], s[1], 4, 4, { fill: Math.sin(m.t * 2 + s[2]) > 0 ? '255;255;255' : '120;120;160', bw: 0 }); });
     m.train.setX(((m.t * 220) % 1900) - 300);
     ui.rect(0, 700, 1280, 20, { fill: '10;8;20', border: '10;8;20', bw: 0 });
-    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else if (m.view === 'ach') drawAchievements(scene, ui, m); else if (m.view === 'a11y') drawA11y(scene, ui, m); else drawMain(scene, ui, m, data);
+    if (m.view === 'levels') drawLevels(scene, ui, m, data); else if (m.view === 'sound') drawSound(scene, ui, m); else if (m.view === 'bye') drawBye(scene, ui, m); else if (m.view === 'credits') drawCredits(scene, ui, m); else if (m.view === 'ach') drawAchievements(scene, ui, m); else if (m.view === 'a11y') drawA11y(scene, ui, m); else if (m.view === 'settings') drawSettings(scene, ui, m); else if (m.view === 'modes') drawModes(scene, ui, m, data); else drawMain(scene, ui, m, data);
     if (m.view !== 'levels') ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, ui.mob ? 704 : 684, { size: 8, align: 'center', color: '90;90;120' });
     m.fx.update(dt, m);
     U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
-    if (m.view === 'main' && ui.button('cred', 'CREDITOS', 1074, 14, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'credits';
-    if (m.view === 'main' && ui.button('lang', U.I18n.lang() === 'en' ? 'ESPANOL' : 'ENGLISH', 1074, ui.mob ? 64 : 52, 190, ui.mob ? 44 : 30, { size: 8, fill: '30;90;130' })) U.I18n.setLang(U.I18n.lang() === 'en' ? 'es' : 'en');   // IDIOMA: el botón dice a cuál cambia
-    if (m.view === 'main' && ui.button('a11y', 'ACCESIBILIDAD', 16, ui.mob ? 64 : 52, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'a11y';
-    if (m.view !== 'sound' && m.view !== 'bye' && m.view !== 'credits' && m.view !== 'ach' && m.view !== 'a11y' && ui.button('snd', 'SONIDO', 16, 14, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'sound';   // volumen y silencio de los tres módulos de audio
+    if (m.view === 'main' && ui.button('cfg', 'AJUSTES', 1074, 14, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'settings';   // sonido, accesibilidad, idioma, cómo jugar y créditos
     ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);
     ui.end();
   };
