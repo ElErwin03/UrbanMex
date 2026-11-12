@@ -262,11 +262,11 @@ Se **desbloquea al completar los 10 niveles** (en `MAS MODOS` aparece `INFINITO 
 - **Archivos:** `src/infinite.js` (generador, jugador automático, racha), `Rules.createRun(data, -1, rnd, nivel)` acepta un nivel ya armado, `Save.recordStreak`.
 
 ## Menú más limpio
-El menú principal quedó con lo esencial para que no se vea saturado: arriba a la derecha un solo botón **`AJUSTES`** y, al centro, **`JUGAR`** (al nivel que toca), **`SELECCIONAR NIVEL`**, **`MAS MODOS`**, **`LOGROS n/23`** y **`SALIR`**. Antes eran diez botones y una tarjeta grande de reto diario.
+El menú principal quedó con lo esencial para que no se vea saturado: al centro **`JUGAR`** (al nivel que toca), **`SELECCIONAR NIVEL`**, **`MAS MODOS`**, **`LOGROS n/23`** junto a **`AJUSTES`** y, hasta abajo, **`SALIR`**. Antes eran diez botones y una tarjeta grande de reto diario.
 
 - **`AJUSTES`:** `SONIDO`, `ACCESIBILIDAD`, `ENGLISH` / `ESPANOL`, `COMO JUGAR` y `CREDITOS`. Cada pantalla tiene su `VOLVER`, que regresa a `AJUSTES`.
 - **`MAS MODOS`:** el **reto diario** y el **modo infinito**, cada uno en su tarjeta (con sus textos de bloqueo). Si el reto de hoy espera, el botón `MAS MODOS` muestra una marca `!` (sin pulsar con "reducir movimiento").
-- **Modo celular:** botones de 44 px o más; `LOGROS` y `SALIR` van uno debajo del otro para que el rótulo no se encoja en inglés.
+- **Modo celular:** botones de 44 px o más; `LOGROS` es más ancho que `AJUSTES` para que `ACHIEVEMENTS 0/23` no se encoja en inglés.
 - **Vista previa:** `node tools/dump_scene.js . Menu m.json --view settings|modes|levels|ach` (más `--daily ...`); `tools/audit_all.sh` revisa las vistas nuevas en normal, `--mobile` y `--lang en`.
 
 ## Reto diario
