@@ -59,9 +59,10 @@
       ui.rect(490 + 300 - 34, 462 + bh + 10 + (bh - 22) / 2, 22, 22, { fill: (230 + glow) + ';' + (180 + glow) + ';40', border: '255;255;255', bw: 2 });
       ui.text('modb', '!', 490 + 300 - 23, 462 + bh + 10 + (bh - 12) / 2 + 1, { size: 12, align: 'center', color: '40;30;10' });
     }
-    var ac = U.Achievements.count(), ry = 462 + 2 * (bh + 10);                                      // LOGROS: pantalla con todos y cuántos llevas
-    if (ui.button('ach', 'LOGROS ' + ac.got + '/' + ac.total, 490, ry, M ? 300 : 146, bh, { size: 8, fill: '150;110;20' })) m.view = 'ach';       // modo celular: uno debajo del otro, para que el rótulo no se encoja
-    if (ui.button('quit', 'SALIR', M ? 490 : 644, M ? ry + bh + 10 : ry, M ? 300 : 146, bh, { size: 8, fill: '110;50;50' })) m.confirmExit = true;   // pide confirmación antes de cerrar
+    var ac = U.Achievements.count(), ry = 462 + 2 * (bh + 10), cw = M ? 230 : 146, x1 = M ? 440 : 490, x2 = M ? 680 : 644, cw2 = M ? 160 : 146;           // LOGROS y AJUSTES lado a lado; SALIR hasta abajo
+    if (ui.button('ach', 'LOGROS ' + ac.got + '/' + ac.total, x1, ry, cw, bh, { size: 8, fill: '150;110;20' })) m.view = 'ach';
+    if (ui.button('cfg', 'AJUSTES', x2, ry, cw2, bh, { size: 8, fill: '70;70;100' })) m.view = 'settings';                    // sonido, accesibilidad, idioma, cómo jugar y créditos
+    if (ui.button('quit', 'SALIR', 490, ry + bh + 10, 300, bh, { size: 8, fill: '110;50;50' })) m.confirmExit = true;          // pide confirmación antes de cerrar
   }
 
   /** MAS MODOS: el reto diario y el modo infinito, cada uno en su tarjeta (ya no aparecen solos al entrar al menú). */
@@ -320,7 +321,6 @@
     if (m.view !== 'levels') ui.text('ver', 'v' + U.VERSION + '  -  hecho con GDevelop', 640, ui.mob ? 704 : 684, { size: 8, align: 'center', color: '90;90;120' });
     m.fx.update(dt, m);
     U.Audio.tick(scene, 'menu', dt);                                   // música tranquila y tren lejano cada 60 s
-    if (m.view === 'main' && ui.button('cfg', 'AJUSTES', 1074, 14, 190, ui.mob ? 44 : 30, { size: 8, fill: '70;70;100' })) m.view = 'settings';   // sonido, accesibilidad, idioma, cómo jugar y créditos
     ui.px = rx; ui.py = ry; if (m.confirmExit) drawConfirmExit(scene, ui, m);
     ui.end();
   };

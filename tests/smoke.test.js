@@ -550,7 +550,7 @@ test('volumen: el menú tiene tres módulos (música general, sonidos generales,
     audioReset(); const m = session('Menu'); m.frame(5); const U = m.U, A = U.Audio, vol = () => JSON.parse(store['UrbanMex_save_v1']).vol;
     assert.deepEqual(A.GROUPS.map((g) => g.id), ['music', 'sfx', 'alert']);
     assert.deepEqual(['music', 'sfx', 'alert'].map((g) => A.level(g)), [7, 7, 7], 'de fábrica: nivel 7 (= los volúmenes base)');
-    m.click(1169, 29); m.click(640, 182); m.frame(3);                                // AJUSTES → SONIDO → panel de los tres módulos
+    m.click(717, 582); m.click(640, 182); m.frame(3);                                // AJUSTES → SONIDO → panel de los tres módulos
     assert.equal(m.scene._um.view, 'sound');
     const seg = Math.floor((620 - 60 - 76 - 12 - 4) / 10);
     m.click(MN.minus, MN.y(0)); assert.equal(A.level('music'), 6); assert.equal(A.level('sfx'), 7); assert.equal(A.level('alert'), 7, 'cada módulo es independiente');
@@ -567,7 +567,7 @@ test('volumen: el menú tiene tres módulos (música general, sonidos generales,
     // "reiniciar el juego": todo vuelve como se dejó
     m.click(MN.mute, MN.y(2)); audioReset(); const m2 = session('Menu'); m2.frame(5);
     assert.deepEqual(['music', 'sfx', 'alert'].map((g) => m2.U.Audio.level(g)), [1, 8, 2]); assert.deepEqual(['music', 'sfx', 'alert'].map((g) => m2.U.Audio.muted(g)), [false, false, true]);
-    m2.click(1169, 29); m2.click(640, 182); m2.frame(3); m2.click(640, 544); m2.frame(2); assert.equal(m2.scene._um.view, 'settings', 'VOLVER regresa a AJUSTES'); m2.click(640, 486); assert.equal(m2.scene._um.view, 'main', 'y de ahí al menú');
+    m2.click(717, 582); m2.click(640, 182); m2.frame(3); m2.click(640, 544); m2.frame(2); assert.equal(m2.scene._um.view, 'settings', 'VOLVER regresa a AJUSTES'); m2.click(640, 486); assert.equal(m2.scene._um.view, 'main', 'y de ahí al menú');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 
@@ -575,9 +575,9 @@ test('menú: botón SALIR abajo del todo; pide confirmación y, si se acepta, ci
   const store = store0();
   try {
     audioReset(); const m = session('Menu'); m.frame(5); const um = m.scene._um;
-    const quit = [644 + 73, 562 + 20], si = [360 + 560 - 260 + 110, 200 + 250 - 70 + 22], no = [360 + 40 + 110, 200 + 250 - 70 + 22];
+    const quit = [640, 612 + 20], si = [360 + 560 - 260 + 110, 200 + 250 - 70 + 22], no = [360 + 40 + 110, 200 + 250 - 70 + 22];
     // el botón está debajo de todos los demás botones del menú principal
-    assert.ok(562 > 462 + 40, 'SALIR queda debajo de JUGAR, SELECCIONAR NIVEL y MAS MODOS');
+    assert.ok(612 > 562 + 40, 'SALIR queda hasta abajo, debajo de LOGROS y AJUSTES');
     m.click(...quit); m.frame(2); assert.equal(um.confirmExit, true, 'abre la ventana de confirmación'); assert.equal(m.scene.changes.length, 0, 'todavía no cierra');
     // con la ventana abierta nada de abajo responde: un clic sobre JUGAR no hace nada
     m.click(640, 400); m.frame(2); assert.equal(m.scene.changes.length, 0); assert.equal(um.confirmExit, true);
@@ -731,7 +731,7 @@ test('viaje imposible: el panel explica el motivo con los números reales, el bo
 // ---- créditos
 test('créditos: botón en el menú; muestra la Universidad Autónoma de Nayarit, la Unidad Académica de Economía y al equipo; VOLVER regresa', () => {
   const m = session('Menu'); m.frame(5); const u = () => m.scene._um, C = m.U.CREDITS, txt = (k) => { const o = m.U.UI.of(m.scene).pool.t['UI:' + k]; return o && !o.hidden ? o.text : null; };
-  assert.equal(u().view, 'main'); m.click(1169, 29); assert.equal(u().view, 'settings', 'AJUSTES abre los ajustes'); m.click(640, 414); assert.equal(u().view, 'credits', 'el botón CREDITOS abre la pantalla'); m.frame(2);
+  assert.equal(u().view, 'main'); m.click(717, 582); assert.equal(u().view, 'settings', 'AJUSTES abre los ajustes'); m.click(640, 414); assert.equal(u().view, 'credits', 'el botón CREDITOS abre la pantalla'); m.frame(2);
   assert.equal(txt('cr:h'), 'CREDITOS'); assert.equal(txt('cr:e0'), 'Universidad Autónoma de Nayarit'); assert.equal(txt('cr:e1'), 'Unidad Académica de Economía');
   assert.deepEqual(C.team.map((p) => p.first + ' ' + p.last), ['Fabian Enrique Real Ramirez', 'Edwin Alberto Barrera Franco', 'Oscar René Domínguez'], 'nombres completos');
   C.team.forEach((p, i) => { assert.equal(txt('cr:n' + i), p.first); assert.equal(txt('cr:l' + i), p.last); assert.ok(txt('cr:r' + i)); });
@@ -829,7 +829,7 @@ test('accesibilidad: el menú tiene el panel (efectos visuales y reducir movimie
   try {
     audioReset(); const m = session('Menu'); m.frame(5); const U = m.U, A = U.A11y, saved = () => JSON.parse(store[KEY]), ph = A.height(620);
     assert.deepEqual([A.quality(), A.calm()], ['high', false], 'de fábrica: efectos altos, movimiento normal');
-    m.click(1169, 29); m.click(640, 240); m.frame(3); assert.equal(m.scene._um.view, 'a11y', 'el botón ACCESIBILIDAD abre el panel');
+    m.click(717, 582); m.click(640, 240); m.frame(3); assert.equal(m.scene._um.view, 'a11y', 'el botón ACCESIBILIDAD abre el panel');
     const bw = Math.floor((620 - 12) / 3), by = 172 + 20 + 15, cx = (i) => 330 + i * (bw + 6) + bw / 2;
     m.click(cx(1), by); assert.equal(A.quality(), 'low'); assert.equal(saved().fx, 'low', 'se guarda al cambiar');
     m.click(cx(2), by); assert.equal(A.quality(), 'off'); m.click(cx(0), by); assert.equal(A.quality(), 'high');
@@ -1248,18 +1248,18 @@ test('menú limpio: el principal solo tiene AJUSTES, JUGAR, SELECCIONAR NIVEL, M
     pinDay(U, 2026, 11, 9); U.session.completed = [0]; U.session.dailyLog = null; m.frame(3);
     assert.deepEqual(ids(), ['ach', 'cfg', 'modes', 'play', 'quit', 'sel'], 'seis botones en total (antes eran diez más una tarjeta enorme)');
     ['snd', 'a11y', 'lang', 'cred', 'how', 'inf', 'dly'].forEach((id) => assert.ok(!ids().includes(id), id + ' ya no está en el menú principal')); assert.equal(T()['UI:dly:t'], undefined); assert.equal(T()['UI:infh:0'], undefined);
-    const cfg = m.scene._umUI.buttons.find((b) => b.id === 'cfg'); assert.ok(cfg.x >= 1000 && cfg.y < 40, 'AJUSTES: un solo botón arriba a la derecha'); assert.equal(T()['UI:btn:cfg'], 'AJUSTES');
+    const bt = (id) => m.scene._umUI.buttons.find((b) => b.id === id), cfg = bt('cfg'), ach = bt('ach'), quit = bt('quit'); assert.ok(cfg.y === ach.y && cfg.x > ach.x, 'AJUSTES va junto a LOGROS (donde antes estaba SALIR)'); assert.ok(m.scene._umUI.buttons.every((b) => b.id === 'quit' || b.y < quit.y), 'SALIR es el botón de hasta abajo'); assert.equal(T()['UI:btn:cfg'], 'AJUSTES');
     // la marca "!" avisa que el reto de hoy espera, sin ocupar el menú
     assert.equal(T()['UI:modb'], '!', 'reto de hoy pendiente: marca en MAS MODOS');
     U.session.dailyLog = U.Daily.newLog(); U.session.dailyLog.days['2026-11-09'] = { tries: 1, won: true, stars: 2, money: 50, minute: 600 }; m.frame(2); assert.equal(T()['UI:modb'], undefined, 'reto de hoy hecho: sin marca');
     U.session.dailyLog = null; U.session.completed = []; m.frame(2); assert.equal(T()['UI:modb'], undefined, 'reto bloqueado: sin marca'); U.session.completed = [0]; U.session.dailyLog = null; m.frame(2); assert.equal(T()['UI:modb'], '!');
     // AJUSTES agrupa sonido, accesibilidad, idioma, cómo jugar y créditos
-    m.click(1169, 29); assert.equal(view(), 'settings'); m.frame(2); assert.deepEqual(ids(), ['a11y', 'cred', 'how', 'lang', 'setback', 'snd']); assert.equal(T()['UI:sh'], 'AJUSTES');
+    m.click(717, 582); assert.equal(view(), 'settings'); m.frame(2); assert.deepEqual(ids(), ['a11y', 'cred', 'how', 'lang', 'setback', 'snd']); assert.equal(T()['UI:sh'], 'AJUSTES');
     [['snd', 182, 'sound', 'sback', 544], ['a11y', 240, 'a11y', 'aback', 150 + U.A11y.height(620) + 44 + 24 + 24], ['cred', 414, 'credits', 'cback', 598]].forEach(([id, y, v, back, by]) => {
       m.click(640, y); assert.equal(view(), v, id + ' abre ' + v); m.frame(2); m.click(640, by); assert.equal(view(), 'settings', 'VOLVER de ' + v + ' regresa a AJUSTES'); m.frame(2);
     });
     m.click(640, 356); assert.deepEqual(m.scene.changes.pop(), [3, 'Tutorial'], 'COMO JUGAR está en AJUSTES'); assert.equal(U.session.afterTutorial, 'Menu');
-    m = session('Menu'); m.frame(3); m.click(1169, 29); m.frame(2); m.click(640, 486); assert.equal(m.scene._um.view, 'main', 'VOLVER de AJUSTES regresa al menú');
+    m = session('Menu'); m.frame(3); m.click(717, 582); m.frame(2); m.click(640, 486); assert.equal(m.scene._um.view, 'main', 'VOLVER de AJUSTES regresa al menú');
     // MAS MODOS: el reto diario y el infinito, cada uno en su tarjeta
     m.click(640, 532); assert.equal(m.scene._um.view, 'modes'); m.frame(3); assert.ok(['dly', 'inf', 'mback'].every((id) => m.scene._umUI.buttons.some((b) => b.id === id)), 'las dos tarjetas y VOLVER');
     assert.equal(uiTexts(m.scene)['UI:mh'], 'MAS MODOS'); m.click(640, 474); assert.equal(m.scene._um.view, 'main', 'VOLVER regresa al menú');
@@ -1684,15 +1684,15 @@ test('inglés (menú): el botón cambia el idioma, se guarda y los textos salen 
   try {
     audioReset(); delete globalThis.gdjs.UrbanMex; const m = session('Menu'); m.frame(3); const U = m.U, T = () => uiTexts(m.scene);
     U.session.ach = {}; U.session.lang = 'es'; m.frame(2); assert.equal(T()['UI:btn:cfg'], 'AJUSTES'); assert.equal(T()['UI:btn:lang'], undefined, 'el idioma ya no está en el menú principal'); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23');
-    m.click(1169, 29); m.frame(2); assert.equal(T()['UI:btn:lang'], 'ENGLISH', 'el botón dice a qué idioma cambia'); assert.equal(T()['UI:btn:cred'], 'CREDITOS');
+    m.click(717, 582); m.frame(2); assert.equal(T()['UI:btn:lang'], 'ENGLISH', 'el botón dice a qué idioma cambia'); assert.equal(T()['UI:btn:cred'], 'CREDITOS');
     m.click(640, 298); m.frame(2); assert.equal(U.I18n.lang(), 'en'); assert.equal(JSON.parse(store['UrbanMex_save_v1']).lang, 'en');
     assert.equal(T()['UI:btn:lang'], 'ESPANOL'); assert.equal(T()['UI:btn:cred'], 'CREDITS'); assert.equal(T()['UI:btn:a11y'], 'ACCESSIBILITY'); assert.equal(T()['UI:btn:snd'], 'SOUND'); assert.equal(T()['UI:btn:how'], 'HOW TO PLAY');
     m.click(640, 486); m.frame(2); assert.equal(m.scene._um.view, 'main'); assert.equal(T()['UI:btn:ach'], 'ACHIEVEMENTS 0/23'); assert.equal(T()['UI:btn:cfg'], 'SETTINGS'); assert.equal(T()['UI:btn:modes'], 'MORE MODES');
     assert.match(T()['UI:prog'], /levels completed/, 'los textos que no son botones también salen en inglés');
     const ui0 = U.UI.of(m.scene); U.session.uiMode = 'on'; ui0.begin(); ui0.button('zz', 'CREDITOS', 10, 10, 100, 44, { size: 8 }); ui0.end(); assert.equal(ui0.pool.t['UI:btn:zz']._umSize, 12, 'el rótulo cabe en inglés (7 letras) aunque en español (8) tendría que achicarse'); U.session.uiMode = 'auto';
-    m.click(1169, 29); m.frame(2); m.click(640, 298); m.frame(2); assert.equal(U.I18n.lang(), 'es'); assert.equal(T()['UI:btn:lang'], 'ENGLISH'); m.click(640, 486); m.frame(2); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23');
+    m.click(717, 582); m.frame(2); m.click(640, 298); m.frame(2); assert.equal(U.I18n.lang(), 'es'); assert.equal(T()['UI:btn:lang'], 'ENGLISH'); m.click(640, 486); m.frame(2); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23');
     // en modo celular el botón también es tocable (44 px)
-    U.session.uiMode = 'on'; m.click(1169, 29); m.frame(2); const b = m.scene._umUI.buttons.find((x) => x.id === 'lang'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón de idioma grande en modo celular');
+    U.session.uiMode = 'on'; m.click(717, 582); m.frame(2); const b = m.scene._umUI.buttons.find((x) => x.id === 'lang'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón de idioma grande en modo celular');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 
