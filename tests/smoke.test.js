@@ -16,7 +16,10 @@ const ALLOWED = {
     'beginFillPath', 'drawPathLineTo', 'closePath', 'endFillPath']   // trazados de relleno (isométrico): verificados en shapepainterruntimeobject.ts
 };
 const COLOR_FN = ['setColor', 'setFillColor', 'setOutlineColor'];
-let stats = { calls: 0 };
+let stats = { calls: 0, redundant: 0 };
+// Para las pruebas de rendimiento: qué setters repitieron el valor que ya tenía el objeto (GDevelop los paga igual) y qué trazos lleva cada Dibujante.
+const SAME = { setColor: (t, a) => t.color === a[0], setOpacity: (t, a) => t.opacity === a[0], setZOrder: (t, a) => t.z === a[0], setPosition: (t, a) => t.x === a[0] && t.y === a[1],
+  setScale: (t, a) => t.scale === a[0], setScaleX: (t, a) => t.sx === a[0], setScaleY: (t, a) => t.sy === a[0], setCharacterSize: (t, a) => t.size === a[0], hide: (t, a) => t.hidden === (a[0] !== false) };
 
 function mockObject(def) {
   const allowed = new Set(ALLOWED.common.concat(ALLOWED[def.type] || [])), state = { x: 0, y: 0, hidden: false, anim: null, name: def.name };
@@ -27,6 +30,10 @@ function mockObject(def) {
     assert.ok(allowed.has(k), `${def.name} (${def.type}) no tiene el método "${k}" en el runtime`);
     return (...args) => {
       stats.calls++;
+      if (SAME[k] && SAME[k](t, args)) stats.redundant++;
+      if (k === 'clear') { t.clears = (t.clears || 0) + 1; t.cmds = []; } else if (def.type === 'PrimitiveDrawing::Drawer') (t.cmds = t.cmds || []).push(k + ':' + args.join(','));
+      if (k === 'setScale') t.scale = args[0];
+      if (k === 'setCharacterSize') t.size = args[0];
       args.forEach((a) => { if (typeof a === 'number') assert.ok(Number.isFinite(a), `${def.name}.${k}: argumento no numérico ${a}`); });
       if (COLOR_FN.includes(k)) assert.match(args[0], /^\d{1,3};\d{1,3};\d{1,3}$/, `${def.name}.${k}: color inválido ${args[0]}`);
       if (COLOR_FN.includes(k)) t.color = args[0];
@@ -1424,7 +1431,7 @@ function mobileScan(s, label) {
   const ui = s.U.UI.of(s.scene), bad = [];
   ui.buttons.filter((b) => !b.disabled).forEach((b) => { if (b.w < 44 || b.h < 44) bad.push('botón chico ' + b.id + ' ' + b.w + 'x' + b.h); });
   ui.buttons.forEach((a, i) => ui.buttons.slice(i + 1).forEach((b) => { if (a.modal === b.modal && a.x + a.w > b.x + 1 && b.x + b.w > a.x + 1 && a.y + a.h > b.y + 1 && b.y + b.h > a.y + 1) bad.push('botones encimados ' + a.id + ' y ' + b.id); }));
-  Object.keys(ui.pool.t).forEach((k) => { const o = ui.pool.t[k]; if (!o.hidden && k.startsWith('UI:') && o._umSize < 12) bad.push('letra de ' + o._umSize + ' px: ' + k + ' "' + String(o.text).slice(0, 24) + '"'); });
+  Object.keys(ui.pool.t).forEach((k) => { const o = ui.pool.t[k]; if (!o.hidden && k.startsWith('UI:') && o.size < 12) bad.push('letra de ' + o.size + ' px: ' + k + ' "' + String(o.text).slice(0, 24) + '"'); });
   assert.deepEqual(bad, [], label + ': ' + bad.join(' | '));
   return ui.buttons.length;
 }
@@ -1484,7 +1491,7 @@ test('móvil: el modo NORMAL no cambia nada (letras de 8 px y botones de siempre
   try {
     audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Nivel'); s.frame(3); const U = s.U; U.session.uiMode = 'off'; U.session.levelIndex = 0; delete s.scene._um; s.frame(3); s.scene._um.modal = null; s.frame(3);
     const ui = U.UI.of(s.scene), z = ui.buttons.find((b) => b.id === 'z-');
-    assert.deepEqual([z.w, z.h], [34, 32], 'el zoom mide lo mismo que antes'); assert.equal(ui.pool.t['UI:hud:day']._umSize, 8); assert.equal(ui.mob, false);
+    assert.deepEqual([z.w, z.h], [34, 32], 'el zoom mide lo mismo que antes'); assert.equal(ui.pool.t['UI:hud:day'].size, 8); assert.equal(ui.mob, false);
     U.session.uiMode = 'auto'; s.frame(3); assert.equal(ui.mob, false, 'AUTO con el motor simulado (sin medida del lienzo): interfaz normal');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
@@ -1580,7 +1587,7 @@ test('móvil: AUTO se activa solo cuando el lienzo se ve chico (con histéresis)
     U.session.uiMode = 'on'; assert.equal(M.active(fake(720)), true, 'GRANDE manda'); U.session.uiMode = 'off'; assert.equal(M.active(fake(300)), false, 'NORMAL manda');
     // los rótulos largos se achican para caber en el botón (sin bajar de 8 px) y los que caben conservan su tamaño
     U.session.uiMode = 'on'; const ui = U.UI.of(s.scene); ui.begin(); ui.button('zz', 'ABCDEFGHIJ', 10, 10, 120, 44, { size: 8 }); ui.button('yy', 'ABCDEFGHI', 10, 70, 120, 44, { size: 8 }); ui.end();
-    assert.equal(ui.pool.t['UI:btn:zz']._umSize, 8, 'no cabe a 12 px (10 letras = 120 > 112)'); assert.equal(ui.pool.t['UI:btn:yy']._umSize, 12, 'cabe a 12 px');
+    assert.equal(ui.pool.t['UI:btn:zz'].size, 8, 'no cabe a 12 px (10 letras = 120 > 112)'); assert.equal(ui.pool.t['UI:btn:yy'].size, 12, 'cabe a 12 px');
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
 
@@ -1689,7 +1696,7 @@ test('inglés (menú): el botón cambia el idioma, se guarda y los textos salen 
     assert.equal(T()['UI:btn:lang'], 'ESPANOL'); assert.equal(T()['UI:btn:cred'], 'CREDITS'); assert.equal(T()['UI:btn:a11y'], 'ACCESSIBILITY'); assert.equal(T()['UI:btn:snd'], 'SOUND'); assert.equal(T()['UI:btn:how'], 'HOW TO PLAY');
     m.click(640, 486); m.frame(2); assert.equal(m.scene._um.view, 'main'); assert.equal(T()['UI:btn:ach'], 'ACHIEVEMENTS 0/23'); assert.equal(T()['UI:btn:cfg'], 'SETTINGS'); assert.equal(T()['UI:btn:modes'], 'MORE MODES');
     assert.match(T()['UI:prog'], /levels completed/, 'los textos que no son botones también salen en inglés');
-    const ui0 = U.UI.of(m.scene); U.session.uiMode = 'on'; ui0.begin(); ui0.button('zz', 'CREDITOS', 10, 10, 100, 44, { size: 8 }); ui0.end(); assert.equal(ui0.pool.t['UI:btn:zz']._umSize, 12, 'el rótulo cabe en inglés (7 letras) aunque en español (8) tendría que achicarse'); U.session.uiMode = 'auto';
+    const ui0 = U.UI.of(m.scene); U.session.uiMode = 'on'; ui0.begin(); ui0.button('zz', 'CREDITOS', 10, 10, 100, 44, { size: 8 }); ui0.end(); assert.equal(ui0.pool.t['UI:btn:zz'].size, 12, 'el rótulo cabe en inglés (7 letras) aunque en español (8) tendría que achicarse'); U.session.uiMode = 'auto';
     m.click(717, 582); m.frame(2); m.click(640, 298); m.frame(2); assert.equal(U.I18n.lang(), 'es'); assert.equal(T()['UI:btn:lang'], 'ENGLISH'); m.click(640, 486); m.frame(2); assert.equal(T()['UI:btn:ach'], 'LOGROS 0/23');
     // en modo celular el botón también es tocable (44 px)
     U.session.uiMode = 'on'; m.click(717, 582); m.frame(2); const b = m.scene._umUI.buttons.find((x) => x.id === 'lang'); assert.ok(b && b.h >= 44 && b.w >= 44, 'botón de idioma grande en modo celular');
@@ -1712,4 +1719,133 @@ test('inglés + modo celular: las pantallas con letras grandes tampoco quedan si
     }));
     const list = [...missing].map(([m, w]) => JSON.stringify(m) + '  <- ' + w); assert.equal(list.length, 0, 'sin traducir (' + list.length + '):\n' + list.join('\n'));
   } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+// ---- rendimiento: lo que el juego le pide a GDevelop en cada fotograma ----------------------------------------------------------------------------
+// GDevelop vuelve a triangular un Shape Painter entero cada vez que se borra y se redibuja, y vuelve a armar un texto cada vez que se llama a
+// setColor / setCharacterSize aunque el valor sea el mismo. Por eso las vías del mapa solo se redibujan si cambian y los objetos no repiten setters.
+
+test('rendimiento: las vías del mapa se dibujan una sola vez y solo se redibujan si cambian (estación bloqueada, línea resaltada)', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(3); const um = s.scene._um, map = um.map, run = um.run;
+  assert.equal(map.routes.clears, 1, 'las vías se dibujan una vez al abrir');
+  assert.ok(map.routes.cmds.length > 400, 'las vías son cientos de trazos: ' + map.routes.cmds.length);
+  s.frame(60); assert.equal(map.routes.clears, 1, 'sin cambios no se vuelven a dibujar en 60 fotogramas');
+  assert.ok(map.pulse.clears >= 60, 'los pulsos sí se redibujan cada fotograma');
+  assert.ok(map.pulse.cmds.length < 40, 'y son pocos trazos: ' + map.pulse.cmds.length);
+  const base = JSON.stringify(map.routes.cmds);
+
+  const line = Object.keys(um.data.lines)[0];
+  um.phone.app = 'lines'; map.highlight = line; s.frame(2);          // el resaltado vive mientras el celular está en la app LINEAS
+  assert.equal(map.routes.clears, 2, 'al resaltar una línea se redibujan (las demás se apagan)');
+  assert.notEqual(JSON.stringify(map.routes.cmds), base);
+  map.highlight = null; um.phone.app = 'home'; s.frame(2);
+  assert.equal(map.routes.clears, 3); assert.equal(JSON.stringify(map.routes.cmds), base, 'al quitar el resaltado vuelve a verse exactamente igual');
+
+  const id = Object.keys(um.data.stations).find((k) => k !== run.current && k !== run.level.goal);
+  run.blocked[id] = true; s.frame(5);
+  assert.equal(map.routes.clears, 4, 'una estación bloqueada se redibuja una sola vez');
+  assert.notEqual(JSON.stringify(map.routes.cmds), base, 'y las vías que llegan a ella se ven apagadas');
+  delete run.blocked[id]; s.frame(2);
+  assert.equal(map.routes.clears, 5); assert.equal(JSON.stringify(map.routes.cmds), base);
+});
+
+test('rendimiento: los pulsos del mapa (anillos, faro de la meta) siguen animándose y las vías no tapan a las estaciones', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const map = s.scene._um.map, seen = new Set();
+  for (let i = 0; i < 12; i++) { seen.add(JSON.stringify(map.pulse.cmds)); s.frame(1); }
+  assert.ok(seen.size >= 6, 'el pulso cambia con el tiempo (' + seen.size + ' dibujos distintos en 12 fotogramas)');
+  assert.ok(map.routes.z < map.pulse.z && map.pulse.z < 60, 'orden: vías (' + map.routes.z + ') < pulsos (' + map.pulse.z + ') < estaciones (60)');
+});
+
+test('rendimiento: sin cambios en pantalla, el juego no repite setters con el mismo valor (menú y nivel)', () => {
+  const store = store0();
+  try {
+    delete globalThis.gdjs.UrbanMex;
+    const run = (name) => {
+      const s = session(name); s.frame(8);
+      stats.redundant = 0; stats.calls = 0; s.frame(40);
+      return { redundant: stats.redundant, perFrame: Math.round(stats.calls / 40) };
+    };
+    const menu = run('Menu'), lvl = run('Nivel');
+    assert.equal(menu.redundant, 0, 'menú: setters repetidos en 40 fotogramas');
+    assert.equal(lvl.redundant, 0, 'nivel: setters repetidos en 40 fotogramas');
+    assert.ok(menu.perFrame < 450 && lvl.perFrame < 550, `llamadas al motor por fotograma: menú ${menu.perFrame}, nivel ${lvl.perFrame} (antes ~4400 en el nivel)`);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('rendimiento: los textos e íconos del menú se ocultan al cambiar de vista y reaparecen al volver (la caché no los deja escondidos)', () => {
+  const store = store0();
+  try {
+    delete globalThis.gdjs.UrbanMex;
+    const m = session('Menu'); m.frame(10);
+    const play = () => uiTexts(m.scene)['UI:btn:sel'];
+    assert.ok(play(), 'SELECCIONAR NIVEL visible al abrir');
+    m.click(717, 582); m.frame(3);                                   // AJUSTES
+    assert.equal(play(), undefined, 'SELECCIONAR NIVEL oculto dentro de AJUSTES');
+    assert.ok(hasText(m.scene, /SONIDO/), 'AJUSTES muestra sus botones');
+    m.click(640, 486); m.frame(3);                                   // VOLVER
+    assert.ok(play(), 'SELECCIONAR NIVEL reaparece al volver');
+    assert.ok(!hasText(m.scene, /SONIDO/), 'y los botones de AJUSTES se ocultan');
+    const texts = uiTexts(m.scene), k = Object.keys(texts)[0];
+    m.frame(5); assert.equal(uiTexts(m.scene)[k], texts[k], 'el texto no cambia solo');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('rendimiento: la caché no se come cambios — texto e ícono siguen cada cambio de color, posición, tamaño, opacidad y orden', () => {
+  const store = store0();
+  try {
+    delete globalThis.gdjs.UrbanMex;
+    const m = session('Menu'); m.frame(3);
+    const UI = m.U.UI.of(m.scene), step = (f) => { UI.begin(); f(); UI.end(); };
+    step(() => UI.text('zz', 'HOLA', 100, 50, { size: 16, color: '1;2;3', opacity: 200, z: 250 }));
+    const t = UI.pool.t['UI:zz'];
+    assert.deepEqual([t.text, t.color, t.opacity, t.z, t.size, t.y], ['HOLA', '1;2;3', 200, 250, 16, 50]);
+    step(() => UI.text('zz', 'HOLA', 100, 50, { size: 16, color: '1;2;3', opacity: 200, z: 250 }));          // igual: nada cambia
+    [['color', { color: '9;8;7' }, 'color', '9;8;7'], ['opacity', { opacity: 80 }, 'opacity', 80], ['z', { z: 260 }, 'z', 260], ['size', { size: 24 }, 'size', 24]].forEach(([n, o, k, v]) => {
+      step(() => UI.text('zz', 'HOLA', 100, 50, Object.assign({ size: 16, color: '1;2;3', opacity: 200, z: 250 }, o)));
+      assert.equal(t[k], v, 'el texto debe seguir el cambio de ' + n);
+    });
+    step(() => UI.text('zz', 'HOLA', 300, 50, { size: 24 })); const x1 = t.x; assert.notEqual(x1, 100);
+    step(() => UI.text('zz', 'HOLA', 300, 90, { size: 24 })); assert.equal(t.x, x1); assert.equal(t.y, 90, 'solo cambió y: también se mueve');
+    step(() => UI.text('zz', 'HOLA', 300, 90, { size: 24 })); assert.equal(t.y, 90);
+
+    step(() => UI.icon('ii', 'estrella', 10, 20, 2, { tint: '5;5;5', z: 300, opacity: 100 }));
+    const ic = UI.pool.i['UI:ii']; assert.deepEqual([ic.anim, ic.scale, ic.x, ic.y, ic.z, ic.opacity, ic.color], ['estrella', 2, 10, 20, 300, 100, '5;5;5']);
+    step(() => UI.icon('ii', 'estrella_vacia', 11, 20, 3, { tint: '6;6;6', z: 301, opacity: 99 }));
+    assert.deepEqual([ic.anim, ic.scale, ic.x, ic.y, ic.z, ic.opacity, ic.color], ['estrella_vacia', 3, 11, 20, 301, 99, '6;6;6']);
+    step(() => UI.icon('ii', 'estrella_vacia', 11, 25, 3, { tint: '6;6;6', z: 301, opacity: 99 })); assert.equal(ic.y, 25, 'solo cambió y');
+    step(() => {});                                                                                        // no se usa: se oculta
+    assert.equal(ic.hidden, true); assert.equal(t.hidden, true);
+    step(() => { UI.text('zz', 'HOLA', 300, 90, { size: 24 }); UI.icon('ii', 'estrella_vacia', 11, 25, 3, { tint: '6;6;6', z: 301, opacity: 99 }); });
+    assert.equal(ic.hidden, false); assert.equal(t.hidden, false);
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('rendimiento: los sprites de efectos (Fx) también siguen cada cambio de tamaño, posición, opacidad, orden y visibilidad', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(3); const st = s.scene._um.fx.stage;
+  const put = (w, cx, cy, o) => { st.begin(); st.spr('zz', 'soft', cx, cy, w, w, o); st.end(); };
+  put(32, 100, 100, { z: 3, opacity: 100 });
+  const f = st.pool['FX:zz'] || st.pool[Object.keys(st.pool).find((k) => /zz$/.test(k))];
+  assert.deepEqual([f.sx, f.sy, f.x, f.y, f.z, f.opacity, f.hidden], [1, 1, 84, 84, 3, 100, false]);
+  put(64, 100, 100, { z: 3, opacity: 100 }); assert.deepEqual([f.sx, f.sy, f.x, f.y], [2, 2, 68, 68], 'cambia el tamaño');
+  put(64, 120, 100, { z: 3, opacity: 100 }); assert.deepEqual([f.x, f.y], [88, 68], 'cambia solo x');
+  put(64, 120, 130, { z: 3, opacity: 100 }); assert.deepEqual([f.x, f.y], [88, 98], 'cambia solo y');
+  put(64, 120, 130, { z: 4, opacity: 100 }); assert.equal(f.z, 4);
+  put(64, 120, 130, { z: 4, opacity: 40 }); assert.equal(f.opacity, 40);
+  st.begin(); st.end(); assert.equal(f.hidden, true, 'sin usar se oculta');
+  put(64, 120, 130, { z: 4, opacity: 40 }); assert.equal(f.hidden, false, 'al volver a usarse reaparece');
+});
+
+test('rendimiento: las estaciones y el jugador del mapa siguen sus cambios (escala de la estación actual, respiración y posición del jugador)', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(2); const um = s.scene._um, map = um.map, run = um.run;
+  const other = Object.keys(map.sprites).find((k) => k !== run.current && k !== run.level.goal && k !== run.level.start);
+  assert.ok(map.sprites[run.current].scale > map.sprites[other].scale, 'la estación actual se dibuja más grande');
+  const anims = new Set(); for (let i = 0; i < 20; i++) { anims.add(map.player.anim); s.frame(1); }
+  assert.deepEqual([...anims].sort(), ['a0', 'a1'], 'el jugador "respira" entre dos cuadros');
+  assert.equal(map.player.x, map.pp.x - 18); assert.equal(map.player.y, map.pp.y - 54); assert.equal(map.player.scale, 3);
+  map.pp.y += 10; s.frame(1); assert.equal(map.player.y, map.pp.y - 54, 'si el jugador solo se mueve en vertical, también se mueve su sprite');
+  assert.equal(map.player.x, map.pp.x - 18);
 });

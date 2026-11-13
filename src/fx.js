@@ -28,15 +28,19 @@
   // ---- escenario: pool de sprites "Fx" (se reutilizan; los que no se usan en el fotograma se ocultan) ------------------------
   function Stage(scene) { this.scene = scene; this.pool = {}; this.used = {}; this.count = 0; }
   Stage.prototype.begin = function () { this.used = {}; };
-  Stage.prototype.end = function () { for (var id in this.pool) if (!this.used[id]) this.pool[id].hide(true); };
+  Stage.prototype.end = function () { for (var id in this.pool) if (!this.used[id] && util.diff(this.pool[id], 'h', true)) this.pool[id].hide(true); };
   /** Sprite centrado en (cx, cy) de w x h px. o: {layer ('FX' por defecto, '' = mapa), z, opacity 0..255, color 'r;g;b', blend, angle} */
   Stage.prototype.spr = function (key, anim, cx, cy, w, h, o) {
     o = o || {}; var layer = o.layer === undefined ? LAYER : o.layer, id = layer + ':' + key, s = this.pool[id];
-    if (!s) { s = this.pool[id] = this.scene.createObject('Fx'); s.setLayer(layer); this.count++; }
-    this.used[id] = true; s.hide(false);
+    if (!s) { s = this.pool[id] = this.scene.createObject('Fx'); s._umv = { h: false }; s.setLayer(layer); this.count++; }
+    this.used[id] = true; if (util.diff(s, 'h', false)) s.hide(false);
     if (s._umAnim !== anim) { s.setAnimationName(anim); s._umAnim = anim; }
-    var sz = SIZE[anim]; s.setScaleX(w / sz[0]); s.setScaleY(h / sz[1]); s.setPosition(cx - w / 2, cy - h / 2);
-    s.setZOrder(o.z || 0); s.setOpacity(Math.round(clamp(o.opacity === undefined ? 255 : o.opacity, 0, 255)));
+    var sz = SIZE[anim], sx = w / sz[0], sy = h / sz[1], px = cx - w / 2, py = cy - h / 2, z = o.z || 0, op = Math.round(clamp(o.opacity === undefined ? 255 : o.opacity, 0, 255));
+    if (util.diff(s, 'sx', sx)) s.setScaleX(sx);
+    if (util.diff(s, 'sy', sy)) s.setScaleY(sy);
+    if (util.diff(s, 'x', px) | util.diff(s, 'y', py)) s.setPosition(px, py);
+    if (util.diff(s, 'z', z)) s.setZOrder(z);
+    if (util.diff(s, 'o', op)) s.setOpacity(op);
     var col = o.color || '255;255;255'; if (s._umColor !== col) { s.setColor(col); s._umColor = col; }
     var bl = o.blend || 0; if (s._umBlend !== bl) { s.setBlendMode(bl); s._umBlend = bl; }
     var an = o.angle || 0; if (s._umAngle !== an) { s.setAngle(an); s._umAngle = an; }
