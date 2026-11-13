@@ -65,8 +65,9 @@
 
   function MapView(scene, data) {
     this.scene = scene; this.data = data; this.layer = scene.getLayer('');
-    this.ground = scene.createObject('Mapa'); this.routes = scene.createObject('Mapa');
-    [this.ground, this.routes].forEach(function (p, k) { p.setPosition(0, 0); p.setZOrder(k ? 50 : 0); p.setCoordinatesRelative(false); p.setOutlineSize(0); });
+    this.ground = scene.createObject('Mapa'); this.routes = scene.createObject('Mapa'); this.pulse = scene.createObject('Mapa');
+    this.routeSig = null;                                                  // firma de lo que muestran las rutas: solo se vuelven a dibujar si cambia (ver _drawRoutes)
+    [this.ground, this.routes, this.pulse].forEach(function (p, k) { p.setPosition(0, 0); p.setZOrder(k ? 49 + k : 0); p.setCoordinatesRelative(false); p.setOutlineSize(0); });
     this.cam = { x: 0, y: 0, zoom: 1, follow: false };
     this.view = { x0: VIEW.x0, x1: VIEW.x1, y0: VIEW.y0, y1: VIEW.y1 };   // zona libre; se ensancha al ocultar el celular
     this.touched = false; this.highlight = null;                         // touched: la persona movió/acercó la cámara
@@ -298,8 +299,10 @@
       if (k >= 1) { var end = m.path[m.path.length - 1]; this.pp.x = end.x; this.pp.y = end.y; this.move = null; }
     }
     // Jugador: 2 cuadros de "respiración"
-    var pl = this.player; pl.setAnimationName(Math.floor(this.t * 3) % 2 ? 'a1' : 'a0'); pl.setScale(3);
-    pl.setPosition(this.pp.x - 18, this.pp.y - 54);
+    var pl = this.player, pa = Math.floor(this.t * 3) % 2 ? 'a1' : 'a0';
+    if (util.diff(pl, 'an', pa)) pl.setAnimationName(pa);
+    if (util.diff(pl, 'sc', 3)) pl.setScale(3);
+    if (util.diff(pl, 'x', this.pp.x - 18) | util.diff(pl, 'y', this.pp.y - 54)) pl.setPosition(this.pp.x - 18, this.pp.y - 54);
     // Cámara: fija (toda la red a la vista) salvo que la persona acerque y pulse "YO"
     if (this.cam.follow) {
       var tx = this.pp.x + (640 - this._cx()) / this.cam.zoom, ty = this.pp.y + (360 - this._cy()) / this.cam.zoom - 20;
@@ -312,11 +315,25 @@
     this._drawRoutes(run, hoverId); this._updateStations(run, ui, hoverId, selId); this._updateCombis(run, ui);
   };
 
+  /**
+   * Las vías (cientos de trazos) cambian muy rara vez: se dibujan en `routes` solo cuando cambia su firma (estación bloqueada, tramo lento o línea
+   * elegida), porque GDevelop vuelve a triangular todo el Shape Painter cada vez que se borra y se redibuja. Lo que sí se mueve en cada fotograma
+   * (pulsos, faro, sombra) va aparte, en `pulse`, que tiene unos cuantos trazos.
+   */
   P._drawRoutes = function (run, hoverId) {
+    var hl = this.highlight, state = this.paths.map(function (p) {
+      var c = p.c, blocked = run.blocked[c.a] || run.blocked[c.b];
+      return (blocked ? 2 : 0) + (U.Rules.edgeCost(run, c.a, c.b) > c.cost + 2 ? 1 : 0);
+    }), sig = (hl || '') + '|' + state.join('');
+    if (sig !== this.routeSig) { this.routeSig = sig; this._drawTracks(run, state); }
+    this._drawPulses(run, hoverId);
+  };
+
+  P._drawTracks = function (run, state) {
     var r = this.routes, d = this.data, hl = this.highlight; r.clear();
-    this.paths.forEach(function (p) {
+    this.paths.forEach(function (p, i) {
       var c = p.c, a = d.stations[c.a], b = d.stations[c.b], pts = p.s;
-      var blocked = run.blocked[c.a] || run.blocked[c.b], cost = U.Rules.edgeCost(run, c.a, c.b), slow = cost > c.cost + 2;
+      var blocked = state[i] >= 2, slow = (state[i] & 1) === 1;
       var col = blocked ? '120;80;150' : slow ? '231;76;60' : util.hex(a.color), op = blocked ? 90 : 255, dim = hl && a.line !== hl && b.line !== hl;
       if (dim) op = 40;                                                      // línea elegida en el celular: las demás se apagan
       if (c.combi) { dim = !!hl; op = blocked ? 70 : dim ? 40 : 255; col = blocked ? '120;80;150' : '255;170;40'; }       // rutas de combi: naranja punteado
@@ -331,6 +348,10 @@
         stroke(r, lighten(col, 0.55), Math.round(op * 0.5)); line(r, pts, 2, -1.5);                                          // reflejo en el riel (luz desde arriba)
       }
     });
+  };
+
+  P._drawPulses = function (run, hoverId) {
+    var r = this.pulse, d = this.data; r.clear();
     var pulse = 0.5 + 0.5 * Math.sin(this.t * 6), self = this, ring = function (p, rad, color, a) { fill(r, color, a); r.drawEllipse(p.x, p.y + 1, rad * 2, rad); };
     U.Graph.neighbors(run.graph, run.current).forEach(function (n) {   // estaciones alcanzables (pulso)
       if (!run.blocked[n]) ring(wpos(d.stations[n]), 21 + 3 * pulse, '255;255;255', 70 + 90 * pulse);
@@ -363,8 +384,9 @@
       var tint = st.id === lv.goal ? '46;204;113' : blocked ? '155;89;182' : st.shop ? '90;170;255' : util.hex(st.color);
       if (this.highlight && st.line !== this.highlight && !key) tint = '70;72;92';              // estaciones de las otras líneas, apagadas
       if (s._umTint !== tint) { s.setColor(tint); s._umTint = tint; }
-      var sc = ST_SCALE * (st.id === run.current ? 1.25 : st.id === hoverId || st.id === selId ? 1.15 : 1); s.setScale(sc);
-      s.setPosition(p.x - ICON * sc / 2, p.y - ICON * sc / 2);
+      var sc = ST_SCALE * (st.id === run.current ? 1.25 : st.id === hoverId || st.id === selId ? 1.15 : 1);
+      if (util.diff(s, 'sc', sc)) s.setScale(sc);
+      if (util.diff(s, 'x', p.x - ICON * sc / 2) | util.diff(s, 'y', p.y - ICON * sc / 2)) s.setPosition(p.x - ICON * sc / 2, p.y - ICON * sc / 2);
       // Nombres: solo los que importan (actual, meta, inicio, bajo el puntero, vecinas); todos con el botón NOMBRES o con zoom
       if (key || near[st.id] || this.labelsAll || zoomedIn) {
         var big = key, col = blocked ? '190;140;220' : st.id === lv.goal ? '120;255;170' : st.id === run.current ? '255;190;120' : '245;245;255';

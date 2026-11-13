@@ -39,7 +39,7 @@
   P.end = function () {
     ['t', 'i'].forEach(function (k) {
       var pool = this.pool[k];
-      for (var id in pool) if (!this.used[k + id]) pool[id].hide(true);
+      for (var id in pool) if (!this.used[k + id] && util.diff(pool[id], 'h', true)) pool[id].hide(true);
     }, this);
   };
 
@@ -63,8 +63,8 @@
   function pooled(ui, kind, key, objName, layer) {
     var pool = ui.pool[kind], id = layer + ':' + key;
     var o = pool[id];
-    if (!o) { o = pool[id] = ui.scene.createObject(objName); o.setLayer(layer); if (kind === 't') o.setFontName(FONT); }
-    ui.used[kind + id] = true; o.hide(false); return o;
+    if (!o) { o = pool[id] = ui.scene.createObject(objName); o._umv = { h: false }; o.setLayer(layer); if (kind === 't') o.setFontName(FONT); }
+    ui.used[kind + id] = true; if (util.diff(o, 'h', false)) o.hide(false); return o;
   }
 
   /** Texto. o: {size(8|16|24), exact (sin agrandar en modo celular), color, align:'left'|'center'|'right', z, cols (ajuste de línea), layer, opacity, lineH} */
@@ -73,12 +73,16 @@
     var t = pooled(this, 't', key, o.obj || 'Texto', layer);
     if (U.I18n) str = U.I18n.tr(str);                                                    // idioma activo (i18n.js)
     if (o.cols) str = util.wrap(str, size === size0 ? o.cols : Math.max(8, Math.floor(o.cols * size0 / size))).join('\n');
-    if (t._umSize !== size) { t.setCharacterSize(size); t._umSize = size; }
-    t.setText(String(str)); t.setColor(o.color || PAL.text);
-    t.setOpacity(o.opacity === undefined ? 255 : o.opacity); t.setZOrder(o.z === undefined ? 200 : o.z);
+    // GDevelop vuelve a dibujar un texto cada vez que se llama a setColor/setCharacterSize aunque el valor sea el mismo: solo se llama si algo cambió.
+    var col = o.color || PAL.text, op = o.opacity === undefined ? 255 : o.opacity, z = o.z === undefined ? 200 : o.z;
+    if (util.diff(t, 'sz', size)) t.setCharacterSize(size);
+    t.setText(String(str));
+    if (util.diff(t, 'c', col)) t.setColor(col);
+    if (util.diff(t, 'o', op)) t.setOpacity(op);
+    if (util.diff(t, 'z', z)) t.setZOrder(z);
     var longest = 0; String(str).split('\n').forEach(function (l) { longest = Math.max(longest, l.length); });
     var wpx = longest * size, ox = o.align === 'center' ? -wpx / 2 : o.align === 'right' ? -wpx : 0;
-    t.setPosition(x + ox, y);
+    if (util.diff(t, 'x', x + ox) | util.diff(t, 'y', y)) t.setPosition(x + ox, y);
     return String(str).split('\n').length * (o.lineH ? Math.round(o.lineH * size / size0) : size + 4);
   };
 
@@ -97,8 +101,12 @@
     o = o || {}; var layer = o.layer === undefined ? 'UI' : o.layer;
     var s = pooled(this, 'i', key, 'Icono', layer);
     if (s._umAnim !== anim) { s.setAnimationName(anim); s._umAnim = anim; }
-    s.setScale(scale || 2); s.setPosition(x, y); s.setZOrder(o.z === undefined ? 210 : o.z);
-    s.setOpacity(o.opacity === undefined ? 255 : o.opacity); s.setColor(o.tint || '255;255;255');
+    var sc = scale || 2, z = o.z === undefined ? 210 : o.z, op = o.opacity === undefined ? 255 : o.opacity, tint = o.tint || '255;255;255';
+    if (util.diff(s, 'sc', sc)) s.setScale(sc);
+    if (util.diff(s, 'x', x) | util.diff(s, 'y', y)) s.setPosition(x, y);
+    if (util.diff(s, 'z', z)) s.setZOrder(z);
+    if (util.diff(s, 'o', op)) s.setOpacity(op);
+    if (util.diff(s, 'c', tint)) s.setColor(tint);
     return s;
   };
 

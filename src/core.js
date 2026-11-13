@@ -109,6 +109,8 @@
 
   U.util = {
     clamp: clamp,
+    /** ¿Cambió el valor v de la propiedad k de este objeto desde la última vez? (lo recuerda). Evita repetir setters que GDevelop paga aunque no cambien nada. */
+    diff: function (o, k, v) { var m = o._umv || (o._umv = {}); if (m[k] === v) return false; m[k] = v; return true; },
     lerp: function (a, b, t) { return a + (b - a) * t; },
     pad2: pad2,
     /** "r;g;b" — formato de color que aceptan los objetos de GDevelop. */

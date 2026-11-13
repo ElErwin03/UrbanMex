@@ -281,6 +281,12 @@ Una ruta nueva **cada día, igual para todos los jugadores**, y **100% sin inter
 - **Archivos:** `src/daily.js` (puro: fecha → reto, racha, marcas), `Rules.createRun(data, -1, rnd, nivel)` con `nivel.daily`, y la tarjeta en `scene-menu.js`. `U.Daily.now` se puede reemplazar en las pruebas para fijar la fecha.
 - **Vista previa:** `node tools/dump_scene.js . Menu m.json --daily pending|retry|done|perfect|locked --streak 5`, `... Nivel n.json --dlevel` y `... Resultado r.json --dresult win|lose --stars 2 --first 1 --streak 3`; `tools/audit_all.sh` ya los revisa.
 
+## Rendimiento
+Medido con `node --expose-gc tools/perf.js . --frames 300` (motor simulado que cuenta lo que el juego le pide a GDevelop en cada fotograma; con `--marks` comprueba que los objetos se estabilicen y no haya fugas). No mide el costo de dibujo (PIXI/WebGL): eso solo se ve en GDevelop.
+- **Vías del mapa**: son cientos de trazos y GDevelop vuelve a triangular el Shape Painter completo cada vez que se borra y se redibuja. Ahora se dibujan una vez y solo se repiten si cambia su firma (estación bloqueada, tramo lento o línea resaltada). Los pulsos, el faro de la meta y la sombra del jugador van en otro Dibujante (`pulse`) con unos 30 trazos.
+- **Setters repetidos**: textos, íconos, estaciones, jugador y sprites de efectos solo llaman a `setColor`, `setOpacity`, `setPosition`, `setScale`, `setZOrder`, `setCharacterSize` y `hide` si el valor cambió (`util.diff`, `core.js`). GDevelop vuelve a armar un texto con cada `setColor` aunque no cambie.
+- Resultado en el nivel: de ~4400 a ~340 llamadas por fotograma y de ~1000 a ~230 trazos por fotograma. Las pruebas (`rendimiento: …` en `tests/smoke.test.js`) verifican que no se repitan setters, que las vías se redibujen cuando deben y que la caché no deje de seguir ningún cambio.
+
 ## Logros
 Hay **23 logros** en cuatro grupos (`PROGRESO`, `ESTILO DE JUEGO`, `EVENTOS DEL DIA`, `MODO INFINITO`). El botón `LOGROS n/23` del menú abre una pantalla con todos: los conseguidos llevan una copa dorada; los pendientes, un candado, y los que tienen contador muestran el avance (`2/3`).
 
