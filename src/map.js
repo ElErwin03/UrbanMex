@@ -375,7 +375,7 @@
   };
 
   P._updateStations = function (run, ui, hoverId, selId) {
-    var d = this.data, lv = run.level, near = {}, zoomedIn = this.cam.zoom >= 1.4;
+    var d = this.data, lv = run.level, near = {}, zoomedIn = this.cam.zoom >= 1.4, labels = [];
     U.Graph.neighbors(run.graph, run.current).forEach(function (n) { near[n] = true; });
     d.stationList.forEach(function (st) {
       var s = this.sprites[st.id], p = wpos(st), blocked = run.blocked[st.id], key = st.id === run.current || st.id === lv.goal || st.id === lv.start || st.id === hoverId || st.id === selId;
@@ -387,14 +387,30 @@
       var sc = ST_SCALE * (st.id === run.current ? 1.25 : st.id === hoverId || st.id === selId ? 1.15 : 1);
       if (util.diff(s, 'sc', sc)) s.setScale(sc);
       if (util.diff(s, 'x', p.x - ICON * sc / 2) | util.diff(s, 'y', p.y - ICON * sc / 2)) s.setPosition(p.x - ICON * sc / 2, p.y - ICON * sc / 2);
-      // Nombres: solo los que importan (actual, meta, inicio, bajo el puntero, vecinas); todos con el botón NOMBRES o con zoom
+      // Nombres: solo los que importan (actual, meta, inicio, bajo el puntero, vecinas); todos con el botón NOMBRES o con zoom.
+      // Se dibujan después de recorrer todas (abajo): primero las importantes y las demás solo si no tapan a otro nombre.
       if (key || near[st.id] || this.labelsAll || zoomedIn) {
-        var big = key, col = blocked ? '190;140;220' : st.id === lv.goal ? '120;255;170' : st.id === run.current ? '255;190;120' : '245;245;255';
-        var ls = util.clamp(1 / this.cam.zoom, 1, 1.35);                                    // con la red entera a escala menor, los nombres crecen un poco para seguir legibles
-        ui.text('lbl:' + st.id, st.id, p.x, p.y + (big ? 22 : 18), { layer: '', obj: 'TextoMapa', align: 'center', size: Math.round((big ? 12 : 8) * ls), z: key ? 90 : 80, color: col });
+        var col = blocked ? '190;140;220' : st.id === lv.goal ? '120;255;170' : st.id === run.current ? '255;190;120' : '245;245;255';
+        labels.push({ id: st.id, x: p.x, y: p.y + (key ? 22 : 18), key: key, near: !!near[st.id], col: col });
       }
       if (st.shop && !blocked && st.id !== lv.goal) ui.icon('shp:' + st.id, 'tienda', p.x + 8, p.y - 40, 1.5, { layer: '', z: 81 });
     }, this);
+    this._placeLabels(ui, labels);
+  };
+
+  /** Pone los nombres de estación sin que se encimen (el croquis no debe quedar tapado por letras): primero las claves (actual, meta, inicio, elegida),
+   *  luego las vecinas y al final el resto; un nombre que choca con otro ya puesto no se dibuja (se ve al acercar el mapa o al tocar esa estación).
+   *  En modo celular las letras se agrandan para verse de ~10 px reales (U.Mobile.mapLabel), así que sobran menos nombres a la vez. */
+  P._placeLabels = function (ui, labels) {
+    var ls = util.clamp(1 / this.cam.zoom, 1, 1.35), zoom = this.cam.zoom, scene = this.scene, placed = [];     // con la red entera a escala menor, los nombres crecen un poco
+    labels.sort(function (a, b) { return (b.key ? 2 : b.near ? 1 : 0) - (a.key ? 2 : a.near ? 1 : 0); });
+    labels.forEach(function (l) {
+      var base = Math.round((l.key ? 12 : 8) * ls), size = U.Mobile ? U.Mobile.mapLabel(scene, base, zoom, l.key) : base;
+      var w = l.id.length * size, box = { x0: l.x - w / 2, x1: l.x + w / 2, y0: l.y, y1: l.y + size };
+      if (!l.key && placed.some(function (q) { return box.x0 < q.x1 && q.x0 < box.x1 && box.y0 < q.y1 && q.y0 < box.y1; })) return;
+      placed.push(box);
+      ui.text('lbl:' + l.id, l.id, l.x, l.y, { layer: '', obj: 'TextoMapa', align: 'center', size: size, exact: true, z: l.key ? 90 : 80, color: l.col });
+    });
   };
 
   U.MapView = MapView;

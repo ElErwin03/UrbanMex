@@ -63,6 +63,11 @@
     if (ui.button('ach', 'LOGROS ' + ac.got + '/' + ac.total, x1, ry, cw, bh, { size: 8, fill: '150;110;20' })) m.view = 'ach';
     if (ui.button('cfg', 'AJUSTES', x2, ry, cw2, bh, { size: 8, fill: '70;70;100' })) m.view = 'settings';                    // sonido, accesibilidad, idioma, cómo jugar y créditos
     if (ui.button('quit', 'SALIR', 490, ry + bh + 10, 300, bh, { size: 8, fill: '110;50;50' })) m.confirmExit = true;          // pide confirmación antes de cerrar
+    // PANTALLA COMPLETA: en el celular el juego se ve mucho más grande sin el marco de la página (solo si el navegador lo permite)
+    if (U.Mobile && U.Mobile.fullscreenSupported(scene) && (M || U.Mobile.touchCapable())) {
+      var fsOn = U.Mobile.isFullscreen(scene);
+      if (ui.button('fscr', fsOn ? 'VENTANA' : 'PANTALLA COMPLETA', 1000, 10, 270, 44, { size: 8, fill: fsOn ? '70;70;100' : '39;174;96' })) U.Mobile.toggleFullscreen(scene);
+    }
   }
 
   /** MAS MODOS: el reto diario y el modo infinito, cada uno en su tarjeta (ya no aparecen solos al entrar al menú). */
