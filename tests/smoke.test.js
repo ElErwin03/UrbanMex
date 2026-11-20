@@ -1849,3 +1849,89 @@ test('rendimiento: las estaciones y el jugador del mapa siguen sus cambios (esca
   map.pp.y += 10; s.frame(1); assert.equal(map.player.y, map.pp.y - 54, 'si el jugador solo se mueve en vertical, también se mueve su sprite');
   assert.equal(map.player.x, map.pp.x - 18);
 });
+
+// ---------------------------------------------------------------- celular: vertical, pantalla completa y nombres del mapa (prueba de uso en itch.io)
+/** Pone (o quita) un celular de mentira: ventana de `w`x`h` y pantalla táctil con `touch` puntos. Devuelve una función que lo deshace. */
+function fakeDevice(w, h, touch) {
+  const nav = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  globalThis.window = { innerWidth: w, innerHeight: h };
+  Object.defineProperty(globalThis, 'navigator', { value: { maxTouchPoints: touch }, configurable: true });
+  return () => { delete globalThis.window; if (nav) Object.defineProperty(globalThis, 'navigator', nav); else delete globalThis.navigator; };
+}
+
+test('móvil: los nombres del mapa se agrandan hasta verse de ~10 px reales (según el zoom y la escala del lienzo) y solo en modo celular', () => {
+  const store = store0();
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Menu'); s.frame(3); const M = s.U.Mobile, U = s.U;
+    const at = (h) => ({ getGame: () => ({ getRenderer: () => ({ getCanvas: () => ({ getBoundingClientRect: () => ({ height: h }) }) }) }) });
+    U.session.uiMode = 'on'; M.reset();
+    const sc = at(360);                                                            // celular horizontal: el lienzo se ve a 0.5x
+    const near = M.mapLabel(sc, 11, 1.5, false), key = M.mapLabel(sc, 16, 1.5, true);
+    assert.ok(near * 1.5 * 0.5 >= 10 - 0.001, 'vecina: ~10 px reales, salió ' + near * 1.5 * 0.5); assert.ok(key * 1.5 * 0.5 >= 13 - 0.5, 'clave: ~13 px reales, salió ' + key * 1.5 * 0.5);
+    assert.ok(key > near, 'la clave se lee más grande que la vecina');
+    const tiny = M.mapLabel(at(150), 11, 0.5, false); assert.ok(tiny <= 28, 'con zoom y escala muy chicos hay tope (' + tiny + ')');
+    assert.ok(M.mapLabel(at(720), 8, 1, false) >= 12, 'en modo celular nunca baja del tamaño grande de siempre (8 → 12)');
+    U.session.uiMode = 'off'; assert.equal(M.mapLabel(sc, 11, 0.73, false), 11, 'en modo NORMAL queda el tamaño de siempre');
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('mapa: los nombres de estación no se encimen (salvo dos claves) y las claves siempre se dibujan, en normal y en modo celular', () => {
+  const store = store0();
+  try {
+    [false, true].forEach((mob) => [0, 4, 9].forEach((lvl) => {
+      const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = lvl; x.U.session.infinite = null; x.U.session.uiMode = mob ? 'on' : 'off'; delete x.scene._um; });
+      s.frame(3); const um = s.scene._um; um.modal = null; um.map.labelsAll = true; s.frame(4);
+      const ui = s.U.UI.of(s.scene), run = um.run, keys = new Set([run.current, run.level.goal, run.level.start]);
+      const L = Object.keys(ui.pool.t).filter((k) => k.startsWith(':lbl:') && !ui.pool.t[k].hidden).map((k) => { const o = ui.pool.t[k], id = k.slice(5); return { id, x0: o.x, x1: o.x + id.length * o.size, y0: o.y, y1: o.y + o.size, key: keys.has(id) }; });
+      keys.forEach((id) => assert.ok(L.some((l) => l.id === id), 'falta el nombre de ' + id + (mob ? ' (celular)' : '')));
+      L.forEach((a, i) => L.slice(i + 1).forEach((b) => { if (a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1) assert.ok(a.key && b.key, `nombres encimados: ${a.id} y ${b.id} (nivel ${lvl + 1}${mob ? ', celular' : ''})`); }));
+      assert.ok(L.length >= 3, 'hay nombres: ' + L.length);
+    }));
+  } finally { delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: en vertical (pantalla táctil) sale el aviso GIRA TU CELULAR, tapa el juego, se descarta con JUGAR ASI y vuelve si se gira otra vez', () => {
+  const store = store0(); let undo = () => {};
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Menu'); s.frame(60); const U = s.U, ui = () => U.UI.of(s.scene), shown = (k) => { const o = ui().pool.t['UI:' + k]; return !!o && !o.hidden; };
+    undo = fakeDevice(400, 800, 5);
+    s.frame(3); assert.equal(ui().rotate, true, 'celular en vertical: aviso'); assert.equal(s.scene._um.view, 'main');
+    assert.match(Object.keys(ui().pool.t).filter((k) => /^UI:rt\d/.test(k) && shown(k.slice(3))).map((k) => ui().pool.t[k].text).join(' '), /GIRA/);
+    assert.ok(ui().buttons.some((b) => b.id === 'rgo' && b.w >= 400 && b.h >= 44), 'botón JUGAR ASI grande');
+    assert.ok(!ui().buttons.some((b) => b.id === 'rfs'), 'sin pantalla completa disponible (iPhone o motor simulado) no hay botón');
+    // los toques no llegan al menú de abajo
+    s.click(640, 376); assert.deepEqual(s.scene.changes, [], 'JUGAR de abajo no responde mientras está el aviso'); assert.equal(s.scene._um.view, 'main');
+    // JUGAR ASI lo descarta
+    const go = ui().buttons.find((b) => b.id === 'rgo'); s.click(go.x + go.w / 2, go.y + go.h / 2); s.frame(2);
+    assert.equal(ui().rotate, false, 'descartado'); s.click(640, 376); assert.ok(s.scene.changes.length, 'ahora sí responde JUGAR');
+    // gira a horizontal: nada; vuelve a vertical: avisa de nuevo
+    s.scene.changes.length = 0; window.innerWidth = 800; window.innerHeight = 400; s.frame(2); assert.equal(ui().rotate, false);
+    window.innerWidth = 400; window.innerHeight = 800; s.frame(2); assert.equal(ui().rotate, true, 'otra vez en vertical, otra vez avisa');
+    // PC (sin pantalla táctil) con ventana angosta: no molesta
+    undo(); undo = fakeDevice(400, 800, 0); s.frame(2); assert.equal(ui().rotate, false, 'sin pantalla táctil no hay aviso');
+    undo(); undo = fakeDevice(1280, 720, 5); s.frame(2); assert.equal(ui().rotate, false, 'horizontal: sin aviso');
+  } finally { undo(); delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});
+
+test('móvil: PANTALLA COMPLETA (aviso de vertical y menú) entra y sale, intenta bloquear la horizontal y no aparece si el navegador no lo permite', () => {
+  const store = store0(); let undo = () => {}; const doc0 = Object.getOwnPropertyDescriptor(globalThis, 'document'), scr0 = Object.getOwnPropertyDescriptor(globalThis, 'screen');
+  try {
+    audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Menu'); s.frame(60); const U = s.U, ui = () => U.UI.of(s.scene), M = U.Mobile;
+    const calls = []; let full = false;
+    const rend = { setFullScreen: (on) => { calls.push('fs:' + on); full = on; globalThis.document.fullscreenElement = on ? {} : null; } };
+    const g0 = s.scene.getGame(); s.scene.getGame = () => new Proxy(g0, { get: (t, k) => k === 'getRenderer' ? () => rend : Reflect.get(t, k) });
+    // el navegador no lo permite (iPhone): no hay botón en el menú
+    undo = fakeDevice(900, 400, 5); s.U.session.uiMode = 'on'; s.frame(3); assert.equal(M.fullscreenSupported(s.scene), false); assert.ok(!ui().buttons.some((b) => b.id === 'fscr'), 'sin soporte no hay botón');
+    // con soporte
+    Object.defineProperty(globalThis, 'document', { value: { fullscreenEnabled: true, fullscreenElement: null, documentElement: {} }, configurable: true });
+    Object.defineProperty(globalThis, 'screen', { value: { orientation: { lock: (o) => { calls.push('lock:' + o); return Promise.resolve(); } } }, configurable: true });
+    s.frame(3); const b = ui().buttons.find((x) => x.id === 'fscr'); assert.ok(b && b.w >= 44 && b.h >= 44, 'botón PANTALLA COMPLETA en el menú'); assert.equal(ui().pool.t['UI:btn:fscr'].text, 'PANTALLA COMPLETA');
+    mobileScan(s, 'menú con PANTALLA COMPLETA');                                      // 44 px o más, sin botones encimados y letras de 12 px o más
+    s.click(b.x + b.w / 2, b.y + b.h / 2); assert.deepEqual(calls, ['fs:true', 'lock:landscape'], 'entra y pide horizontal'); s.frame(3); assert.equal(ui().pool.t['UI:btn:fscr'].text, 'VENTANA', 'ya en pantalla completa el botón dice VENTANA');
+    calls.length = 0; const b2 = ui().buttons.find((x) => x.id === 'fscr'); s.click(b2.x + b2.w / 2, b2.y + b2.h / 2); assert.deepEqual(calls, ['fs:false'], 'sale (y no pide bloqueo)');
+    // el aviso de vertical también ofrece PANTALLA COMPLETA
+    window.innerWidth = 400; window.innerHeight = 800; s.frame(3); const r = ui().buttons.find((x) => x.id === 'rfs'); assert.ok(r, 'el aviso trae PANTALLA COMPLETA'); calls.length = 0; s.click(r.x + r.w / 2, r.y + r.h / 2); assert.equal(calls[0], 'fs:true');
+    // un celular real (puntero "grueso") no ve el botón en una PC sin táctil y sin modo celular
+    s.U.session.uiMode = 'off'; undo(); undo = fakeDevice(1280, 720, 0); s.frame(3); assert.ok(!ui().buttons.some((x) => x.id === 'fscr'), 'en una PC normal no estorba');
+  } finally { undo(); if (doc0) Object.defineProperty(globalThis, 'document', doc0); else delete globalThis.document; if (scr0) Object.defineProperty(globalThis, 'screen', scr0); else delete globalThis.screen; delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
+});

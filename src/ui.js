@@ -33,10 +33,40 @@
     else if (U.session.touchMode && !this.down && (this.px !== this.lastX || this.py !== this.lastY) && this.lastX >= 0) U.session.touchMode = false;   // se movió un ratón de verdad
     this.lastX = this.px; this.lastY = this.py; this.touch = U.session.touchMode === true;
     this.consumed = false; this.hover = null; this.used = {}; this.buttons = []; this.mob = !!(U.Mobile && U.Mobile.active(this.scene));
+    // Celular en vertical: el aviso de girar tapa todo y es lo único que recibe toques (la escena de abajo ve el puntero lejos, sin botón apretado ni dedos).
+    this.rotate = !!(U.Mobile && U.Mobile.needsRotate());
+    if (this.rotate) {
+      this.real = { px: this.px, py: this.py, down: this.down, pressed: this.pressed, released: this.released };
+      this.px = this.py = -9999; this.down = this.pressed = this.released = false; this.touches = []; this.wheel = 0;
+    }
     this.base.clear(); this.modal.clear();
   };
 
+  /** Aviso "GIRA TU CELULAR" (pantalla vertical): dibujado en tamaños que se ven de verdad aunque el lienzo se reduzca a ~0.3x. */
+  P._drawRotate = function () {
+    var r = this.real, M = U.Mobile, scene = this.scene, sc = Math.max(0.15, M.scale(scene));
+    this.px = r.px; this.py = r.py; this.down = r.down; this.pressed = r.pressed; this.released = r.released;       // el aviso sí recibe el toque
+    var big = function (real, lo, hi) { return Math.round(util.clamp(real / sc, lo, hi)); };
+    var t = big(15, 20, 40), b = big(11, 18, 26), bt = big(12, 18, 32), bh = Math.round(Math.max(80, 44 / sc * 0.7)), tx = 650, w = 600, tr = function (x) { return U.I18n ? U.I18n.tr(x) : x; };
+    var wrap = function (str, size) { return util.wrap(tr(str), Math.max(8, Math.floor(w / size))); };
+    var tl = wrap('GIRA TU CELULAR', t), bl = wrap('El juego se ve mejor en horizontal.', b), fsOn = M.fullscreenSupported(scene);
+    var head = tl.length * (t + 8) + 14 + bl.length * (b + 8) + 30, total = head + (fsOn ? 2 * bh + 24 : bh), y = Math.max(20, Math.round((720 - total) / 2)), cy = 360;
+    this.rect(0, 0, 1280, 720, { fill: '14;12;30', bw: 0, modal: true, block: true });
+    // dibujo: un celular vertical (rojo) → uno horizontal (verde), centrados a la izquierda
+    this.rect(120, cy - 110, 130, 220, { fill: '30;30;56', border: '231;76;60', bw: 6, modal: true });
+    this.line(280, cy, 350, cy, 10, '255;255;255', 255, true); this.line(350, cy, 322, cy - 26, 10, '255;255;255', 255, true); this.line(350, cy, 322, cy + 26, 10, '255;255;255', 255, true);
+    this.rect(380, cy - 70, 210, 140, { fill: '30;30;56', border: '46;204;113', bw: 6, modal: true });
+    var put = function (ui, key, lines, size, color) { lines.forEach(function (l, i) { ui.text(key + i, l, tx, y, { size: size, exact: true, color: color, z: 330, noTr: true }); y += size + 8; }); };
+    put(this, 'rt', tl, t, PAL.orange); y += 14;
+    put(this, 'rs', bl, b, PAL.text); y += 30;
+    if (fsOn && this.button('rfs', '', tx, y, w, bh, { size: 8, fill: '39;174;96', modal: true })) M.toggleFullscreen(scene);
+    if (fsOn) { this.text('rfsl', 'PANTALLA COMPLETA', tx + w / 2, y + (bh - bt) / 2, { size: bt, exact: true, align: 'center', z: 330 }); y += bh + 24; }
+    if (this.button('rgo', '', tx, y, w, bh, { size: 8, fill: '70;70;100', modal: true })) M.dismissRotate();
+    this.text('rgol', 'JUGAR ASI', tx + w / 2, y + (bh - bt) / 2, { size: bt, exact: true, align: 'center', z: 330 });
+  };
+
   P.end = function () {
+    if (this.rotate) this._drawRotate();
     ['t', 'i'].forEach(function (k) {
       var pool = this.pool[k];
       for (var id in pool) if (!this.used[k + id] && util.diff(pool[id], 'h', true)) pool[id].hide(true);
@@ -71,7 +101,7 @@
   P.text = function (key, str, x, y, o) {
     o = o || {}; var size0 = o.size || 8, size = o.exact ? size0 : this.fs(size0), layer = o.layer === undefined ? 'UI' : o.layer;
     var t = pooled(this, 't', key, o.obj || 'Texto', layer);
-    if (U.I18n) str = U.I18n.tr(str);                                                    // idioma activo (i18n.js)
+    if (U.I18n && !o.noTr) str = U.I18n.tr(str);                                          // idioma activo (i18n.js); noTr: ya viene traducido
     if (o.cols) str = util.wrap(str, size === size0 ? o.cols : Math.max(8, Math.floor(o.cols * size0 / size))).join('\n');
     // GDevelop vuelve a dibujar un texto cada vez que se llama a setColor/setCharacterSize aunque el valor sea el mismo: solo se llama si algo cambió.
     var col = o.color || PAL.text, op = o.opacity === undefined ? 255 : o.opacity, z = o.z === undefined ? 200 : o.z;
