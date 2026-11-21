@@ -1963,3 +1963,48 @@ test('mapa: el color se dibuja (aro verde/rojo y insignia ✓/✕ encima de esta
   assert.ok(has(map.pulse, '231;76;60'), 'aro rojo');
   run.blocked[ns[0]] = true; s.frame(2); assert.equal(circles(), (ns.length - 1) * 2, 'la bloqueada no lleva insignia (ya se ve morada)'); delete run.blocked[ns[0]];
 });
+
+// ---------------------------------------------------------------- asaltos: estaciones reportadas en el mapa y mensaje con noticia y riesgo (hallazgo de la presentación)
+test('asaltos: las estaciones reportadas llevan un icono de alerta en el mapa (solo se redibuja al cambiar) y la leyenda lo explica', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(3); const um = s.scene._um, map = um.map, run = um.run; um.modal = null;
+  const amber = () => map.marks.cmds.filter((x) => x === 'setFillColor:255;200;40').length;
+  assert.equal(amber(), 0, 'sin noticias de asaltos no hay alertas');
+  const far = Object.keys(run.data.stations).find((k) => !run.data.stations[k].shop && k !== run.level.goal && !s.U.Graph.neighbors(run.graph, run.current).includes(k));
+  run.danger[far] = true; s.frame(2); assert.equal(amber(), 1, 'una alerta por estación reportada, aunque no sea vecina');
+  const clears = map.marks.clears; s.frame(60); assert.equal(map.marks.clears, clears, 'sin cambios no se redibuja');
+  const nb = s.U.Graph.neighbors(run.graph, run.current)[0]; run.danger[nb] = true; s.frame(2); assert.equal(amber(), 2); assert.ok(map.marks.clears > clears);
+  const ui = s.U.UI.of(s.scene); assert.ok(ui.pool.t['UI:lg:l7'] && ui.pool.t['UI:lg:l7'].text === 'Riesgo', 'leyenda: Riesgo');
+});
+
+test('asaltos: el panel de la estación muestra el riesgo real (y sube en hora pico), en normal y en modo celular', () => {
+  [false, true].forEach((mob) => {
+    delete globalThis.gdjs.UrbanMex;
+    const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; x.U.session.infinite = null; x.U.session.uiMode = mob ? 'on' : 'off'; }); s.frame(3);
+    const um = s.scene._um, run = um.run, ui = s.U.UI.of(s.scene); um.modal = null; um.modalQueue = [];
+    const nb = s.U.Graph.neighbors(run.graph, run.current).find((x) => !run.blocked[x] && !run.data.stations[x].shop && x !== run.level.goal), cfg = run.data.config;
+    const text = () => { const o = ui.pool.t['UI:sp:rk']; return o && !o.hidden ? o.text : null; };
+    um.selected = nb; s.frame(2); assert.equal(text(), null, 'sin noticia no hay etiqueta');
+    run.danger[nb] = true; run.minute = cfg.dayStartMinute + 300; s.frame(2);       // pasada la hora pico del lunes: riesgo base
+    const base = Math.round((cfg.robbery.baseChance - cfg.robbery.luck) * 100); assert.ok(text() && text().includes(base + ' %') && /ASALTO/.test(text()), (mob ? 'celular: ' : '') + 'riesgo base ' + text());
+    run.minute = 420; s.frame(2); const peak = s.U.Rules.robberyRisk(run, nb); assert.ok(text().includes(peak.percent + ' %'), 'hora pico: ' + text()); assert.ok(peak.percent >= base, 'la hora pico no lo baja');
+  });
+});
+
+test('asaltos: el mensaje del asalto cita la noticia que reportó la estación y el riesgo; pasar de suerte también dice el riesgo', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const go = (rnd) => {
+    const s = session('Nivel'); s.frame(3); const u = s.scene._um, run = u.run; u.modal = null; u.modalQueue = []; run.minute = 570; run.rnd = () => rnd;
+    const nb = s.U.Graph.neighbors(run.graph, run.current).find((x) => !run.blocked[x] && !run.data.stations[x].shop && x !== run.level.goal);
+    run.danger[nb] = true; run.dangerInfo[nb] = { title: 'ROBOS EN PRUEBA', time: '7:40 AM' };
+    const at = (id) => { const w = u.map.stationPos(id), c = u.map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
+    s.click(...at(nb)); s.click(...at(nb)); for (let g = 0; g < 400 && (u.pending || u.map.moving() || g < 5) && !u.modal; g++) s.frame(2);
+    for (let g = 0; g < 10; g++) s.frame(2); return { s, u, run, nb };
+  };
+  const pct = (run) => Math.round((run.data.config.robbery.baseChance - run.data.config.robbery.luck) * 100) + ' %';
+  const a = go(0); assert.equal(a.run.robbed, 1); assert.ok(a.u.modal, 'sale la ventana del asalto'); const txt = a.u.modal.lines.join(' ');
+  assert.match(txt, /ROBOS EN PRUEBA/, 'cita la noticia'); assert.match(txt, /7:40 AM/, 'y la hora'); assert.ok(txt.includes('Riesgo de asalto: ' + pct(a.run)), 'y el riesgo: ' + txt); assert.match(txt, /Debiste haber leido las noticias/, 'conserva la frase de siempre');
+  const wrapped = [].concat(...a.u.modal.lines.map((l) => (l === '' ? [''] : a.s.U.util.wrap(l, 48)))); assert.ok(wrapped.length <= 9, 'cabe en la ventana (300 px de alto, 9 líneas): ' + wrapped.length);
+  const log = a.run.newsLog[0]; assert.equal(log.title, 'ASALTO CONFIRMADO!'); assert.ok(log.impact.includes(pct(a.run)) && log.impact.includes('ROBOS EN PRUEBA'), 'el celular también: ' + log.impact);
+  const b = go(0.99); assert.equal(b.run.robbed, 0); assert.ok(b.run.newsLog[0].desc.includes('riesgo ' + pct(b.run)), 'pasaste de suerte: ' + b.run.newsLog[0].desc);
+});
