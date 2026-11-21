@@ -93,6 +93,7 @@ for (let i = 0; i < frames; i++) {
     if (flag('minute')) um.run.minute = +flag('minute');
     if (flag('pause')) { um.paused = true; um.pauseView = flag('pause') === true ? 'main' : flag('pause'); }   // ventana de pausa: main | sound | a11y | confirm | restart
     if (flag('at') && um.run.data.stations[flag('at')]) { um.run.current = flag('at'); um.run.visited[flag('at')] = true; }   // empieza en otra estacion (para probar una combi)
+    if (flag('danger')) String(flag('danger')).split(',').forEach(function (n) { if (um.run.data.stations[n]) { um.run.danger[n] = true; um.run.dangerInfo[n] = { title: 'ROBOS EN ' + n.toUpperCase(), time: '7:40 AM' }; } });   // zonas reportadas (para ver el icono de alerta)
     if (flag('stamina')) um.run.stamina = +flag('stamina');                          // para ver los mensajes de "no puedes viajar"
     if (flag('money')) um.run.money = +flag('money');
     if (flag('rob') && i === frames - 1 - (+flag('rob'))) { um.fx.robbery(60); um.hurt = 1.3; }   // asalto: N fotogramas antes del final (0 = justo ahora)

@@ -50,6 +50,17 @@
     um.pending = out; float(um, id + '  -' + out.cost.time + ' min', PAL.blue);
   }
 
+  function pct(chance) { return Math.round(chance * 100) + ' %'; }
+
+  /** Por qué te asaltaron: la noticia que reportó la estación (y a qué hora) y el riesgo que tenías (con el extra de la hora pico si lo había). */
+  function robberyWhy(out) {
+    var rep = out.report, lines = [], short;
+    lines.push(rep ? 'La estacion estaba reportada: "' + rep.title + '" (' + rep.time + ').' : 'La estacion estaba reportada como zona de asaltos.');
+    lines.push('Riesgo de asalto: ' + pct(out.chance) + (out.bonus > 0 ? ' (incluye +' + pct(out.bonus) + ' por la hora pico).' : '.'));
+    short = 'Estacion reportada: riesgo ' + pct(out.chance) + (rep ? ' · ' + rep.title : '');
+    return { lines: lines, short: short };
+  }
+
   function resolve(um) {
     var out = um.pending, run = um.run; um.pending = null;
     announceEvents(um);                                         // lluvia, hora pico y huelgas que empezaron o terminaron durante el viaje
@@ -58,11 +69,12 @@
     if (out.type === 'shop') { snd(um, 'tienda'); shopModal(um); }
     else if (out.type === 'robbery') {
       snd(um, 'asalto'); um.fx.robbery(out.stolen); um.hurt = 1.3; float(um, '-$' + out.stolen, PAL.red);   // efectos: destello, sacudida, monedas y el saldo tiembla
-      N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', 'Debiste leer las noticias...');
-      modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', '', '"Debiste haber leido las noticias..."'],
+      var why = robberyWhy(out);
+      N.info(run, 'ASALTO CONFIRMADO!', 'Te robaron $' + out.stolen + ' en ' + run.current + '.', why.short);
+      modal(um, { title: 'TE ASALTARON!', lines: ['En ' + run.current + ' te quitaron $' + out.stolen + '.', ''].concat(why.lines, ['', '"Debiste haber leido las noticias..."']),
                   buttons: [{ label: 'SEGUIR', kind: 'danger' }] });
     } else if (out.type === 'lucky') {
-      N.info(run, 'Pasaste de suerte', 'Ibas por ' + run.current + ' (zona reportada) y no paso nada. Esta vez!', 'Sin incidentes');
+      N.info(run, 'Pasaste de suerte', 'Ibas por ' + run.current + ' (zona reportada, riesgo ' + pct(out.chance) + ') y no paso nada. Esta vez!', 'Sin incidentes');
       float(um, 'Pasaste de suerte', PAL.green); snd(um, 'suerte');
     }
   }
@@ -187,11 +199,11 @@
   }
 
   function drawLegend(ui, um) {
-    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.'], ['combi', 'Combi'], ['ok', 'Puedes'], ['no', 'Falta']];
+    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.'], ['combi', 'Combi'], ['ok', 'Puedes'], ['no', 'Falta'], ['alerta', 'Riesgo']];
     ui.rect(x, y, 340, 76, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
     ui.text('lg:t', 'LEYENDA', x + 10, y + 8, { size: 8, color: PAL.orange });
     var cols = 4, stride = 83;
-    if (ui.mob) { items.shift(); cols = 3; stride = 112; }                              // celular: letras de 12 px → 3 columnas y sin "Tu" (el muñeco naranja ya se reconoce), para que quepan las 6 marcas
+    if (ui.mob) { items.splice(0, 2); cols = 3; stride = 112; }                          // celular: letras de 12 px → 3 columnas y sin "Tu" ni "Meta" (el muñeco y la bandera ya se reconocen), para que quepan 6
     items.forEach(function (it, i) {
       var ix = x + 8 + (i % cols) * stride, iy = y + 24 + Math.floor(i / cols) * 24;
       if (it[0] === 'ok' || it[0] === 'no') {                                         // las mismas insignias que el mapa pone junto a las vecinas: ✓ verde = puedes ir, ✕ roja = no te alcanza
@@ -226,6 +238,8 @@
       if (c.combi && id !== run.level.goal) desc = 'Ruta de COMBI desde ' + run.current + ': $' + c.money + ' pero salta varias estaciones. Viajar aqui?';
       ui.rect(x, y, w, h, { fill: '12;10;24', border: PAL.orange, bw: 3, block: true });
       ui.text('sp:t', id, x + 16, y + 10, { size: 16, color: PAL.orange });
+      var risk = R.robberyRisk(run, id);                                     // zona reportada: el mismo riesgo que se aplicará al llegar
+      if (risk) ui.text('sp:rk', (M ? 'REPORTADA: ' + pct(risk.chance) + ' ASALTO' : 'ZONA REPORTADA: ' + pct(risk.chance) + ' DE ASALTO'), x + w - 16, y + 14, { size: 8, align: 'right', color: PAL.red });
       var why = chk.ok ? null : R.explain(run, id);                          // por qué NO se puede viajar (con los números reales)
       if (why) { ui.text('sp:w1', why.short + '.', x + 16, y + 34, { size: 8, color: PAL.red }); ui.text('sp:w2', why.detail, x + 16, y + (M ? 54 : 48), { size: 8, cols: M ? 54 : 80, color: '200;205;225' }); }
       else ui.text('sp:d', desc, x + 16, y + 34, { size: 8, cols: M ? 54 : 62, color: '200;205;225' });

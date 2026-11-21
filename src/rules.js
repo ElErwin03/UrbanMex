@@ -6,6 +6,8 @@
 
   function setOf(list) { var o = {}; (list || []).forEach(function (k) { o[k] = true; }); return o; }
   function E() { return U.Events; }
+  /** Probabilidad de asalto en una zona reportada: base − suerte + extra de la hora pico (tope 95 %). */
+  function chanceOf(run, bonus) { var r = run.data.config.robbery; return Math.min(0.95, r.baseChance - r.luck + bonus); }
 
   var Rules = {
     SAVER_KEEP: 0.65,                             // 2.ª estrella: terminar con al menos el 65 % del dinero que dejaría la mejor ruta (alcanza aunque compres un Monster)
@@ -18,7 +20,7 @@
         data: data, graph: G.build(data), rnd: rng, levelIndex: levelIndex, level: lv,
         current: lv.start, stamina: lv.staminaMax, staminaMax: lv.staminaMax, money: lv.moneyStart,
         minute: cfg.dayStartMinute, steps: 0, robbed: 0, stolen: 0, monsters: 0, combis: 0, waited: 0, visited: visited,
-        blocked: setOf(lv.blocked), striking: {}, eventQueue: [], danger: {}, timeMods: {}, monsterPromo: false, freeRides: 0,
+        blocked: setOf(lv.blocked), striking: {}, eventQueue: [], danger: {}, dangerInfo: {}, timeMods: {}, monsterPromo: false, freeRides: 0,
         newsLog: [], newsUsed: {}, unread: 0, newsMoves: cfg.news.firstAfterMoves, newsCount: 0,
         over: false, won: false, endReason: ''
       };
@@ -111,6 +113,14 @@
       return out;
     },
 
+    /** Riesgo de asalto al llegar a `to` saliendo ahora: { chance 0..1, percent, base, bonus, report } o null si no es una zona reportada (ni meta ni tienda).
+     *  Es la MISMA cuenta que usa `travel`, así que lo que se muestra (mapa, panel, mensaje) nunca contradice lo que pasa. `bonus` es el extra de la hora pico. */
+    robberyRisk: function (run, to) {
+      if (!run.danger[to] || to === run.level.goal || run.data.stations[to].shop) return null;
+      var bonus = E() ? E().robberyBonus(run) : 0, chance = chanceOf(run, bonus);
+      return { chance: chance, percent: Math.round(chance * 100), base: chanceOf(run, 0), bonus: bonus, report: run.dangerInfo[to] || null };
+    },
+
     /** Viaja a `to`. → { ok, type: 'goal'|'shop'|'robbery'|'lucky'|'arrive', cost, stolen? } */
     travel: function (run, to) {
       var chk = Rules.canTravel(run, to);
@@ -128,7 +138,8 @@
         out.type = 'shop';
       } else if (run.danger[to]) {
         var r = run.data.config.robbery;
-        var chance = Math.min(0.95, r.baseChance - r.luck + bonus);
+        var chance = chanceOf(run, bonus);
+        out.chance = chance; out.bonus = bonus; out.report = run.dangerInfo[to] || null;      // para explicar el asalto: con qué riesgo y qué noticia avisó
         if (run.rnd() < chance) {
           var loss = Math.min(run.money, Math.floor(r.minLoss + run.rnd() * (r.maxLoss - r.minLoss + 1)));
           run.money -= loss; run.stolen += loss; run.robbed++;
@@ -189,7 +200,10 @@
     applyNews: function (run, item) {
       var e = item.effects || {}, cfg = run.data.config;
       (e.block || []).forEach(function (s) { run.blocked[s] = true; delete run.striking[s]; });   // un bloqueo de noticia es permanente aunque la huelga termine
-      (e.danger || []).forEach(function (s) { run.danger[s] = true; });
+      (e.danger || []).forEach(function (s) {
+        run.danger[s] = true;
+        if (!run.dangerInfo[s]) run.dangerInfo[s] = { title: item.title, time: util.clock(run.minute) };     // qué noticia la reportó y a qué hora (la primera)
+      });
       if (e.timeMod) {
         run.data.connections.forEach(function (c) {
           if (c.combi) return;                                                     // las combis no usan las líneas del Metro: no les afectan sus fallas
