@@ -187,12 +187,20 @@
   }
 
   function drawLegend(ui, um) {
-    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.'], ['combi', 'Combi']];
+    var x = 920, y = 636, items = [['persona', 'Tu'], ['meta', 'Meta'], ['tienda', 'Tienda'], ['bloqueo', 'Bloq.'], ['combi', 'Combi'], ['ok', 'Puedes'], ['no', 'Falta']];
     ui.rect(x, y, 340, 76, { fill: '12;10;24', border: '90;90;120', bw: 2, block: true });
     ui.text('lg:t', 'LEYENDA', x + 10, y + 8, { size: 8, color: PAL.orange });
+    var cols = 4, stride = 83;
+    if (ui.mob) { items.shift(); cols = 3; stride = 112; }                              // celular: letras de 12 px → 3 columnas y sin "Tu" (el muñeco naranja ya se reconoce), para que quepan las 6 marcas
     items.forEach(function (it, i) {
-      var ix = x + 10 + (i % 3) * 112, iy = y + 24 + Math.floor(i / 3) * 24;
-      ui.icon('lg:i' + i, it[0], ix, iy, 1.5); ui.text('lg:l' + i, it[1], ix + 30, iy + 8, { size: 8 });
+      var ix = x + 8 + (i % cols) * stride, iy = y + 24 + Math.floor(i / cols) * 24;
+      if (it[0] === 'ok' || it[0] === 'no') {                                         // las mismas insignias que el mapa pone junto a las vecinas: ✓ verde = puedes ir, ✕ roja = no te alcanza
+        var ok = it[0] === 'ok', cx = ix + 12, cy = iy + 12;
+        ui.rect(ix, iy, 24, 24, { fill: ok ? '46;204;113' : '231;76;60', border: '255;255;255', bw: 2 });
+        if (ok) { ui.line(cx - 6, cy, cx - 2, cy + 5, 3, '255;255;255', 255); ui.line(cx - 2, cy + 5, cx + 6, cy - 5, 3, '255;255;255', 255); }
+        else { ui.line(cx - 5, cy - 5, cx + 5, cy + 5, 3, '255;255;255', 255); ui.line(cx + 5, cy - 5, cx - 5, cy + 5, 3, '255;255;255', 255); }
+      } else ui.icon('lg:i' + i, it[0], ix, iy, 1.5);
+      ui.text('lg:l' + i, it[1], ix + 28, iy + 8, { size: 8 });
     });
   }
 

@@ -161,6 +161,17 @@ Cuando un viaje no se puede hacer, el panel de la estación ya no se queda mudo:
 
 El costo que falta se pinta en rojo en la fila de costos. El doble clic en una vecina que no puedes pagar tampoco viaja: abre el panel con el motivo. Para verlo sin jugar: `node tools/dump_scene.js . Nivel out.json --at Coyoacán --select Pantitlán --stamina 30` y luego `render_preview.py`.
 
+### Qué estaciones puedes alcanzar (marcadas en el mapa)
+Antes las vecinas solo latían en blanco y no se sabía a cuáles podías ir. Ahora cada vecina de tu estación se marca **sobre la estación, no sobre las líneas** (`MapView.reachable`, que usa el mismo `canTravel` que el viaje):
+
+| Marca | Significa |
+|---|---|
+| Aro **verde** latiendo + insignia ✓ verde | Puedes ir ya |
+| Aro **rojo** fijo + insignia ✕ roja | Está conectada, pero hoy no te alcanza el dinero, la stamina o la hora (tócala y el panel dice qué falta) |
+| Aro **morado**, sin insignia | Bloqueada (noticias o huelga) |
+
+Los aros llevan borde blanco para que se vean aunque la línea sea verde; la insignia va al costado de la estación y encima de estaciones y nombres (las líneas verticales van muy juntas y una flecha arriba quedaba tapada) y **se distingue por la forma** (✓ / ✕), no solo por el color. La insignia vive en su propio Shape Painter (`marks`) que solo se redibuja cuando cambia el estado de las vecinas, no en cada fotograma. La `LEYENDA` del nivel incluye ✓ `Puedes` y ✕ `Falta` (en modo celular, 3 columnas y sin `Tu`, para que quepan con letras de 12 px), y el tutorial (`ELIGE UNA VECINA`) lo explica.
+
 ## Créditos
 Botón **CREDITOS** dentro de `AJUSTES` (menú principal). Muestra:
 

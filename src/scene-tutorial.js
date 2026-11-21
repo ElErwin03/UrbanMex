@@ -20,7 +20,7 @@
         ['meta', 'LLEGA A LA META', 'Llega a tu destino antes de las ' + end + ', con el Metro, los transbordos y las combis.'],
         ['reloj', 'EL RELOJ ES TU LIMITE', 'El tiempo solo avanza cuando viajas: ' + cfg.stationTime + ' min por estación y ' + cfg.transferTime + ' min por transbordo.']] },
       { id: 'move', title: 'COMO MOVERTE', items: [
-        ['persona', 'ELIGE UNA VECINA', 'Toca una estación conectada a la tuya: las vecinas se iluminan en el mapa.'],
+        ['persona', 'ELIGE UNA VECINA', 'Toca una estación conectada a la tuya. Las vecinas se marcan: verde con palomita = puedes ir; roja con X = no te alcanza.'],
         ['mapa', 'PULSA VIAJAR', 'El botón está en el panel de abajo a la izquierda. Con ' + (touch ? 'doble toque' : 'doble clic') + ' en una vecina viajas directo.'],
         ['combi', 'COMBIS Y TRANSBORDOS', 'Las rutas punteadas naranja son combis: saltan varias estaciones y cuestan $' + cfg.combi.money + ' y ' + cfg.combi.stamina + ' de stamina. Cambiar de línea es un transbordo.']] },
       { id: 'res', title: 'TUS RECURSOS', items: [

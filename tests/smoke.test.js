@@ -1935,3 +1935,31 @@ test('móvil: PANTALLA COMPLETA (aviso de vertical y menú) entra y sale, intent
     s.U.session.uiMode = 'off'; undo(); undo = fakeDevice(1280, 720, 0); s.frame(3); assert.ok(!ui().buttons.some((x) => x.id === 'fscr'), 'en una PC normal no estorba');
   } finally { undo(); if (doc0) Object.defineProperty(globalThis, 'document', doc0); else delete globalThis.document; if (scr0) Object.defineProperty(globalThis, 'screen', scr0); else delete globalThis.screen; delete globalThis.localStorage; delete globalThis.gdjs.UrbanMex; SND.reset(); }
 });
+
+// ---------------------------------------------------------------- estaciones alcanzables marcadas por color (hallazgo de la presentación en itch.io)
+test('mapa: las vecinas se marcan verde (puedes ir) / roja (no te alcanza) / morada (bloqueada) con el mismo canTravel del viaje', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(3); const um = s.scene._um, map = um.map, run = um.run, G = s.U.Graph, R = s.U.Rules;
+  const ns = G.neighbors(run.graph, run.current); assert.ok(ns.length >= 1);
+  const check = (label) => { const r = map.reachable(run); assert.deepEqual(Object.keys(r).sort(), ns.slice().sort(), 'solo las vecinas'); ns.forEach((n) => assert.equal(r[n], run.blocked[n] ? 'blocked' : R.canTravel(run, n).ok ? 'ok' : 'no', label + ': ' + n)); return r; };
+  let r = check('inicio'); assert.ok(ns.every((n) => r[n] === 'ok'), 'al empezar se puede ir a todas las vecinas');
+  run.stamina = 0; r = check('sin stamina'); assert.ok(ns.every((n) => r[n] === 'no'), 'sin stamina ninguna alcanza');
+  run.stamina = run.staminaMax; run.money = 0; r = check('sin dinero'); assert.ok(ns.every((n) => r[n] === 'no'), 'sin dinero ninguna alcanza');
+  run.money = run.level.moneyStart; run.minute = run.data.config.dayEndMinute; r = check('anocheció'); assert.ok(ns.every((n) => r[n] === 'no'), 'sin hora ninguna alcanza');
+  run.minute = run.data.config.dayStartMinute; run.blocked[ns[0]] = true; r = check('bloqueada'); assert.equal(r[ns[0]], 'blocked');
+  delete run.blocked[ns[0]];
+});
+
+test('mapa: el color se dibuja (aro verde/rojo y insignia ✓/✕ encima de estaciones y nombres) y la insignia solo se redibuja cuando cambia', () => {
+  delete globalThis.gdjs.UrbanMex;
+  const s = session('Nivel'); s.frame(3); const um = s.scene._um, map = um.map, run = um.run, ns = s.U.Graph.neighbors(run.graph, run.current);
+  const has = (g, c) => g.cmds.some((x) => x === 'setFillColor:' + c);
+  assert.ok(has(map.pulse, '46;204;113'), 'aro verde'); assert.ok(!has(map.pulse, '231;76;60'), 'sin rojo mientras se puede ir a todas');
+  const circles = () => map.marks.cmds.filter((x) => x.startsWith('drawCircle:')).length;
+  assert.equal(circles(), ns.length * 2, 'una insignia (borde + color) por vecina'); assert.ok(has(map.marks, '46;204;113') && !has(map.marks, '231;76;60'));
+  assert.ok(map.marks.z > 90 && map.marks.z > map.pulse.z, 'la insignia va encima de estaciones (60) y nombres (90): ' + map.marks.z);
+  const clears = map.marks.clears; s.frame(60); assert.equal(map.marks.clears, clears, 'sin cambios no se redibuja en 60 fotogramas (los aros sí laten)');
+  run.stamina = 0; s.frame(2); assert.equal(map.marks.clears, clears + 1, 'al cambiar el estado se redibuja una vez'); assert.ok(has(map.marks, '231;76;60') && !has(map.marks, '46;204;113'), 'insignia roja');
+  assert.ok(has(map.pulse, '231;76;60'), 'aro rojo');
+  run.blocked[ns[0]] = true; s.frame(2); assert.equal(circles(), (ns.length - 1) * 2, 'la bloqueada no lleva insignia (ya se ve morada)'); delete run.blocked[ns[0]];
+});
