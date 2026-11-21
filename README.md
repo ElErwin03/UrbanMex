@@ -172,6 +172,14 @@ Antes las vecinas solo latían en blanco y no se sabía a cuáles podías ir. Ah
 
 Los aros llevan borde blanco para que se vean aunque la línea sea verde; la insignia va al costado de la estación y encima de estaciones y nombres (las líneas verticales van muy juntas y una flecha arriba quedaba tapada) y **se distingue por la forma** (✓ / ✕), no solo por el color. La insignia vive en su propio Shape Painter (`marks`) que solo se redibuja cuando cambia el estado de las vecinas, no en cada fotograma. La `LEYENDA` del nivel incluye ✓ `Puedes` y ✕ `Falta` (en modo celular, 3 columnas y sin `Tu`, para que quepan con letras de 12 px), y el tutorial (`ELIGE UNA VECINA`) lo explica.
 
+### Asaltos: zonas reportadas y por qué te asaltaron
+Una noticia de asaltos marca estaciones como **zona reportada** (`run.danger`). Antes el mapa no las mostraba y el mensaje del asalto solo decía "Debiste leer las noticias…", así que los robos parecían caprichosos. Ahora:
+
+- **Mapa:** cada estación reportada lleva un triángulo amarillo con "!" arriba a la izquierda (se dibuja en el Shape Painter `marks`, que solo se redibuja cuando cambian las vecinas o las zonas reportadas). La `LEYENDA` lo incluye como `Riesgo`.
+- **Panel de la estación:** al elegir una estación reportada dice `ZONA REPORTADA: 40 % DE ASALTO` (en celular, `REPORTADA: 40 % ASALTO`). El número sube con la **hora pico** (+15 %) porque es exactamente el que se aplicará al salir: `Rules.robberyRisk` y `Rules.travel` comparten la misma cuenta (`base − suerte + extra de hora pico`, tope 95 %), así que lo que se ve nunca contradice lo que pasa.
+- **Mensaje del asalto:** cita la noticia que reportó la estación y a qué hora (`run.dangerInfo`, se guarda la primera), el riesgo que tenías y, si hubo, el extra de la hora pico; también queda en el celular. Pasar de suerte dice el riesgo que corriste.
+- **No cambia el balance:** probabilidades, pérdidas y noticias son las mismas; solo se muestran.
+
 ## Créditos
 Botón **CREDITOS** dentro de `AJUSTES` (menú principal). Muestra:
 

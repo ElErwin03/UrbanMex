@@ -765,3 +765,30 @@ test('reto diario: createRun usa el nivel del día y el resumen lo marca', () =>
   assert.equal(U.Rules.summary(U.Rules.createRun(data, 0)).daily, null); assert.equal(U.Rules.summary(U.Rules.createRun(data, -1, () => 0.5, Inf().level(data, 3, 4))).daily, null);
   const a = U.Rules.createRun(data, -1, Dly().rnd(k), lv), b = U.Rules.createRun(data, -1, Dly().rnd(k), lv); [a, b].forEach((x) => { U.News.intro(x); U.News.onMove(x); }); assert.deepEqual(a.newsLog.map((n) => n.title), b.newsLog.map((n) => n.title), 'las noticias del día son las mismas para todos');
 });
+
+test('asaltos: robberyRisk da el mismo riesgo que aplica travel (40 % normal, +hora pico) y solo en zonas reportadas que no son meta ni tienda', () => {
+  const ev = data.config.events.horaPico, r0 = data.config.robbery, base = r0.baseChance - r0.luck;
+  const mk = (minute) => { const run = U.Rules.createRun(data, 0, () => 0.5); run.minute = minute; return run; };
+  const run = mk(570), n = metroTo(run);
+  assert.equal(U.Rules.robberyRisk(run, n), null, 'sin noticia no hay riesgo que mostrar');
+  run.danger[n] = true; let k = U.Rules.robberyRisk(run, n);
+  assert.equal(k.percent, Math.round(base * 100)); assert.equal(k.bonus, 0); assert.ok(Math.abs(k.chance - base) < 1e-9);
+  const peak = mk(420); peak.danger[n] = true; k = U.Rules.robberyRisk(peak, n);
+  assert.ok(Math.abs(k.bonus - ev.robberyBonus) < 1e-9 && Math.abs(k.chance - (base + ev.robberyBonus)) < 1e-9, 'la hora pico sube el riesgo mostrado');
+  assert.equal(k.percent, Math.round((base + ev.robberyBonus) * 100)); assert.ok(Math.abs(k.base - base) < 1e-9);
+  const out = U.Rules.travel(peak, n); assert.ok(Math.abs(out.chance - k.chance) < 1e-9 && Math.abs(out.bonus - k.bonus) < 1e-9, 'travel informa el mismo riesgo');
+  assert.equal(U.Rules.robberyRisk(peak, peak.level.goal), null, 'la meta nunca asalta'); peak.danger[peak.level.goal] = true; assert.equal(U.Rules.robberyRisk(peak, peak.level.goal), null);
+  const shop = data.stationList.find((s) => s.shop).id; peak.danger[shop] = true; assert.equal(U.Rules.robberyRisk(peak, shop), null, 'una tienda tampoco');
+  const capped = mk(420); capped.danger[n] = true; data.config.robbery.baseChance = 0.99; try { assert.equal(U.Rules.robberyRisk(capped, n).percent, 95, 'tope de 95 %'); } finally { data.config.robbery.baseChance = r0.baseChance; }
+});
+
+test('asaltos: la noticia que reporta la estación queda registrada (título y hora, la primera) y viaja con el resultado del asalto', () => {
+  const run = U.Rules.createRun(data, 0, () => 0), item = data.news.find((x) => x.effects && x.effects.danger && x.effects.danger.length), st = item.effects.danger[0];
+  run.minute = 450; U.Rules.applyNews(run, item);
+  assert.deepEqual(run.dangerInfo[st], { title: item.title, time: U.util.clock(450) });
+  run.minute = 500; U.Rules.applyNews(run, Object.assign({}, item, { title: 'OTRA NOTICIA' })); assert.equal(run.dangerInfo[st].title, item.title, 'se conserva la primera noticia');
+  const to = run.graph.adj[run.current].find((s) => s !== run.level.goal && !run.data.stations[s].shop); run.danger[to] = true; run.dangerInfo[to] = { title: 'ROBOS EN PRUEBA', time: '7:40 AM' };
+  const out = U.Rules.travel(run, to); assert.equal(out.type, 'robbery'); assert.deepEqual(out.report, { title: 'ROBOS EN PRUEBA', time: '7:40 AM' });
+  const lucky = U.Rules.createRun(data, 0, () => 0.99), t2 = lucky.graph.adj[lucky.current].find((s) => s !== lucky.level.goal && !lucky.data.stations[s].shop); lucky.danger[t2] = true;
+  const o2 = U.Rules.travel(lucky, t2); assert.equal(o2.type, 'lucky'); assert.ok(o2.chance > 0 && o2.report === null, 'sin noticia registrada → null, no revienta');
+});

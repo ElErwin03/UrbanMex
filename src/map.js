@@ -362,8 +362,9 @@
 
   /** Insignia al costado de cada vecina: ✓ verde (puedes ir) o ✕ roja (no te alcanza). La forma distingue aunque no se vean los colores. No se tapa con las
    *  estaciones de arriba/abajo (las líneas verticales van muy juntas) y solo se redibuja cuando cambia algo, no en cada fotograma. */
-  P._drawMarks = function (reach) {
-    var m = this.marks, d = this.data, sig = Object.keys(reach).map(function (n) { return n + reach[n]; }).join('|');
+  P._drawMarks = function (reach, run) {
+    var m = this.marks, d = this.data, danger = Object.keys(run.danger).filter(function (k) { return run.danger[k] && d.stations[k]; }).sort();
+    var sig = Object.keys(reach).map(function (n) { return n + reach[n]; }).join('|') + '#' + danger.join('|');
     if (sig === this.marksSig) return; this.marksSig = sig; m.clear();
     Object.keys(reach).forEach(function (n) {
       var st = reach[n]; if (st === 'blocked') return;
@@ -372,6 +373,12 @@
       stroke(m, '255;255;255', 255);
       if (ok) { m.drawLineV2(x - 5, y, x - 1.5, y + 4, 3); m.drawLineV2(x - 1.5, y + 4, x + 5, y - 4, 3); }                  // palomita
       else { m.drawLineV2(x - 4.5, y - 4.5, x + 4.5, y + 4.5, 3); m.drawLineV2(x + 4.5, y - 4.5, x - 4.5, y + 4.5, 3); }       // X
+    });
+    danger.forEach(function (n) {                                                                                  // ZONA REPORTADA por una noticia de asaltos: triángulo amarillo con "!" al otro costado
+      var p = wpos(d.stations[n]), x = p.x - 30, y = p.y - 24;
+      fill(m, '255;255;255', 255); poly(m, [{ x: x - 15, y: y + 12 }, { x: x + 15, y: y + 12 }, { x: x, y: y - 15 }]);
+      fill(m, '255;200;40', 255); poly(m, [{ x: x - 11.5, y: y + 9.5 }, { x: x + 11.5, y: y + 9.5 }, { x: x, y: y - 10.5 }]);
+      stroke(m, '40;24;0', 255); m.drawLineV2(x, y - 4, x, y + 2.5, 3); fill(m, '40;24;0', 255); m.drawCircle(x, y + 6, 1.8);
     });
   };
 
@@ -385,7 +392,7 @@
       else if (st === 'no') { ring(p, 25, '255;255;255', 130); ring(p, 22, '231;76;60', 210); }
       else ring(p, 21, '155;89;182', 100);                             // bloqueada: morado, como su color en el mapa
     });
-    this._drawMarks(reach);
+    this._drawMarks(reach, run);
     var goal = wpos(d.stations[run.level.goal]);                       // faro verde sobre la meta
     fill(r, '46;204;113', 70 + 60 * pulse); r.drawRectangle(goal.x - 3, goal.y - 78, goal.x + 3, goal.y - 6);
     ring(goal, 24 + 3 * pulse, '46;204;113', 110);

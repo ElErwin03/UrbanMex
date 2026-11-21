@@ -79,7 +79,7 @@
     'COMO LEER LAS NOTICIAS': 'HOW TO READ THE NEWS', 'BLOQUEO: solo se cierra esa estacion, no toda la linea. Busca otra ruta.': 'BLOCKADE: only that station closes, not the whole line. Find another route.',
     'PELIGRO: puede haber asaltos en esa estacion.': 'DANGER: there may be robberies at that station.', 'RETRASO: viajar por esa linea tarda mas minutos.': 'DELAY: traveling on that line takes more minutes.',
     'COMBI: ruta punteada naranja entre estaciones separadas. Cuesta ${0} y salta varias.': 'COMBI: dotted orange route between distant stations. Costs ${0} and skips several.', 'Via naranja-roja = retraso. Via morada = bloqueada.': 'Orange-red track = delay. Purple track = blocked.',
-    'BLOQUEOS': 'BLOCKADES', 'ASALTOS': 'ROBBERIES', 'RETRASOS': 'DELAYS', 'COMBIS': 'COMBIS', 'Combi': 'Combi', 'Tu': 'You', 'Bloq.': 'Block.', 'Puedes': 'Can go', 'Falta': 'Short', 'Tienda': 'Store', 'LEYENDA': 'LEGEND',
+    'BLOQUEOS': 'BLOCKADES', 'ASALTOS': 'ROBBERIES', 'RETRASOS': 'DELAYS', 'COMBIS': 'COMBIS', 'Combi': 'Combi', 'Tu': 'You', 'Bloq.': 'Block.', 'Puedes': 'Can go', 'Falta': 'Short', 'Riesgo': 'Risk', 'Tienda': 'Store', 'LEYENDA': 'LEGEND',
     // ---- nivel: HUD, panel de estación, tienda, ventanas
     'ASALTO CONFIRMADO!': 'ROBBERY CONFIRMED!', 'Te robaron ${0}': 'They robbed you of ${0}', 'Debiste leer las noticias...': 'You should have read the news...', 'TE ASALTARON!': 'YOU WERE ROBBED!', 'te quitaron ${0}': 'they took ${0}',
     '"Debiste haber leido las noticias..."': '"You should have read the news..."', 'Pasaste de suerte': 'You got lucky', 'Ibas por {0} (zona reportada) y no paso nada. Esta vez!': 'You were passing {0} (reported area) and nothing happened. This time!', 'Sin incidentes': 'No incidents',
