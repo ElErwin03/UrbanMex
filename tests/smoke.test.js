@@ -1999,3 +1999,19 @@ test('pausa: en modo celular el menú con REINICIAR NIVEL cumple botones de 44 p
   const u = () => s.scene._um; u().modal = null; u().modalQueue = []; u().paused = true; u().pauseView = 'main'; s.frame(3); mobileScan(s, 'pausa con REINICIAR');
   pbtn(s, 'pa:rst'); s.frame(3); assert.equal(u().pauseView, 'restart'); mobileScan(s, 'confirmar reinicio');
 });
+
+// ---------------------------------------------------------------- Línea 12: se dice dentro del juego que no está incluida (hallazgo de la presentación)
+test('celular: la app LINEAS avisa que la LÍNEA 12 (dorada) NO ESTÁ INCLUIDA, sin poder tocarla, y no promete lo que el juego no tiene', () => {
+  [false, true].forEach((mob) => {
+    delete globalThis.gdjs.UrbanMex;
+    const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; x.U.session.infinite = null; x.U.session.dailyRun = null; x.U.session.uiMode = mob ? 'on' : 'off'; delete x.scene._um; }); s.frame(3);
+    const u = () => s.scene._um, ui = () => s.U.UI.of(s.scene), t = (k) => { const o = ui().pool.t['UI:' + k]; return o && !o.hidden ? o.text : null; };
+    u().modal = null; u().modalQueue = []; u().phone.app = 'lines'; u().setPhone(true); s.frame(3);
+    assert.equal(t('ph:ln12'), 'LÍNEA 12'); assert.equal(t('ph:ls12'), 'NO INCLUIDA'); if (mob) assert.equal(t('ph:lc12'), 'DORADA');
+    assert.ok(!u().run.data.lines['12'], 'el juego no tiene la Línea 12 (si se agrega a los datos, esta prueba y el aviso cambian)');
+    const row = ui().pool.t['UI:ph:ln12']; s.click(row.x + 20, row.y + 6); s.frame(2); assert.equal(u().map.highlight, null, 'no se puede resaltar: no existe en el mapa');
+    if (mob) mobileScan(s, 'LINEAS con la Línea 12 (celular)');                   // botones de 44 px y letras de 12 px solo en modo celular
+    // si algún día se agrega la Línea 12 a los datos, el aviso desaparece solo
+    u().run.data.lines['12'] = { name: 'Línea 12', color: '#C9A227', colorName: 'dorada' }; s.frame(3); assert.equal(t('ph:ln12') === 'LÍNEA 12' && t('ph:ls12') === 'NO INCLUIDA', false, 'con la línea en los datos ya no dice NO INCLUIDA'); delete u().run.data.lines['12'];
+  });
+});

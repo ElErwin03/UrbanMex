@@ -137,7 +137,17 @@
         if (ui.inside(x, ry, w, rh) && ui.released) um.map.highlight = on ? null : id;
       });
       var cy = y + ids.length * step + 2;
-      cy += ui.lines('ph:lh', util.wrap('Toca una linea para verla en el mapa.', 31), x, cy, { size: 8, color: PAL.yellow, lineH: 12 }) + 8;
+      if (!run.data.lines['12']) {                                                // la Línea 12 (dorada) no está en el juego: se dice aquí, en la lista de líneas, y no se puede tocar
+        var h12 = M ? rh : 26, ry12 = y + ids.length * step, dim = '120;120;145';
+        ui.rect(x, ry12, w, h12, { fill: '16;16;30', border: '50;50;76', bw: 2, block: true });
+        ui.rect(x + 6, ry12 + (M ? 8 : 3), M ? 32 : 20, M ? 32 : 20, { fill: '70;62;30', border: '90;90;112', bw: 2 });
+        ui.text('ph:lk12', '12', x + (M ? 22 : 16), ry12 + (M ? 16 : 8), { size: 8, align: 'center', color: '170;160;110' });
+        ui.text('ph:ln12', 'LÍNEA 12', x + (M ? 48 : 34), ry12 + (M ? 6 : 7), { size: 12, color: dim });
+        if (M) ui.text('ph:lc12', 'DORADA', x + 48, ry12 + 28, { size: 8, color: '170;160;110' });
+        ui.text('ph:ls12', 'NO INCLUIDA', x + w - 8, ry12 + (M ? 16 : 9), { size: 8, align: 'right', color: dim });
+        cy = ry12 + h12 + 4;
+      }
+      cy += ui.lines('ph:lh', util.wrap('Toca una linea para verla.', 31), x, cy, { size: 8, color: PAL.yellow, lineH: 12 }) + 8;
       if (M) return;                                                              // (en modo celular no cabe: el tutorial explica cómo leer las noticias)
       ui.text('ph:lg', 'COMO LEER LAS NOTICIAS', x, cy, { size: 8, color: PAL.orange }); cy += 18;
       [['BLOQUEO: solo se cierra esa estacion, no toda la linea. Busca otra ruta.', PAL.purple],

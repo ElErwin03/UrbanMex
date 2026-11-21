@@ -75,7 +75,7 @@
     'MI CELULAR': 'MY PHONE', 'NOTICIAS': 'NEWS', 'RUTA': 'ROUTE', 'SALDO': 'BALANCE', 'LINEAS': 'LINES', 'AJUSTES': 'SETTINGS', 'INICIO': 'HOME', 'MI BILLETERA': 'MY WALLET', 'Sin noticias aun': 'No news yet',
     'ESTAS EN': 'YOU ARE AT', 'NOTICIA - ahora': 'NEWS - now', '{0}  EVENTO': '{0}  EVENT', '{0}  INFO': '{0}  INFO', '{0}  PELIGRO': '{0}  DANGER', '{0}  RETRASO': '{0}  DELAY', '{0}  BLOQUEO': '{0}  BLOCKED', '{0}  BUENAS NOTICIAS': '{0}  GOOD NEWS',
     '{0}/{1} (rueda del raton)': '{0}/{1} (mouse wheel)', '{0} est.': '{0} st.', '{0} x estacion': '{0} x station',
-    'Las vias naranja-rojas del mapa tienen retraso. Las moradas estan bloqueadas.': 'Orange-red tracks on the map are delayed. Purple ones are blocked.', 'Toca una linea para verla en el mapa.': 'Tap a line to see it on the map.',
+    'Las vias naranja-rojas del mapa tienen retraso. Las moradas estan bloqueadas.': 'Orange-red tracks on the map are delayed. Purple ones are blocked.', 'Toca una linea para verla.': 'Tap a line to see it.', 'NO INCLUIDA': 'NOT INCLUDED',
     'COMO LEER LAS NOTICIAS': 'HOW TO READ THE NEWS', 'BLOQUEO: solo se cierra esa estacion, no toda la linea. Busca otra ruta.': 'BLOCKADE: only that station closes, not the whole line. Find another route.',
     'PELIGRO: puede haber asaltos en esa estacion.': 'DANGER: there may be robberies at that station.', 'RETRASO: viajar por esa linea tarda mas minutos.': 'DELAY: traveling on that line takes more minutes.',
     'COMBI: ruta punteada naranja entre estaciones separadas. Cuesta ${0} y salta varias.': 'COMBI: dotted orange route between distant stations. Costs ${0} and skips several.', 'Via naranja-roja = retraso. Via morada = bloqueada.': 'Orange-red track = delay. Purple track = blocked.',
