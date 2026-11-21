@@ -22,7 +22,7 @@
     U.Save.load();
     var inf = U.session.infinite, dr = !inf && U.session.dailyRun, plan = inf ? U.Infinite.level(data, inf.seed, inf.round) : dr ? U.Daily.level(data, dr.key) : undefined;      // modo infinito, reto diario o nivel normal
     var um = scene._um = { data: data, run: R.createRun(data, plan ? -1 : U.session.levelIndex, dr ? U.Daily.rnd(dr.key) : undefined, plan), ui: U.UI.of(scene), phone: U.Phone.newPhoneState(),
-      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false, paused: false, pauseView: 'main', hurt: 0,
+      selected: null, modal: null, modalQueue: [], floats: [], push: null, hover: null, pending: null, lastClick: null, endTimer: 0, exitToMenu: false, restartLevel: false, paused: false, pauseView: 'main', hurt: 0,
       drag: { active: false, moved: false, sx: 0, sy: 0, lx: 0, ly: 0 } };
     var run = um.run;
     um.map = new U.MapView(scene, data);
@@ -278,8 +278,12 @@
   }
 
   /** Ventana de pausa: CONTINUAR / SONIDO (los tres volúmenes) / SALIR AL MENU (con confirmación). Todo lo de abajo queda congelado. */
+  /** REINICIAR NIVEL no existe en el modo infinito: ahí una derrota termina la racha, no se puede reintentar la misma ronda.
+   *  El reto diario (que se arma con el mismo generador y también lleva `infinite`) sí se puede reintentar, como ya hace REINTENTAR en su resultado. */
+  function canRestart(run) { return !run.level.infinite || !!run.level.daily; }
+
   function drawPause(ui, um) {
-    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? (ui.mob ? 500 : 440) : v === 'a11y' ? 70 + U.A11y.height(440, ui.mob) + 10 + 44 + 40 : v === 'confirm' ? 250 : 388, y = Math.round((720 - h) / 2);
+    var run = um.run, v = um.pauseView, w = 520, x = 380, h = v === 'sound' ? (ui.mob ? 500 : 440) : v === 'a11y' ? 70 + U.A11y.height(440, ui.mob) + 10 + 44 + 40 : v === 'confirm' || v === 'restart' ? 250 : canRestart(run) ? 446 : 388, y = Math.round((720 - h) / 2);
     ui.rect(0, 0, 1280, 720, { fill: '0;0;0', alpha: 170, bw: 0, modal: true, block: true });
     ui.rect(x, y, w, h, { fill: '16;14;32', border: PAL.orange, bw: 4, modal: true, block: true });
     var T = function (k, str, ty, o) { ui.text(k, str, x + w / 2, ty, Object.assign({ align: 'center', z: 330 }, o)); };
@@ -299,6 +303,12 @@
       T('pa:c2', 'Perderas el avance de este dia.', y + 112, { size: 8, color: PAL.dim });
       if (B('pa:no', 'CANCELAR', x + 30, y + h - 70, 220, '70;70;100')) um.pauseView = 'main';
       if (B('pa:si', 'SI, SALIR', x + w - 250, y + h - 70, 220, '192;57;43')) um.exitToMenu = true;
+    } else if (v === 'restart') {                                                                      // reinicio rápido: pide confirmación, igual que SALIR AL MENU
+      T('pa:t', 'REINICIAR NIVEL', y + 24, { size: 16, color: PAL.orange });
+      T('pa:c1', 'Seguro que quieres reiniciar el nivel?', y + 86, { size: 8, color: '230;234;250' });
+      T('pa:c2', 'Empezaras de cero este dia.', y + 112, { size: 8, color: PAL.dim });
+      if (B('pa:rno', 'CANCELAR', x + 30, y + h - 70, 220, '70;70;100')) um.pauseView = 'main';
+      if (B('pa:rsi', 'SI, REINICIAR', x + w - 250, y + h - 70, 220, '192;57;43')) um.restartLevel = true;
     } else {
       T('pa:t', 'PAUSA', y + 22, { size: 24, color: PAL.orange });
       T('pa:l1', U.Infinite.title(run.level), y + 76, { size: 8, color: PAL.yellow });
@@ -306,9 +316,11 @@
       if (B('pa:cont', 'CONTINUAR', x + 110, y + 126, 300, '39;174;96')) setPause(um, false);
       if (B('pa:snd', 'SONIDO', x + 110, y + 184, 300, '60;60;90')) um.pauseView = 'sound';
       if (B('pa:a11y', 'ACCESIBILIDAD', x + 110, y + 242, 300, '60;60;90')) um.pauseView = 'a11y';
-      if (B('pa:menu', 'SALIR AL MENU', x + 110, y + 300, 300, '110;50;50')) um.pauseView = 'confirm';
+      var ry = y + 300;
+      if (canRestart(run)) { if (B('pa:rst', 'REINICIAR NIVEL', x + 110, ry, 300, '150;95;30')) um.pauseView = 'restart'; ry += 58; }
+      if (B('pa:menu', 'SALIR AL MENU', x + 110, ry, 300, '110;50;50')) um.pauseView = 'confirm';
     }
-    if (v !== 'confirm' && !ui.mob) T('pa:hint', v === 'sound' || v === 'a11y' ? 'ESC: volver' : 'ESC o P: continuar', y + h - 22, { size: 8, color: PAL.dim });
+    if (v !== 'confirm' && v !== 'restart' && !ui.mob) T('pa:hint', v === 'sound' || v === 'a11y' ? 'ESC: volver' : 'ESC o P: continuar', y + h - 22, { size: 8, color: PAL.dim });
   }
 
   function drawFloats(ui, um, dt) {
@@ -328,7 +340,7 @@
     if (um.geoMob !== ui.mob) { um.geoMob = ui.mob; um.map.phoneX1 = ui.mob ? 826 : 906; um.map.setPhoneOpen(um.phone.open); }   // el celular es más ancho en modo celular
 
     // Esc o P: pausa / continúa (en la ventana de SONIDO o de confirmación, Esc vuelve al menú de pausa); no hay pausa al terminar el día
-    if (!run.over && !um.exitToMenu) {
+    if (!run.over && !um.exitToMenu && !um.restartLevel) {
       var esc = keyUp(scene, 'Escape'), pk = keyUp(scene, 'p');
       if (esc || pk) { if (!um.paused) { setPause(um, true); snd(um, 'click'); } else if (esc && um.pauseView !== 'main') um.pauseView = 'main'; else { setPause(um, false); snd(um, 'click'); } }
     }
@@ -380,6 +392,7 @@
     ui.end();
 
     if (um.exitToMenu) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Menu'); return; }
+    if (um.restartLevel) { scene.requestChange(gdjs.SceneChangeRequest.REPLACE_SCENE, 'Nivel'); return; }     // reinicio rápido: la escena arranca de nuevo con el mismo nivel (U.session no cambia)
     if (run.over && !um.saved && run.level.daily) { um.saved = true; um.daily = U.Daily.finish(run, R.score(run).stars); }      // reto diario: guarda el resultado del día y la racha de días
     else if (run.over && !um.saved && run.level.infinite) { um.saved = true; um.streak = U.Infinite.finish(run, R.score(run).stars); }      // modo infinito: suma a la racha y guarda el récord
     else if (run.over && run.won && !um.saved) { um.saved = true; U.Save.markCompleted(run.levelIndex); um.record = U.Save.record(run.levelIndex, R.score(run).stars, run.money); }   // guarda el progreso y la mejor marca al ganar
