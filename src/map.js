@@ -66,6 +66,8 @@
   function MapView(scene, data) {
     this.scene = scene; this.data = data; this.layer = scene.getLayer('');
     this.ground = scene.createObject('Mapa'); this.routes = scene.createObject('Mapa'); this.pulse = scene.createObject('Mapa');
+    this.marks = scene.createObject('Mapa'); this.marks.setPosition(0, 0); this.marks.setZOrder(95); this.marks.setCoordinatesRelative(false); this.marks.setOutlineSize(0);   // insignias ✓ / ✕ de las vecinas (encima de las estaciones)
+    this.marksSig = null;
     this.routeSig = null;                                                  // firma de lo que muestran las rutas: solo se vuelven a dibujar si cambia (ver _drawRoutes)
     [this.ground, this.routes, this.pulse].forEach(function (p, k) { p.setPosition(0, 0); p.setZOrder(k ? 49 + k : 0); p.setCoordinatesRelative(false); p.setOutlineSize(0); });
     this.cam = { x: 0, y: 0, zoom: 1, follow: false };
@@ -350,12 +352,40 @@
     });
   };
 
+  /** Qué pasa con cada vecina de la estación actual: 'ok' (puedes ir ya), 'no' (conectada, pero no te alcanza el dinero, la stamina o la hora) o
+   *  'blocked'. Usa el mismo `canTravel` que el viaje, así que el color nunca contradice lo que pasa al viajar. */
+  P.reachable = function (run) {
+    var out = {};
+    U.Graph.neighbors(run.graph, run.current).forEach(function (n) { out[n] = run.blocked[n] ? 'blocked' : U.Rules.canTravel(run, n).ok ? 'ok' : 'no'; });
+    return out;
+  };
+
+  /** Insignia al costado de cada vecina: ✓ verde (puedes ir) o ✕ roja (no te alcanza). La forma distingue aunque no se vean los colores. No se tapa con las
+   *  estaciones de arriba/abajo (las líneas verticales van muy juntas) y solo se redibuja cuando cambia algo, no en cada fotograma. */
+  P._drawMarks = function (reach) {
+    var m = this.marks, d = this.data, sig = Object.keys(reach).map(function (n) { return n + reach[n]; }).join('|');
+    if (sig === this.marksSig) return; this.marksSig = sig; m.clear();
+    Object.keys(reach).forEach(function (n) {
+      var st = reach[n]; if (st === 'blocked') return;
+      var p = wpos(d.stations[n]), x = p.x + 32, y = p.y - 8, ok = st === 'ok';
+      fill(m, '255;255;255', 255); m.drawCircle(x, y, 13); fill(m, ok ? '46;204;113' : '231;76;60', 255); m.drawCircle(x, y, 10.5);
+      stroke(m, '255;255;255', 255);
+      if (ok) { m.drawLineV2(x - 5, y, x - 1.5, y + 4, 3); m.drawLineV2(x - 1.5, y + 4, x + 5, y - 4, 3); }                  // palomita
+      else { m.drawLineV2(x - 4.5, y - 4.5, x + 4.5, y + 4.5, 3); m.drawLineV2(x + 4.5, y - 4.5, x - 4.5, y + 4.5, 3); }       // X
+    });
+  };
+
   P._drawPulses = function (run, hoverId) {
     var r = this.pulse, d = this.data; r.clear();
     var pulse = 0.5 + 0.5 * Math.sin(this.t * 6), self = this, ring = function (p, rad, color, a) { fill(r, color, a); r.drawEllipse(p.x, p.y + 1, rad * 2, rad); };
-    U.Graph.neighbors(run.graph, run.current).forEach(function (n) {   // estaciones alcanzables (pulso)
-      if (!run.blocked[n]) ring(wpos(d.stations[n]), 21 + 3 * pulse, '255;255;255', 70 + 90 * pulse);
+    var reach = this.reach = this.reachable(run);
+    Object.keys(reach).forEach(function (n) {                          // aro de color con borde blanco: se ve aunque la línea sea verde
+      var p = wpos(d.stations[n]), st = reach[n];
+      if (st === 'ok') { ring(p, 28 + 3 * pulse, '255;255;255', 190); ring(p, 25 + 3 * pulse, '46;204;113', 235); }
+      else if (st === 'no') { ring(p, 25, '255;255;255', 130); ring(p, 22, '231;76;60', 210); }
+      else ring(p, 21, '155;89;182', 100);                             // bloqueada: morado, como su color en el mapa
     });
+    this._drawMarks(reach);
     var goal = wpos(d.stations[run.level.goal]);                       // faro verde sobre la meta
     fill(r, '46;204;113', 70 + 60 * pulse); r.drawRectangle(goal.x - 3, goal.y - 78, goal.x + 3, goal.y - 6);
     ring(goal, 24 + 3 * pulse, '46;204;113', 110);
