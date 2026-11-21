@@ -194,7 +194,8 @@ Se pausa con **Esc**, con **P** o con el botón **PAUSA** de la barra de arriba 
 
 - **Qué se congela:** el mapa y el jugador (un viaje a medias espera y termina al continuar), los efectos, los mensajes flotantes y avisos del celular, y el reloj del tren de 60 s. El reloj del juego solo avanza al viajar, así que no corre mientras tanto.
 - **Audio en pausa:** la música baja a 35 % (`ALERT.pauseDuck`), el bucle de apuro se apaga con fundido y, al continuar, vuelve **sin repetir** el aviso de entrada.
-- **Menú:** CONTINUAR · SONIDO (los tres volúmenes con MUDO, el mismo panel del menú principal) · SALIR AL MENU, que pide confirmación (CANCELAR / SI, SALIR). En SONIDO o en la confirmación, Esc regresa un paso.
+- **Menú:** CONTINUAR · SONIDO (los tres volúmenes con MUDO, el mismo panel del menú principal) · ACCESIBILIDAD · **REINICIAR NIVEL** · SALIR AL MENU, que pide confirmación (CANCELAR / SI, SALIR). En SONIDO, ACCESIBILIDAD o en cualquier confirmación, Esc regresa un paso.
+- **Reinicio rápido:** `REINICIAR NIVEL` pide confirmación (CANCELAR / SI, REINICIAR) y, al aceptar, reemplaza la escena `Nivel` (`um.restartLevel`, igual que SALIR AL MENU usa `um.exitToMenu`): el mismo nivel arranca de cero con su ventana de inicio. Antes solo había REINTENTAR en la pantalla de resultado, es decir, tras perder o ganar. No cuenta como intento del reto diario (los intentos se registran al terminar el día) y **no existe en el modo infinito**, donde una derrota termina la racha y no se puede reintentar la ronda. Las pruebas tocan los botones por su id (`pbtn`), no por coordenadas, porque la altura del menú depende de si hay REINICIAR.
 - Lo de abajo se ve atenuado y no responde al ratón; un aviso pendiente (noticia, evento) reaparece al continuar.
 - Vista previa: `node tools/dump_scene.js . Nivel out.json --pause main|sound|confirm` y luego `render_preview.py`.
 

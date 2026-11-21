@@ -3,7 +3,7 @@
  * que REGISTRA lo que se dibuja (sprites, textos y comandos de los objetos Dibujante) y lo vuelca a un JSON.
  * El paso 2 (tools/render_preview.py) convierte ese JSON en un PNG.
  *
- *   node tools/dump_scene.js <carpeta-del-repo> <Escena> <salida.json> [--level N] [--frames N] [--minute M] [--select ESTACION] [--danger EST1,EST2] [--pause main|sound|confirm] [--modal] [--phone APP] [--result win|lose] [--view sound|levels] [--at ESTACION] [--stamina N] [--money N] [--rob FOTOGRAMAS]
+ *   node tools/dump_scene.js <carpeta-del-repo> <Escena> <salida.json> [--level N] [--frames N] [--minute M] [--select ESTACION] [--pause main|sound|a11y|confirm|restart] [--modal] [--phone APP] [--result win|lose] [--view sound|levels] [--at ESTACION] [--stamina N] [--money N] [--rob FOTOGRAMAS]
  *
  * Es una aproximación fiel del orden de dibujo (capas, zOrder, cámara), no el renderizador real de GDevelop:
  * no reproduce filtros/efectos de capa de GDevelop (Adjustment, etc.) ni el suavizado exacto de la GPU. Sí registra escala X/Y, ángulo
@@ -91,7 +91,7 @@ for (let i = 0; i < frames; i++) {
   if (um && um.run) {
     if (!flag('modal')) um.modal = null;                       // quita la ventana de "EMPEZAR" para ver el mapa
     if (flag('minute')) um.run.minute = +flag('minute');
-    if (flag('pause')) { um.paused = true; um.pauseView = flag('pause') === true ? 'main' : flag('pause'); }   // ventana de pausa: main | sound | confirm
+    if (flag('pause')) { um.paused = true; um.pauseView = flag('pause') === true ? 'main' : flag('pause'); }   // ventana de pausa: main | sound | a11y | confirm | restart
     if (flag('at') && um.run.data.stations[flag('at')]) { um.run.current = flag('at'); um.run.visited[flag('at')] = true; }   // empieza en otra estacion (para probar una combi)
     if (flag('danger')) String(flag('danger')).split(',').forEach(function (n) { if (um.run.data.stations[n]) { um.run.danger[n] = true; um.run.dangerInfo[n] = { title: 'ROBOS EN ' + n.toUpperCase(), time: '7:40 AM' }; } });   // zonas reportadas (para ver el icono de alerta)
     if (flag('stamina')) um.run.stamina = +flag('stamina');                          // para ver los mensajes de "no puedes viajar"

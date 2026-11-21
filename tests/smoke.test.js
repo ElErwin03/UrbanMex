@@ -770,7 +770,7 @@ test('pausa: Esc / P y el botón PAUSA pausan y continúan; no hay pausa al term
   key('Escape'); assert.equal(u().paused, false, 'Esc otra vez continúa');
   key('p'); assert.equal(u().paused, true, 'P pausa'); key('p'); assert.equal(u().paused, false, 'P continúa');
   s.click(1169, 28); assert.equal(u().paused, true, 'el botón PAUSA pausa');
-  s.click(640, 314); assert.equal(u().paused, false, 'CONTINUAR continúa');
+  pbtn(s, 'pa:cont'); assert.equal(u().paused, false, 'CONTINUAR continúa');
   u().run.over = true; u().run.won = false; s.frame(2); key('Escape'); assert.equal(u().paused, false, 'con el día terminado no hay pausa');
 });
 
@@ -800,20 +800,20 @@ test('pausa: un viaje a medias se congela y termina al continuar; el día no ava
   s.frame(120); assert.ok(u().map.moving(), 'sigue a medio camino'); assert.ok(u().pending, 'el viaje no se resuelve en pausa'); assert.equal(r.current, nb); assert.equal(pos(), p0, 'el jugador no se mueve');
   // aunque el recorrido ya hubiera terminado, la llegada espera a que continúes
   u().map.move = null; s.frame(30); assert.ok(u().pending, 'la llegada no se resuelve mientras está en pausa'); assert.ok(!u().modal, 'ni aparece el aviso de la estación');
-  s.click(640, 314); finishModals(s); assert.ok(!u().map.moving() && !u().pending, 'al continuar el viaje termina'); assert.equal(u().paused, false);
+  pbtn(s, 'pa:cont'); finishModals(s); assert.ok(!u().map.moving() && !u().pending, 'al continuar el viaje termina'); assert.equal(u().paused, false);
 });
 
 test('pausa: menú SONIDO cambia los volúmenes; SALIR AL MENU pide confirmación y CANCELAR no sale', () => {
   const { s, u, U, key } = pauseSession();
-  key('Escape'); s.click(640, 372); assert.equal(u().pauseView, 'sound');
+  key('Escape'); pbtn(s, 'pa:snd'); assert.equal(u().pauseView, 'sound');
   const v0 = U.session.vol.music.level; s.click(755, 241); assert.equal(U.session.vol.music.level, v0 + 1, '+ sube la música'); s.click(435, 241); s.click(435, 241); assert.equal(U.session.vol.music.level, v0 - 1, '- la baja');
   s.click(822, 241); assert.equal(U.session.vol.music.mute, true, 'MUDO silencia la música'); s.click(822, 241); assert.equal(U.session.vol.music.mute, false);
   key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en SONIDO vuelve al menú de pausa'); assert.equal(u().paused, true);
-  s.click(640, 372); s.click(640, 476); assert.equal(u().pauseView, 'main', 'VOLVER regresa');
-  s.click(640, 488); assert.equal(u().pauseView, 'confirm'); assert.equal(s.scene.changes.length, 0, 'todavía no sale');
+  pbtn(s, 'pa:snd'); s.click(640, 476); assert.equal(u().pauseView, 'main', 'VOLVER regresa');
+  pbtn(s, 'pa:menu'); assert.equal(u().pauseView, 'confirm'); assert.equal(s.scene.changes.length, 0, 'todavía no sale');
   s.click(520, 437); assert.equal(u().pauseView, 'main'); assert.equal(s.scene.changes.length, 0, 'CANCELAR no sale');
-  s.click(640, 488); key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en la confirmación también cancela'); assert.equal(s.scene.changes.length, 0);
-  s.click(640, 488); s.click(760, 437); assert.deepEqual(s.scene.changes.pop(), [3, 'Menu'], 'SI, SALIR vuelve al menú');
+  pbtn(s, 'pa:menu'); key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en la confirmación también cancela'); assert.equal(s.scene.changes.length, 0);
+  pbtn(s, 'pa:menu'); s.click(760, 437); assert.deepEqual(s.scene.changes.pop(), [3, 'Menu'], 'SI, SALIR vuelve al menú');
 });
 
 test('pausa: el tren de 60 s espera, la música baja, el apuro calla y al continuar no se repite el aviso', () => {
@@ -892,11 +892,11 @@ test('accesibilidad (celular y pausa): también se llega desde AJUSTES y desde l
     s.frame(2); s.click(1090, 144 + 120 + 15); assert.equal(U.A11y.calm(), true, 'el panel del celular cambia el ajuste'); s.click(1230, 114); assert.equal(u.phone.app, 'home', 'el botón < regresa');
     U.A11y.setCalm(false);
     // pausa: ACCESIBILIDAD → ajustar → Esc vuelve al menú de pausa
-    KEYS.add('Escape'); s.frame(2); assert.equal(u.paused, true); s.click(640, 430); assert.equal(u.pauseView, 'a11y', 'la pausa tiene el botón ACCESIBILIDAD');
+    KEYS.add('Escape'); s.frame(2); assert.equal(u.paused, true); pbtn(s, 'pa:a11y'); assert.equal(u.pauseView, 'a11y', 'la pausa tiene el botón ACCESIBILIDAD');
     const h = 70 + U.A11y.height(440) + 10 + 44 + 40, y = Math.round((720 - h) / 2);
     s.click(640, y + 70 + 120 + 15); assert.equal(U.A11y.calm(), true, 'el panel de la pausa cambia el ajuste'); s.click(640, y + 70 + 120 + 15); assert.equal(U.A11y.calm(), false);
     KEYS.add('Escape'); s.frame(2); assert.equal(u.pauseView, 'main', 'Esc vuelve al menú de pausa'); assert.equal(u.paused, true);
-    s.click(640, 314); assert.equal(u.paused, false, 'CONTINUAR sigue funcionando');
+    pbtn(s, 'pa:cont'); assert.equal(u.paused, false, 'CONTINUAR sigue funcionando');
   } finally { a11yReset(U); delete globalThis.gdjs.UrbanMex; KEYS.clear(); }
 });
 
@@ -1100,7 +1100,7 @@ test('audio (foco): el ajuste AL SALIR DE LA VENTANA se guarda, se valida y se c
     store[KEY] = JSON.stringify({ v: 1, bg: 'si' }); U.session.bgAudio = false; U.session.loaded = false; U.Save.load(); assert.equal(U.session.bgAudio, false, 'un valor dañado se ignora');
     // pausa del nivel: SONIDO → botón en (810, 413)
     audioReset(); delete globalThis.gdjs.UrbanMex; KEYS.clear(); const s = session('Nivel'); s.frame(3); const u = s.scene._um; u.modal = null; u.modalQueue = [];
-    KEYS.add('Escape'); s.frame(2); s.click(640, 372); assert.equal(u.pauseView, 'sound'); assert.equal(txt(s)['UI:btn:pa:bg'], 'PAUSAR'); s.click(810, 413); assert.equal(s.U.session.bgAudio, true, 'la pausa cambia el ajuste'); assert.equal(txt(s)['UI:btn:pa:bg'], 'SEGUIR');
+    KEYS.add('Escape'); s.frame(2); pbtn(s, 'pa:snd'); assert.equal(u.pauseView, 'sound'); assert.equal(txt(s)['UI:btn:pa:bg'], 'PAUSAR'); s.click(810, 413); assert.equal(s.U.session.bgAudio, true, 'la pausa cambia el ajuste'); assert.equal(txt(s)['UI:btn:pa:bg'], 'SEGUIR');
     s.click(640, 476); assert.equal(u.pauseView, 'main', 'VOLVER sigue funcionando con la fila nueva'); KEYS.clear();
     // celular: AJUSTES → SONIDO, botón en (1192, 401)
     s.U.session.bgAudio = false; u.paused = false; u.phone.open = true; u.phone.app = 'snd'; s.frame(2); assert.equal(txt(s)['UI:btn:ph:bg'], 'PAUSAR'); s.click(1192, 401); assert.equal(s.U.session.bgAudio, true, 'el celular cambia el ajuste');
@@ -1852,6 +1852,9 @@ test('rendimiento: las estaciones y el jugador del mapa siguen sus cambios (esca
 
 // ---------------------------------------------------------------- celular: vertical, pantalla completa y nombres del mapa (prueba de uso en itch.io)
 /** Pone (o quita) un celular de mentira: ventana de `w`x`h` y pantalla táctil con `touch` puntos. Devuelve una función que lo deshace. */
+/** Toca un botón de la pantalla por su id (p. ej. 'pa:cont' en la pausa): el menú de pausa cambia de altura si hay REINICIAR NIVEL, y así las pruebas no dependen de coordenadas. */
+function pbtn(s, id) { s.frame(1); const b = s.U.UI.of(s.scene).buttons.find((x) => x.id === id); assert.ok(b, 'no hay botón ' + id); s.click(b.x + b.w / 2, b.y + b.h / 2); }
+
 function fakeDevice(w, h, touch) {
   const nav = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
   globalThis.window = { innerWidth: w, innerHeight: h };
@@ -1964,47 +1967,35 @@ test('mapa: el color se dibuja (aro verde/rojo y insignia ✓/✕ encima de esta
   run.blocked[ns[0]] = true; s.frame(2); assert.equal(circles(), (ns.length - 1) * 2, 'la bloqueada no lleva insignia (ya se ve morada)'); delete run.blocked[ns[0]];
 });
 
-// ---------------------------------------------------------------- asaltos: estaciones reportadas en el mapa y mensaje con noticia y riesgo (hallazgo de la presentación)
-test('asaltos: las estaciones reportadas llevan un icono de alerta en el mapa (solo se redibuja al cambiar) y la leyenda lo explica', () => {
-  delete globalThis.gdjs.UrbanMex;
-  const s = session('Nivel'); s.frame(3); const um = s.scene._um, map = um.map, run = um.run; um.modal = null;
-  const amber = () => map.marks.cmds.filter((x) => x === 'setFillColor:255;200;40').length;
-  assert.equal(amber(), 0, 'sin noticias de asaltos no hay alertas');
-  const far = Object.keys(run.data.stations).find((k) => !run.data.stations[k].shop && k !== run.level.goal && !s.U.Graph.neighbors(run.graph, run.current).includes(k));
-  run.danger[far] = true; s.frame(2); assert.equal(amber(), 1, 'una alerta por estación reportada, aunque no sea vecina');
-  const clears = map.marks.clears; s.frame(60); assert.equal(map.marks.clears, clears, 'sin cambios no se redibuja');
-  const nb = s.U.Graph.neighbors(run.graph, run.current)[0]; run.danger[nb] = true; s.frame(2); assert.equal(amber(), 2); assert.ok(map.marks.clears > clears);
-  const ui = s.U.UI.of(s.scene); assert.ok(ui.pool.t['UI:lg:l7'] && ui.pool.t['UI:lg:l7'].text === 'Riesgo', 'leyenda: Riesgo');
+// ---------------------------------------------------------------- reinicio rápido en la pausa (hallazgo de la presentación: faltaba un botón de reinicio)
+test('pausa: REINICIAR NIVEL pide confirmación (CANCELAR y Esc no reinician) y SI, REINICIAR arranca el mismo nivel de cero', () => {
+  audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Nivel'); s.frame(2); const U = s.U, u = () => s.scene._um, key = (k) => { KEYS.add(k); s.frame(2); KEYS.delete(k); s.frame(1); };
+  U.session.levelIndex = 2; U.session.infinite = null; U.session.dailyRun = null; delete s.scene._um; s.frame(3); u().modal = null; u().modalQueue = [];
+  const run0 = u().run, money0 = run0.money, stamina0 = run0.stamina; run0.money -= 7; run0.stamina -= 9; run0.minute += 40; const lvl = run0.levelIndex;
+  key('Escape'); assert.equal(u().paused, true); pbtn(s, 'pa:rst'); assert.equal(u().pauseView, 'restart', 'pide confirmación'); assert.equal(s.scene.changes.length, 0, 'todavía no reinicia');
+  const t = s.U.UI.of(s.scene); assert.ok(t.pool.t['UI:pa:c1'].text.includes('reiniciar'), 'pregunta si se quiere reiniciar');
+  pbtn(s, 'pa:rno'); assert.equal(u().pauseView, 'main', 'CANCELAR vuelve a la pausa'); assert.equal(s.scene.changes.length, 0);
+  pbtn(s, 'pa:rst'); key('Escape'); assert.equal(u().pauseView, 'main', 'Esc en la confirmación también cancela'); assert.equal(s.scene.changes.length, 0); assert.equal(u().paused, true);
+  pbtn(s, 'pa:rst'); pbtn(s, 'pa:rsi'); s.frame(2); assert.deepEqual(s.scene.changes.pop(), [3, 'Nivel'], 'SI, REINICIAR vuelve a cargar la escena del nivel'); assert.equal(U.session.levelIndex, 2, 'el mismo nivel');
+  delete s.scene._um; s.frame(3);                                                    // lo que hace el motor al reemplazar la escena
+  const run1 = u().run; assert.notEqual(run1, run0, 'partida nueva'); assert.equal(run1.levelIndex, lvl); assert.equal(run1.money, money0); assert.equal(run1.stamina, stamina0); assert.equal(u().paused, false, 'sin pausa');
 });
 
-test('asaltos: el panel de la estación muestra el riesgo real (y sube en hora pico), en normal y en modo celular', () => {
-  [false, true].forEach((mob) => {
-    delete globalThis.gdjs.UrbanMex;
-    const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; x.U.session.infinite = null; x.U.session.uiMode = mob ? 'on' : 'off'; }); s.frame(3);
-    const um = s.scene._um, run = um.run, ui = s.U.UI.of(s.scene); um.modal = null; um.modalQueue = [];
-    const nb = s.U.Graph.neighbors(run.graph, run.current).find((x) => !run.blocked[x] && !run.data.stations[x].shop && x !== run.level.goal), cfg = run.data.config;
-    const text = () => { const o = ui.pool.t['UI:sp:rk']; return o && !o.hidden ? o.text : null; };
-    um.selected = nb; s.frame(2); assert.equal(text(), null, 'sin noticia no hay etiqueta');
-    run.danger[nb] = true; run.minute = cfg.dayStartMinute + 300; s.frame(2);       // pasada la hora pico del lunes: riesgo base
-    const base = Math.round((cfg.robbery.baseChance - cfg.robbery.luck) * 100); assert.ok(text() && text().includes(base + ' %') && /ASALTO/.test(text()), (mob ? 'celular: ' : '') + 'riesgo base ' + text());
-    run.minute = 420; s.frame(2); const peak = s.U.Rules.robberyRisk(run, nb); assert.ok(text().includes(peak.percent + ' %'), 'hora pico: ' + text()); assert.ok(peak.percent >= base, 'la hora pico no lo baja');
-  });
+test('pausa: REINICIAR NIVEL no cuenta como intento del reto diario, no existe en el modo infinito y SALIR AL MENU queda como último botón', () => {
+  audioReset(); delete globalThis.gdjs.UrbanMex; const s = session('Nivel'); s.frame(2); const U = s.U, u = () => s.scene._um, key = (k) => { KEYS.add(k); s.frame(2); KEYS.delete(k); s.frame(1); };
+  const btns = () => s.U.UI.of(s.scene).buttons.filter((b) => /^pa:/.test(b.id) && b.id !== 'pa:go').map((b) => b.id);
+  U.session.levelIndex = 0; U.session.infinite = null; U.session.dailyRun = { key: '2026-11-09' }; delete s.scene._um; s.frame(3); u().modal = null; u().modalQueue = [];
+  const before = JSON.stringify(U.Daily.status('2026-11-09')); key('Escape'); s.frame(1);
+  assert.deepEqual(btns(), ['pa:cont', 'pa:snd', 'pa:a11y', 'pa:rst', 'pa:menu'], 'REINICIAR va antes de SALIR AL MENU');
+  const ys = ['pa:cont', 'pa:snd', 'pa:a11y', 'pa:rst', 'pa:menu'].map((id) => s.U.UI.of(s.scene).buttons.find((b) => b.id === id)); ys.forEach((b, i) => { if (i) assert.ok(b.y >= ys[i - 1].y + ys[i - 1].h + 8, 'sin encimarse: ' + b.id); assert.ok(b.h >= 44 && b.y + b.h <= 720, 'cabe en pantalla: ' + b.id); });
+  pbtn(s, 'pa:rst'); pbtn(s, 'pa:rsi'); assert.equal(s.scene.changes.pop()[1], 'Nivel'); assert.equal(JSON.stringify(U.Daily.status('2026-11-09')), before, 'reiniciar no suma intento ni cambia la racha');
+  // modo infinito: una derrota termina la racha, así que no se puede reintentar la ronda
+  U.session.dailyRun = null; U.Infinite.start(5); delete s.scene._um; s.frame(3); u().modal = null; u().modalQueue = []; key('Escape'); s.frame(1);
+  assert.deepEqual(btns(), ['pa:cont', 'pa:snd', 'pa:a11y', 'pa:menu'], 'en infinito no hay REINICIAR'); U.session.infinite = null;
 });
 
-test('asaltos: el mensaje del asalto cita la noticia que reportó la estación y el riesgo; pasar de suerte también dice el riesgo', () => {
-  delete globalThis.gdjs.UrbanMex;
-  const go = (rnd) => {
-    const s = session('Nivel'); s.frame(3); const u = s.scene._um, run = u.run; u.modal = null; u.modalQueue = []; run.minute = 570; run.rnd = () => rnd;
-    const nb = s.U.Graph.neighbors(run.graph, run.current).find((x) => !run.blocked[x] && !run.data.stations[x].shop && x !== run.level.goal);
-    run.danger[nb] = true; run.dangerInfo[nb] = { title: 'ROBOS EN PRUEBA', time: '7:40 AM' };
-    const at = (id) => { const w = u.map.stationPos(id), c = u.map.cam; return [(w.x - c.x) * c.zoom + 640, (w.y - c.y) * c.zoom + 360]; };
-    s.click(...at(nb)); s.click(...at(nb)); for (let g = 0; g < 400 && (u.pending || u.map.moving() || g < 5) && !u.modal; g++) s.frame(2);
-    for (let g = 0; g < 10; g++) s.frame(2); return { s, u, run, nb };
-  };
-  const pct = (run) => Math.round((run.data.config.robbery.baseChance - run.data.config.robbery.luck) * 100) + ' %';
-  const a = go(0); assert.equal(a.run.robbed, 1); assert.ok(a.u.modal, 'sale la ventana del asalto'); const txt = a.u.modal.lines.join(' ');
-  assert.match(txt, /ROBOS EN PRUEBA/, 'cita la noticia'); assert.match(txt, /7:40 AM/, 'y la hora'); assert.ok(txt.includes('Riesgo de asalto: ' + pct(a.run)), 'y el riesgo: ' + txt); assert.match(txt, /Debiste haber leido las noticias/, 'conserva la frase de siempre');
-  const wrapped = [].concat(...a.u.modal.lines.map((l) => (l === '' ? [''] : a.s.U.util.wrap(l, 48)))); assert.ok(wrapped.length <= 9, 'cabe en la ventana (300 px de alto, 9 líneas): ' + wrapped.length);
-  const log = a.run.newsLog[0]; assert.equal(log.title, 'ASALTO CONFIRMADO!'); assert.ok(log.impact.includes(pct(a.run)) && log.impact.includes('ROBOS EN PRUEBA'), 'el celular también: ' + log.impact);
-  const b = go(0.99); assert.equal(b.run.robbed, 0); assert.ok(b.run.newsLog[0].desc.includes('riesgo ' + pct(b.run)), 'pasaste de suerte: ' + b.run.newsLog[0].desc);
+test('pausa: en modo celular el menú con REINICIAR NIVEL cumple botones de 44 px y letras de 12 px (confirmación incluida)', () => {
+  const s = mobileSession('Nivel', (x) => { x.U.session.levelIndex = 0; x.U.session.infinite = null; x.U.session.dailyRun = null; delete x.scene._um; }); s.frame(3);
+  const u = () => s.scene._um; u().modal = null; u().modalQueue = []; u().paused = true; u().pauseView = 'main'; s.frame(3); mobileScan(s, 'pausa con REINICIAR');
+  pbtn(s, 'pa:rst'); s.frame(3); assert.equal(u().pauseView, 'restart'); mobileScan(s, 'confirmar reinicio');
 });

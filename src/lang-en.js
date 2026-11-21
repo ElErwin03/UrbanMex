@@ -31,7 +31,7 @@
     'AUTO agranda letras y botones en pantallas chicas.': 'AUTO enlarges text and buttons on small screens.', 'AUTO: grande solo en pantallas chicas.': 'AUTO: large only on small screens.',
     'Todo aviso se ve y se oye. El apuro marca con "!" el recurso que se agota, ademas del rojo.': 'Every alert is seen and heard. The rush marks the running-out resource with "!", besides red.',
     'ESC: volver': 'ESC: back', 'ESC o P: continuar': 'ESC or P: resume', 'PAUSA': 'PAUSE', 'PAUSAR': 'PAUSE', 'CONTINUAR': 'RESUME', 'SALIR AL MENU': 'EXIT TO MENU', 'SONIDO Y MUSICA >': 'SOUND AND MUSIC >', 'ACCESIBILIDAD >': 'ACCESSIBILITY >',
-    'Seguro que quieres salir del nivel?': 'Are you sure you want to leave the level?', 'Perderas el avance de este dia.': 'You will lose this day\'s progress.',
+    'REINICIAR NIVEL': 'RESTART LEVEL', 'SI, REINICIAR': 'YES, RESTART', 'Seguro que quieres reiniciar el nivel?': 'Are you sure you want to restart the level?', 'Empezaras de cero este dia.': 'You will start this day over.', 'Seguro que quieres salir del nivel?': 'Are you sure you want to leave the level?', 'Perderas el avance de este dia.': 'You will lose this day\'s progress.',
     'DOBLE CLIC VIAJAR: {0}': 'DOUBLE-CLICK TRAVEL: {0}', 'DOBLE TOQUE: {0}': 'DOUBLE TAP: {0}', 'SI': 'YES',
     'Doble clic en una estacion vecina (la siguiente a la tuya): viajas ahi sin confirmar.': 'Double-click a neighboring station (the next one to yours): you travel there without confirming.',
     'Musica relajante de fondo y un tren lejano que pasa cada minuto, a volumen bajo.': 'Relaxing background music and a distant train passing every minute, at low volume.',
